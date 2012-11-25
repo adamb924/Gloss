@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TextDisplayWidget</class>
+ <widget class="QTabWidget" name="TextDisplayWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>TabWidget</string>
+  </property>
+  <property name="currentIndex">
+   <number>1</number>
+  </property>
+  <widget class="QWidget" name="baselineTab">
+   <attribute name="title">
+    <string>Baseline</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="glossTab">
+   <attribute name="title">
+    <string>Gloss</string>
+   </attribute>
+   <layout class="QVBoxLayout"/>
+  </widget>
+  <widget class="QWidget" name="morphologyTab">
+   <attribute name="title">
+    <string>Morphology</string>
+   </attribute>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
