@@ -1,4 +1,4 @@
-#include "abstractworddisplaywidget.h"
+#include "worddisplaywidget.h"
 #include "textbit.h"
 #include "project.h"
 #include "lingedit.h"
@@ -7,28 +7,27 @@
 #include <QtGui>
 #include <QtDebug>
 
-AbstractWordDisplayWidget::AbstractWordDisplayWidget( TextBit *bit, Project *project)
+WordDisplayWidget::WordDisplayWidget( TextBit *bit, Project::BaselineMode baselineMode, Project *project)
 {
+    mBaselineMode = baselineMode;
     mTextBit = bit;
     mProject = project;
 
     mGlossLines = mProject->glossLines();
 
+    if( mTextBit->id() == -1 )
+        guessInterpretation();
+
     setupLayout();
 
     setMinimumSize(128,128);
 
-//    qDebug() << "Size Policy" << this->sizePolicy();
-
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
-
-//    qDebug() << mLayout->geometry();
-//    qDebug() << this->geometry();
 
     fillData();
 }
 
-void AbstractWordDisplayWidget::setupLayout()
+void WordDisplayWidget::setupLayout()
 {
     mLayout = new QVBoxLayout;
     setLayout(mLayout);
@@ -38,8 +37,6 @@ void AbstractWordDisplayWidget::setupLayout()
     mLayout->addWidget(new QLabel(mTextBit->text()));
     for(int i=0; i<mGlossLines.count(); i++)
     {
-        //        qDebug() << lines.at(i).mType << lines.at(i).mWritingSystem.keyboardCommand();
-        qDebug() << "Creating edit for id:" << mTextBit->id();
         LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mTextBit->id() ), this);
         mLayout->addWidget(edit);
         mEdits << edit;
@@ -59,25 +56,24 @@ void AbstractWordDisplayWidget::setupLayout()
 }
 
 
-void AbstractWordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
+void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
     menu.addAction(tr("New gloss..."),this,SLOT(newGloss()));
     menu.exec(event->globalPos());
 }
 
-void AbstractWordDisplayWidget::newGloss()
+void WordDisplayWidget::newGloss()
 {
 }
 
-QSize AbstractWordDisplayWidget::sizeHint() const
+QSize WordDisplayWidget::sizeHint() const
 {
     return QSize(128,128);
 }
 
-void AbstractWordDisplayWidget::fillData()
+void WordDisplayWidget::fillData()
 {
-    qDebug() << mTextBit->text() << mTextBit->id();
     if( mTextBit->id() != -1 )
     {
         for(int i=0; i<mGlossLines.count();i++)
@@ -88,18 +84,57 @@ void AbstractWordDisplayWidget::fillData()
                 mEdits[i]->setText( mProject->getInterpretationOrthography(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             case Project::Transcription:
-                qDebug() << "Transcription" << mProject->getInterpretationTranscription(mTextBit->id(), mGlossLines.at(i).writingSystem() );
-                qDebug() << "textbit id" << mTextBit->id();
-                qDebug() << "glossline ws" << mGlossLines.at(i).writingSystem()->flexString();
                 mEdits[i]->setText( mProject->getInterpretationTranscription(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             case Project::Gloss:
-                qDebug() << "Gloss" << mProject->getInterpretationTranscription(mTextBit->id(), mGlossLines.at(i).writingSystem() );
-                qDebug() << "textbit id" << mTextBit->id();
-                qDebug() << "glossline ws" << mGlossLines.at(i).writingSystem()->flexString();
                 mEdits[i]->setText( mProject->getInterpretationGloss(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             }
         }
+    }
+}
+
+void WordDisplayWidget::guessInterpretation()
+{
+    if( mBaselineMode == Project::Orthographic )
+    {
+        QList<qlonglong> candidates =  mProject->candidateInterpretationsOrthographic( mTextBit->text() );
+
+        if( candidates.length() == 0 )
+        {
+            mTextBit->setId( mProject->newInterpretationFromOrthography(*mTextBit) );
+            mCandidateStatus = SingleOption;
+        }
+        else if ( candidates.length() == 1 )
+        {
+            mTextBit->setId( candidates.at(0) );
+            mCandidateStatus = SingleOption;
+        }
+        else // greater than 1
+        {
+            mTextBit->setId( candidates.at(0) );
+            mCandidateStatus = MultipleOption;
+        }
+        mApprovalStatus = Unapproved;
+    }
+    else
+    {
+        QList<qlonglong> candidates = mProject->candidateInterpretationsPhonetic( mTextBit->text() );
+        if( candidates.length() == 0 )
+        {
+            mTextBit->setId( mProject->newInterpretationFromPhonetic(*mTextBit)  );
+            mCandidateStatus = SingleOption;
+        }
+        else if ( candidates.length() == 1 )
+        {
+            mTextBit->setId( candidates.at(0) );
+            mCandidateStatus = SingleOption;
+        }
+        else // greater than 1
+        {
+            mTextBit->setId( candidates.at(0) );
+            mCandidateStatus = MultipleOption;
+        }
+        mApprovalStatus = Unapproved;
     }
 }

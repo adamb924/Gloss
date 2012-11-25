@@ -19,7 +19,6 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
 
 void LingEdit::focusInEvent ( QFocusEvent * e )
 {
-//    qDebug() << "Focus In" << mWritingSystem.keyboardCommand();
 //    QProcess *switchInput = new QProcess();
 //    switchInput->start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mWritingSystem.keyboardCommand() );
 }

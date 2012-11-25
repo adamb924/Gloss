@@ -5,9 +5,8 @@
 #include <QStringList>
 
 #include "flowlayout.h"
-#include "phoneticworddisplaywidget.h"
-#include "orthographicworddisplaywidget.h"
 #include "textbit.h"
+#include "worddisplaywidget.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(WritingSystem *baselineWs, Project::BaselineMode baselineMode, Project *project, QWidget *parent) :
     QWidget(parent)
@@ -59,15 +58,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
         {
             *(mTextBits.last()) << new TextBit(words.at(j),mWritingSystem);
 
-            AbstractWordDisplayWidget *word;
-            if( mBaselineMode == Project::Orthographic )
-                word = new OrthographicWordDisplayWidget( mTextBits.last()->last() , mProject );
-            else
-                word = new PhoneticWordDisplayWidget( mTextBits.last()->last() , mProject );
-            if( mTextBits.last()->last()->id() == -1 )
-                word->guessInterpretation();
-
-
+            WordDisplayWidget *word = new WordDisplayWidget( mTextBits.last()->last() , mBaselineMode , mProject );
             flowLayout->addWidget(word);
             mWordDisplayWidgets << word;
         }

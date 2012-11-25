@@ -1,5 +1,5 @@
-#ifndef ABSTRACTWORDDISPLAYWIDGET_H
-#define ABSTRACTWORDDISPLAYWIDGET_H
+#ifndef WORDDISPLAYWIDGET_H
+#define WORDDISPLAYWIDGET_H
 
 #include <QWidget>
 #include <QString>
@@ -13,20 +13,22 @@ class QVBoxLayout;
 class WritingSystem;
 class TextBit;
 
-class AbstractWordDisplayWidget : public QWidget
+class WordDisplayWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    AbstractWordDisplayWidget(TextBit *bit, Project *project);
+    WordDisplayWidget(TextBit *bit, Project::BaselineMode baselineMode, Project *project);
 
     QSize sizeHint() const;
 
-    virtual void guessInterpretation() = 0;
+    void guessInterpretation();
 
 protected:
     Project *mProject;
     TextBit *mTextBit;
+
+    Project::BaselineMode mBaselineMode;
 
     enum CandidateStatus { SingleOption, MultipleOption };
     enum ApprovalStatus { Approved, Unapproved };
@@ -50,4 +52,4 @@ private slots:
     void newGloss();
 };
 
-#endif // ABSTRACTWORDDISPLAYWIDGET_H
+#endif // WORDDISPLAYWIDGET_H

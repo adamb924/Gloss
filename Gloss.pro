@@ -16,12 +16,10 @@ SOURCES += main.cpp\
     project.cpp \
     textdisplaywidget.cpp \
     interlineardisplaywidget.cpp \
-    abstractworddisplaywidget.cpp \
+    worddisplaywidget.cpp \
     writingsystem.cpp \
     lingedit.cpp \
     glossline.cpp \
-    phoneticworddisplaywidget.cpp \
-    orthographicworddisplaywidget.cpp \
     textbit.cpp
 
 HEADERS  += mainwindow.h \
@@ -29,12 +27,10 @@ HEADERS  += mainwindow.h \
     project.h \
     textdisplaywidget.h \
     interlineardisplaywidget.h \
-    abstractworddisplaywidget.h \
+    worddisplaywidget.h \
     writingsystem.h \
     lingedit.h \
     glossline.h \
-    phoneticworddisplaywidget.h \
-    orthographicworddisplaywidget.h \
     textbit.h
 
 FORMS    += mainwindow.ui \
