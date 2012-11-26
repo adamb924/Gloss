@@ -3,6 +3,7 @@
 #include "project.h"
 #include "lingedit.h"
 #include "glossline.h"
+#include "databaseadapter.h"
 
 #include <QtGui>
 #include <QtDebug>
@@ -44,12 +45,16 @@ void WordDisplayWidget::setupLayout()
         switch( mGlossLines.at(i).type() )
         {
         case Project::Orthographic:
+            connect(edit, SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationOrthography(TextBit)));
+            connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(orthographyChanged(TextBit)));
             break;
         case Project::Gloss:
-            connect(edit,SIGNAL(stringChanged(TextBit)), mProject, SLOT(updateInterpretationGloss(TextBit)));
+            connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationGloss(TextBit)));
+            connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(glossChanged(TextBit)));
             break;
         case Project::Transcription:
-            connect(edit,SIGNAL(stringChanged(TextBit)), mProject, SLOT(updateInterpretationTranscription(TextBit)));
+            connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationTranscription(TextBit)));
+            connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(transcriptionChanged(TextBit)));
             break;
         }
     }
@@ -81,13 +86,13 @@ void WordDisplayWidget::fillData()
             switch( mGlossLines.at(i).type() )
             {
             case Project::Orthography:
-                mEdits[i]->setText( mProject->getInterpretationOrthography(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
+                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationOrthography(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             case Project::Transcription:
-                mEdits[i]->setText( mProject->getInterpretationTranscription(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
+                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationTranscription(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             case Project::Gloss:
-                mEdits[i]->setText( mProject->getInterpretationGloss(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
+                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationGloss(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             }
         }
@@ -97,44 +102,73 @@ void WordDisplayWidget::fillData()
 void WordDisplayWidget::guessInterpretation()
 {
     if( mBaselineMode == Project::Orthographic )
-    {
-        QList<qlonglong> candidates =  mProject->candidateInterpretationsOrthographic( mTextBit->text() );
-
-        if( candidates.length() == 0 )
-        {
-            mTextBit->setId( mProject->newInterpretationFromOrthography(*mTextBit) );
-            mCandidateStatus = SingleOption;
-        }
-        else if ( candidates.length() == 1 )
-        {
-            mTextBit->setId( candidates.at(0) );
-            mCandidateStatus = SingleOption;
-        }
-        else // greater than 1
-        {
-            mTextBit->setId( candidates.at(0) );
-            mCandidateStatus = MultipleOption;
-        }
-        mApprovalStatus = Unapproved;
-    }
+        guessInterpretationOrthographic();
     else
+        guessInterpretationPhonetic();
+}
+
+void WordDisplayWidget::guessInterpretationOrthographic()
+{
+    QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretationsOrthographic( mTextBit->text() );
+    qlonglong oldId = mTextBit->id();
+    if( candidates.length() == 0 )
     {
-        QList<qlonglong> candidates = mProject->candidateInterpretationsPhonetic( mTextBit->text() );
-        if( candidates.length() == 0 )
-        {
-            mTextBit->setId( mProject->newInterpretationFromPhonetic(*mTextBit)  );
-            mCandidateStatus = SingleOption;
-        }
-        else if ( candidates.length() == 1 )
-        {
-            mTextBit->setId( candidates.at(0) );
-            mCandidateStatus = SingleOption;
-        }
-        else // greater than 1
-        {
-            mTextBit->setId( candidates.at(0) );
-            mCandidateStatus = MultipleOption;
-        }
-        mApprovalStatus = Unapproved;
+        mTextBit->setId( mProject->dbAdapter()->newInterpretationFromOrthography(*mTextBit) );
+        mCandidateStatus = SingleOption;
     }
+    else if ( candidates.length() == 1 )
+    {
+        mTextBit->setId( candidates.at(0) );
+        mCandidateStatus = SingleOption;
+    }
+    else // greater than 1
+    {
+        mTextBit->setId( candidates.at(0) );
+        mCandidateStatus = MultipleOption;
+    }
+    mApprovalStatus = Unapproved;
+    emit idChanged(this,oldId,mTextBit->id());
+}
+
+void WordDisplayWidget::guessInterpretationPhonetic()
+{
+    QList<qlonglong> candidates = mProject->dbAdapter()->candidateInterpretationsPhonetic( mTextBit->text() );
+    qlonglong oldId = mTextBit->id();
+    if( candidates.length() == 0 )
+    {
+        mTextBit->setId( mProject->dbAdapter()->newInterpretationFromPhonetic(*mTextBit)  );
+        mCandidateStatus = SingleOption;
+    }
+    else if ( candidates.length() == 1 )
+    {
+        mTextBit->setId( candidates.at(0) );
+        mCandidateStatus = SingleOption;
+    }
+    else // greater than 1
+    {
+        mTextBit->setId( candidates.at(0) );
+        mCandidateStatus = MultipleOption;
+    }
+    mApprovalStatus = Unapproved;
+    emit idChanged(this,oldId,mTextBit->id());
+}
+
+TextBit* WordDisplayWidget::textBit() const
+{
+    return mTextBit;
+}
+
+void WordDisplayWidget::updateEdit( const TextBit & bit, Project::GlossLineType type )
+{
+    LingEdit *line = getAppropriateEdit(bit, type);
+    if( line != 0 )
+        line->setText(bit.text());
+}
+
+LingEdit* WordDisplayWidget::getAppropriateEdit(const TextBit & bit, Project::GlossLineType type )
+{
+    for(int i=0; i<mGlossLines.count(); i++)
+        if( mGlossLines.at(i).type() == type && mGlossLines.at(i).writingSystem()->flexString() == bit.writingSystem()->flexString() )
+            return mEdits[i];
+    return 0;
 }

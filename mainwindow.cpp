@@ -2,9 +2,11 @@
 #include "ui_mainwindow.h"
 
 #include "project.h"
+#include "databaseadapter.h"
 #include "textdisplaywidget.h"
 
 #include <QtGui>
+#include <QtSql>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,11 +26,30 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addText()));
 
     ui->menuData->setEnabled(false);
+    ui->menuGuts->setEnabled(false);
+
+    addTableMenuItems();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::addTableMenuItems()
+{
+    QString table;
+    QStringList tables;
+    tables << "Interpretations" << "OrthographicForms" << "PhoneticForms" << "MorphologicalAnalyses" << "Glosses" << "WritingSystems" << "GlossLines";
+    foreach(table, tables)
+    {
+        QAction *action = new QAction(table,ui->menuGuts);
+        action->setData(table);
+        ui->menuGuts->addAction(action);
+        QActionGroup *group = new QActionGroup(this);
+        group->addAction(action);
+        connect(group,SIGNAL(triggered(QAction*)),this,SLOT(sqlTableView(QAction*)));
+    }
 }
 
 void MainWindow::newProject()
@@ -40,10 +61,11 @@ void MainWindow::newProject()
         if( mProject != 0 )
             delete mProject;
         mProject = new Project();
-        mProject->initialize(filename);
+        mProject->dbAdapter()->initialize(filename);
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
         ui->menuData->setEnabled(true);
+        ui->menuGuts->setEnabled(true);
     }
 }
 
@@ -60,6 +82,7 @@ void MainWindow::openProject()
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
         ui->menuData->setEnabled(true);
+        ui->menuGuts->setEnabled(true);
     }
 }
 
@@ -78,4 +101,19 @@ void MainWindow::addText()
     TextDisplayWidget *tmp = new TextDisplayWidget(mProject, this);
     ui->mdiArea->addSubWindow(tmp);
     tmp->show();
+}
+
+void MainWindow::sqlTableView( QAction * action )
+{
+    QString name = action->data().toString();
+    QSqlTableModel *model = new QSqlTableModel(this,*mProject->dbAdapter()->db());
+    model->setTable(name);
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->select();
+
+    QTableView *view = new QTableView;
+    view->setModel(model);
+    view->setSortingEnabled(true);
+    view->setWindowTitle(name);
+    view->show();
 }

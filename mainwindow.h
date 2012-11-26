@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 class Project;
+class QAction;
 
 namespace Ui {
     class MainWindow;
@@ -22,11 +23,15 @@ private:
 
     Project *mProject;
 
+    void addTableMenuItems();
+
 public slots:
     void newProject();
     void openProject();
     void saveProject();
     void saveProjectAs();
+
+    void sqlTableView( QAction * action );
 
     void addText();
 

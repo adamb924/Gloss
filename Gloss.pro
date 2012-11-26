@@ -20,7 +20,9 @@ SOURCES += main.cpp\
     writingsystem.cpp \
     lingedit.cpp \
     glossline.cpp \
-    textbit.cpp
+    textbit.cpp \
+    textlocation.cpp \
+    databaseadapter.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -31,7 +33,12 @@ HEADERS  += mainwindow.h \
     writingsystem.h \
     lingedit.h \
     glossline.h \
-    textbit.h
+    textbit.h \
+    textlocation.h \
+    databaseadapter.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui
+
+LIBS += -L../quazip
+LIBS += -lquazip

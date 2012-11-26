@@ -23,6 +23,10 @@ public:
     QSize sizeHint() const;
 
     void guessInterpretation();
+    void guessInterpretationOrthographic();
+    void guessInterpretationPhonetic();
+
+    TextBit* textBit() const;
 
 protected:
     Project *mProject;
@@ -38,6 +42,8 @@ protected:
 
     void fillData();
 
+    LingEdit* getAppropriateEdit(const TextBit & bit, Project::GlossLineType type );
+
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
@@ -48,8 +54,18 @@ private:
     QList<GlossLine> mGlossLines;
     QList<LingEdit*> mEdits;
 
+signals:
+    void idChanged(WordDisplayWidget *w, qlonglong oldId, qlonglong newId );
+
+    void glossChanged(const TextBit & bit);
+    void orthographyChanged(const TextBit & bit);
+    void transcriptionChanged(const TextBit & bit);
+
 private slots:
     void newGloss();
+
+public slots:
+    void updateEdit( const TextBit & bit, Project::GlossLineType type );
 };
 
 #endif // WORDDISPLAYWIDGET_H

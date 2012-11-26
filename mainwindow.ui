@@ -46,8 +46,14 @@
     </property>
     <addaction name="actionAdd_text"/>
    </widget>
+   <widget class="QMenu" name="menuGuts">
+    <property name="title">
+     <string>Guts</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
+   <addaction name="menuGuts"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew_Project">
@@ -92,10 +98,25 @@
   </action>
   <action name="actionAdd_text">
    <property name="text">
-    <string>Add text...</string>
+    <string>Paste in text...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionInterpretations">
+   <property name="text">
+    <string>Interpretations</string>
+   </property>
+  </action>
+  <action name="actionOrthographicForms">
+   <property name="text">
+    <string>OrthographicForms</string>
+   </property>
+  </action>
+  <action name="actionPhoneticForms">
+   <property name="text">
+    <string>PhoneticForms</string>
    </property>
   </action>
  </widget>

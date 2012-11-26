@@ -2,6 +2,7 @@
 #include "ui_textdisplaywidget.h"
 
 #include "interlineardisplaywidget.h"
+#include "databaseadapter.h"
 
 TextDisplayWidget::TextDisplayWidget(Project *project, QWidget *parent) :
     QTabWidget(parent),
@@ -15,7 +16,7 @@ TextDisplayWidget::TextDisplayWidget(Project *project, QWidget *parent) :
     mBaselineMode = Project::Orthographic;
 
     // TODO this too need to be modifiable
-    mWritingSystem = mProject->writingSystem("wbl-Arab-AF");
+    mWritingSystem = mProject->dbAdapter()->writingSystem("wbl-Arab-AF");
 
     ui->setupUi(this);
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
