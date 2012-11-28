@@ -55,8 +55,6 @@ private:
     void setBaselineBitsFromBaseline();
 
     void guessInterpretation(TextBit *bit);
-    void guessInterpretationOrthographic(TextBit *bit);
-    void guessInterpretationPhonetic(TextBit *bit);
 
     void importTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 

@@ -6,8 +6,7 @@ class WritingSystem;
 class GlossLine {
 public:
     enum LineType {
-        Orthography,
-        Transcription,
+        Text,
         Gloss
     };
 

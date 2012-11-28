@@ -88,14 +88,10 @@ QList<GlossLine> Project::glossLines()
     {
         GlossLine::LineType type;
         QString sType = q.value(0).toString();
-        if( sType == "Orthography" )
-            type = GlossLine::Orthography;
-        else if ( sType == "Transcription" )
-            type = GlossLine::Transcription;
-        else if ( sType == "Gloss" )
-            type = GlossLine::Gloss;
+        if ( sType == "Text" )
+            type = GlossLine::Text;
         else
-            type = GlossLine::Orthography;
+            type = GlossLine::Gloss;
         lines << GlossLine(type, new WritingSystem( q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString() , q.value(7).toInt() ) );
     }
     return lines;

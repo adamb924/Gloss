@@ -112,42 +112,11 @@ void Text::setBaselineBitsFromBaseline()
 
 void Text::guessInterpretation(TextBit *bit)
 {
-    if( mBaselineMode == Orthographic )
-        guessInterpretationOrthographic(bit);
-    else
-        guessInterpretationPhonetic(bit);
-}
-
-void Text::guessInterpretationOrthographic(TextBit *bit)
-{
-    QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretationsOrthographic( bit->text() );
+    QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretations( *bit );
     qlonglong oldId = bit->id();
     if( candidates.length() == 0 )
     {
-        bit->setId( mProject->dbAdapter()->newInterpretationFromOrthography(*bit) );
-        mCandidateStatus = SingleOption;
-    }
-    else if ( candidates.length() == 1 )
-    {
-        bit->setId( candidates.at(0) );
-        mCandidateStatus = SingleOption;
-    }
-    else // greater than 1
-    {
-        bit->setId( candidates.at(0) );
-        mCandidateStatus = MultipleOption;
-    }
-    mApprovalStatus = Unapproved;
-    emit idChanged(bit,oldId);
-}
-
-void Text::guessInterpretationPhonetic(TextBit *bit)
-{
-    QList<qlonglong> candidates = mProject->dbAdapter()->candidateInterpretationsPhonetic( bit->text() );
-    qlonglong oldId = bit->id();
-    if( candidates.length() == 0 )
-    {
-        bit->setId( mProject->dbAdapter()->newInterpretationFromPhonetic(*bit)  );
+        bit->setId( mProject->dbAdapter()->newInterpretation(*bit) );
         mCandidateStatus = SingleOption;
     }
     else if ( candidates.length() == 1 )

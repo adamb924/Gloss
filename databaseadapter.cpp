@@ -33,7 +33,7 @@ void DatabaseAdapter::initialize(QString filename)
     {
         QFile old(filename);
         old.setPermissions(QFile::ReadOther | QFile::WriteOther);
-        qDebug() << old.remove();
+//        qDebug() << old.remove();
     }
 
     mDb.setDatabaseName(filename);
@@ -45,11 +45,11 @@ void DatabaseAdapter::initialize(QString filename)
     createTables();
 }
 
-QList<qlonglong> DatabaseAdapter::candidateInterpretationsPhonetic(const QString & form) const
+QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBit & bit) const
 {
     QList<qlonglong> candidates;
     QSqlQuery q(mDb);
-    QString query = QString("select Interpretations._id from Interpretations,PhoneticForms where Form='%1' and PhoneticForms.InterpretationId=Interpretations._id;").arg(form);
+    QString query = QString("select Interpretations._id from Interpretations,TextForms,WritingSystems where Form='%1' and WritingSystem=WritingSystems._id and WritingSystems.FlexString='%2' and TextForms.InterpretationId=Interpretations._id;").arg(bit.text()).arg(bit.writingSystem()->flexString());
     if( !q.exec(query)  )
         qDebug() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
     while( q.next() )
@@ -58,21 +58,7 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretationsPhonetic(const QString
     return candidates;
 }
 
-
-QList<qlonglong> DatabaseAdapter::candidateInterpretationsOrthographic(const QString & form) const
-{
-    QList<qlonglong> candidates;
-    QSqlQuery q(mDb);
-    QString query = QString("select Interpretations._id from Interpretations,OrthographicForms where Form='%1' and OrthographicForms.InterpretationId=Interpretations._id;").arg(form);
-    if( !q.exec(query)  )
-        qDebug() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
-    while( q.next() )
-        candidates << q.value(0).toLongLong();
-
-    return candidates;
-}
-
-qlonglong DatabaseAdapter::newInterpretationFromOrthography( const TextBit & bit )
+qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
 {
     mDb.transaction();
 
@@ -83,32 +69,11 @@ qlonglong DatabaseAdapter::newInterpretationFromOrthography( const TextBit & bit
     {
         if(!q.exec("insert into Interpretations (_id) select null;"))
             throw;
-
         qlonglong id = q.lastInsertId().toLongLong();
 
-        // a bit profligate, but why not?
-        // this ought not to be needed because they will be inserted later anyway
-/*
-        // OrthographicForm
-        if(!q.exec(QString("insert into OrthographicForms (InterpretationId,WritingSystem) select '%1',_id from WritingSystems;").arg(id)))
-            throw;
-
-        // PhoneticForm
-        if(!q.exec(QString("insert into PhoneticForms (InterpretationId,WritingSystem) select '%1',_id from WritingSystems;").arg(id)))
-            throw;
-
-        // MorphologicalAnalysis
-        if(!q.exec(QString("insert into MorphologicalAnalyses (InterpretationId,WritingSystem) select '%1',_id from WritingSystems;").arg(id)))
-            throw;
-
-        // Gloss
-        if(!q.exec(QString("insert into Glosses (InterpretationId,WritingSystem) select '%1',_id from WritingSystems;").arg(id)))
-            throw;
-*/
         TextBit newBit(bit);
         newBit.setId(id);
-        updateInterpretationOrthography(newBit);
-
+        updateInterpretationTextForm(newBit);
     }
     catch(std::exception &e)
     {
@@ -120,10 +85,12 @@ qlonglong DatabaseAdapter::newInterpretationFromOrthography( const TextBit & bit
     return q.lastInsertId().toLongLong();
 }
 
-qlonglong DatabaseAdapter::newInterpretationFromPhonetic( const TextBit & bit )
+void DatabaseAdapter::updateInterpretationTextForm( const TextBit & bit )
 {
-    // TODO implement this
-    return -1;
+    QSqlQuery q(mDb);
+    QString query = QString("replace into TextForms (InterpretationId, WritingSystem, Form) select '%1',_id,'%2' from WritingSystems where FlexString='%3';").arg(bit.id()).arg(bit.text()).arg(bit.writingSystem()->flexString());
+    if( !q.exec(query)  )
+        qDebug() << "DatabaseAdapter::updateInterpretationTextForm" << q.lastError().text() << query;
 }
 
 void DatabaseAdapter::updateInterpretationGloss( const TextBit & bit )
@@ -132,22 +99,6 @@ void DatabaseAdapter::updateInterpretationGloss( const TextBit & bit )
     QString query = QString("replace into Glosses (InterpretationId, WritingSystem, Form) select '%1',_id,'%2' from WritingSystems where FlexString='%3';").arg(bit.id()).arg(bit.text()).arg(bit.writingSystem()->flexString());
     if( !q.exec(query)  )
         qDebug() << "DatabaseAdapter::updateInterpretationGloss" << q.lastError().text() << query;
-}
-
-void DatabaseAdapter::updateInterpretationTranscription( const TextBit & bit )
-{
-    QSqlQuery q(mDb);
-    QString query = QString("replace into PhoneticForms (InterpretationId, WritingSystem, Form) select '%1',_id,'%2' from WritingSystems where FlexString='%3';").arg(bit.id()).arg(bit.text()).arg(bit.writingSystem()->flexString());
-    if( !q.exec(query)  )
-        qDebug() << "DatabaseAdapter::updateInterpretationTranscription" << q.lastError().text() << query;
-}
-
-void DatabaseAdapter::updateInterpretationOrthography( const TextBit & bit )
-{
-    QSqlQuery q(mDb);
-    QString query = QString("replace into OrthographicForms (InterpretationId, WritingSystem, Form) select '%1',_id,'%2' from WritingSystems where FlexString='%3';").arg(bit.id()).arg(bit.text()).arg(bit.writingSystem()->flexString());
-    if( !q.exec(query)  )
-        qDebug() << "DatabaseAdapter::updateInterpretationOrthography" << q.lastError().text() << query;
 }
 
 void DatabaseAdapter::updateInterpretationMorphologicalAnalysis( const TextBit & bit, const QString & splitString )
@@ -176,10 +127,10 @@ QString DatabaseAdapter::getInterpretationGloss(qlonglong id, WritingSystem *ws)
     }
 }
 
-QString DatabaseAdapter::getInterpretationTranscription(qlonglong id, WritingSystem *ws) const
+QString DatabaseAdapter::getInterpretationTextForm(qlonglong id, WritingSystem *ws) const
 {
     QSqlQuery q(mDb);
-    QString query = QString("select Form from PhoneticForms where InterpretationId='%1' and WritingSystem in (select _id from WritingSystems where FlexString='%2');").arg(id).arg(ws->flexString());
+    QString query = QString("select Form from TextForms where InterpretationId='%1' and WritingSystem in (select _id from WritingSystems where FlexString='%2');").arg(id).arg(ws->flexString());
     if( q.exec(query) )
     {
         if( q.first() )
@@ -189,25 +140,7 @@ QString DatabaseAdapter::getInterpretationTranscription(qlonglong id, WritingSys
     }
     else
     {
-        qDebug() << "DatabaseAdapter::getInterpretationTranscription" << q.lastError().text() << query;
-        return "";
-    }
-}
-
-QString DatabaseAdapter::getInterpretationOrthography(qlonglong id, WritingSystem *ws) const
-{
-    QSqlQuery q(mDb);
-    QString query = QString("select Form from OrthographicForms where InterpretationId='%1' and WritingSystem in (select _id from WritingSystems where FlexString='%2');").arg(id).arg(ws->flexString());
-    if( q.exec(query) )
-    {
-        if( q.first() )
-            return q.value(0).toString();
-        else
-            return "";
-    }
-    else
-    {
-        qDebug() << "DatabaseAdapter::getInterpretationOrthography" << q.lastError().text() << query;
+        qDebug() << "DatabaseAdapter::getInterpretationTextForm" << q.lastError().text() << query;
         return "";
     }
 }
@@ -242,10 +175,7 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table Interpretations ( _id integer primary key autoincrement );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
-    if( !q.exec("create table OrthographicForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, unique (InterpretationId,WritingSystem)  );") )
-        qDebug() << q.lastError().text() << q.lastQuery();
-
-    if( !q.exec("create table PhoneticForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, unique (InterpretationId,WritingSystem)  );") )
+    if( !q.exec("create table TextForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, unique (InterpretationId,WritingSystem)  );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
     if( !q.exec("create table MorphologicalAnalyses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, SplitString text, unique (InterpretationId,WritingSystem)  );") )
@@ -265,8 +195,8 @@ void DatabaseAdapter::createTables()
     q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('English','Eng', 'en', 'english.ahk' , '0' , 'Times New Roman' , '12' );");
     q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('IPA','IPA', 'wbl-Qaaa-AF-fonipa-x-Zipa', 'ipa.ahk' , '0' , 'Times New Roman' , '12' );");
 
-    q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Orthography','1', '2');");
-    q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Transcription','2', '4');");
+    q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Text','1', '2');");
+    q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Text','2', '4');");
     q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Gloss','3', '1');");
     q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Gloss','4', '3');");
 }

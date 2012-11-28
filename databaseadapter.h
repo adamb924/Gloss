@@ -14,17 +14,17 @@ public:
     explicit DatabaseAdapter(const QString & filename, QObject *parent = 0);
     ~DatabaseAdapter();
 
+    //! \brief Initializes the database at the path \a filename
     void initialize(QString filename);
 
-    QList<qlonglong> candidateInterpretationsPhonetic(const QString & form) const;
-    QList<qlonglong> candidateInterpretationsOrthographic(const QString & form) const;
+    //! \brief Returns a list of possible interpretations of the baseline TextBit \a bit
+    QList<qlonglong> candidateInterpretations(const TextBit & bit) const;
 
-    qlonglong newInterpretationFromOrthography( const TextBit & bit );
-    qlonglong newInterpretationFromPhonetic( const TextBit & bit );
+    //! \brief Creates a new interpretation of the baseline TextBit \a bit and returns the database index of the Interpreation
+    qlonglong newInterpretation( const TextBit & bit );
 
     QString getInterpretationGloss(qlonglong id, WritingSystem *ws) const;
-    QString getInterpretationTranscription(qlonglong id, WritingSystem *ws) const;
-    QString getInterpretationOrthography(qlonglong id, WritingSystem *ws) const;
+    QString getInterpretationTextForm(qlonglong id, WritingSystem *ws) const;
     QString getInterpretationMorphologicalAnalysis(qlonglong id, WritingSystem *ws) const;
 
     void addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection);
@@ -44,8 +44,10 @@ signals:
 
 public slots:
     void updateInterpretationGloss( const TextBit & bit );
-    void updateInterpretationTranscription( const TextBit & bit );
-    void updateInterpretationOrthography( const TextBit & bit );
+
+    //! \brief Updates a text form in the database, where the id of the textform is the id field of \a bit
+    void updateInterpretationTextForm( const TextBit & bit );
+
     void updateInterpretationMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
 
 };

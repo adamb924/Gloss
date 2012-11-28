@@ -41,17 +41,13 @@ void WordDisplayWidget::setupLayout()
 
         switch( mGlossLines.at(i).type() )
         {
-        case GlossLine::Orthography:
-            connect(edit, SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationOrthography(TextBit)));
-            connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(orthographyChanged(TextBit)));
+        case GlossLine::Text:
+            connect(edit, SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationTextForm(TextBit)));
+            connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(textChanged(TextBit)));
             break;
         case GlossLine::Gloss:
             connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationGloss(TextBit)));
             connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(glossChanged(TextBit)));
-            break;
-        case GlossLine::Transcription:
-            connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationTranscription(TextBit)));
-            connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(transcriptionChanged(TextBit)));
             break;
         }
     }
@@ -82,11 +78,8 @@ void WordDisplayWidget::fillData()
         {
             switch( mGlossLines.at(i).type() )
             {
-            case GlossLine::Orthography:
-                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationOrthography(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
-                break;
-            case GlossLine::Transcription:
-                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationTranscription(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
+            case GlossLine::Text:
+                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationTextForm(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             case GlossLine::Gloss:
                 mEdits[i]->setText( mProject->dbAdapter()->getInterpretationGloss(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );

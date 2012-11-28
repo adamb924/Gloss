@@ -27,8 +27,7 @@ public slots:
 
 private slots:
     void updateGloss( const TextBit & bit );
-    void updateTranscription( const TextBit & bit );
-    void updateOrthography( const TextBit & bit );
+    void updateText( const TextBit & bit );
     void updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
 
 private:

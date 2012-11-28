@@ -57,8 +57,6 @@ void InterlinearDisplayWidget::setLayoutFromText()
         }
     }
     mLayout->addStretch(100);
-
-//    qDebug() << mConcordance;
 }
 
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(TextBit *bit)
@@ -72,8 +70,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(TextBit *bit)
 
     // update concordant words
     connect(wdw,SIGNAL(glossChanged(TextBit)), this, SLOT(updateGloss(TextBit)));
-    connect(wdw,SIGNAL(orthographyChanged(TextBit)), this, SLOT(updateOrthography(TextBit)));
-    connect(wdw,SIGNAL(transcriptionChanged(TextBit)), this, SLOT(updateTranscription(TextBit)));
+    connect(wdw,SIGNAL(textChanged(TextBit)), this, SLOT(updateText(TextBit)));
 
     mWordDisplayWidgets << wdw;
 
@@ -102,20 +99,12 @@ void InterlinearDisplayWidget::updateGloss( const TextBit & bit )
         wdw->updateEdit(bit,GlossLine::Gloss);
 }
 
-void InterlinearDisplayWidget::updateTranscription( const TextBit & bit )
+void InterlinearDisplayWidget::updateText( const TextBit & bit )
 {
     WordDisplayWidget* wdw;
     QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
     foreach(wdw, wdwList)
-        wdw->updateEdit(bit,GlossLine::Transcription);
-}
-
-void InterlinearDisplayWidget::updateOrthography( const TextBit & bit )
-{
-    WordDisplayWidget* wdw;
-    QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
-    foreach(wdw, wdwList)
-        wdw->updateEdit(bit,GlossLine::Orthography);
+        wdw->updateEdit(bit,GlossLine::Text);
 }
 
 void InterlinearDisplayWidget::updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString )

@@ -51,8 +51,7 @@ signals:
     void idChanged(WordDisplayWidget *w, qlonglong oldId, qlonglong newId );
 
     void glossChanged(const TextBit & bit);
-    void orthographyChanged(const TextBit & bit);
-    void transcriptionChanged(const TextBit & bit);
+    void textChanged(const TextBit & bit);
 
 private slots:
     void newGloss();
