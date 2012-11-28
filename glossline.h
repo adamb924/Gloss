@@ -1,20 +1,26 @@
 #ifndef GLOSSLINE_H
 #define GLOSSLINE_H
 
-#include "project.h"
+class WritingSystem;
 
 class GlossLine {
 public:
-    GlossLine();
-    GlossLine(Project::GlossLineType type, WritingSystem *ws);
+    enum LineType {
+        Orthography,
+        Transcription,
+        Gloss
+    };
 
-    void setType(Project::GlossLineType type);
+    GlossLine();
+    GlossLine(LineType type, WritingSystem *ws);
+
+    void setType(LineType type);
     void setWritingSystem(WritingSystem *ws);
-    Project::GlossLineType type() const;
+    LineType type() const;
     WritingSystem* writingSystem() const;
 
 private:
-    Project::GlossLineType mType;
+    LineType mType;
     WritingSystem *mWritingSystem;
 };
 

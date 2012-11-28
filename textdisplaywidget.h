@@ -4,7 +4,7 @@
 #include <QTabWidget>
 
 #include "project.h"
-#include "textinfo.h"
+#include "text.h"
 
 class InterlinearDisplayWidget;
 
@@ -17,16 +17,14 @@ class TextDisplayWidget : public QTabWidget
     Q_OBJECT
 
 public:
-    explicit TextDisplayWidget(const TextInfo & info, Project *project, QWidget *parent = 0);
+    explicit TextDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
     ~TextDisplayWidget();
-
-    Project::BaselineMode textBaselineMode() const;
 
 private:
     Ui::TextDisplayWidget *ui;
     Project *mProject;
     InterlinearDisplayWidget *mInterlinear;
-    TextInfo mTextInfo;
+    Text *mText;
 
 private slots:
     void tabChanged(int i);

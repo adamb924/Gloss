@@ -7,6 +7,7 @@
 
 #include "glossline.h"
 #include "lingedit.h"
+#include "text.h"
 
 class Project;
 class QVBoxLayout;
@@ -18,13 +19,10 @@ class WordDisplayWidget : public QWidget
     Q_OBJECT
 
 public:
-    WordDisplayWidget(TextBit *bit, Project::BaselineMode baselineMode, Project *project);
+    WordDisplayWidget(TextBit *bit, Text::BaselineMode baselineMode, Project *project);
 
     QSize sizeHint() const;
 
-    void guessInterpretation();
-    void guessInterpretationOrthographic();
-    void guessInterpretationPhonetic();
 
     TextBit* textBit() const;
 
@@ -32,17 +30,12 @@ protected:
     Project *mProject;
     TextBit *mTextBit;
 
-    Project::BaselineMode mBaselineMode;
+    Text::BaselineMode mBaselineMode;
 
-    enum CandidateStatus { SingleOption, MultipleOption };
-    enum ApprovalStatus { Approved, Unapproved };
-
-    CandidateStatus mCandidateStatus;
-    ApprovalStatus mApprovalStatus;
 
     void fillData();
 
-    LingEdit* getAppropriateEdit(const TextBit & bit, Project::GlossLineType type );
+    LingEdit* getAppropriateEdit(const TextBit & bit, GlossLine::LineType type );
 
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
@@ -65,7 +58,7 @@ private slots:
     void newGloss();
 
 public slots:
-    void updateEdit( const TextBit & bit, Project::GlossLineType type );
+    void updateEdit( const TextBit & bit, GlossLine::LineType type );
 };
 
 #endif // WORDDISPLAYWIDGET_H

@@ -24,7 +24,6 @@ SOURCES += main.cpp\
     textlocation.cpp \
     databaseadapter.cpp \
     newtextdialog.cpp \
-    textinfo.cpp \
     importflextextdialog.cpp \
     text.cpp
 
@@ -41,7 +40,6 @@ HEADERS  += mainwindow.h \
     textlocation.h \
     databaseadapter.h \
     newtextdialog.h \
-    textinfo.h \
     importflextextdialog.h \
     text.h
 

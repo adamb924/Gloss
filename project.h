@@ -19,19 +19,15 @@ public:
     Project();
     ~Project();
 
-    enum GlossLineType {
-        Orthography,
-        Transcription,
-        Gloss
-    };
-    enum BaselineMode { Orthographic, Phonetic };
-
     bool create(QString filename);
     bool readFromFile(QString filename);
 
     QList<GlossLine> glossLines();
 
     DatabaseAdapter* dbAdapter();
+
+    Text* newBlankText(const QString & name, Text::BaselineMode bm, WritingSystem *ws);
+    Text* textFromFlexText(QFile *file, Text::BaselineMode bm, WritingSystem *ws);
 
 public slots:
 

@@ -1,32 +1,68 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-#include "project.h"
+#include <QObject>
+#include <QString>
+#include <QList>
 
-class Text
+#include "textbit.h"
+
+class WritingSystem;
+class Project;
+class QFile;
+
+class Text : public QObject
 {
+    Q_OBJECT
 public:
-    Text();
+    enum BaselineMode { Orthographic, Phonetic };
+    enum CandidateStatus { SingleOption, MultipleOption };
+    enum ApprovalStatus { Approved, Unapproved };
 
-    Text(const QString & name, Project::BaselineMode bm, WritingSystem *ws);
+    Text();
+    Text(const QString & name, BaselineMode bm, WritingSystem *ws, Project *project);
+    Text(QFile *file, Project *project);
+    Text(QFile *file, BaselineMode bm, WritingSystem *ws, Project *project);
 
     QString name() const;
     void setName(const QString & name);
-    Project::BaselineMode baselineMode() const;
-    void setBaselineMode(Project::BaselineMode bm);
+    BaselineMode baselineMode() const;
+    void setBaselineMode(BaselineMode bm);
     WritingSystem* writingSystem() const;
     void setWritingSystem(WritingSystem *ws);
 
     QString baselineText() const;
     void setBaselineText(const QString & text);
 
-private:
-    QString mName;
+    QList< QList<TextBit*>* >* baselineBits();
 
+private:
+    QString mName;    
     QString mBaselineText;
 
-    Project::BaselineMode mBaselineMode;
+    Project *mProject;
+
+    CandidateStatus mCandidateStatus;
+    ApprovalStatus mApprovalStatus;
+
+    BaselineMode mBaselineMode;
     WritingSystem *mBaselineWritingSystem;
+
+    QList< QList<TextBit*>* > mBaselineBits;
+
+    void clearTextBits();
+
+    void setBaselineBitsFromBaseline();
+
+    void guessInterpretation(TextBit *bit);
+    void guessInterpretationOrthographic(TextBit *bit);
+    void guessInterpretationPhonetic(TextBit *bit);
+
+    void importTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
+
+signals:
+    void baselineTextChanged(const QString & baseline);
+    void idChanged(TextBit *b, qlonglong oldId);
 };
 
 #endif // TEXT_H

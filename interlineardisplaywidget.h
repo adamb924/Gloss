@@ -7,26 +7,23 @@
 
 class QVBoxLayout;
 
-#include "project.h"
 #include "flowlayout.h"
 #include "textbit.h"
 #include "textlocation.h"
 #include "worddisplaywidget.h"
 
+class Text;
+
 class InterlinearDisplayWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit InterlinearDisplayWidget(WritingSystem *baselineWs, Project::BaselineMode baselineMode, Project *project, QWidget *parent = 0);
+    explicit InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
-
-    WritingSystem* writingSystem() const;
-    void setWritingSystem(WritingSystem *ws);
 
 signals:
 
 public slots:
-    void setText(const QString& text);
 
 private slots:
     void updateGloss( const TextBit & bit );
@@ -35,14 +32,8 @@ private slots:
     void updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
 
 private:
+    Text *mText;
     Project *mProject;
-
-    WritingSystem *mWritingSystem; // for the baseline text
-
-//    QMultiHash<qlonglong, TextLocation> mConcordance;
-    QMultiHash<qlonglong, WordDisplayWidget*> mConcordance;
-
-    QString mText;
 
     void setLayoutFromText();
 
@@ -50,15 +41,16 @@ private:
 
     QVBoxLayout *mLayout;
 
-    Project::BaselineMode mBaselineMode;
-
-    QList< QList<TextBit*>* > mTextBits;
-
     QList<FlowLayout*> mLineLayouts;
     QList<QWidget*> mWordDisplayWidgets;
+    QMultiHash<qlonglong, WordDisplayWidget*> mConcordance;
+
+    FlowLayout* addLine();
+    WordDisplayWidget* addWordDisplayWidget(TextBit *bit);
 
 private slots:
     void updateConcordance( WordDisplayWidget *w, qlonglong oldId, qlonglong newId );
+    void baselineTextUpdated(const QString & baselineText);
 };
 
 #endif // INTERLINEARDISPLAYWIDGET_H

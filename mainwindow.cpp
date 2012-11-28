@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave_Project, SIGNAL(triggered()), this, SLOT(saveProject()));
     connect(ui->actionSave_Project_As, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
 
-    connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addText()));
+    connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addBlankText()));
     connect(ui->actionImport_FlexText, SIGNAL(triggered()), this, SLOT(importFlexText()));
 
     ui->menuData->setEnabled(false);
@@ -99,14 +99,15 @@ void MainWindow::saveProjectAs()
 
 }
 
-void MainWindow::addText()
+void MainWindow::addBlankText()
 {
     NewTextDialog dialog( mProject->dbAdapter()->writingSystems(), this);
     if( dialog.exec() == QDialog::Accepted )
     {
-        TextDisplayWidget *tmp = new TextDisplayWidget(TextInfo(dialog.name(), dialog.baselineMode(), mProject->dbAdapter()->writingSystem(dialog.writingSystem()) ), mProject, this);
-        ui->mdiArea->addSubWindow(tmp);
-        tmp->show();
+        Text *text = mProject->newBlankText(dialog.name(), dialog.baselineMode(), mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
+        ui->mdiArea->addSubWindow(subWindow);
+        subWindow->show();
     }
 }
 
@@ -130,6 +131,17 @@ void MainWindow::importFlexText()
     ImportFlexTextDialog dialog(mProject,this);
     if( dialog.exec() == QDialog::Accepted )
     {
-        qDebug() << dialog.filename() << dialog.writingSystem() << dialog.baselineMode();
+        if( QFile::exists(dialog.filename()) )
+        {
+            QFile *file = new QFile(dialog.filename());
+            Text *text = mProject->textFromFlexText(file,dialog.baselineMode(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
+            ui->mdiArea->addSubWindow(subWindow);
+            subWindow->show();
+        }
+        else
+        {
+            // TODO error message
+        }
     }
 }

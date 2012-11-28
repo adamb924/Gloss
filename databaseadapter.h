@@ -34,6 +34,8 @@ public:
     bool writingSystemExists(const QString & flexstring) const;
     QSqlDatabase* db();
 
+    QList<qlonglong> getInterpretation();
+
 private:
     QSqlDatabase mDb;
     void createTables();

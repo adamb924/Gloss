@@ -7,18 +7,18 @@
 #include "flowlayout.h"
 #include "textbit.h"
 #include "worddisplaywidget.h"
+#include "text.h"
+#include "project.h"
 
-InterlinearDisplayWidget::InterlinearDisplayWidget(WritingSystem *baselineWs, Project::BaselineMode baselineMode, Project *project, QWidget *parent) :
+InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent) :
     QWidget(parent)
 {
+    mText = text;
     mProject = project;
-
-    mWritingSystem = baselineWs;
-
-    mBaselineMode = baselineMode;
-
     mLayout = new QVBoxLayout(this);
     setLayout(mLayout);
+
+    connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 }
 
 InterlinearDisplayWidget::~InterlinearDisplayWidget()
@@ -26,13 +26,10 @@ InterlinearDisplayWidget::~InterlinearDisplayWidget()
     clearData();
 }
 
-void InterlinearDisplayWidget::setText(const QString& text)
+void InterlinearDisplayWidget::baselineTextUpdated(const QString & baselineText)
 {
-    if( mText != text )
-    {
-        mText = text;
-        setLayoutFromText();
-    }
+    // TODO it's not clear to me that this is the best way to do this
+    setLayoutFromText();
 }
 
 void InterlinearDisplayWidget::clearData()
@@ -42,15 +39,6 @@ void InterlinearDisplayWidget::clearData()
     qDeleteAll(mLineLayouts);
     mLineLayouts.clear();
 
-    QList<TextBit*> *line;
-    foreach( line , mTextBits )
-    {
-        qDeleteAll(*line);
-        line->clear();
-    }
-    qDeleteAll(mTextBits);
-    mTextBits.clear();
-
     // does this belong here or would that defeat the purpose?
     mConcordance.clear();
 }
@@ -59,51 +47,45 @@ void InterlinearDisplayWidget::setLayoutFromText()
 {
     clearData();
 
-    QStringList lines = mText.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
-    for(int i=0; i<lines.count(); i++)
+    for(int i=0; i< mText->baselineBits()->count(); i++)
     {
-        FlowLayout *flowLayout = new FlowLayout;
-
-        mTextBits << new QList<TextBit*>;
-
-        QStringList words = lines.at(i).split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
-        for(int j=0; j<words.count(); j++)
+        FlowLayout *flowLayout = addLine();
+        for(int j=0; j<mText->baselineBits()->at(i)->count(); j++)
         {
-//            mConcordance.insert(mTextBits.last()->last())
-
-            *(mTextBits.last()) << new TextBit(words.at(j),mWritingSystem);
-
-            // once this object is constructed, it will have an id
-            WordDisplayWidget *wdw = new WordDisplayWidget( mTextBits.last()->last() , mBaselineMode , mProject );
-            connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
-            // this line is necessary because the signal from the constructor is emitted before the connection is made
-            mConcordance.insert( wdw->textBit()->id() , wdw );
-
-            // update concordant words
-            connect(wdw,SIGNAL(glossChanged(TextBit)), this, SLOT(updateGloss(TextBit)));
-            connect(wdw,SIGNAL(orthographyChanged(TextBit)), this, SLOT(updateOrthography(TextBit)));
-            connect(wdw,SIGNAL(transcriptionChanged(TextBit)), this, SLOT(updateTranscription(TextBit)));
-
+            WordDisplayWidget *wdw = addWordDisplayWidget(mText->baselineBits()->at(i)->at(j));
             flowLayout->addWidget(wdw);
-            mWordDisplayWidgets << wdw;
         }
-
-        mLineLayouts << flowLayout;
-        mLayout->addLayout(flowLayout);
     }
     mLayout->addStretch(100);
 
 //    qDebug() << mConcordance;
 }
 
-WritingSystem* InterlinearDisplayWidget::writingSystem() const
+WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(TextBit *bit)
 {
-    return mWritingSystem;
+    // once this object is constructed, it will have an id
+    WordDisplayWidget *wdw = new WordDisplayWidget( bit , mText->baselineMode() , mProject );
+    // TODO this will not work
+    connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
+    // this line is necessary because the signal from the constructor is emitted before the connection is made
+    mConcordance.insert( wdw->textBit()->id() , wdw );
+
+    // update concordant words
+    connect(wdw,SIGNAL(glossChanged(TextBit)), this, SLOT(updateGloss(TextBit)));
+    connect(wdw,SIGNAL(orthographyChanged(TextBit)), this, SLOT(updateOrthography(TextBit)));
+    connect(wdw,SIGNAL(transcriptionChanged(TextBit)), this, SLOT(updateTranscription(TextBit)));
+
+    mWordDisplayWidgets << wdw;
+
+    return wdw;
 }
 
-void InterlinearDisplayWidget::setWritingSystem(WritingSystem *ws)
+FlowLayout* InterlinearDisplayWidget::addLine()
 {
-    mWritingSystem = ws;
+    FlowLayout *flowLayout = new FlowLayout;
+    mLineLayouts << flowLayout;
+    mLayout->addLayout(flowLayout);
+    return flowLayout;
 }
 
 void InterlinearDisplayWidget::updateConcordance( WordDisplayWidget *w, qlonglong oldId, qlonglong newId )
@@ -117,7 +99,7 @@ void InterlinearDisplayWidget::updateGloss( const TextBit & bit )
     WordDisplayWidget* wdw;
     QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
     foreach(wdw, wdwList)
-        wdw->updateEdit(bit,Project::Gloss);
+        wdw->updateEdit(bit,GlossLine::Gloss);
 }
 
 void InterlinearDisplayWidget::updateTranscription( const TextBit & bit )
@@ -125,7 +107,7 @@ void InterlinearDisplayWidget::updateTranscription( const TextBit & bit )
     WordDisplayWidget* wdw;
     QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
     foreach(wdw, wdwList)
-        wdw->updateEdit(bit,Project::Transcription);
+        wdw->updateEdit(bit,GlossLine::Transcription);
 }
 
 void InterlinearDisplayWidget::updateOrthography( const TextBit & bit )
@@ -133,7 +115,7 @@ void InterlinearDisplayWidget::updateOrthography( const TextBit & bit )
     WordDisplayWidget* wdw;
     QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
     foreach(wdw, wdwList)
-        wdw->updateEdit(bit,Project::Orthography);
+        wdw->updateEdit(bit,GlossLine::Orthography);
 }
 
 void InterlinearDisplayWidget::updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString )

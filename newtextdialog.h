@@ -18,7 +18,7 @@ public:
     explicit NewTextDialog( const QList<WritingSystem*> & ws, QWidget *parent = 0);
     ~NewTextDialog();
 
-    Project::BaselineMode baselineMode() const;
+    Text::BaselineMode baselineMode() const;
     QString writingSystem() const;
     QString name() const;
 

@@ -1,16 +1,18 @@
 #include "glossline.h"
 
+#include "writingsystem.h"
+
 GlossLine::GlossLine()
 {
 }
 
-GlossLine::GlossLine(Project::GlossLineType type, WritingSystem *ws)
+GlossLine::GlossLine(LineType type, WritingSystem *ws)
 {
     mType = type;
     mWritingSystem = ws;
 }
 
-void GlossLine::setType(Project::GlossLineType type)
+void GlossLine::setType(LineType type)
 {
     mType = type;
 }
@@ -20,7 +22,7 @@ void GlossLine::setWritingSystem(WritingSystem *ws)
     mWritingSystem = ws;
 }
 
-Project::GlossLineType GlossLine::type() const
+GlossLine::LineType GlossLine::type() const
 {
     return mType;
 }

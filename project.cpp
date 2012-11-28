@@ -86,16 +86,16 @@ QList<GlossLine> Project::glossLines()
         qDebug() << "Project::glossLines" << q.lastError().text() << query;
     while( q.next() )
     {
-        Project::GlossLineType type;
+        GlossLine::LineType type;
         QString sType = q.value(0).toString();
         if( sType == "Orthography" )
-            type = Project::Orthography;
+            type = GlossLine::Orthography;
         else if ( sType == "Transcription" )
-            type = Project::Transcription;
+            type = GlossLine::Transcription;
         else if ( sType == "Gloss" )
-            type = Project::Gloss;
+            type = GlossLine::Gloss;
         else
-            type = Project::Orthography;
+            type = GlossLine::Orthography;
         lines << GlossLine(type, new WritingSystem( q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString() , q.value(7).toInt() ) );
     }
     return lines;
@@ -130,7 +130,16 @@ void Project::readTextPaths()
     mTextPaths = tempDir.entryList(QDir::Files,QDir::Name);
 }
 
-Text* Project::newBlankText(const QString & name, Project::BaselineMode bm, WritingSystem *ws)
+Text* Project::newBlankText(const QString & name, Text::BaselineMode bm, WritingSystem *ws)
 {
+    Text *text = new Text(name,bm,ws,this);
+    mTexts.append(text);
+    return text;
+}
 
+Text* Project::textFromFlexText(QFile *file, Text::BaselineMode bm, WritingSystem *ws)
+{
+    Text *text = new Text(file,bm,ws,this);
+    mTexts.append(text);
+    return text;
 }

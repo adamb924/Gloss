@@ -33,7 +33,7 @@ private slots:
 
     void sqlTableView( QAction * action );
 
-    void addText();
+    void addBlankText();
     void importFlexText();
 };
 
