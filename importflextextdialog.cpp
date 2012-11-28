@@ -108,7 +108,3 @@ QString ImportFlexTextDialog::writingSystem() const
     return ui->baselineWritingSystem->itemData(ui->baselineWritingSystem->currentIndex()).toString();
 }
 
-Text::BaselineMode ImportFlexTextDialog::baselineMode() const
-{
-    return (Text::BaselineMode)ui->baselineMode->itemData(ui->baselineMode->currentIndex()).toInt();
-}

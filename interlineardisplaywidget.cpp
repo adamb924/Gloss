@@ -62,7 +62,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(TextBit *bit)
 {
     // once this object is constructed, it will have an id
-    WordDisplayWidget *wdw = new WordDisplayWidget( bit , mText->baselineMode() , mProject );
+    WordDisplayWidget *wdw = new WordDisplayWidget( bit , mProject );
     // TODO this will not work
     connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
     // this line is necessary because the signal from the constructor is emitted before the connection is made

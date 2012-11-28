@@ -15,19 +15,16 @@ class Text : public QObject
 {
     Q_OBJECT
 public:
-    enum BaselineMode { Orthographic, Phonetic };
     enum CandidateStatus { SingleOption, MultipleOption };
     enum ApprovalStatus { Approved, Unapproved };
 
     Text();
-    Text(const QString & name, BaselineMode bm, WritingSystem *ws, Project *project);
+    Text(const QString & name, WritingSystem *ws, Project *project);
     Text(QFile *file, Project *project);
-    Text(QFile *file, BaselineMode bm, WritingSystem *ws, Project *project);
+    Text(QFile *file, WritingSystem *ws, Project *project);
 
     QString name() const;
     void setName(const QString & name);
-    BaselineMode baselineMode() const;
-    void setBaselineMode(BaselineMode bm);
     WritingSystem* writingSystem() const;
     void setWritingSystem(WritingSystem *ws);
 
@@ -45,7 +42,6 @@ private:
     CandidateStatus mCandidateStatus;
     ApprovalStatus mApprovalStatus;
 
-    BaselineMode mBaselineMode;
     WritingSystem *mBaselineWritingSystem;
 
     QList< QList<TextBit*>* > mBaselineBits;

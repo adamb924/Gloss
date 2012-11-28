@@ -18,14 +18,6 @@ NewTextDialog::~NewTextDialog()
     delete ui;
 }
 
-Text::BaselineMode NewTextDialog::baselineMode() const
-{
-    if( ui->baselineMode->currentText() == tr("Orthographic") )
-        return Text::Orthographic;
-    else
-        return Text::Phonetic;
-}
-
 QString NewTextDialog::writingSystem() const
 {
     return ui->baselineWritingSystem->itemData(ui->baselineWritingSystem->currentIndex()).toString();

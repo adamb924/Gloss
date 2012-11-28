@@ -19,19 +19,15 @@ class WordDisplayWidget : public QWidget
     Q_OBJECT
 
 public:
-    WordDisplayWidget(TextBit *bit, Text::BaselineMode baselineMode, Project *project);
+    WordDisplayWidget(TextBit *bit, Project *project);
 
     QSize sizeHint() const;
-
 
     TextBit* textBit() const;
 
 protected:
     Project *mProject;
     TextBit *mTextBit;
-
-    Text::BaselineMode mBaselineMode;
-
 
     void fillData();
 

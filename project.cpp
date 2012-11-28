@@ -126,16 +126,16 @@ void Project::readTextPaths()
     mTextPaths = tempDir.entryList(QDir::Files,QDir::Name);
 }
 
-Text* Project::newBlankText(const QString & name, Text::BaselineMode bm, WritingSystem *ws)
+Text* Project::newBlankText(const QString & name, WritingSystem *ws)
 {
-    Text *text = new Text(name,bm,ws,this);
+    Text *text = new Text(name,ws,this);
     mTexts.append(text);
     return text;
 }
 
-Text* Project::textFromFlexText(QFile *file, Text::BaselineMode bm, WritingSystem *ws)
+Text* Project::textFromFlexText(QFile *file, WritingSystem *ws)
 {
-    Text *text = new Text(file,bm,ws,this);
+    Text *text = new Text(file,ws,this);
     mTexts.append(text);
     return text;
 }

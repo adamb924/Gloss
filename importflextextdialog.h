@@ -21,7 +21,6 @@ public:
 
     QString filename() const;
     QString writingSystem() const;
-    Text::BaselineMode baselineMode() const;
 
 private:
     Ui::ImportFlexTextDialog *ui;

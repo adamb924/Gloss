@@ -11,10 +11,9 @@ Text::Text()
 {
 }
 
-Text::Text(const QString & name, BaselineMode bm, WritingSystem *ws, Project *project)
+Text::Text(const QString & name, WritingSystem *ws, Project *project)
 {
     mName = name;
-    mBaselineMode = bm;
     mBaselineWritingSystem = ws;
     mProject = project;
 }
@@ -25,10 +24,9 @@ Text::Text(QFile *file, Project *project)
     importTextFromFlexText(file,true);
 }
 
-Text::Text(QFile *file, BaselineMode bm, WritingSystem *ws, Project *project)
+Text::Text(QFile *file, WritingSystem *ws, Project *project)
 {
     mProject = project;
-    mBaselineMode = bm;
     mBaselineWritingSystem = ws;
     importTextFromFlexText(file,false);
 }
@@ -42,15 +40,6 @@ QString Text::name() const
 void Text::setName(const QString & name)
 {
     mName = name;
-}
-
-Text::BaselineMode Text::baselineMode() const
-{
-    return mBaselineMode;
-}
-void Text::setBaselineMode(BaselineMode bm)
-{
-    mBaselineMode = bm;
 }
 
 WritingSystem* Text::writingSystem() const

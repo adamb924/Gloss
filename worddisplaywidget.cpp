@@ -8,9 +8,8 @@
 #include <QtGui>
 #include <QtDebug>
 
-WordDisplayWidget::WordDisplayWidget( TextBit *bit, Text::BaselineMode baselineMode, Project *project)
+WordDisplayWidget::WordDisplayWidget( TextBit *bit, Project *project)
 {
-    mBaselineMode = baselineMode;
     mTextBit = bit;
     mProject = project;
 

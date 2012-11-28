@@ -104,7 +104,7 @@ void MainWindow::addBlankText()
     NewTextDialog dialog( mProject->dbAdapter()->writingSystems(), this);
     if( dialog.exec() == QDialog::Accepted )
     {
-        Text *text = mProject->newBlankText(dialog.name(), dialog.baselineMode(), mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+        Text *text = mProject->newBlankText(dialog.name(), mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
         TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();
@@ -134,7 +134,7 @@ void MainWindow::importFlexText()
         if( QFile::exists(dialog.filename()) )
         {
             QFile *file = new QFile(dialog.filename());
-            Text *text = mProject->textFromFlexText(file,dialog.baselineMode(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+            Text *text = mProject->textFromFlexText(file,mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
             TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();

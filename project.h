@@ -26,8 +26,8 @@ public:
 
     DatabaseAdapter* dbAdapter();
 
-    Text* newBlankText(const QString & name, Text::BaselineMode bm, WritingSystem *ws);
-    Text* textFromFlexText(QFile *file, Text::BaselineMode bm, WritingSystem *ws);
+    Text* newBlankText(const QString & name, WritingSystem *ws);
+    Text* textFromFlexText(QFile *file, WritingSystem *ws);
 
 public slots:
 
