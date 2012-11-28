@@ -6,6 +6,7 @@
 #include <QList>
 
 #include "writingsystem.h"
+#include "text.h"
 
 class GlossLine;
 class TextBit;
@@ -25,6 +26,7 @@ public:
     };
     enum BaselineMode { Orthographic, Phonetic };
 
+    bool create(QString filename);
     bool readFromFile(QString filename);
 
     QList<GlossLine> glossLines();
@@ -43,6 +45,8 @@ private:
 
     void readTextPaths();
     QDir getTempDir();
+
+    QList<Text*> mTexts;
 };
 
 #endif // PROJECT_H

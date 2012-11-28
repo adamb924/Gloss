@@ -4,6 +4,8 @@
 #include "project.h"
 #include "databaseadapter.h"
 #include "textdisplaywidget.h"
+#include "newtextdialog.h"
+#include "importflextextdialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -24,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave_Project_As, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
 
     connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addText()));
+    connect(ui->actionImport_FlexText, SIGNAL(triggered()), this, SLOT(importFlexText()));
 
     ui->menuData->setEnabled(false);
     ui->menuGuts->setEnabled(false);
@@ -61,7 +64,7 @@ void MainWindow::newProject()
         if( mProject != 0 )
             delete mProject;
         mProject = new Project();
-        mProject->dbAdapter()->initialize(filename);
+        mProject->create(filename);
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
         ui->menuData->setEnabled(true);
@@ -98,9 +101,13 @@ void MainWindow::saveProjectAs()
 
 void MainWindow::addText()
 {
-    TextDisplayWidget *tmp = new TextDisplayWidget(mProject, this);
-    ui->mdiArea->addSubWindow(tmp);
-    tmp->show();
+    NewTextDialog dialog( mProject->dbAdapter()->writingSystems(), this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        TextDisplayWidget *tmp = new TextDisplayWidget(TextInfo(dialog.name(), dialog.baselineMode(), mProject->dbAdapter()->writingSystem(dialog.writingSystem()) ), mProject, this);
+        ui->mdiArea->addSubWindow(tmp);
+        tmp->show();
+    }
 }
 
 void MainWindow::sqlTableView( QAction * action )
@@ -116,4 +123,13 @@ void MainWindow::sqlTableView( QAction * action )
     view->setSortingEnabled(true);
     view->setWindowTitle(name);
     view->show();
+}
+
+void MainWindow::importFlexText()
+{
+    ImportFlexTextDialog dialog(mProject,this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        qDebug() << dialog.filename() << dialog.writingSystem() << dialog.baselineMode();
+    }
 }

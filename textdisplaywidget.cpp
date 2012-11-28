@@ -4,31 +4,27 @@
 #include "interlineardisplaywidget.h"
 #include "databaseadapter.h"
 
-TextDisplayWidget::TextDisplayWidget(Project *project, QWidget *parent) :
+TextDisplayWidget::TextDisplayWidget(const TextInfo & info, Project *project, QWidget *parent) :
     QTabWidget(parent),
     ui(new Ui::TextDisplayWidget)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
+    mTextInfo = info;
     mProject = project;
-
-    // TODO this will need to be modifiable
-    mBaselineMode = Project::Orthographic;
-
-    // TODO this too need to be modifiable
-    mWritingSystem = mProject->dbAdapter()->writingSystem("wbl-Arab-AF");
 
     ui->setupUi(this);
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
-    mInterlinear = new InterlinearDisplayWidget(mWritingSystem, mBaselineMode, mProject, this);
+    mInterlinear = new InterlinearDisplayWidget(mTextInfo.writingSystem(), mTextInfo.baselineMode(), mProject, this);
     ui->glossTab->layout()->addWidget(mInterlinear);
+
+    this->setWindowTitle(info.name());
 }
 
 TextDisplayWidget::~TextDisplayWidget()
 {
     delete ui;
-    delete mWritingSystem;
 }
 
 void TextDisplayWidget::tabChanged(int i)
@@ -38,19 +34,4 @@ void TextDisplayWidget::tabChanged(int i)
     {
         mInterlinear->setText( ui->plainTextEdit->toPlainText() );
     }
-}
-
-Project::BaselineMode TextDisplayWidget::textBaselineMode() const
-{
-    return mBaselineMode;
-}
-
-WritingSystem* TextDisplayWidget::writingSystem() const
-{
-    return mWritingSystem;
-}
-
-void TextDisplayWidget::setWritingSystem(WritingSystem *ws)
-{
-    mWritingSystem = ws;
 }

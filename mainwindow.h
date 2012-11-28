@@ -25,7 +25,7 @@ private:
 
     void addTableMenuItems();
 
-public slots:
+private slots:
     void newProject();
     void openProject();
     void saveProject();
@@ -34,7 +34,7 @@ public slots:
     void sqlTableView( QAction * action );
 
     void addText();
-
+    void importFlexText();
 };
 
 #endif // MAINWINDOW_H

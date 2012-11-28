@@ -45,6 +45,7 @@
      <string>Data</string>
     </property>
     <addaction name="actionAdd_text"/>
+    <addaction name="actionImport_FlexText"/>
    </widget>
    <widget class="QMenu" name="menuGuts">
     <property name="title">
@@ -117,6 +118,11 @@
   <action name="actionPhoneticForms">
    <property name="text">
     <string>PhoneticForms</string>
+   </property>
+  </action>
+  <action name="actionImport_FlexText">
+   <property name="text">
+    <string>Import FlexText...</string>
    </property>
   </action>
  </widget>

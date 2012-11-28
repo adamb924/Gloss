@@ -27,8 +27,11 @@ public:
     QString getInterpretationOrthography(qlonglong id, WritingSystem *ws) const;
     QString getInterpretationMorphologicalAnalysis(qlonglong id, WritingSystem *ws) const;
 
-    WritingSystem* writingSystem(QString code);
+    void addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection);
 
+    WritingSystem* writingSystem(QString code);
+    QList<WritingSystem*> writingSystems() const;
+    bool writingSystemExists(const QString & flexstring) const;
     QSqlDatabase* db();
 
 private:

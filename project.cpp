@@ -19,6 +19,15 @@ Project::~Project()
 {
 }
 
+bool Project::create(QString filename)
+{
+    mProjectPath = filename;
+    QDir tempDir = getTempDir();
+    mDbAdapter = new DatabaseAdapter(tempDir.absoluteFilePath(mDatabaseFilename));
+    mDbAdapter->initialize(filename);
+    return true;
+}
+
 bool Project::readFromFile(QString filename)
 {
     mProjectPath = filename;
@@ -72,12 +81,12 @@ QList<GlossLine> Project::glossLines()
     //    QSqlQuery q(mDb);
     QSqlQuery q(QSqlDatabase::database( "qt_sql_default_connection" ));
 
-    QString query = QString("select Type, Name, Abbreviation, FlexString, KeyboardCommand, Direction from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
+    QString query = QString("select Type, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
     if( !q.exec(query)  )
         qDebug() << "Project::glossLines" << q.lastError().text() << query;
     while( q.next() )
     {
-        Project::GlossLineType type = Project::Orthography; // just not to leave it uninitialized
+        Project::GlossLineType type;
         QString sType = q.value(0).toString();
         if( sType == "Orthography" )
             type = Project::Orthography;
@@ -85,7 +94,9 @@ QList<GlossLine> Project::glossLines()
             type = Project::Transcription;
         else if ( sType == "Gloss" )
             type = Project::Gloss;
-        lines << GlossLine(type, new WritingSystem( q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() ) );
+        else
+            type = Project::Orthography;
+        lines << GlossLine(type, new WritingSystem( q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString() , q.value(7).toInt() ) );
     }
     return lines;
 }
@@ -117,4 +128,9 @@ void Project::readTextPaths()
     tempDir.setNameFilters(filters);
     mTextPaths.clear();
     mTextPaths = tempDir.entryList(QDir::Files,QDir::Name);
+}
+
+Text* Project::newBlankText(const QString & name, Project::BaselineMode bm, WritingSystem *ws)
+{
+
 }

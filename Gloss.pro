@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql xml xmlpatterns
 
 TARGET = Gloss
 TEMPLATE = app
@@ -22,7 +22,11 @@ SOURCES += main.cpp\
     glossline.cpp \
     textbit.cpp \
     textlocation.cpp \
-    databaseadapter.cpp
+    databaseadapter.cpp \
+    newtextdialog.cpp \
+    textinfo.cpp \
+    importflextextdialog.cpp \
+    text.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -35,10 +39,16 @@ HEADERS  += mainwindow.h \
     glossline.h \
     textbit.h \
     textlocation.h \
-    databaseadapter.h
+    databaseadapter.h \
+    newtextdialog.h \
+    textinfo.h \
+    importflextextdialog.h \
+    text.h
 
 FORMS    += mainwindow.ui \
-    textdisplaywidget.ui
+    textdisplaywidget.ui \
+    newtextdialog.ui \
+    importflextextdialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

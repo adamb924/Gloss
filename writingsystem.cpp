@@ -4,12 +4,22 @@ WritingSystem::WritingSystem()
 {
 }
 
-WritingSystem::WritingSystem(const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection)
+WritingSystem::WritingSystem(const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize)
 {
     mName = name;
     mAbbreviation = abbreviation;
     mFlexString = flexString;
     mKeyboardCommand = keyboardCommand;
+    mLayoutDirection = layoutDirection;
+    mFontFamily = fontFamily;
+    mFontSize = fontSize;
+}
+
+WritingSystem::WritingSystem(const QString & abbreviation, const QString & fontFamily, const QString & flexString, Qt::LayoutDirection layoutDirection)
+{
+    mAbbreviation = abbreviation;
+    mFontFamily = fontFamily;
+    mFlexString = flexString;
     mLayoutDirection = layoutDirection;
 }
 
@@ -36,4 +46,19 @@ QString WritingSystem::flexString() const
 Qt::LayoutDirection WritingSystem::layoutDirection() const
 {
     return mLayoutDirection;
+}
+
+QString WritingSystem::fontFamily() const
+{
+    return mFontFamily;
+}
+
+int WritingSystem::fontSize() const
+{
+    return mFontSize;
+}
+
+QString WritingSystem::summaryString() const
+{
+    return QString("%1 (%2, %3)").arg(mName).arg(mAbbreviation).arg(mFlexString);
 }

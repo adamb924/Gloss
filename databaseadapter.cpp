@@ -254,16 +254,16 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table Glosses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, unique (InterpretationId,WritingSystem)  );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
-    if( !q.exec("create table WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer );") )
+    if( !q.exec("create table WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
     if( !q.exec("create table GlossLines ( Type text, DisplayOrder integer, WritingSystem integer );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
-    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction )  values ('Persian','Prs', 'prd-Arab', 'persian.ahk' , '1' );");
-    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction )  values ('Wakhi','Wak', 'wbl-Arab-AF', 'wakhi.ahk' , '1' );");
-    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction )  values ('English','Eng', 'en', 'english.ahk' , '0' );");
-    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction )  values ('IPA','IPA', 'wbl-Qaaa-AF-fonipa-x-Zipa', 'ipa.ahk' , '0' );");
+    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Persian','Prs', 'prd-Arab', 'persian.ahk' , '1' , 'ScheherazadeKerned' , '16' );");
+    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Wakhi','Wak', 'wbl-Arab-AF', 'wakhi.ahk' , '1' , 'ScheherazadeKerned' , '16' );");
+    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('English','Eng', 'en', 'english.ahk' , '0' , 'Times New Roman' , '12' );");
+    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('IPA','IPA', 'wbl-Qaaa-AF-fonipa-x-Zipa', 'ipa.ahk' , '0' , 'Times New Roman' , '12' );");
 
     q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Orthography','1', '2');");
     q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Transcription','2', '4');");
@@ -274,11 +274,37 @@ void DatabaseAdapter::createTables()
 WritingSystem* DatabaseAdapter::writingSystem(QString code)
 {
     QSqlQuery q(mDb);
-    QString query = QString("select Name, Abbreviation, KeyboardCommand, Direction from WritingSystems where FlexString='%1';").arg(code);
+    QString query = QString("select Name, Abbreviation, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems where FlexString='%1';").arg(code);
     if( !q.exec(query)  )
         qDebug() << "Project::writingSystem" << q.lastError().text() << query;
     if( q.first() )
-        return new WritingSystem(q.value(0).toString(), q.value(1).toString(), code, q.value(2).toString(), (Qt::LayoutDirection)q.value(0).toInt() );
+        return new WritingSystem(q.value(0).toString(), q.value(1).toString(), code, q.value(2).toString(), (Qt::LayoutDirection)q.value(3).toInt() , q.value(4).toString(), q.value(5).toInt() );
     else
         return new WritingSystem();
+}
+
+QList<WritingSystem*> DatabaseAdapter::writingSystems() const
+{
+    QList<WritingSystem*> list;
+    QSqlQuery q(mDb);
+    QString query = QString("select Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems;");
+    if( !q.exec(query)  )
+        qDebug() << "Project::writingSystems" << q.lastError().text() << query;
+    while( q.next() )
+        list << new WritingSystem(q.value(0).toString(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), (Qt::LayoutDirection)q.value(4).toInt() , q.value(5).toString(), q.value(6).toInt() );
+    return list;
+}
+
+bool DatabaseAdapter::writingSystemExists(const QString & flexstring) const
+{
+    QSqlQuery q(mDb);
+    QString query = QString("select FlexString from WritingSystems where FlexString='%1';").arg(flexstring);
+    q.exec(query);
+    return q.first();
+}
+
+void DatabaseAdapter::addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection)
+{
+    QSqlQuery q(mDb);
+    q.exec(QString("insert into WritingSystems ( FlexString, FontFamily, Direction )  values ( '%1' , '%2' , '%3' );").arg(flexString).arg(fontFamily).arg(layoutDirection));
 }
