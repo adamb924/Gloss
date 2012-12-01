@@ -23,8 +23,9 @@ bool Project::create(QString filename)
 {
     mProjectPath = filename;
     QDir tempDir = getTempDir();
-    mDbAdapter = new DatabaseAdapter(tempDir.absoluteFilePath(mDatabaseFilename));
-    mDbAdapter->initialize(filename);
+    mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
+    mDbAdapter = new DatabaseAdapter(mDatabasePath);
+    mDbAdapter->initialize(mDatabasePath);
     return true;
 }
 
@@ -81,7 +82,7 @@ QList<GlossLine> Project::glossLines()
     //    QSqlQuery q(mDb);
     QSqlQuery q(QSqlDatabase::database( "qt_sql_default_connection" ));
 
-    QString query = QString("select Type, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
+    QString query = QString("select _id,Type, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
     if( !q.exec(query)  )
         qDebug() << "Project::glossLines" << q.lastError().text() << query;
     while( q.next() )
@@ -92,7 +93,7 @@ QList<GlossLine> Project::glossLines()
             type = GlossLine::Text;
         else
             type = GlossLine::Gloss;
-        lines << GlossLine(type, new WritingSystem( q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString() , q.value(7).toInt() ) );
+        lines << GlossLine(type, new WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
     }
     return lines;
 }

@@ -10,7 +10,7 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
 {
     mTextBit = bit;
 
-    setStyleSheet("border: 1px solid gray");
+//    setStyleSheet("border: 1px solid gray");
 
     this->setLayoutDirection(bit.writingSystem()->layoutDirection());
 

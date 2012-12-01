@@ -35,6 +35,7 @@ private:
     DatabaseAdapter *mDbAdapter;
     QStringList mTextPaths;
     QString mDatabaseFilename;
+    QString mDatabasePath;
 
     QString mProjectPath;
     QString mTempPath;

@@ -1,11 +1,8 @@
 #include "writingsystem.h"
 
-WritingSystem::WritingSystem()
+WritingSystem::WritingSystem(const qlonglong id, const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize)
 {
-}
-
-WritingSystem::WritingSystem(const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize)
-{
+    mId = id;
     mName = name;
     mAbbreviation = abbreviation;
     mFlexString = flexString;
@@ -15,8 +12,9 @@ WritingSystem::WritingSystem(const QString & name, const QString & abbreviation,
     mFontSize = fontSize;
 }
 
-WritingSystem::WritingSystem(const QString & abbreviation, const QString & fontFamily, const QString & flexString, Qt::LayoutDirection layoutDirection)
+WritingSystem::WritingSystem(const qlonglong id, const QString & abbreviation, const QString & fontFamily, const QString & flexString, Qt::LayoutDirection layoutDirection)
 {
+    mId = id;
     mAbbreviation = abbreviation;
     mFontFamily = fontFamily;
     mFlexString = flexString;
@@ -26,6 +24,11 @@ WritingSystem::WritingSystem(const QString & abbreviation, const QString & fontF
 QString WritingSystem::keyboardCommand() const
 {
     return mKeyboardCommand;
+}
+
+qlonglong WritingSystem::id() const
+{
+    return mId;
 }
 
 QString WritingSystem::name() const

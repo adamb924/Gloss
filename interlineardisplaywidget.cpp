@@ -19,6 +19,9 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project,
     setLayout(mLayout);
 
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
+
+    if( mText->baselineBits()->length() > 0 )
+        setLayoutFromText();
 }
 
 InterlinearDisplayWidget::~InterlinearDisplayWidget()

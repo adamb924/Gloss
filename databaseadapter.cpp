@@ -6,14 +6,14 @@
 #include "writingsystem.h"
 
 DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
-    QObject(parent)
+        QObject(parent)
 {
     mDb = QSqlDatabase::addDatabase("QSQLITE");
     mDb.setDatabaseName(filename);
     if(!mDb.open())
     {
-            QMessageBox::information (0,"Error Message","There was a problem in opening the database. The program said: " + mDb.lastError().databaseText() + " It is unlikely that you will solve this on your own. Rather you had better contact the developer." );
-            return;
+        QMessageBox::information (0,"Error Message","There was a problem in opening the database. The program said: " + mDb.lastError().databaseText() + " It is unlikely that you will solve this on your own. Rather you had better contact the developer." );
+        return;
     }
 }
 
@@ -28,19 +28,11 @@ DatabaseAdapter::~DatabaseAdapter()
 
 void DatabaseAdapter::initialize(QString filename)
 {
-    // TODO fix this so it works
-    if( QFile::exists(filename))
-    {
-        QFile old(filename);
-        old.setPermissions(QFile::ReadOther | QFile::WriteOther);
-//        qDebug() << old.remove();
-    }
-
     mDb.setDatabaseName(filename);
     if(!mDb.open())
     {
-            QMessageBox::information (0,"Error Message","There was a problem in opening the database. The program said: " + mDb.lastError().databaseText() + " It is unlikely that you will solve this on your own. Rather you had better contact the developer." );
-            return;
+        QMessageBox::information (0,"Error Message","There was a problem in opening the database. The program said: " + mDb.lastError().databaseText() + " It is unlikely that you will solve this on your own. Rather you had better contact the developer." );
+        return;
     }
     createTables();
 }
@@ -64,12 +56,13 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
 
     QSqlQuery q(mDb);
     QString query;
+    qlonglong id;
 
     try
     {
         if(!q.exec("insert into Interpretations (_id) select null;"))
             throw;
-        qlonglong id = q.lastInsertId().toLongLong();
+        id = q.lastInsertId().toLongLong();
 
         TextBit newBit(bit);
         newBit.setId(id);
@@ -82,7 +75,45 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
         return -1;
     }
     mDb.commit();
-    return q.lastInsertId().toLongLong();
+    return id;
+}
+
+qlonglong DatabaseAdapter::newInterpretation(const QList<TextBit> & textForms , const QList<TextBit> & glossForms )
+{
+    mDb.transaction();
+
+    QSqlQuery q(mDb);
+    QString query;
+    qlonglong id;
+
+    try
+    {
+        if(!q.exec("insert into Interpretations (_id) select null;"))
+            throw -1;
+        id = q.lastInsertId().toLongLong();
+
+        // TODO fix this error handling
+        for(int i=0; i<textForms.count(); i++)
+        {
+            q.exec(QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg(textForms.at(i).writingSystem()->id()).arg(textForms.at(i).text()));
+//            if(!q.exec(QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg(textForms.at(i).writingSystem()->id()).arg(textForms.at(i).text())));
+//            throw id;
+        }
+        for(int i=0; i<glossForms.count(); i++)
+        {
+            q.exec(QString("insert into Glosses (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg(glossForms.at(i).writingSystem()->id()).arg(glossForms.at(i).text()));
+            //            if(!q.exec(QString("insert into Glosses (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg(glossForms.at(i).writingSystem()->id()).arg(glossForms.at(i).text())));
+            //        throw id;
+        }
+    }
+    catch(int e)
+    {
+        qDebug() << "DatabaseAdapter::newInterpretationFromOrthography" << q.lastError().text() << query;
+        mDb.rollback();
+        return -1;
+    }
+    mDb.commit();
+    return id;
 }
 
 void DatabaseAdapter::updateInterpretationTextForm( const TextBit & bit )
@@ -172,22 +203,22 @@ void DatabaseAdapter::createTables()
 {
     QSqlQuery q(mDb);
 
-    if( !q.exec("create table Interpretations ( _id integer primary key autoincrement );") )
+    if( !q.exec("create table if not exists Interpretations ( _id integer primary key autoincrement );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
-    if( !q.exec("create table TextForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, unique (InterpretationId,WritingSystem)  );") )
+    if( !q.exec("create table if not exists TextForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, unique (InterpretationId,WritingSystem)  );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
-    if( !q.exec("create table MorphologicalAnalyses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, SplitString text, unique (InterpretationId,WritingSystem)  );") )
+    if( !q.exec("create table if not exists MorphologicalAnalyses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, SplitString text, unique (InterpretationId,WritingSystem)  );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
-    if( !q.exec("create table Glosses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, unique (InterpretationId,WritingSystem)  );") )
+    if( !q.exec("create table if not exists Glosses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, unique (InterpretationId,WritingSystem)  );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
-    if( !q.exec("create table WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
+    if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
-    if( !q.exec("create table GlossLines ( Type text, DisplayOrder integer, WritingSystem integer );") )
+    if( !q.exec("create table if not exists GlossLines ( Type text, DisplayOrder integer, WritingSystem integer );") )
         qDebug() << q.lastError().text() << q.lastQuery();
 
     q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Persian','Prs', 'prd-Arab', 'persian.ahk' , '1' , 'ScheherazadeKerned' , '16' );");
@@ -201,27 +232,27 @@ void DatabaseAdapter::createTables()
     q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Gloss','4', '3');");
 }
 
-WritingSystem* DatabaseAdapter::writingSystem(QString code)
+WritingSystem* DatabaseAdapter::writingSystem(QString flexString)
 {
     QSqlQuery q(mDb);
-    QString query = QString("select Name, Abbreviation, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems where FlexString='%1';").arg(code);
+    QString query = QString("select _id, Name, Abbreviation, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems where FlexString='%1';").arg(flexString);
     if( !q.exec(query)  )
         qDebug() << "Project::writingSystem" << q.lastError().text() << query;
     if( q.first() )
-        return new WritingSystem(q.value(0).toString(), q.value(1).toString(), code, q.value(2).toString(), (Qt::LayoutDirection)q.value(3).toInt() , q.value(4).toString(), q.value(5).toInt() );
+        return new WritingSystem(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), flexString, q.value(3).toString(), (Qt::LayoutDirection)q.value(4).toInt() , q.value(5).toString(), q.value(6).toInt() );
     else
-        return new WritingSystem();
+        return 0;
 }
 
 QList<WritingSystem*> DatabaseAdapter::writingSystems() const
 {
     QList<WritingSystem*> list;
     QSqlQuery q(mDb);
-    QString query = QString("select Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems;");
+    QString query = QString("select _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems;");
     if( !q.exec(query)  )
         qDebug() << "Project::writingSystems" << q.lastError().text() << query;
     while( q.next() )
-        list << new WritingSystem(q.value(0).toString(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), (Qt::LayoutDirection)q.value(4).toInt() , q.value(5).toString(), q.value(6).toInt() );
+        list << new WritingSystem(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString(), q.value(7).toInt() );
     return list;
 }
 
@@ -237,4 +268,34 @@ void DatabaseAdapter::addWritingSystem(const QString & flexString, const QString
 {
     QSqlQuery q(mDb);
     q.exec(QString("insert into WritingSystems ( FlexString, FontFamily, Direction )  values ( '%1' , '%2' , '%3' );").arg(flexString).arg(fontFamily).arg(layoutDirection));
+}
+
+QList<qlonglong> DatabaseAdapter::candidateInterpretations(const QList<TextBit> & textForms , const QList<TextBit> & glossForms )
+{
+    QString query;
+
+    for(int i=0; i<textForms.count(); i++)
+    {
+        query.append( QString("select distinct(InterpretationId) from TextForms where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from TextForms where WritingSystem= '%1') ").arg(textForms.at(i).writingSystem()->id()).arg(textForms.at(i).text()) );
+        if( i != textForms.count() - 1 )
+            query.append(" intersect ");
+    }
+    if( textForms.count() > 0 )
+        query.append(" intersect ");
+    for(int i=0; i<glossForms.count(); i++)
+    {
+        query.append( QString("select distinct(InterpretationId) from Glosses where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from Glosses where WritingSystem= '%1') ").arg(glossForms.at(i).writingSystem()->id()).arg(glossForms.at(i).text()) );
+        if( i != glossForms.count() - 1 )
+            query.append(" intersect ");
+    }
+    query.append(";");
+
+    QSqlQuery q(mDb);
+    q.exec(query);
+
+    QList<qlonglong> candidates;
+    while( q.next() )
+        candidates << q.value(0).toLongLong();
+
+    return candidates;
 }

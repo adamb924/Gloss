@@ -1,6 +1,7 @@
 #include "text.h"
 
 #include <QXmlStreamReader>
+#include <QTextStream>
 #include <QtDebug>
 
 #include "writingsystem.h"
@@ -102,7 +103,7 @@ void Text::setBaselineBitsFromBaseline()
 void Text::guessInterpretation(TextBit *bit)
 {
     QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretations( *bit );
-    qlonglong oldId = bit->id();
+//    qlonglong oldId = bit->id();
     if( candidates.length() == 0 )
     {
         bit->setId( mProject->dbAdapter()->newInterpretation(*bit) );
@@ -119,7 +120,29 @@ void Text::guessInterpretation(TextBit *bit)
         mCandidateStatus = MultipleOption;
     }
     mApprovalStatus = Unapproved;
-    emit idChanged(bit,oldId);
+    // TODO rethink what this call ought to be doing
+    //    emit idChanged(bit,oldId);
+}
+
+void Text::guessInterpretation(TextBit *bit, const QList<TextBit> & textForms, const QList<TextBit> & glossForms)
+{
+    QList<qlonglong> candidates = mProject->dbAdapter()->candidateInterpretations(textForms,glossForms);
+    if( candidates.length() == 0 )
+    {
+        qlonglong id = mProject->dbAdapter()->newInterpretation(textForms,glossForms);
+        bit->setId( id );
+        mCandidateStatus = SingleOption;
+    }
+    else if ( candidates.length() == 1 )
+    {
+        bit->setId( candidates.at(0) );
+        mCandidateStatus = SingleOption;
+    }
+    else // greater than 1
+    {
+        bit->setId( candidates.at(0) );
+        mCandidateStatus = MultipleOption;
+    }
 }
 
 void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
@@ -130,6 +153,10 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 
     bool inWord = false;
     QXmlStreamReader stream(file);
+    QList<TextBit> textForms;
+    QList<TextBit> glossForms;
+    QString baselineText;
+
     while (!stream.atEnd())
     {
         stream.readNext();
@@ -139,6 +166,8 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             if( name == "word" )
             {
                 inWord = true;
+                textForms.clear();
+                glossForms.clear();
             }
             else if ( name == "phrase" )
             {
@@ -147,16 +176,22 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             else if ( name == "item" )
             {
                 QXmlStreamAttributes attr = stream.attributes();
-                if( attr.hasAttribute("type") )
+                if( attr.hasAttribute("type") && attr.hasAttribute("lang") )
                 {
                     QString type = attr.value("type").toString();
+                    WritingSystem *lang = mProject->dbAdapter()->writingSystem( attr.value("lang").toString() );
+                    QString text = stream.readElementText();
                     if( type == "txt" )
                     {
-
+                        textForms.append( TextBit( text , lang ) );
+                        if( lang->flexString() == mBaselineWritingSystem->flexString() )
+                        {
+                            baselineText = text;
+                        }
                     }
                     else if( type == "gls" )
                     {
-
+                        glossForms.append( TextBit( text , lang ) );
                     }
                 }
             }
@@ -164,6 +199,8 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
         else if( stream.tokenType() == QXmlStreamReader::EndElement && name == "word" )
         {
             inWord = false;
+            mBaselineBits.last()->append(new TextBit(baselineText,mBaselineWritingSystem));
+            guessInterpretation(mBaselineBits.last()->last(), textForms, glossForms);
         }
     }
     if (stream.hasError()) {

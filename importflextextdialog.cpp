@@ -22,6 +22,8 @@ ImportFlexTextDialog::ImportFlexTextDialog(Project *project, QWidget *parent) :
 
     connect(ui->choose, SIGNAL(clicked()), this, SLOT(chooseFile()));
     connect(ui->filename, SIGNAL(textChanged(QString)), this, SLOT(fillDataFromFlexText()));
+
+    chooseFile();
 }
 
 ImportFlexTextDialog::~ImportFlexTextDialog()

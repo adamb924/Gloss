@@ -7,10 +7,10 @@
 class WritingSystem
 {
 public:
-    WritingSystem();
-    WritingSystem(const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize);
-    WritingSystem(const QString & abbreviation, const QString & fontFamily, const QString & flexString, Qt::LayoutDirection layoutDirection);
+    WritingSystem(const qlonglong id, const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize);
+    WritingSystem(const qlonglong id, const QString & abbreviation, const QString & fontFamily, const QString & flexString, Qt::LayoutDirection layoutDirection);
 
+    qlonglong id() const;
     QString name() const;
     QString abbreviation() const;
     QString flexString() const;
@@ -24,6 +24,7 @@ public:
 
 private:
     QString mName, mAbbreviation, mFlexString, mKeyboardCommand, mFontFamily;
+    qlonglong mId;
     int mFontSize;
     Qt::LayoutDirection mLayoutDirection;
 };

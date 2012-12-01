@@ -50,7 +50,11 @@ private:
 
     void setBaselineBitsFromBaseline();
 
+    //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with the text form TextBit.
     void guessInterpretation(TextBit *bit);
+
+    //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with text and gloss TextBits.
+    void guessInterpretation(TextBit *bit, const QList<TextBit> & textForms , const QList<TextBit> & glossForms);
 
     void importTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 

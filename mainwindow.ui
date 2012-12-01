@@ -124,6 +124,9 @@
    <property name="text">
     <string>Import FlexText...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

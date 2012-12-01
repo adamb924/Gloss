@@ -17,24 +17,32 @@ public:
     //! \brief Initializes the database at the path \a filename
     void initialize(QString filename);
 
-    //! \brief Returns a list of possible interpretations of the baseline TextBit \a bit
+    //! \brief Returns a list of possible interpretations of the text form TextBit \a bit
     QList<qlonglong> candidateInterpretations(const TextBit & bit) const;
+
+    //! \brief Returns a list of possible interpretations of the given text and gloss forms
+    QList<qlonglong> candidateInterpretations(const QList<TextBit> & textForms , const QList<TextBit> & glossForms );
 
     //! \brief Creates a new interpretation of the baseline TextBit \a bit and returns the database index of the Interpreation
     qlonglong newInterpretation( const TextBit & bit );
+
+    //! \brief Creates a new interpretation with the given text forms and glosses
+    qlonglong newInterpretation(const QList<TextBit> & textForms , const QList<TextBit> & glossForms );
 
     QString getInterpretationGloss(qlonglong id, WritingSystem *ws) const;
     QString getInterpretationTextForm(qlonglong id, WritingSystem *ws) const;
     QString getInterpretationMorphologicalAnalysis(qlonglong id, WritingSystem *ws) const;
 
+    //! \brief Adds the writing system to the database
     void addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection);
 
-    WritingSystem* writingSystem(QString code);
+    //! \brief Returns a pointer to the WritingSystem specified by \a flexString, or 0 if none exists.
+    WritingSystem* writingSystem(QString flexString);
+
     QList<WritingSystem*> writingSystems() const;
     bool writingSystemExists(const QString & flexstring) const;
     QSqlDatabase* db();
 
-    QList<qlonglong> getInterpretation();
 
 private:
     QSqlDatabase mDb;
