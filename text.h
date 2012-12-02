@@ -7,6 +7,7 @@
 
 #include "textbit.h"
 #include "glossitem.h"
+#include "phrase.h"
 
 class WritingSystem;
 class Project;
@@ -37,8 +38,7 @@ public:
     QString baselineText() const;
     void setBaselineText(const QString & text);
 
-//    QList< QList<TextBit*>* >* baselineBits();
-    QList< QList<GlossItem*>* >* glossItems();
+    QList<Phrase*>* glossItems();
 
     //! \brief Serialize the text to an XML file
     bool serialize(const QString & filename) const;
@@ -60,18 +60,17 @@ private:
 
     WritingSystem *mBaselineWritingSystem;
 
-//    QList< QList<TextBit*>* > mBaselineBits;
-    QList< QList<GlossItem*>* > mGlossItems;
+    QList<Phrase*> mGlossItems;
 
-    void clearTextBits();
+    void clearGlossItems();
 
-    void setBaselineBitsFromBaseline();
+    void setGlossItemsFromBaseline();
 
     //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with the text form TextBit.
-    void guessInterpretation(TextBit *bit);
+    void guessInterpretation(GlossItem *item);
 
     //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with text and gloss TextBits.
-    void guessInterpretation(TextBit *bit, const QList<TextBit> & textForms , const QList<TextBit> & glossForms);
+    void guessInterpretation(GlossItem *item, const QList<TextBit> & textForms , const QList<TextBit> & glossForms);
 
     void importTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 

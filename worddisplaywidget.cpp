@@ -8,9 +8,9 @@
 #include <QtGui>
 #include <QtDebug>
 
-WordDisplayWidget::WordDisplayWidget( TextBit *bit, Qt::Alignment alignment, Project *project)
+WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, Project *project)
 {
-    mTextBit = bit;
+    mGlossItem = item;
     mAlignment = alignment;
     mProject = project;
 
@@ -32,10 +32,10 @@ void WordDisplayWidget::setupLayout()
 
     mEdits.clear();
 
-    mLayout->addWidget(new QLabel(mTextBit->text()));
+    mLayout->addWidget(new QLabel(mGlossItem->baselineText()->text()));
     for(int i=0; i<mGlossLines.count(); i++)
     {
-        LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mTextBit->id() ), this);
+        LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mGlossItem->id() ), this);
         edit->setAlignment(calculateAlignment());
         mLayout->addWidget(edit);
         mEdits << edit;
@@ -44,11 +44,11 @@ void WordDisplayWidget::setupLayout()
         {
         case GlossLine::Text:
             connect(edit, SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationTextForm(TextBit)));
-            connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(textChanged(TextBit)));
+            connect(edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(textChanged(TextBit)));
             break;
         case GlossLine::Gloss:
             connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationGloss(TextBit)));
-            connect( edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(glossChanged(TextBit)));
+            connect(edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(glossChanged(TextBit)));
             break;
         }
     }
@@ -73,26 +73,26 @@ QSize WordDisplayWidget::sizeHint() const
 
 void WordDisplayWidget::fillData()
 {
-    if( mTextBit->id() != -1 )
+    if( mGlossItem->id() != -1 )
     {
         for(int i=0; i<mGlossLines.count();i++)
         {
             switch( mGlossLines.at(i).type() )
             {
             case GlossLine::Text:
-                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationTextForm(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
+                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationTextForm(mGlossItem->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             case GlossLine::Gloss:
-                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationGloss(mTextBit->id(), mGlossLines.at(i).writingSystem() ) );
+                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationGloss(mGlossItem->id(), mGlossLines.at(i).writingSystem() ) );
                 break;
             }
         }
     }
 }
 
-TextBit* WordDisplayWidget::textBit() const
+GlossItem* WordDisplayWidget::glossItem() const
 {
-    return mTextBit;
+    return mGlossItem;
 }
 
 void WordDisplayWidget::updateEdit( const TextBit & bit, GlossLine::LineType type )
@@ -113,7 +113,7 @@ LingEdit* WordDisplayWidget::getAppropriateEdit(const TextBit & bit, GlossLine::
 // TODO this has no effect
 Qt::Alignment WordDisplayWidget::calculateAlignment() const
 {
-    if( mTextBit->writingSystem()->layoutDirection() == Qt::LeftToRight )
+    if( mGlossItem->baselineText()->writingSystem()->layoutDirection() == Qt::LeftToRight )
     {
         if( mAlignment == Qt::AlignLeft )
         {

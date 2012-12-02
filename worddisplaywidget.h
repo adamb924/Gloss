@@ -19,15 +19,15 @@ class WordDisplayWidget : public QWidget
     Q_OBJECT
 
 public:
-    WordDisplayWidget(TextBit *bit, Qt::Alignment alignment, Project *project);
+    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, Project *project);
 
     QSize sizeHint() const;
 
-    TextBit* textBit() const;
+    GlossItem* glossItem() const;
 
 protected:
     Project *mProject;
-    TextBit *mTextBit;
+    GlossItem *mGlossItem;
     Qt::Alignment mAlignment;
 
     void fillData();

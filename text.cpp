@@ -4,10 +4,12 @@
 #include <QXmlStreamWriter>
 #include <QTextStream>
 #include <QtDebug>
+#include <QHashIterator>
 
 #include "writingsystem.h"
 #include "project.h"
 #include "databaseadapter.h"
+#include "phrase.h"
 
 Text::Text()
 {
@@ -75,84 +77,81 @@ void Text::setBaselineText(const QString & text)
     if( text != mBaselineText )
     {
         mBaselineText = text;
-        setBaselineBitsFromBaseline();
+        setGlossItemsFromBaseline();
         emit baselineTextChanged(mBaselineText);
     }
 }
 
-QList< QList<TextBit*>* >* Text::baselineBits()
+QList<Phrase*>* Text::glossItems()
 {
-    return &mBaselineBits;
+    return &mGlossItems;
 }
 
-void Text::clearTextBits()
+void Text::clearGlossItems()
 {
-    QList<TextBit*> *line;
-    foreach( line , mBaselineBits )
+    Phrase *phrase;
+    foreach( phrase , mGlossItems )
     {
-        qDeleteAll(*line);
-        line->clear();
+        qDeleteAll(*phrase);
+        phrase->clear();
     }
-    qDeleteAll(mBaselineBits);
-    mBaselineBits.clear();
+    qDeleteAll(mGlossItems);
+    mGlossItems.clear();
 }
 
-void Text::setBaselineBitsFromBaseline()
+void Text::setGlossItemsFromBaseline()
 {
     QStringList lines = mBaselineText.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
     for(int i=0; i<lines.count(); i++)
     {
-        mBaselineBits.append( new QList<TextBit*> );
+        mGlossItems.append( new Phrase );
         QStringList words = lines.at(i).split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
         for(int j=0; j<words.count(); j++)
         {
-            mBaselineBits.last()->append(new TextBit(words.at(j),mBaselineWritingSystem));
-            guessInterpretation(mBaselineBits.last()->last());
+            mGlossItems.last()->append(new GlossItem(new TextBit(words.at(j),mBaselineWritingSystem)));
+            guessInterpretation(mGlossItems.last()->last());
         }
     }
 }
 
-void Text::guessInterpretation(TextBit *bit)
+void Text::guessInterpretation(GlossItem *item)
 {
-    QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretations( *bit );
-//    qlonglong oldId = bit->id();
+    QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretations( *item->baselineText() );
     if( candidates.length() == 0 )
     {
-        bit->setId( mProject->dbAdapter()->newInterpretation(*bit) );
+        item->setId( mProject->dbAdapter()->newInterpretation(*item->baselineText()) );
         mCandidateStatus = SingleOption;
     }
     else if ( candidates.length() == 1 )
     {
-        bit->setId( candidates.at(0) );
+        item->setId( candidates.at(0) );
         mCandidateStatus = SingleOption;
     }
     else // greater than 1
     {
-        bit->setId( candidates.at(0) );
+        item->setId( candidates.at(0) );
         mCandidateStatus = MultipleOption;
     }
     mApprovalStatus = Unapproved;
-    // TODO rethink what this call ought to be doing
-    //    emit idChanged(bit,oldId);
 }
 
-void Text::guessInterpretation(TextBit *bit, const QList<TextBit> & textForms, const QList<TextBit> & glossForms)
+void Text::guessInterpretation(GlossItem *item, const QList<TextBit> & textForms, const QList<TextBit> & glossForms)
 {
     QList<qlonglong> candidates = mProject->dbAdapter()->candidateInterpretations(textForms,glossForms);
     if( candidates.length() == 0 )
     {
         qlonglong id = mProject->dbAdapter()->newInterpretation(textForms,glossForms);
-        bit->setId( id );
+        item->setId( id );
         mCandidateStatus = SingleOption;
     }
     else if ( candidates.length() == 1 )
     {
-        bit->setId( candidates.at(0) );
+        item->setId( candidates.at(0) );
         mCandidateStatus = SingleOption;
     }
     else // greater than 1
     {
-        bit->setId( candidates.at(0) );
+        item->setId( candidates.at(0) );
         mCandidateStatus = MultipleOption;
     }
 }
@@ -161,7 +160,7 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 {
     file->open(QFile::ReadOnly);
 
-    clearTextBits();
+    clearGlossItems();
 
     bool inWord = false;
     QXmlStreamReader stream(file);
@@ -183,7 +182,7 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             }
             else if ( name == "phrase" )
             {
-                mBaselineBits.append( new QList<TextBit*> );
+                mGlossItems.append( new Phrase );
             }
             else if ( name == "item" )
             {
@@ -211,8 +210,8 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
         else if( stream.tokenType() == QXmlStreamReader::EndElement && name == "word" )
         {
             inWord = false;
-            mBaselineBits.last()->append(new TextBit(baselineText,mBaselineWritingSystem));
-            guessInterpretation(mBaselineBits.last()->last(), textForms, glossForms);
+            mGlossItems.last()->append(new GlossItem(new TextBit(baselineText,mBaselineWritingSystem)));
+            guessInterpretation(mGlossItems.last()->last(), textForms, glossForms);
         }
     }
     if (stream.hasError()) {
@@ -243,6 +242,8 @@ bool Text::serialize(const QString & filename) const
 
 bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
 {
+    // TODO do something else with these references to mBaselineWritingSystem
+
     if( !mName.isEmpty() )
         writeItem( "title" , mBaselineWritingSystem , mName , stream );
     if( !mComment.isEmpty() )
@@ -252,10 +253,29 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
     stream->writeStartElement("paragraph");
     stream->writeStartElement("phrases");
 
-    for(int i=0; i)
-    stream->writeStartElement("phrase");
+    for(int i=0; i<mGlossItems.count(); i++)
+    {
+        stream->writeStartElement("phrase");
+        writeItem("segnum", mBaselineWritingSystem, QString("%1").arg(i+1) , stream );
+        stream->writeStartElement("words");
+        for(int j=0; j<mGlossItems.at(i)->count(); j++)
+        {
 
-    stream->writeEndElement(); // phrase
+        }
+
+        stream->writeEndElement(); // words
+
+        // phrase-level glosses
+        QHashIterator<WritingSystem*, QString> iter(mGlossItems.at(iter)->glosses());
+        while (iter.hasNext())
+        {
+            iter.next();
+            writeItem("gls",iter.key(),iter.value(),stream);
+        }
+
+        stream->writeEndElement(); // phrase
+    }
+
 
     stream->writeEndElement(); // phrases
     stream->writeEndElement(); // paragraph

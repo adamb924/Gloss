@@ -20,7 +20,7 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project,
 
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 
-    if( mText->baselineBits()->length() > 0 )
+    if( mText->glossItems()->length() > 0 )
         setLayoutFromText();
 }
 
@@ -50,26 +50,26 @@ void InterlinearDisplayWidget::setLayoutFromText()
 {
     clearData();
 
-    for(int i=0; i< mText->baselineBits()->count(); i++)
+    for(int i=0; i< mText->glossItems()->count(); i++)
     {
         QLayout *flowLayout = addLine();
-        for(int j=0; j<mText->baselineBits()->at(i)->count(); j++)
+        for(int j=0; j<mText->glossItems()->at(i)->count(); j++)
         {
-            WordDisplayWidget *wdw = addWordDisplayWidget(mText->baselineBits()->at(i)->at(j));
+            WordDisplayWidget *wdw = addWordDisplayWidget(mText->glossItems()->at(i)->at(j));
             flowLayout->addWidget(wdw);
         }
     }
     mLayout->addStretch(100);
 }
 
-WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(TextBit *bit)
+WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
     // once this object is constructed, it will have an id
-    WordDisplayWidget *wdw = new WordDisplayWidget( bit , mText->writingSystem()->layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , mProject );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->writingSystem()->layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , mProject );
     // TODO this will not work
 //    connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
     // this line is necessary because the signal from the constructor is emitted before the connection is made
-    mConcordance.insert( wdw->textBit()->id() , wdw );
+    mConcordance.insert( wdw->glossItem()->id() , wdw );
 
     // update concordant words
     connect(wdw,SIGNAL(glossChanged(TextBit)), this, SLOT(updateGloss(TextBit)));

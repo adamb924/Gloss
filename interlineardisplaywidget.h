@@ -6,6 +6,7 @@
 #include <QMultiHash>
 
 class QVBoxLayout;
+class GlossItem;
 
 #include "flowlayout.h"
 #include "textbit.h"
@@ -45,7 +46,7 @@ private:
     QMultiHash<qlonglong, WordDisplayWidget*> mConcordance;
 
     QLayout* addLine();
-    WordDisplayWidget* addWordDisplayWidget(TextBit *bit);
+    WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
 
 private slots:
     void updateConcordance( WordDisplayWidget *w, qlonglong oldId, qlonglong newId );
