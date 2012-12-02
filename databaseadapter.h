@@ -43,7 +43,6 @@ public:
     bool writingSystemExists(const QString & flexstring) const;
     QSqlDatabase* db();
 
-
 private:
     QSqlDatabase mDb;
     void createTables();

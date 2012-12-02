@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     databaseadapter.cpp \
     newtextdialog.cpp \
     importflextextdialog.cpp \
-    text.cpp
+    text.cpp \
+    glossitem.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     databaseadapter.h \
     newtextdialog.h \
     importflextextdialog.h \
-    text.h
+    text.h \
+    glossitem.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

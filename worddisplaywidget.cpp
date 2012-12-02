@@ -8,9 +8,10 @@
 #include <QtGui>
 #include <QtDebug>
 
-WordDisplayWidget::WordDisplayWidget( TextBit *bit, Project *project)
+WordDisplayWidget::WordDisplayWidget( TextBit *bit, Qt::Alignment alignment, Project *project)
 {
     mTextBit = bit;
+    mAlignment = alignment;
     mProject = project;
 
     mGlossLines = mProject->glossLines();
@@ -35,6 +36,7 @@ void WordDisplayWidget::setupLayout()
     for(int i=0; i<mGlossLines.count(); i++)
     {
         LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mTextBit->id() ), this);
+        edit->setAlignment(calculateAlignment());
         mLayout->addWidget(edit);
         mEdits << edit;
 
@@ -106,4 +108,31 @@ LingEdit* WordDisplayWidget::getAppropriateEdit(const TextBit & bit, GlossLine::
         if( mGlossLines.at(i).type() == type && mGlossLines.at(i).writingSystem()->flexString() == bit.writingSystem()->flexString() )
             return mEdits[i];
     return 0;
+}
+
+// TODO this has no effect
+Qt::Alignment WordDisplayWidget::calculateAlignment() const
+{
+    if( mTextBit->writingSystem()->layoutDirection() == Qt::LeftToRight )
+    {
+        if( mAlignment == Qt::AlignLeft )
+        {
+            return Qt::AlignLeft;
+        }
+        else
+        {
+            return Qt::AlignRight;
+        }
+    }
+    else // Qt::RightToLeft
+    {
+        if( mAlignment == Qt::AlignLeft )
+        {
+            return Qt::AlignLeft;
+        }
+        else
+        {
+            return Qt::AlignLeft;
+        }
+    }
 }

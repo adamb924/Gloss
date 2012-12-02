@@ -19,7 +19,7 @@ class WordDisplayWidget : public QWidget
     Q_OBJECT
 
 public:
-    WordDisplayWidget(TextBit *bit, Project *project);
+    WordDisplayWidget(TextBit *bit, Qt::Alignment alignment, Project *project);
 
     QSize sizeHint() const;
 
@@ -28,8 +28,11 @@ public:
 protected:
     Project *mProject;
     TextBit *mTextBit;
+    Qt::Alignment mAlignment;
 
     void fillData();
+
+    Qt::Alignment calculateAlignment() const;
 
     LingEdit* getAppropriateEdit(const TextBit & bit, GlossLine::LineType type );
 
@@ -44,8 +47,6 @@ private:
     QList<LingEdit*> mEdits;
 
 signals:
-    void idChanged(WordDisplayWidget *w, qlonglong oldId, qlonglong newId );
-
     void glossChanged(const TextBit & bit);
     void textChanged(const TextBit & bit);
 

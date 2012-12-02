@@ -1,6 +1,7 @@
 #include "text.h"
 
 #include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 #include <QTextStream>
 #include <QtDebug>
 
@@ -42,6 +43,17 @@ void Text::setName(const QString & name)
 {
     mName = name;
 }
+
+QString Text::comment() const
+{
+    return mComment;
+}
+
+void Text::setComment(const QString & comment)
+{
+    mComment = comment;
+}
+
 
 WritingSystem* Text::writingSystem() const
 {
@@ -206,4 +218,57 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
     if (stream.hasError()) {
         qDebug() << "Text::readTextFromFlexText error with xml reading";
     }
+}
+
+bool Text::serialize(const QString & filename) const
+{
+    QFile outFile(filename);
+    if( !outFile.open(QFile::WriteOnly) )
+        return false;
+
+    QXmlStreamWriter stream(&outFile);
+    stream.setCodec("UTF-8");
+    stream.setAutoFormatting(true);
+    stream.writeStartDocument();
+    stream.writeStartElement("document");
+    stream.writeAttribute("version", "2");
+
+    serializeInterlinearText(&stream);
+
+    stream.writeEndElement(); // document
+    stream.writeEndDocument();
+
+    return true;
+}
+
+bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
+{
+    if( !mName.isEmpty() )
+        writeItem( "title" , mBaselineWritingSystem , mName , stream );
+    if( !mComment.isEmpty() )
+        writeItem( "comment" , mBaselineWritingSystem , mComment , stream );
+
+    stream->writeStartElement("paragraphs");
+    stream->writeStartElement("paragraph");
+    stream->writeStartElement("phrases");
+
+    for(int i=0; i)
+    stream->writeStartElement("phrase");
+
+    stream->writeEndElement(); // phrase
+
+    stream->writeEndElement(); // phrases
+    stream->writeEndElement(); // paragraph
+    stream->writeEndElement(); // paragraphs
+
+    return true;
+}
+
+void Text::writeItem(const QString & type, const WritingSystem * ws, const QString & text , QXmlStreamWriter *stream) const
+{
+    stream->writeStartElement("item");
+    stream->writeAttribute("type",type);
+    stream->writeAttribute("lang",ws->flexString());
+    stream->writeCharacters(mName);
+    stream->writeEndElement();
 }

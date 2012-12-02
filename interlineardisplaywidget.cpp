@@ -52,7 +52,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
 
     for(int i=0; i< mText->baselineBits()->count(); i++)
     {
-        FlowLayout *flowLayout = addLine();
+        QLayout *flowLayout = addLine();
         for(int j=0; j<mText->baselineBits()->at(i)->count(); j++)
         {
             WordDisplayWidget *wdw = addWordDisplayWidget(mText->baselineBits()->at(i)->at(j));
@@ -65,9 +65,9 @@ void InterlinearDisplayWidget::setLayoutFromText()
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(TextBit *bit)
 {
     // once this object is constructed, it will have an id
-    WordDisplayWidget *wdw = new WordDisplayWidget( bit , mProject );
+    WordDisplayWidget *wdw = new WordDisplayWidget( bit , mText->writingSystem()->layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , mProject );
     // TODO this will not work
-    connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
+//    connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
     // this line is necessary because the signal from the constructor is emitted before the connection is made
     mConcordance.insert( wdw->textBit()->id() , wdw );
 
@@ -80,9 +80,11 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(TextBit *bit)
     return wdw;
 }
 
-FlowLayout* InterlinearDisplayWidget::addLine()
+QLayout* InterlinearDisplayWidget::addLine()
 {
+    // TODO no flow here
     FlowLayout *flowLayout = new FlowLayout;
+//    QHBoxLayout *flowLayout = new QHBoxLayout;
     mLineLayouts << flowLayout;
     mLayout->addLayout(flowLayout);
     return flowLayout;

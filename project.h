@@ -22,7 +22,7 @@ public:
     bool create(QString filename);
     bool readFromFile(QString filename);
 
-    QList<GlossLine> glossLines();
+    QList<GlossLine> glossLines() const;
 
     DatabaseAdapter* dbAdapter();
 
@@ -42,6 +42,8 @@ private:
 
     void readTextPaths();
     QDir getTempDir();
+
+    bool maybeDelete(QDir tempDir);
 
     QList<Text*> mTexts;
 };

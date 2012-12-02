@@ -141,7 +141,7 @@ void MainWindow::importFlexText()
         }
         else
         {
-            // TODO error message
+            QMessageBox::critical(this,tr("Error reading file"),tr("The file %1 could not be opened.").arg(dialog.filename()));
         }
     }
 }

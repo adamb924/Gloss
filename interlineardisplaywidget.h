@@ -40,11 +40,11 @@ private:
 
     QVBoxLayout *mLayout;
 
-    QList<FlowLayout*> mLineLayouts;
+    QList<QLayout*> mLineLayouts;
     QList<QWidget*> mWordDisplayWidgets;
     QMultiHash<qlonglong, WordDisplayWidget*> mConcordance;
 
-    FlowLayout* addLine();
+    QLayout* addLine();
     WordDisplayWidget* addWordDisplayWidget(TextBit *bit);
 
 private slots:

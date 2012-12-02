@@ -6,10 +6,12 @@
 #include <QList>
 
 #include "textbit.h"
+#include "glossitem.h"
 
 class WritingSystem;
 class Project;
 class QFile;
+class QXmlStreamWriter;
 
 class Text : public QObject
 {
@@ -25,16 +27,30 @@ public:
 
     QString name() const;
     void setName(const QString & name);
+
+    QString comment() const;
+    void setComment(const QString & comment);
+
     WritingSystem* writingSystem() const;
     void setWritingSystem(WritingSystem *ws);
 
     QString baselineText() const;
     void setBaselineText(const QString & text);
 
-    QList< QList<TextBit*>* >* baselineBits();
+//    QList< QList<TextBit*>* >* baselineBits();
+    QList< QList<GlossItem*>* >* glossItems();
+
+    //! \brief Serialize the text to an XML file
+    bool serialize(const QString & filename) const;
+
+    //! \brief Serialize the interlinear text (i.e., <interlinear-text> to the XML stream
+    bool serializeInterlinearText(QXmlStreamWriter *stream) const;
+
+    //! \brief Write an <item> to the text stream, with specified attributes and text content
+    void writeItem(const QString & type, const WritingSystem * ws, const QString & text , QXmlStreamWriter *stream) const;
 
 private:
-    QString mName;    
+    QString mName, mComment;
     QString mBaselineText;
 
     Project *mProject;
@@ -44,7 +60,8 @@ private:
 
     WritingSystem *mBaselineWritingSystem;
 
-    QList< QList<TextBit*>* > mBaselineBits;
+//    QList< QList<TextBit*>* > mBaselineBits;
+    QList< QList<GlossItem*>* > mGlossItems;
 
     void clearTextBits();
 

@@ -23,10 +23,45 @@ bool Project::create(QString filename)
 {
     mProjectPath = filename;
     QDir tempDir = getTempDir();
-    mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
-    mDbAdapter = new DatabaseAdapter(mDatabasePath);
-    mDbAdapter->initialize(mDatabasePath);
-    return true;
+
+    if(maybeDelete(tempDir))
+    {
+        mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
+        mDbAdapter = new DatabaseAdapter(mDatabasePath);
+        mDbAdapter->initialize(mDatabasePath);
+        return true;
+    }
+    else
+    {
+        mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
+        mDbAdapter = new DatabaseAdapter(mDatabasePath);
+        return false;
+    }
+}
+
+bool Project::maybeDelete(QDir tempDir)
+{
+    QStringList files;
+    files = tempDir.entryList(QStringList("*"), QDir::Files | QDir::NoSymLinks);
+    if( files.count() > 0 )
+    {
+        if( QMessageBox::Yes == QMessageBox::question( 0, tr("Overwrite files"), tr("The temporary directory %1 has files in it. If a project has not closed recently, these files could contain important data. Click 'Yes' to save this data from being overwritten. Otherwise click 'No' and the files will be deleted.").arg(tempDir.absolutePath()), QMessageBox::Yes | QMessageBox::No , QMessageBox::Yes ) )
+        {
+            return false;
+        }
+        else
+        {
+            for(int i=0; i<files.count(); i++)
+            {
+                QFile::remove(files.at(i));
+            }
+            return true;
+        }
+    }
+    else
+    {
+        return true;
+    }
 }
 
 bool Project::readFromFile(QString filename)
@@ -76,13 +111,12 @@ bool Project::readFromFile(QString filename)
     return true;
 }
 
-QList<GlossLine> Project::glossLines()
+QList<GlossLine> Project::glossLines() const
 {
     QList<GlossLine> lines;
-    //    QSqlQuery q(mDb);
     QSqlQuery q(QSqlDatabase::database( "qt_sql_default_connection" ));
 
-    QString query = QString("select _id,Type, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
+    QString query = QString("select Type, _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
     if( !q.exec(query)  )
         qDebug() << "Project::glossLines" << q.lastError().text() << query;
     while( q.next() )

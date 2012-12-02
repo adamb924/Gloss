@@ -5,6 +5,8 @@
 #include "databaseadapter.h"
 #include "text.h"
 
+#include <QScrollArea>
+
 TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *parent) :
     QTabWidget(parent),
     ui(new Ui::TextDisplayWidget)
@@ -18,7 +20,13 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
     mInterlinear = new InterlinearDisplayWidget(mText, mProject, this);
-    ui->glossTab->layout()->addWidget(mInterlinear);
+
+    QScrollArea *scrollArea = new QScrollArea;
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setBackgroundRole(QPalette::Light);
+    scrollArea->setWidget(mInterlinear);
+
+    ui->glossTab->layout()->addWidget(scrollArea);
 
     this->setWindowTitle(mText->name());
 }
