@@ -20,10 +20,10 @@ public:
 
     void addGloss(const TextBit & bit);
     QString gloss(const WritingSystem & ws);
-    QHash<WritingSystem, QString>* glosses();
+    TextBitHash* glosses();
 
 private:
-    QHash<WritingSystem, QString> mGlosses;
+    TextBitHash mGlosses;
 };
 
 #endif // PHRASE_H

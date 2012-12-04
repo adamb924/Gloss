@@ -113,52 +113,7 @@ void Text::setGlossItemsFromBaseline()
         mGlossItems.append( new Phrase );
         QStringList words = lines.at(i).split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
         for(int j=0; j<words.count(); j++)
-        {
-            mGlossItems.last()->append(new GlossItem(TextBit(words.at(j),mBaselineWritingSystem)));
-            guessInterpretation(mGlossItems.last()->last());
-        }
-    }
-}
-
-void Text::guessInterpretation(GlossItem *item)
-{
-    QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretations( item->baselineText() );
-    if( candidates.length() == 0 )
-    {
-        item->setId( mProject->dbAdapter()->newInterpretation(item->baselineText()) );
-        mCandidateStatus = SingleOption;
-    }
-    else if ( candidates.length() == 1 )
-    {
-        item->setId( candidates.at(0) );
-        mCandidateStatus = SingleOption;
-    }
-    else // greater than 1
-    {
-        item->setId( candidates.at(0) );
-        mCandidateStatus = MultipleOption;
-    }
-    mApprovalStatus = Unapproved;
-}
-
-void Text::guessInterpretation(GlossItem *item, const QList<TextBit> & textForms, const QList<TextBit> & glossForms)
-{
-    QList<qlonglong> candidates = mProject->dbAdapter()->candidateInterpretations(textForms,glossForms);
-    if( candidates.length() == 0 )
-    {
-        qlonglong id = mProject->dbAdapter()->newInterpretation(textForms,glossForms);
-        item->setId( id );
-        mCandidateStatus = SingleOption;
-    }
-    else if ( candidates.length() == 1 )
-    {
-        item->setId( candidates.at(0) );
-        mCandidateStatus = SingleOption;
-    }
-    else // greater than 1
-    {
-        item->setId( candidates.at(0) );
-        mCandidateStatus = MultipleOption;
+            mGlossItems.last()->append(new GlossItem(TextBit(words.at(j),mBaselineWritingSystem), mProject));
     }
 }
 
@@ -205,8 +160,8 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
     bool inWord = false;
     bool inPhrase = false;
     QXmlStreamReader stream(file);
-    QList<TextBit> textForms;
-    QList<TextBit> glossForms;
+    TextBitHash textForms;
+    TextBitHash glossForms;
     QString baselineText;
 
     while (!stream.atEnd())
@@ -224,19 +179,13 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
                     qlonglong id = stream.attributes().value("http://www.adambaker.org/gloss.php","id").toString().toLongLong();
-                    glossForms = mProject->dbAdapter()->getInterpretationGlosses(id);
-                    textForms = mProject->dbAdapter()->getInterpretationTextForms(id);
-                    for(int i=0; i<textForms.count(); i++)
-                    {
-                        if( textForms.at(i).writingSystem() == mBaselineWritingSystem )
-                        {
-                            baselineText = textForms.at(i).text();
-                            break;
-                        }
-                    }
-                    mGlossItems.last()->append(new GlossItem(TextBit(baselineText, mBaselineWritingSystem), textForms, glossForms));
-                    mGlossItems.last()->last()->setId(id);
+                    mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, id, mProject));
                     stream.skipCurrentElement();
+
+                    if(stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php", "approval-status") && stream.attributes().value("http://www.adambaker.org/gloss.php", "approval-status").toString() == "true" )
+                        mGlossItems.last()->last()->setApprovalStatus(GlossItem::Approved);
+                    else
+                        mGlossItems.last()->last()->setApprovalStatus(GlossItem::Unapproved);
                 }
             }
             else if ( name == "phrase" )
@@ -254,7 +203,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     QString text = stream.readElementText();
                     if( type == "txt" )
                     {
-                        textForms.append( TextBit( text , lang ) );
+                        textForms.insert( lang, text );
                         if( lang.flexString() == mBaselineWritingSystem.flexString() )
                         {
                             baselineText = text;
@@ -262,7 +211,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     }
                     else if( type == "gls" )
                     {
-                        glossForms.append( TextBit( text , lang ) );
+                        glossForms.insert( lang, text );
                     }
                 }
             }
@@ -272,8 +221,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             if(name == "word")
             {
                 inWord = false;
-                mGlossItems.last()->append(new GlossItem(TextBit(baselineText, mBaselineWritingSystem), textForms, glossForms));
-                guessInterpretation(mGlossItems.last()->last(), textForms, glossForms);
+                mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, mProject));
             }
             else if(name == "phrase")
             {
@@ -341,15 +289,20 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
             stream->writeStartElement("word");
 
             stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(mGlossItems.at(i)->at(j)->id()) );
+            if( mGlossItems.at(i)->at(j)->approvalStatus() == GlossItem::Approved )
+                stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "true" );
+            else
+                stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "true" );
 
-            QHashIterator<WritingSystem, QString> textIter(*mGlossItems.at(i)->at(j)->textItems());
+
+            TextBitHashIterator textIter(*mGlossItems.at(i)->at(j)->textItems());
             while (textIter.hasNext())
             {
                 textIter.next();
                 writeItem("txt",textIter.key(),textIter.value(),stream);
             }
 
-            QHashIterator<WritingSystem, QString> glossIter(*mGlossItems.at(i)->at(j)->glossItems());
+            TextBitHashIterator glossIter(*mGlossItems.at(i)->at(j)->glossItems());
             while (glossIter.hasNext())
             {
                 glossIter.next();
@@ -361,7 +314,7 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         stream->writeEndElement(); // words
 
         // phrase-level glosses
-        QHashIterator<WritingSystem, QString> iter(*mGlossItems.at(i)->glosses());
+        TextBitHashIterator iter(*mGlossItems.at(i)->glosses());
         while (iter.hasNext())
         {
             iter.next();

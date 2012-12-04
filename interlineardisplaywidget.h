@@ -30,11 +30,13 @@ public:
 signals:
 
 public slots:
-
-private slots:
     void updateGloss( const TextBit & bit );
     void updateText( const TextBit & bit );
     void updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
+
+private slots:
+    void updateConcordance( WordDisplayWidget *w, qlonglong oldId, qlonglong newId );
+    void baselineTextUpdated(const QString & baselineText);
 
 private:
     Text *mText;
@@ -53,9 +55,6 @@ private:
     QLayout* addLine();
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
 
-private slots:
-    void updateConcordance( WordDisplayWidget *w, qlonglong oldId, qlonglong newId );
-    void baselineTextUpdated(const QString & baselineText);
 };
 
 #endif // INTERLINEARDISPLAYWIDGET_H

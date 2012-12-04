@@ -4,14 +4,16 @@
 #include "lingedit.h"
 #include "glossline.h"
 #include "databaseadapter.h"
+#include "interlineardisplaywidget.h"
 
 #include <QtGui>
 #include <QtDebug>
 
-WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, Project *project)
+WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, Project *project)
 {
     mGlossItem = item;
     mAlignment = alignment;
+    mInterlinearDisplayWidget = ildw;
     mProject = project;
 
     mGlossLines = mProject->glossLines();
@@ -44,18 +46,18 @@ void WordDisplayWidget::setupLayout()
             LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mGlossItem->id() ), this);
             edit->setAlignment(calculateAlignment());
             mLayout->addWidget(edit);
-            mEdits << edit;
+            mEdits.insert(mGlossLines.at(i).writingSystem(), edit);
 
             switch( mGlossLines.at(i).type() )
             {
             case GlossLine::Text:
                 connect(edit, SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationTextForm(TextBit)));
                 // when the edit's text is changed, a signal is emitted, which is picked up by InterlinearDisplayWidget
-                connect(edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(textChanged(TextBit)));
+                connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
                 break;
             case GlossLine::Gloss:
                 connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationGloss(TextBit)));
-                connect(edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(glossChanged(TextBit)));
+                connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
                 break;
             }
 //        }
@@ -72,11 +74,10 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
 void WordDisplayWidget::newGloss()
 {
-}
-
-QSize WordDisplayWidget::sizeHint() const
-{
-    return QSize(128,128);
+    // TODO implement this
+    qlonglong id = mProject->dbAdapter()->newInterpretation( mGlossItem->baselineText() );
+    mGlossItem->setInterpretation(id);
+//    mGlossItem
 }
 
 void WordDisplayWidget::fillData()
@@ -85,15 +86,18 @@ void WordDisplayWidget::fillData()
     {
         for(int i=0; i<mGlossLines.count();i++)
         {
+            QString form;
             switch( mGlossLines.at(i).type() )
             {
             case GlossLine::Text:
-                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationTextForm(mGlossItem->id(), mGlossLines.at(i).writingSystem() ) );
+                form = mProject->dbAdapter()->getInterpretationTextForm(mGlossItem->id(), mGlossLines.at(i).writingSystem() );
                 break;
             case GlossLine::Gloss:
-                mEdits[i]->setText( mProject->dbAdapter()->getInterpretationGloss(mGlossItem->id(), mGlossLines.at(i).writingSystem() ) );
+                form = mProject->dbAdapter()->getInterpretationGloss(mGlossItem->id(), mGlossLines.at(i).writingSystem() );
                 break;
             }
+            mEdits[mGlossLines.at(i).writingSystem()]->setText( form );
+            mEdits[mGlossLines.at(i).writingSystem()]->setText( form );
         }
     }
 }
@@ -105,17 +109,9 @@ GlossItem* WordDisplayWidget::glossItem() const
 
 void WordDisplayWidget::updateEdit( const TextBit & bit, GlossLine::LineType type )
 {
-    LingEdit *line = getAppropriateEdit(bit, type);
+    LingEdit *line = mEdits.value(bit.writingSystem());
     if( line != 0 )
         line->setText(bit.text());
-}
-
-LingEdit* WordDisplayWidget::getAppropriateEdit(const TextBit & bit, GlossLine::LineType type )
-{
-    for(int i=0; i<mGlossLines.count(); i++)
-        if( mGlossLines.at(i).type() == type && mGlossLines.at(i).writingSystem().flexString() == bit.writingSystem().flexString() )
-            return mEdits[i];
-    return 0;
 }
 
 // TODO this has no effect

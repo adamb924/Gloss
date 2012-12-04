@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QString>
 #include <QList>
+#include <QHash>
 
 #include "glossline.h"
 #include "lingedit.h"
@@ -19,30 +20,30 @@ class Project;
 class QVBoxLayout;
 class WritingSystem;
 class TextBit;
+class InterlinearDisplayWidget;
 
 class WordDisplayWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, Project *project);
-
-    QSize sizeHint() const;
+    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, Project *project);
 
     GlossItem* glossItem() const;
 
-protected:
+    void updateEdit( const TextBit & bit, GlossLine::LineType type );
+
+private:
     Project *mProject;
     GlossItem *mGlossItem;
     Qt::Alignment mAlignment;
+
+    InterlinearDisplayWidget *mInterlinearDisplayWidget;
 
     void fillData();
 
     Qt::Alignment calculateAlignment() const;
 
-    LingEdit* getAppropriateEdit(const TextBit & bit, GlossLine::LineType type );
-
-private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
     void setupLayout();
@@ -50,17 +51,13 @@ private:
     QVBoxLayout *mLayout;
 
     QList<GlossLine> mGlossLines;
-    QList<LingEdit*> mEdits;
-
-signals:
-    void glossChanged(const TextBit & bit);
-    void textChanged(const TextBit & bit);
+    QHash<WritingSystem, LingEdit*> mEdits;
 
 private slots:
     void newGloss();
 
-public slots:
-    void updateEdit( const TextBit & bit, GlossLine::LineType type );
+signals:
+
 };
 
 #endif // WORDDISPLAYWIDGET_H

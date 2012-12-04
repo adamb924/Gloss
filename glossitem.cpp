@@ -1,31 +1,50 @@
 #include "glossitem.h"
 #include "textbit.h"
+#include "project.h"
+#include "databaseadapter.h"
 
 #include <QtDebug>
 
-GlossItem::GlossItem(const TextBit & baselineText, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const TextBit & baselineText, Project *project, QObject *parent) : QObject(parent)
 {
     mTextItems.insert(baselineText.writingSystem(), baselineText.text() );
-    mBaselineText = baselineText;
+    mBaselineWritingSystem = baselineText.writingSystem();
     mId = -1;
+
+    mProject = project;
+
+    guessInterpretation();
 }
 
-GlossItem::GlossItem(const TextBit & baselineText, const QList<TextBit> & textForms, const QList<TextBit> & glossForms, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent) : QObject(parent)
 {
-    mBaselineText = baselineText;
+    mBaselineWritingSystem = ws;
 
-    for(int i=0; i<textForms.count(); i++)
-        mTextItems.insert( textForms.at(i).writingSystem() , textForms.at(i).text() );
+    mTextItems = textForms;
+    mGlossItems = glossForms;
 
-    for(int i=0; i<glossForms.count(); i++)
-        mGlossItems.insert( glossForms.at(i).writingSystem() , glossForms.at(i).text() );
+    mProject = project;
 
-    mId = -1;
+    guessInterpretation();
 }
 
-void GlossItem::setId(qlonglong id)
+GlossItem::GlossItem(const WritingSystem & ws, qlonglong id, Project *project, QObject *parent)
+{
+    mProject = project;
+    mBaselineWritingSystem = ws;
+    setInterpretation(id);
+}
+
+void GlossItem::setInterpretation(qlonglong id)
 {
     mId = id;
+    mTextItems.clear();
+    mGlossItems.clear();
+
+    mTextItems = mProject->dbAdapter()->getInterpretationTextForms(mId);
+    mGlossItems = mProject->dbAdapter()->getInterpretationGlosses(mId);
+
+    mApprovalStatus = GlossItem::Approved;
 }
 
 qlonglong GlossItem::id() const
@@ -35,15 +54,78 @@ qlonglong GlossItem::id() const
 
 TextBit GlossItem::baselineText() const
 {
-    return mBaselineText;
+    return TextBit( mTextItems.value(mBaselineWritingSystem) , mBaselineWritingSystem );
 }
 
-QHash<WritingSystem, QString>* GlossItem::textItems()
+TextBitHash* GlossItem::textItems()
 {
     return &mTextItems;
 }
 
-QHash<WritingSystem, QString>* GlossItem::glossItems()
+TextBitHash* GlossItem::glossItems()
 {
     return &mGlossItems;
 }
+
+void GlossItem::setCandidateStatus(CandidateStatus status)
+{
+    if( mCandidateStatus != status )
+    {
+        mCandidateStatus = status;
+        emit candidateStatusChanged(mCandidateStatus);
+    }
+}
+
+void GlossItem::setApprovalStatus(ApprovalStatus status)
+{
+    if( mApprovalStatus != status )
+    {
+        mApprovalStatus = status;
+        emit approvalStatusChanged(mApprovalStatus);
+    }
+}
+
+GlossItem::ApprovalStatus GlossItem::approvalStatus() const
+{
+    return mApprovalStatus;
+}
+
+void GlossItem::updateGloss( const TextBit & bit )
+{
+    mGlossItems.insert(bit.writingSystem(), bit.text());
+}
+
+void GlossItem::updateText( const TextBit & bit )
+{
+    mTextItems.insert(bit.writingSystem(), bit.text());
+}
+
+void GlossItem::guessInterpretation()
+{
+    QList<qlonglong> candidates;
+    if( mTextItems.count() > 0 || mGlossItems.count() > 0 )
+        candidates = mProject->dbAdapter()->candidateInterpretations(mTextItems,mGlossItems);
+    else
+        candidates =  mProject->dbAdapter()->candidateInterpretations( baselineText() );
+
+    if( candidates.length() == 0 )
+    {
+        if( mTextItems.count() > 0)
+            mProject->dbAdapter()->newInterpretation(mTextItems,mGlossItems);
+        else
+            setInterpretation( mProject->dbAdapter()->newInterpretation(baselineText()) );
+        setCandidateStatus(GlossItem::SingleOption);
+    }
+    else if ( candidates.length() == 1 )
+    {
+        setInterpretation( candidates.at(0) );
+        setCandidateStatus(GlossItem::SingleOption);
+    }
+    else // greater than 1
+    {
+        setInterpretation( candidates.at(0) );
+        setCandidateStatus(GlossItem::MultipleOption);
+    }
+    setApprovalStatus(GlossItem::Unapproved);
+}
+

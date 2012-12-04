@@ -14,34 +14,65 @@
 #include "textbit.h"
 
 class TextBit;
+class Project;
 
 class GlossItem : public QObject
 {
     Q_OBJECT
 public:
-    //! \brief Construct a GlossItem that is empty except for the baseline TextBit.
-    explicit GlossItem(const TextBit & baselineText, QObject *parent = 0);
-    //! \brief Construct a GlossItem with the given baseline TextBit, and other gloss and text forms.
-    GlossItem(const TextBit & baselineText, const QList<TextBit> & textForms, const QList<TextBit> & glossForms, QObject *parent = 0);
+    enum CandidateStatus { SingleOption, MultipleOption };
+    enum ApprovalStatus { Approved, Unapproved };
 
-    void setId(qlonglong id);
+    //! \brief Construct a GlossItem that is empty except for the baseline TextBit.
+    explicit GlossItem(const TextBit & baselineText, Project *project, QObject *parent = 0);
+
+    //! \brief Construct a GlossItem with the given WritingSystem, and gloss and text forms.
+    GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent = 0);
+
+    //! \brief Construct a GlossItem with the id (and data) from the given id (corresponding to the _id row of the Interpretations SQL table).
+    GlossItem(const WritingSystem & ws, qlonglong id, Project *project, QObject *parent = 0);
+
+    //! \brief Sets the id of this GlossItem (corresponding to the _id row of the Interpretations SQL table), and sets the data for the GlossItem accordingly.
+    void setInterpretation(qlonglong id);
+
+    //! \brief Returns the id of the GlossItem (corresponding to the _id row of the Interpretations SQL table)
     qlonglong id() const;
 
     TextBit baselineText() const;
 
-    QHash<WritingSystem, QString>* textItems();
-    QHash<WritingSystem, QString>* glossItems();
+    TextBitHash* textItems();
+    TextBitHash* glossItems();
+
+    void setCandidateStatus(CandidateStatus status);
+    void setApprovalStatus(ApprovalStatus status);
+
+    ApprovalStatus approvalStatus() const;
 
 signals:
+    void candidateStatusChanged(CandidateStatus status);
+    void approvalStatusChanged(ApprovalStatus status);
 
 public slots:
+    void updateGloss( const TextBit & bit );
+    void updateText( const TextBit & bit );
 
 private:
-    QHash<WritingSystem, QString> mTextItems;
-    QHash<WritingSystem, QString> mGlossItems;
+    TextBitHash mTextItems;
+    TextBitHash mGlossItems;
+
+    //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with the text form TextBit.
+    void guessInterpretation();
+
+    //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with text and gloss TextBits.
+    void guessInterpretation(const QList<TextBit> & textForms , const QList<TextBit> & glossForms);
+
+    Project *mProject;
+
+    CandidateStatus mCandidateStatus;
+    ApprovalStatus mApprovalStatus;
 
     qlonglong mId;
-    TextBit mBaselineText;
+    WritingSystem mBaselineWritingSystem;
 };
 
 #endif // GLOSSITEM_H

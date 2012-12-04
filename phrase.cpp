@@ -18,7 +18,7 @@ QString Phrase::gloss(const WritingSystem & ws)
     return mGlosses.value(ws);
 }
 
-QHash<WritingSystem, QString>* Phrase::glosses()
+TextBitHash* Phrase::glosses()
 {
     return &mGlosses;
 }

@@ -25,9 +25,6 @@ class Text : public QObject
 {
     Q_OBJECT
 public:
-    enum CandidateStatus { SingleOption, MultipleOption };
-    enum ApprovalStatus { Approved, Unapproved };
-
     Text();
     ~Text();
     Text(const WritingSystem &, const QString & name, Project *project);
@@ -71,9 +68,6 @@ private:
 
     Project *mProject;
 
-    CandidateStatus mCandidateStatus;
-    ApprovalStatus mApprovalStatus;
-
     WritingSystem mBaselineWritingSystem;
 
     QList<Phrase*> mGlossItems;
@@ -81,12 +75,6 @@ private:
     void clearGlossItems();
 
     void setGlossItemsFromBaseline();
-
-    //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with the text form TextBit.
-    void guessInterpretation(GlossItem *item);
-
-    //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with text and gloss TextBits.
-    void guessInterpretation(GlossItem *item, const QList<TextBit> & textForms , const QList<TextBit> & glossForms);
 
     //! \brief Sets the text from the given file. Returns false if this fails.
     bool importTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);

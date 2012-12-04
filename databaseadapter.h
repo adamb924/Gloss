@@ -9,8 +9,10 @@
 
 #include <QObject>
 #include <QtSql>
+#include <QHash>
 
-class TextBit;
+#include "textbit.h"
+
 class WritingSystem;
 
 class DatabaseAdapter : public QObject
@@ -27,20 +29,23 @@ public:
     QList<qlonglong> candidateInterpretations(const TextBit & bit) const;
 
     //! \brief Returns a list of possible interpretations of the given text and gloss forms
-    QList<qlonglong> candidateInterpretations(const QList<TextBit> & textForms , const QList<TextBit> & glossForms );
+    QList<qlonglong> candidateInterpretations(const TextBitHash & textForms , const TextBitHash & glossForms );
 
     //! \brief Creates a new interpretation of the baseline TextBit \a bit and returns the database index of the Interpreation
     qlonglong newInterpretation( const TextBit & bit );
 
     //! \brief Creates a new interpretation with the given text forms and glosses
-    qlonglong newInterpretation(const QList<TextBit> & textForms , const QList<TextBit> & glossForms );
+    qlonglong newInterpretation(const TextBitHash & textForms , const TextBitHash & glossForms );
 
     QString getInterpretationGloss(qlonglong id, const WritingSystem & ws) const;
     QString getInterpretationTextForm(qlonglong id, const WritingSystem & ws) const;
     QString getInterpretationMorphologicalAnalysis(qlonglong id, const WritingSystem & ws) const;
 
-    QList<TextBit> getInterpretationGlosses(qlonglong id) const;
-    QList<TextBit> getInterpretationTextForms(qlonglong id) const;
+    //! \brief Returns a list of glosses for the given Interpretation _id (\a id)
+    TextBitHash getInterpretationGlosses(qlonglong id) const;
+
+    //! \brief Returns a list of text forms for the given Interpretation _id (\a id)
+    TextBitHash getInterpretationTextForms(qlonglong id) const;
 
     //! \brief Adds the writing system to the database
     void addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection);
