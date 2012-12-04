@@ -29,6 +29,7 @@ public:
     enum ApprovalStatus { Approved, Unapproved };
 
     Text();
+    ~Text();
     Text(const WritingSystem &, const QString & name, Project *project);
     Text(const QString & filePath, Project *project);
     Text(const QString & filePath, const WritingSystem &, Project *project);

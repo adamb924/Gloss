@@ -18,6 +18,12 @@ Text::Text()
 {
 }
 
+Text::~Text()
+{
+    qDeleteAll(mGlossItems);
+    mGlossItems.clear();
+}
+
 Text::Text(const WritingSystem & ws, const QString & name, Project *project)
 {
     mName = name;
@@ -28,7 +34,6 @@ Text::Text(const WritingSystem & ws, const QString & name, Project *project)
 
 Text::Text(const QString & filePath, Project *project)
 {
-    qDebug() << "Text::Text(const QString & filePath, Project *project)";
     QFile *file = new QFile(filePath);
     mProject = project;
     mValid = importTextFromFlexText(file,true);
@@ -38,8 +43,8 @@ Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
 {
     QFile *file = new QFile(filePath);
     mProject = project;
-    mValid = importTextFromFlexText(file,false);
     mBaselineWritingSystem = ws;
+    mValid = importTextFromFlexText(file,false);
 }
 
 
@@ -96,12 +101,6 @@ QList<Phrase*>* Text::glossItems()
 
 void Text::clearGlossItems()
 {
-    Phrase *phrase;
-    foreach( phrase , mGlossItems )
-    {
-        qDeleteAll(*phrase);
-        phrase->clear();
-    }
     qDeleteAll(mGlossItems);
     mGlossItems.clear();
 }
@@ -115,7 +114,7 @@ void Text::setGlossItemsFromBaseline()
         QStringList words = lines.at(i).split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
         for(int j=0; j<words.count(); j++)
         {
-            mGlossItems.last()->append(new GlossItem(new TextBit(words.at(j),mBaselineWritingSystem)));
+            mGlossItems.last()->append(new GlossItem(TextBit(words.at(j),mBaselineWritingSystem)));
             guessInterpretation(mGlossItems.last()->last());
         }
     }
@@ -123,10 +122,10 @@ void Text::setGlossItemsFromBaseline()
 
 void Text::guessInterpretation(GlossItem *item)
 {
-    QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretations( *item->baselineText() );
+    QList<qlonglong> candidates =  mProject->dbAdapter()->candidateInterpretations( item->baselineText() );
     if( candidates.length() == 0 )
     {
-        item->setId( mProject->dbAdapter()->newInterpretation(*item->baselineText()) );
+        item->setId( mProject->dbAdapter()->newInterpretation(item->baselineText()) );
         mCandidateStatus = SingleOption;
     }
     else if ( candidates.length() == 1 )
@@ -165,8 +164,6 @@ void Text::guessInterpretation(GlossItem *item, const QList<TextBit> & textForms
 
 bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
 {
-    qDebug( ) << filePath;
-
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setFocus(QUrl(filePath));
     query.setMessageHandler(new MessageHandler(this));
@@ -175,14 +172,13 @@ bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
     {
         QStringList result;
         query.evaluateTo(&result);
-        qDebug() << result;
 
         if( result.isEmpty() )
             return false;
 
         mBaselineWritingSystem = mProject->dbAdapter()->writingSystem( result.at(0) );
 
-        return false; // change
+        return true;
     }
     else
     {
@@ -193,14 +189,11 @@ bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
 
 bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 {
-    qDebug() << baselineInfoFromFile;
     if( baselineInfoFromFile)
     {
         if( !setBaselineWritingSystemFromFile(file->fileName()) )
             return false;
     }
-
-    qDebug() << "Text::importTextFromFlexText writing system id:" << mBaselineWritingSystem.id();
 
     file->open(QFile::ReadOnly);
 
@@ -227,6 +220,24 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 inWord = true;
                 textForms.clear();
                 glossForms.clear();
+
+                if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
+                {
+                    qlonglong id = stream.attributes().value("http://www.adambaker.org/gloss.php","id").toString().toLongLong();
+                    glossForms = mProject->dbAdapter()->getInterpretationGlosses(id);
+                    textForms = mProject->dbAdapter()->getInterpretationTextForms(id);
+                    for(int i=0; i<textForms.count(); i++)
+                    {
+                        if( textForms.at(i).writingSystem() == mBaselineWritingSystem )
+                        {
+                            baselineText = textForms.at(i).text();
+                            break;
+                        }
+                    }
+                    mGlossItems.last()->append(new GlossItem(TextBit(baselineText, mBaselineWritingSystem), textForms, glossForms));
+                    mGlossItems.last()->last()->setId(id);
+                    stream.skipCurrentElement();
+                }
             }
             else if ( name == "phrase" )
             {
@@ -243,8 +254,6 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     QString text = stream.readElementText();
                     if( type == "txt" )
                     {
-//                        qDebug() << lang->flexString();
-//                        qDebug() << mBaselineWritingSystem.flexString();
                         textForms.append( TextBit( text , lang ) );
                         if( lang.flexString() == mBaselineWritingSystem.flexString() )
                         {
@@ -263,7 +272,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             if(name == "word")
             {
                 inWord = false;
-                mGlossItems.last()->append(new GlossItem(new TextBit(baselineText, mBaselineWritingSystem), textForms, glossForms));
+                mGlossItems.last()->append(new GlossItem(TextBit(baselineText, mBaselineWritingSystem), textForms, glossForms));
                 guessInterpretation(mGlossItems.last()->last(), textForms, glossForms);
             }
             else if(name == "phrase")
@@ -272,6 +281,9 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             }
         }
     }
+
+    file->close();
+
     if (stream.hasError()) {
         qDebug() << "Text::readTextFromFlexText error with xml reading";
         return false;

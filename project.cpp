@@ -17,6 +17,7 @@ Project::Project()
 
 Project::~Project()
 {
+    qDeleteAll(mTexts);
 }
 
 bool Project::create(QString filename)

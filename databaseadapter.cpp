@@ -142,6 +142,36 @@ void DatabaseAdapter::updateInterpretationMorphologicalAnalysis( const TextBit &
         qDebug() << "DatabaseAdapter::updateInterpretationMorphologicalAnalysis" << q.lastError().text() << query;
 }
 
+QList<TextBit> DatabaseAdapter::getInterpretationGlosses(qlonglong id) const
+{
+    QList<TextBit> glosses;
+    QSqlQuery q(mDb);
+    QString query = QString("select Form,FlexString from Glosses,WritingSystems where InterpretationId='%1' and WritingSystem=WritingSystems._id;").arg(id);
+    if( q.exec(query) )
+    {
+        while( q.next() )
+        {
+            glosses << TextBit( q.value(0).toString() , writingSystem( q.value(1).toString() ) );
+        }
+    }
+    return glosses;
+}
+
+QList<TextBit> DatabaseAdapter::getInterpretationTextForms(qlonglong id) const
+{
+    QList<TextBit> textForms;
+    QSqlQuery q(mDb);
+    QString query = QString("select Form,FlexString from TextForms,WritingSystems where InterpretationId='%1' and WritingSystem=WritingSystems._id;").arg(id);
+    if( q.exec(query) )
+    {
+        while( q.next() )
+        {
+            textForms << TextBit( q.value(0).toString() , writingSystem( q.value(1).toString() ) );
+        }
+    }
+    return textForms;
+}
+
 QString DatabaseAdapter::getInterpretationGloss(qlonglong id, const WritingSystem & ws) const
 {
     QSqlQuery q(mDb);
@@ -234,7 +264,7 @@ void DatabaseAdapter::createTables()
     q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Gloss','4', '3');");
 }
 
-WritingSystem DatabaseAdapter::writingSystem(QString flexString)
+WritingSystem DatabaseAdapter::writingSystem(const QString & flexString) const
 {
     QSqlQuery q(mDb);
     QString query = QString("select _id, Name, Abbreviation, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems where FlexString='%1';").arg(flexString);

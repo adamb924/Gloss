@@ -39,11 +39,14 @@ public:
     QString getInterpretationTextForm(qlonglong id, const WritingSystem & ws) const;
     QString getInterpretationMorphologicalAnalysis(qlonglong id, const WritingSystem & ws) const;
 
+    QList<TextBit> getInterpretationGlosses(qlonglong id) const;
+    QList<TextBit> getInterpretationTextForms(qlonglong id) const;
+
     //! \brief Adds the writing system to the database
     void addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection);
 
     //! \brief Returns a pointer to the WritingSystem specified by \a flexString, or 0 if none exists.
-    WritingSystem writingSystem(QString flexString);
+    WritingSystem writingSystem(const QString &  flexString) const;
 
     QList<WritingSystem*> writingSystems() const;
     bool writingSystemExists(const QString & flexstring) const;

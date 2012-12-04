@@ -9,7 +9,9 @@
 
 #include <QObject>
 #include <QHash>
+
 #include "writingsystem.h"
+#include "textbit.h"
 
 class TextBit;
 
@@ -17,13 +19,15 @@ class GlossItem : public QObject
 {
     Q_OBJECT
 public:
-    explicit GlossItem(TextBit *baselineText, QObject *parent = 0);
-    GlossItem(TextBit *baselineText, const QList<TextBit> & textForms, const QList<TextBit> & glossForms, QObject *parent = 0);
+    //! \brief Construct a GlossItem that is empty except for the baseline TextBit.
+    explicit GlossItem(const TextBit & baselineText, QObject *parent = 0);
+    //! \brief Construct a GlossItem with the given baseline TextBit, and other gloss and text forms.
+    GlossItem(const TextBit & baselineText, const QList<TextBit> & textForms, const QList<TextBit> & glossForms, QObject *parent = 0);
 
     void setId(qlonglong id);
     qlonglong id() const;
 
-    TextBit* baselineText() const;
+    TextBit baselineText() const;
 
     QHash<WritingSystem, QString>* textItems();
     QHash<WritingSystem, QString>* glossItems();
@@ -37,7 +41,7 @@ private:
     QHash<WritingSystem, QString> mGlossItems;
 
     qlonglong mId;
-    TextBit *mBaselineText;
+    TextBit mBaselineText;
 };
 
 #endif // GLOSSITEM_H

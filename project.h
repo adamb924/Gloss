@@ -59,8 +59,6 @@ private:
     QString mTempPath;
 
     void readTextPaths();
-
-
     bool maybeDelete(QDir tempDir);
 
     QString tempDirName() const;

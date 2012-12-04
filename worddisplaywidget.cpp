@@ -32,8 +32,8 @@ void WordDisplayWidget::setupLayout()
 
     mEdits.clear();
 
-    QLabel *baselineWord = new QLabel(mGlossItem->baselineText()->text());
-    baselineWord->setStyleSheet(QString("font-family: %1; font-size: %2pt;").arg(mGlossItem->baselineText()->writingSystem().fontFamily()).arg(mGlossItem->baselineText()->writingSystem().fontSize()));
+    QLabel *baselineWord = new QLabel(mGlossItem->baselineText().text());
+    baselineWord->setStyleSheet(QString("font-family: %1; font-size: %2pt;").arg(mGlossItem->baselineText().writingSystem().fontFamily()).arg(mGlossItem->baselineText().writingSystem().fontSize()));
 
     mLayout->addWidget(baselineWord);
     for(int i=0; i<mGlossLines.count(); i++)
@@ -121,7 +121,7 @@ LingEdit* WordDisplayWidget::getAppropriateEdit(const TextBit & bit, GlossLine::
 // TODO this has no effect
 Qt::Alignment WordDisplayWidget::calculateAlignment() const
 {
-    if( mGlossItem->baselineText()->writingSystem().layoutDirection() == Qt::LeftToRight )
+    if( mGlossItem->baselineText().writingSystem().layoutDirection() == Qt::LeftToRight )
     {
         if( mAlignment == Qt::AlignLeft )
         {

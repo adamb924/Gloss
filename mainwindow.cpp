@@ -37,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    if( mProject != 0 )
+        delete mProject;
     delete ui;
 }
 
@@ -208,6 +210,12 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
 
 void MainWindow::openText()
 {
+    if( mProject->textPaths()->count() == 0)
+    {
+        QMessageBox::information(this, tr("No texts"), tr("The project has no texts to open."));
+        return;
+    }
+
     QStringList texts;
     QFileInfo info;
 
