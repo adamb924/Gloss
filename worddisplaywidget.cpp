@@ -74,10 +74,9 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
 void WordDisplayWidget::newGloss()
 {
-    // TODO implement this
     qlonglong id = mProject->dbAdapter()->newInterpretation( mGlossItem->baselineText() );
     mGlossItem->setInterpretation(id);
-//    mGlossItem
+    fillData();
 }
 
 void WordDisplayWidget::fillData()
@@ -90,21 +89,16 @@ void WordDisplayWidget::fillData()
             switch( mGlossLines.at(i).type() )
             {
             case GlossLine::Text:
-                form = mProject->dbAdapter()->getInterpretationTextForm(mGlossItem->id(), mGlossLines.at(i).writingSystem() );
+                form = mGlossItem->textItems()->value( mGlossLines.at(i).writingSystem() );
                 break;
             case GlossLine::Gloss:
-                form = mProject->dbAdapter()->getInterpretationGloss(mGlossItem->id(), mGlossLines.at(i).writingSystem() );
+                form = mGlossItem->glossItems()->value( mGlossLines.at(i).writingSystem() );
                 break;
             }
             mEdits[mGlossLines.at(i).writingSystem()]->setText( form );
             mEdits[mGlossLines.at(i).writingSystem()]->setText( form );
         }
     }
-}
-
-GlossItem* WordDisplayWidget::glossItem() const
-{
-    return mGlossItem;
 }
 
 void WordDisplayWidget::updateEdit( const TextBit & bit, GlossLine::LineType type )

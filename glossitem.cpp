@@ -111,7 +111,7 @@ void GlossItem::guessInterpretation()
     if( candidates.length() == 0 )
     {
         if( mTextItems.count() > 0)
-            mProject->dbAdapter()->newInterpretation(mTextItems,mGlossItems);
+            setInterpretation( mProject->dbAdapter()->newInterpretation(mTextItems,mGlossItems) );
         else
             setInterpretation( mProject->dbAdapter()->newInterpretation(baselineText()) );
         setCandidateStatus(GlossItem::SingleOption);

@@ -307,11 +307,11 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
         textIter.next();
 
         query.append( QString("select distinct(InterpretationId) from TextForms where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from TextForms where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( textIter.value() ) );
-        if( !textIter.hasNext() )
+        if( textIter.hasNext() )
             query.append(" intersect ");
     }
 
-    if( textForms.count() > 0 )
+    if( glossForms.count() > 0 )
         query.append(" intersect ");
 
     textIter = TextBitHashIterator(glossForms);
@@ -320,14 +320,17 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
         textIter.next();
 
         query.append( QString("select distinct(InterpretationId) from Glosses where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from Glosses where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( textIter.value() ) );
-        if( !textIter.hasNext() )
+        if( textIter.hasNext() )
             query.append(" intersect ");
     }
 
     query.append(";");
 
+//    qDebug() << query;
+
     QSqlQuery q(mDb);
-    q.exec(query);
+    if( !q.exec(query)  )
+        qDebug() << "Project::candidateInterpretations" << q.lastError().text() << query;
 
     QList<qlonglong> candidates;
     while( q.next() )

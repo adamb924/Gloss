@@ -64,12 +64,11 @@ void InterlinearDisplayWidget::setLayoutFromText()
 
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
-    // once this object is constructed, it will have an id
     WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , this, mProject );
     // TODO this will not work
 //    connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
     // this line is necessary because the signal from the constructor is emitted before the connection is made
-    mConcordance.insert( wdw->glossItem()->id() , wdw );
+    mConcordance.insert( item->id() , wdw );
 
     mWordDisplayWidgets << wdw;
 
@@ -100,8 +99,10 @@ void InterlinearDisplayWidget::updateGloss( const TextBit & bit )
 
 void InterlinearDisplayWidget::updateText( const TextBit & bit )
 {
+    qDebug() << bit.id();
     WordDisplayWidget* wdw;
     QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
+    qDebug() << wdwList;
     foreach(wdw, wdwList)
         wdw->updateEdit(bit,GlossLine::Text);
 }

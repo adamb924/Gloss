@@ -29,8 +29,6 @@ class WordDisplayWidget : public QWidget
 public:
     WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, Project *project);
 
-    GlossItem* glossItem() const;
-
     void updateEdit( const TextBit & bit, GlossLine::LineType type );
 
 private:
