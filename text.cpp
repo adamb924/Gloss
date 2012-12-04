@@ -16,12 +16,7 @@
 
 Text::Text()
 {
-}
-
-Text::~Text()
-{
-    qDeleteAll(mGlossItems);
-    mGlossItems.clear();
+    mValid = true;
 }
 
 Text::Text(const WritingSystem & ws, const QString & name, Project *project)
@@ -47,6 +42,11 @@ Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
     mValid = importTextFromFlexText(file,false);
 }
 
+Text::~Text()
+{
+    qDeleteAll(mGlossItems);
+    mGlossItems.clear();
+}
 
 QString Text::name() const
 {
@@ -115,6 +115,21 @@ void Text::setGlossItemsFromBaseline()
         for(int j=0; j<words.count(); j++)
             mGlossItems.last()->append(new GlossItem(TextBit(words.at(j),mBaselineWritingSystem), mProject));
     }
+}
+
+void Text::setBaselineFromGlossItems()
+{
+    mBaselineText = "";
+    for(int i=0; i<mGlossItems.count(); i++)
+    {
+        QString line;
+        for(int j=0; j<mGlossItems.at(i)->count(); j++)
+        {
+            line += mGlossItems.at(i)->at(j)->baselineText().text() + " ";
+        }
+        mBaselineText += line.trimmed() + "\n";
+    }
+    mBaselineText = mBaselineText.trimmed();
 }
 
 bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
@@ -236,6 +251,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
         qDebug() << "Text::readTextFromFlexText error with xml reading";
         return false;
     }
+    setBaselineFromGlossItems();
     return true;
 }
 

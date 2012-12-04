@@ -99,10 +99,8 @@ void InterlinearDisplayWidget::updateGloss( const TextBit & bit )
 
 void InterlinearDisplayWidget::updateText( const TextBit & bit )
 {
-    qDebug() << bit.id();
     WordDisplayWidget* wdw;
     QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
-    qDebug() << wdwList;
     foreach(wdw, wdwList)
         wdw->updateEdit(bit,GlossLine::Text);
 }

@@ -187,6 +187,7 @@ Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem &
     if(text->isValid())
     {
         mTexts.insert(text->name(), text);
+        mTextPaths << filePath;
         return text;
     }
     else
@@ -198,7 +199,11 @@ Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem &
 Text* Project::textFromFlexText(const QString & filePath)
 {
     Text *text = new Text(filePath,this);
-    mTexts.insert(text->name(), text);
+    if( text->isValid() )
+    {
+        mTexts.insert(text->name(), text);
+        mTextPaths << filePath;
+    }
     return text;
 }
 

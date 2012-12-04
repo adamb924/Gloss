@@ -19,6 +19,8 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->setupUi(this);
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
+    ui->baselineTextEdit->setPlainText( text->baselineText() );
+
     mInterlinear = new InterlinearDisplayWidget(mText, mProject, this);
 
     QScrollArea *scrollArea = new QScrollArea;
@@ -41,7 +43,7 @@ void TextDisplayWidget::tabChanged(int i)
     // TODO eventually we'll need something finer-grained here
     if( i == 1 )
     {
-        mText->setBaselineText( ui->plainTextEdit->toPlainText() );
+        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
     }
 }
 
