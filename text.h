@@ -1,3 +1,9 @@
+/*!
+  \class Text
+  \ingroup Data
+  \brief A data class holding data for a text.
+*/
+
 #ifndef TEXT_H
 #define TEXT_H
 
@@ -13,6 +19,7 @@ class WritingSystem;
 class Project;
 class QFile;
 class QXmlStreamWriter;
+class QDir;
 
 class Text : public QObject
 {
@@ -22,9 +29,9 @@ public:
     enum ApprovalStatus { Approved, Unapproved };
 
     Text();
-    Text(const QString & name, WritingSystem *ws, Project *project);
-    Text(QFile *file, Project *project);
-    Text(QFile *file, WritingSystem *ws, Project *project);
+    Text(const WritingSystem &, const QString & name, Project *project);
+    Text(const QString & filePath, Project *project);
+    Text(const QString & filePath, const WritingSystem &, Project *project);
 
     QString name() const;
     void setName(const QString & name);
@@ -32,13 +39,15 @@ public:
     QString comment() const;
     void setComment(const QString & comment);
 
-    WritingSystem* writingSystem() const;
-    void setWritingSystem(WritingSystem *ws);
+    WritingSystem writingSystem() const;
+    void setWritingSystem(const WritingSystem & ws);
 
     QString baselineText() const;
     void setBaselineText(const QString & text);
 
     QList<Phrase*>* glossItems();
+
+    void saveText(QDir tempDir) const;
 
     //! \brief Serialize the text to an XML file
     bool serialize(const QString & filename) const;
@@ -47,18 +56,24 @@ public:
     bool serializeInterlinearText(QXmlStreamWriter *stream) const;
 
     //! \brief Write an <item> to the text stream, with specified attributes and text content
-    void writeItem(const QString & type, const WritingSystem * ws, const QString & text , QXmlStreamWriter *stream) const;
+    void writeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream) const;
+
+    //! \brief Reads the given flextext file to set the baseline writing system for the text
+    bool setBaselineWritingSystemFromFile(const QString & filePath );
+
+    bool isValid() const;
 
 private:
     QString mName, mComment;
     QString mBaselineText;
+    bool mValid;
 
     Project *mProject;
 
     CandidateStatus mCandidateStatus;
     ApprovalStatus mApprovalStatus;
 
-    WritingSystem *mBaselineWritingSystem;
+    WritingSystem mBaselineWritingSystem;
 
     QList<Phrase*> mGlossItems;
 
@@ -72,7 +87,8 @@ private:
     //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with text and gloss TextBits.
     void guessInterpretation(GlossItem *item, const QList<TextBit> & textForms , const QList<TextBit> & glossForms);
 
-    void importTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
+    //! \brief Sets the text from the given file. Returns false if this fails.
+    bool importTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 
 signals:
     void baselineTextChanged(const QString & baseline);

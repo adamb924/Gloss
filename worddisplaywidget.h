@@ -1,3 +1,9 @@
+/*!
+  \class WordDisplayWidget
+  \ingroup GUI
+  \brief A widget for displaying a word in an InterlinearDisplayWidget. The corresponding data class is GlossItem.
+*/
+
 #ifndef WORDDISPLAYWIDGET_H
 #define WORDDISPLAYWIDGET_H
 

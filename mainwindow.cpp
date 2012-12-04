@@ -11,8 +11,8 @@
 #include <QtSql>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+        QMainWindow(parent),
+        ui(new Ui::MainWindow)
 {
     mProject = 0;
 
@@ -24,12 +24,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen_Project, SIGNAL(triggered()), this, SLOT(openProject()));
     connect(ui->actionSave_Project, SIGNAL(triggered()), this, SLOT(saveProject()));
     connect(ui->actionSave_Project_As, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
+    connect(ui->actionClose_Project, SIGNAL(triggered()), this, SLOT(closeProject()));
 
+    connect(ui->actionOpen_text, SIGNAL(triggered()), this, SLOT(openText()));
     connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addBlankText()));
     connect(ui->actionImport_FlexText, SIGNAL(triggered()), this, SLOT(importFlexText()));
 
-    ui->menuData->setEnabled(false);
-    ui->menuGuts->setEnabled(false);
+    setProjectActionsEnabled(false);
 
     addTableMenuItems();
 }
@@ -67,8 +68,7 @@ void MainWindow::newProject()
         mProject->create(filename);
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
-        ui->menuData->setEnabled(true);
-        ui->menuGuts->setEnabled(true);
+        setProjectActionsEnabled(true);
     }
 }
 
@@ -84,8 +84,7 @@ void MainWindow::openProject()
         mProject->readFromFile(filename);
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
-        ui->menuData->setEnabled(true);
-        ui->menuGuts->setEnabled(true);
+        setProjectActionsEnabled(true);
     }
 }
 
@@ -97,6 +96,58 @@ void MainWindow::saveProject()
 void MainWindow::saveProjectAs()
 {
 
+}
+
+void MainWindow::closeProject()
+{
+    if( mProject == 0 )
+        return;
+    if( maybeSave() )
+        projectClose();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if( mProject == 0 )
+    {
+        event->accept();
+        return;
+    }
+    if( maybeSave() )
+        projectClose();
+}
+
+void MainWindow::projectClose()
+{
+    mProject->removeTempDirectory();
+    delete mProject;
+    mProject = 0;
+    setProjectActionsEnabled(false);
+}
+
+
+bool MainWindow::maybeSave()
+{
+    while( ui->mdiArea->currentSubWindow() != 0 )
+        ui->mdiArea->removeSubWindow(ui->mdiArea->currentSubWindow());
+
+    QMessageBox::StandardButton result = QMessageBox::question(this,tr("Save changes?"),tr("Do you want to save your changes?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel , QMessageBox::Cancel );
+    switch(result)
+    {
+    case QMessageBox::Yes:
+        mProject->save();
+        return true;
+        break;
+    case QMessageBox::No:
+        return true;
+        break;
+    case QMessageBox::Cancel:
+        return false;
+        break;
+    default:
+        return false;
+        break;
+    }
 }
 
 void MainWindow::addBlankText()
@@ -133,15 +184,56 @@ void MainWindow::importFlexText()
     {
         if( QFile::exists(dialog.filename()) )
         {
-            QFile *file = new QFile(dialog.filename());
-            Text *text = mProject->textFromFlexText(file,mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
-            ui->mdiArea->addSubWindow(subWindow);
-            subWindow->show();
+            Text *text = mProject->textFromFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+            if(text != 0)
+                openText(text->name());
         }
         else
         {
             QMessageBox::critical(this,tr("Error reading file"),tr("The file %1 could not be opened.").arg(dialog.filename()));
         }
+    }
+}
+
+void MainWindow::setProjectActionsEnabled(bool enabled)
+{
+    ui->menuData->setEnabled(enabled);
+    ui->menuGuts->setEnabled(enabled);
+    ui->actionAdd_text->setEnabled(enabled);
+    ui->actionImport_FlexText->setEnabled(enabled);
+    ui->actionSave_Project->setEnabled(enabled);
+    ui->actionSave_Project_As->setEnabled(enabled);
+    ui->actionClose_Project->setEnabled(enabled);
+}
+
+void MainWindow::openText()
+{
+    QStringList texts;
+    QFileInfo info;
+
+    for(int i=0; i<mProject->textPaths()->count(); i++)
+    {
+        info.setFile(mProject->textPaths()->at(i));
+        texts << info.baseName();
+    }
+    bool ok;
+    QString whichText = QInputDialog::getItem( this, tr("Select text"), tr("Select the text to open"), texts, 0, false, &ok );
+    if( ok )
+        openText(whichText);
+}
+
+void MainWindow::openText(const QString & textName)
+{
+    mProject->openText(textName);
+    Text *text = mProject->texts()->value(textName, 0);
+    if( text == 0 )
+    {
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened.").arg(textName));
+    }
+    else
+    {
+        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
+        ui->mdiArea->addSubWindow(subWindow);
+        subWindow->show();
     }
 }

@@ -1,3 +1,9 @@
+/*!
+  \class NewTextDialog
+  \ingroup GUI
+  \brief A dialog class for adding a blank interlinear text into the project.
+*/
+
 #ifndef NEWTEXTDIALOG_H
 #define NEWTEXTDIALOG_H
 

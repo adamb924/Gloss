@@ -1,3 +1,8 @@
+/*!
+ \defgroup GUI User interface classes
+ \defgroup Data Data classes
+ */
+
 #include <QtGui/QApplication>
 #include "mainwindow.h"
 

@@ -1,5 +1,29 @@
 #include "writingsystem.h"
 
+WritingSystem::WritingSystem()
+{
+    mId = 0;
+    mName = "";
+    mAbbreviation = "";
+    mFlexString = "";
+    mKeyboardCommand = "";
+    mLayoutDirection = Qt::LeftToRight;
+    mFontFamily = "";
+    mFontSize = 0;
+}
+
+WritingSystem::WritingSystem(const WritingSystem & other)
+{
+    mId = other.mId;
+    mName = other.mName;
+    mAbbreviation = other.mAbbreviation;
+    mFlexString = other.mFlexString;
+    mKeyboardCommand = other.mKeyboardCommand;
+    mLayoutDirection = other.mLayoutDirection;
+    mFontFamily = other.mFontFamily;
+    mFontSize = other.mFontSize;
+}
+
 WritingSystem::WritingSystem(const qlonglong id, const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize)
 {
     mId = id;
@@ -64,4 +88,22 @@ int WritingSystem::fontSize() const
 QString WritingSystem::summaryString() const
 {
     return QString("%1 (%2, %3)").arg(mName).arg(mAbbreviation).arg(mFlexString);
+}
+
+bool WritingSystem::operator==(const WritingSystem & other) const
+{
+    return mFlexString == other.flexString();
+}
+
+WritingSystem& WritingSystem::operator=(const WritingSystem & other)
+{
+    mId = other.mId;
+    mName = other.mName;
+    mAbbreviation = other.mAbbreviation;
+    mFlexString = other.mFlexString;
+    mKeyboardCommand = other.mKeyboardCommand;
+    mLayoutDirection = other.mLayoutDirection;
+    mFontFamily = other.mFontFamily;
+    mFontSize = other.mFontSize;
+    return *this;
 }

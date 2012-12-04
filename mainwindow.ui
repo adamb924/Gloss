@@ -37,6 +37,7 @@
     <addaction name="actionOpen_Project"/>
     <addaction name="actionSave_Project"/>
     <addaction name="actionSave_Project_As"/>
+    <addaction name="actionClose_Project"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -44,6 +45,8 @@
     <property name="title">
      <string>Data</string>
     </property>
+    <addaction name="actionOpen_text"/>
+    <addaction name="separator"/>
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
    </widget>
@@ -105,27 +108,28 @@
     <string>Ctrl+T</string>
    </property>
   </action>
-  <action name="actionInterpretations">
-   <property name="text">
-    <string>Interpretations</string>
-   </property>
-  </action>
-  <action name="actionOrthographicForms">
-   <property name="text">
-    <string>OrthographicForms</string>
-   </property>
-  </action>
-  <action name="actionPhoneticForms">
-   <property name="text">
-    <string>PhoneticForms</string>
-   </property>
-  </action>
   <action name="actionImport_FlexText">
    <property name="text">
     <string>Import FlexText...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+F</string>
+   </property>
+  </action>
+  <action name="actionClose_Project">
+   <property name="text">
+    <string>Close Project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F4</string>
+   </property>
+  </action>
+  <action name="actionOpen_text">
+   <property name="text">
+    <string>Open text...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
    </property>
   </action>
  </widget>

@@ -127,7 +127,7 @@ QList<GlossLine> Project::glossLines() const
             type = GlossLine::Text;
         else
             type = GlossLine::Gloss;
-        lines << GlossLine(type, new WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
+        lines << GlossLine(type, WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
     }
     return lines;
 }
@@ -139,9 +139,7 @@ DatabaseAdapter* Project::dbAdapter()
 
 QDir Project::getTempDir()
 {
-    QString hash = QString(QCryptographicHash::hash(mProjectPath.toUtf8(),QCryptographicHash::Md5).toHex());
-    QString name = QString("gloss-%1").arg( hash );
-
+    QString name = tempDirName();
     QDir tempDir = QDir::temp();
     tempDir.mkdir(name);
     tempDir.cd(name);
@@ -151,26 +149,155 @@ QDir Project::getTempDir()
     return tempDir;
 }
 
+QString Project::tempDirName() const
+{
+    QString hash = QString(QCryptographicHash::hash(mProjectPath.toUtf8(),QCryptographicHash::Md5).toHex());
+    return QString("gloss-%1").arg( hash );
+}
+
 void Project::readTextPaths()
 {
     QDir tempDir = getTempDir();
-    QStringList filters;
-    filters << "*.flextext";
-    tempDir.setNameFilters(filters);
+    tempDir.setNameFilters(QStringList("*.flextext"));
+    tempDir.setSorting(QDir::Name);
     mTextPaths.clear();
-    mTextPaths = tempDir.entryList(QDir::Files,QDir::Name);
+    QStringList entries = tempDir.entryList(QDir::Files,QDir::Name);
+    for(int i=0; i<entries.count(); i++)
+        mTextPaths << tempDir.absoluteFilePath(entries.at(i));
 }
 
-Text* Project::newBlankText(const QString & name, WritingSystem *ws)
+Text* Project::newBlankText(const QString & name, const WritingSystem & ws)
 {
-    Text *text = new Text(name,ws,this);
-    mTexts.append(text);
+    Text *text = new Text(ws,name,this);
+    if( text->isValid() )
+    {
+        mTexts.insert(name, text);
+        return text;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem & ws)
+{
+    Text *text = new Text(filePath,ws,this);
+    if(text->isValid())
+    {
+        mTexts.insert(text->name(), text);
+        return text;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+Text* Project::textFromFlexText(const QString & filePath)
+{
+    Text *text = new Text(filePath,this);
+    mTexts.insert(text->name(), text);
     return text;
 }
 
-Text* Project::textFromFlexText(QFile *file, WritingSystem *ws)
+bool Project::save()
 {
-    Text *text = new Text(file,ws,this);
-    mTexts.append(text);
-    return text;
+    // indebted to: http://stackoverflow.com/questions/2598117/zipping-a-folder-file-using-qt
+    QuaZip zip(mProjectPath);
+    QuaZipFile outFile(&zip);
+
+    if (!zip.open(QuaZip::mdCreate))
+    {
+        qDebug() << "zip.open()" << zip.getZipError();
+        return false;
+    }
+    char c;
+    QFile inFile;
+    QDir tempDir = getTempDir();
+    tempDir.setNameFilters(QStringList("*"));
+    QStringList files = tempDir.entryList(QDir::Files,QDir::Name);
+    for(int i=0; i<files.count(); i++)
+    {
+        inFile.setFileName( tempDir.absoluteFilePath(files.at(i)) );
+        if( !inFile.open(QIODevice::ReadOnly))
+        {
+            qDebug() << inFile.errorString();
+            return false;
+        }
+        if( !outFile.open(QIODevice::WriteOnly, QuaZipNewInfo(files.at(i) , tempDir.absoluteFilePath(files.at(i)) )))
+        {
+            qDebug() << outFile.errorString();
+            return false;
+        }
+        while (inFile.getChar(&c) && outFile.putChar(c));
+
+        if (outFile.getZipError() != UNZ_OK)
+        {
+            qDebug() << outFile.getZipError();
+            return false;
+        }
+
+        outFile.close();
+
+        if (outFile.getZipError() != UNZ_OK)
+        {
+            qDebug() << outFile.getZipError();
+            return false;
+        }
+
+        inFile.close();
+    }
+
+    removeTempDirectory();
+
+    return true;
+}
+
+void Project::removeTempDirectory()
+{
+    mDbAdapter->close();
+
+    QDir tempDir = getTempDir();
+    tempDir.setNameFilters(QStringList("*"));
+    QStringList files = tempDir.entryList(QDir::Files,QDir::Name);
+    for(int i=0; i<files.count(); i++)
+    {
+        QFile f( tempDir.absoluteFilePath( files.at(i) ) );
+        if( ! f.remove() )
+            qDebug() << f.errorString() << tempDir.absoluteFilePath( files.at(i) ) ;
+    }
+
+    tempDir.cdUp();
+    tempDir.rmdir( tempDirName() );
+}
+
+QStringList* Project::textPaths()
+{
+    return &mTextPaths;
+}
+
+QHash<QString,Text*>* Project::texts()
+{
+    return &mTexts;
+}
+
+bool Project::openText(const QString & name)
+{
+    // if the text is already available
+    if( mTexts.contains(name) )
+        return true;
+
+    QDir tempDir = getTempDir();
+    QString filename = QString("%1.flextext").arg(name);
+    QString filePath = tempDir.absoluteFilePath( filename );
+    if( QFile::exists( filePath ) )
+    {
+        textFromFlexText( filePath );
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

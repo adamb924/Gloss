@@ -1,10 +1,11 @@
 #include "textbit.h"
+#include "writingsystem.h"
 
 TextBit::TextBit()
 {
 }
 
-TextBit::TextBit(const QString & text, WritingSystem *ws, qlonglong id )
+TextBit::TextBit(const QString & text, const WritingSystem & ws, qlonglong id )
 {
     mText = text;
     mWritingSystem = ws;
@@ -24,7 +25,7 @@ void TextBit::setText(const QString & text)
     mText = text;
 }
 
-void TextBit::setWritingSystem(WritingSystem *ws)
+void TextBit::setWritingSystem(const WritingSystem & ws)
 {
     mWritingSystem = ws;
 }
@@ -34,7 +35,7 @@ QString TextBit::text() const
     return mText;
 }
 
-WritingSystem* TextBit::writingSystem() const
+WritingSystem TextBit::writingSystem() const
 {
     return mWritingSystem;
 }

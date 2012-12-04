@@ -1,3 +1,10 @@
+/*!
+  \class FlowLayout
+  \ingroup GUI
+  \brief A QLayout subclass, providing a layout which arranges widgets as if it they were text. This is Qt example code, though I may have made modifications.
+*/
+
+
 /****************************************************************************
 **
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).

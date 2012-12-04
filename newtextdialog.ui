@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>261</width>
-    <height>178</height>
+    <width>249</width>
+    <height>133</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,27 +25,6 @@
      </item>
      <item>
       <widget class="QLineEdit" name="textName"/>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Will the baseline text be orthographic or phonetic?</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="baselineMode">
-       <item>
-        <property name="text">
-         <string>Orthographic</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Phonetic</string>
-        </property>
-       </item>
-      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_2">

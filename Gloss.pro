@@ -21,13 +21,13 @@ SOURCES += main.cpp\
     lingedit.cpp \
     glossline.cpp \
     textbit.cpp \
-    textlocation.cpp \
     databaseadapter.cpp \
     newtextdialog.cpp \
     importflextextdialog.cpp \
     text.cpp \
     glossitem.cpp \
-    phrase.cpp
+    phrase.cpp \
+    messagehandler.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -39,13 +39,13 @@ HEADERS  += mainwindow.h \
     lingedit.h \
     glossline.h \
     textbit.h \
-    textlocation.h \
     databaseadapter.h \
     newtextdialog.h \
     importflextextdialog.h \
     text.h \
     glossitem.h \
-    phrase.h
+    phrase.h \
+    messagehandler.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

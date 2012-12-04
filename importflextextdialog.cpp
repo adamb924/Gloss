@@ -10,6 +10,7 @@
 #include "writingsystem.h"
 #include "project.h"
 #include "databaseadapter.h"
+#include "messagehandler.h"
 
 ImportFlexTextDialog::ImportFlexTextDialog(Project *project, QWidget *parent) :
         QDialog(parent),
@@ -43,6 +44,7 @@ void ImportFlexTextDialog::fillDataFromFlexText()
     QString filename = ui->filename->text();
     if( filename.isNull() || !QFile::exists(filename) )
     {
+        QMessageBox::information(this,tr("Error reading file"), tr("The file you've chosen appears not to exist."));
         disable();
         return;
     }
@@ -51,12 +53,14 @@ void ImportFlexTextDialog::fillDataFromFlexText()
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
+        QMessageBox::information(this,tr("Error reading file"), tr("The file you've chosen cannot be opened."));
         disable();
         return;
     }
 
     if (!document.setContent(&file))
     {
+        QMessageBox::information(this,tr("Error reading file"), tr("The file you've chosen cannot be set to the content of a QDomDocument object (obscure error report, sorry)."));
         file.close();
         disable();
         return;
@@ -64,9 +68,15 @@ void ImportFlexTextDialog::fillDataFromFlexText()
     file.close();
 
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.setFocus(QUrl(filename));
-    query.setQuery("for $x in /document/interlinear-text/languages/language return string-join( ( string($x/@lang),string($x/@font),string($x/@RightToLeft) ) , ',')");
-    if (query.isValid()) {
+    if(!query.setFocus(QUrl(filename)))
+    {
+        QMessageBox::critical(this,tr("Error"),tr("Could not parse the XML in this file: %1").arg(filename));
+        return;
+    }
+    query.setMessageHandler(new MessageHandler(this));
+    query.setQuery("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/languages/language return string-join( ( string($x/@lang),string($x/@font),string($x/@RightToLeft) ) , ',')");
+    if (query.isValid())
+    {
         QStringList result;
         query.evaluateTo(&result);
 
@@ -84,18 +94,21 @@ void ImportFlexTextDialog::fillDataFromFlexText()
         }
         enable();
     }
+    else
+    {
+        // report errors here
+        QMessageBox::information(this,tr("Error reading file"), tr("Invalid query -- my bad."));
+    }
 }
 
 void ImportFlexTextDialog::enable()
 {
-    ui->baselineMode->setEnabled(true);
     ui->baselineWritingSystem->setEnabled(true);
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 }
 
 void ImportFlexTextDialog::disable()
 {
-    ui->baselineMode->setEnabled(false);
     ui->baselineWritingSystem->setEnabled(false);
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 }

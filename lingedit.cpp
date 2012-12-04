@@ -11,16 +11,19 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
     mTextBit = bit;
 
 //    setStyleSheet("border: 1px solid gray");
+    setStyleSheet(QString("font-family: %1; font-size: %2pt;").arg(bit.writingSystem().fontFamily()).arg(bit.writingSystem().fontSize()));
 
-    this->setLayoutDirection(bit.writingSystem()->layoutDirection());
+    this->setLayoutDirection(bit.writingSystem().layoutDirection());
 
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
 
 void LingEdit::focusInEvent ( QFocusEvent * e )
 {
-//    QProcess *switchInput = new QProcess();
-//    switchInput->start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mWritingSystem.keyboardCommand() );
+    // http://msdn.microsoft.com/en-us/goglobal/bb896001
+    QProcess *switchInput = new QProcess();
+//    qDebug() << mTextBit.writingSystem()->keyboardCommand();
+    switchInput->start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mTextBit.writingSystem().keyboardCommand() );
 }
 
 void LingEdit::textChanged()

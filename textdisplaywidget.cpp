@@ -28,7 +28,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
 
     ui->glossTab->layout()->addWidget(scrollArea);
 
-    this->setWindowTitle(mText->name());
+    setWindowTitle(mText->name());
 }
 
 TextDisplayWidget::~TextDisplayWidget()
@@ -43,4 +43,10 @@ void TextDisplayWidget::tabChanged(int i)
     {
         mText->setBaselineText( ui->plainTextEdit->toPlainText() );
     }
+}
+
+void TextDisplayWidget::closeEvent(QCloseEvent *event)
+{
+    mText->saveText(mProject->getTempDir());
+    event->accept();
 }

@@ -1,3 +1,9 @@
+/*!
+  \class DatabaseAdapter
+  \ingroup Data
+  \brief A database adapter to provide an interface to the SQLite database.
+*/
+
 #ifndef DATABASEADAPTER_H
 #define DATABASEADAPTER_H
 
@@ -29,23 +35,27 @@ public:
     //! \brief Creates a new interpretation with the given text forms and glosses
     qlonglong newInterpretation(const QList<TextBit> & textForms , const QList<TextBit> & glossForms );
 
-    QString getInterpretationGloss(qlonglong id, WritingSystem *ws) const;
-    QString getInterpretationTextForm(qlonglong id, WritingSystem *ws) const;
-    QString getInterpretationMorphologicalAnalysis(qlonglong id, WritingSystem *ws) const;
+    QString getInterpretationGloss(qlonglong id, const WritingSystem & ws) const;
+    QString getInterpretationTextForm(qlonglong id, const WritingSystem & ws) const;
+    QString getInterpretationMorphologicalAnalysis(qlonglong id, const WritingSystem & ws) const;
 
     //! \brief Adds the writing system to the database
     void addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection);
 
     //! \brief Returns a pointer to the WritingSystem specified by \a flexString, or 0 if none exists.
-    WritingSystem* writingSystem(QString flexString);
+    WritingSystem writingSystem(QString flexString);
 
     QList<WritingSystem*> writingSystems() const;
     bool writingSystemExists(const QString & flexstring) const;
     QSqlDatabase* db();
 
+    void close();
+
 private:
     QSqlDatabase mDb;
     void createTables();
+
+    QString mFilename;
 
 signals:
 

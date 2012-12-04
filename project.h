@@ -1,3 +1,9 @@
+/*!
+  \class Project
+  \ingroup Data
+  \brief A data class holding data for a project.
+*/
+
 #ifndef PROJECT_H
 #define PROJECT_H
 
@@ -26,14 +32,26 @@ public:
 
     DatabaseAdapter* dbAdapter();
 
-    Text* newBlankText(const QString & name, WritingSystem *ws);
-    Text* textFromFlexText(QFile *file, WritingSystem *ws);
+    QStringList* textPaths();
+
+    bool save();
+
+    Text* newBlankText(const QString & name, const WritingSystem & ws);
+    Text* textFromFlexText(const QString & filePath, const WritingSystem & ws);
+    Text* textFromFlexText(const QString & filePath);
+
+    QDir getTempDir();
+
+    void removeTempDirectory();
+
+    QHash<QString,Text*>* texts();
+
+    bool openText(const QString & name);
 
 public slots:
 
 private:
     DatabaseAdapter *mDbAdapter;
-    QStringList mTextPaths;
     QString mDatabaseFilename;
     QString mDatabasePath;
 
@@ -41,11 +59,17 @@ private:
     QString mTempPath;
 
     void readTextPaths();
-    QDir getTempDir();
+
 
     bool maybeDelete(QDir tempDir);
 
-    QList<Text*> mTexts;
+    QString tempDirName() const;
+
+    //! \brief Paths of all texts in the temp directory
+    QStringList mTextPaths;
+
+    //! \brief A hash containing all "opened" texts, keyed by name
+    QHash<QString,Text*> mTexts;
 };
 
 #endif // PROJECT_H

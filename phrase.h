@@ -1,3 +1,9 @@
+/*!
+  \class Phrase
+  \ingroup Data
+  \brief A data class holding a list of GlossItem objects, as well as a hash map with phrase-level glosses.
+*/
+
 #ifndef PHRASE_H
 #define PHRASE_H
 
@@ -14,10 +20,10 @@ public:
 
     void addGloss(const TextBit & bit);
     QString gloss(const WritingSystem & ws);
-    QHash<WritingSystem*, QString>* glosses() const;
+    QHash<WritingSystem, QString>* glosses();
 
 private:
-    QHash<WritingSystem*, QString> mGlosses;
+    QHash<WritingSystem, QString> mGlosses;
 };
 
 #endif // PHRASE_H

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>236</width>
-    <height>183</height>
+    <height>138</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,30 +49,6 @@
        <property name="enabled">
         <bool>false</bool>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Baseline Mode</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="baselineMode">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <item>
-        <property name="text">
-         <string>Orthographic</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Phonetic</string>
-        </property>
-       </item>
       </widget>
      </item>
     </layout>

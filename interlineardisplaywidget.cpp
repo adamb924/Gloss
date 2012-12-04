@@ -65,7 +65,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
     // once this object is constructed, it will have an id
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->writingSystem()->layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , mProject );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , mProject );
     // TODO this will not work
 //    connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
     // this line is necessary because the signal from the constructor is emitted before the connection is made
@@ -82,9 +82,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
 
 QLayout* InterlinearDisplayWidget::addLine()
 {
-    // TODO no flow here
     FlowLayout *flowLayout = new FlowLayout;
-//    QHBoxLayout *flowLayout = new QHBoxLayout;
     mLineLayouts << flowLayout;
     mLayout->addLayout(flowLayout);
     return flowLayout;

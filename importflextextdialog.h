@@ -1,3 +1,9 @@
+/*!
+  \class ImportFlexTextDialog
+  \ingroup GUI
+  \brief A dialog class for importing a FlexText into the project.
+*/
+
 #ifndef IMPORTFLEXTEXTDIALOG_H
 #define IMPORTFLEXTEXTDIALOG_H
 

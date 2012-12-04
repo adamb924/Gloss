@@ -32,25 +32,33 @@ void WordDisplayWidget::setupLayout()
 
     mEdits.clear();
 
-    mLayout->addWidget(new QLabel(mGlossItem->baselineText()->text()));
+    QLabel *baselineWord = new QLabel(mGlossItem->baselineText()->text());
+    baselineWord->setStyleSheet(QString("font-family: %1; font-size: %2pt;").arg(mGlossItem->baselineText()->writingSystem().fontFamily()).arg(mGlossItem->baselineText()->writingSystem().fontSize()));
+
+    mLayout->addWidget(baselineWord);
     for(int i=0; i<mGlossLines.count(); i++)
     {
-        LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mGlossItem->id() ), this);
-        edit->setAlignment(calculateAlignment());
-        mLayout->addWidget(edit);
-        mEdits << edit;
+        // TODO rethink how to do this
+//        if( mGlossItem->baselineText()->writingSystem()->flexString() != mGlossLines.at(i).writingSystem()->flexString() )
+//        {
+            LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mGlossItem->id() ), this);
+            edit->setAlignment(calculateAlignment());
+            mLayout->addWidget(edit);
+            mEdits << edit;
 
-        switch( mGlossLines.at(i).type() )
-        {
-        case GlossLine::Text:
-            connect(edit, SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationTextForm(TextBit)));
-            connect(edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(textChanged(TextBit)));
-            break;
-        case GlossLine::Gloss:
-            connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationGloss(TextBit)));
-            connect(edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(glossChanged(TextBit)));
-            break;
-        }
+            switch( mGlossLines.at(i).type() )
+            {
+            case GlossLine::Text:
+                connect(edit, SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationTextForm(TextBit)));
+                // when the edit's text is changed, a signal is emitted, which is picked up by InterlinearDisplayWidget
+                connect(edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(textChanged(TextBit)));
+                break;
+            case GlossLine::Gloss:
+                connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationGloss(TextBit)));
+                connect(edit, SIGNAL(stringChanged(TextBit)), this, SIGNAL(glossChanged(TextBit)));
+                break;
+            }
+//        }
     }
 }
 
@@ -105,7 +113,7 @@ void WordDisplayWidget::updateEdit( const TextBit & bit, GlossLine::LineType typ
 LingEdit* WordDisplayWidget::getAppropriateEdit(const TextBit & bit, GlossLine::LineType type )
 {
     for(int i=0; i<mGlossLines.count(); i++)
-        if( mGlossLines.at(i).type() == type && mGlossLines.at(i).writingSystem()->flexString() == bit.writingSystem()->flexString() )
+        if( mGlossLines.at(i).type() == type && mGlossLines.at(i).writingSystem().flexString() == bit.writingSystem().flexString() )
             return mEdits[i];
     return 0;
 }
@@ -113,7 +121,7 @@ LingEdit* WordDisplayWidget::getAppropriateEdit(const TextBit & bit, GlossLine::
 // TODO this has no effect
 Qt::Alignment WordDisplayWidget::calculateAlignment() const
 {
-    if( mGlossItem->baselineText()->writingSystem()->layoutDirection() == Qt::LeftToRight )
+    if( mGlossItem->baselineText()->writingSystem().layoutDirection() == Qt::LeftToRight )
     {
         if( mAlignment == Qt::AlignLeft )
         {

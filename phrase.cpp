@@ -15,10 +15,10 @@ void Phrase::addGloss(const TextBit & bit)
 
 QString Phrase::gloss(const WritingSystem & ws)
 {
-    return mGlosses.value(ws, "");
+    return mGlosses.value(ws);
 }
 
-QHash<WritingSystem*, QString>* glosses() const
+QHash<WritingSystem, QString>* Phrase::glosses()
 {
     return &mGlosses;
 }

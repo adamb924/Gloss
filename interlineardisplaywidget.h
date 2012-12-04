@@ -1,3 +1,9 @@
+/*!
+  \class InterlinearDisplayWidget
+  \ingroup GUI
+  \brief A widget for an interlinear text display. The widget's layout is populated with a series of FlowLayout layouts corresponding to phrases. The widget also keeps a concordance of GlossItem objects, to update their fields when the values are changed.
+*/
+
 #ifndef INTERLINEARDISPLAYWIDGET_H
 #define INTERLINEARDISPLAYWIDGET_H
 
@@ -10,7 +16,6 @@ class GlossItem;
 
 #include "flowlayout.h"
 #include "textbit.h"
-#include "textlocation.h"
 #include "worddisplaywidget.h"
 
 class Text;

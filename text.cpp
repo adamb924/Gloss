@@ -5,34 +5,41 @@
 #include <QTextStream>
 #include <QtDebug>
 #include <QHashIterator>
+#include <QXmlQuery>
 
 #include "writingsystem.h"
 #include "project.h"
 #include "databaseadapter.h"
 #include "phrase.h"
+#include "glossitem.h"
+#include "messagehandler.h"
 
 Text::Text()
 {
 }
 
-Text::Text(const QString & name, WritingSystem *ws, Project *project)
+Text::Text(const WritingSystem & ws, const QString & name, Project *project)
 {
     mName = name;
     mBaselineWritingSystem = ws;
     mProject = project;
+    mValid = true;
 }
 
-Text::Text(QFile *file, Project *project)
+Text::Text(const QString & filePath, Project *project)
 {
+    qDebug() << "Text::Text(const QString & filePath, Project *project)";
+    QFile *file = new QFile(filePath);
     mProject = project;
-    importTextFromFlexText(file,true);
+    mValid = importTextFromFlexText(file,true);
 }
 
-Text::Text(QFile *file, WritingSystem *ws, Project *project)
+Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
 {
+    QFile *file = new QFile(filePath);
     mProject = project;
+    mValid = importTextFromFlexText(file,false);
     mBaselineWritingSystem = ws;
-    importTextFromFlexText(file,false);
 }
 
 
@@ -57,12 +64,12 @@ void Text::setComment(const QString & comment)
 }
 
 
-WritingSystem* Text::writingSystem() const
+WritingSystem Text::writingSystem() const
 {
     return mBaselineWritingSystem;
 }
 
-void Text::setWritingSystem(WritingSystem *ws)
+void Text::setWritingSystem(const WritingSystem & ws)
 {
     mBaselineWritingSystem = ws;
 }
@@ -156,13 +163,54 @@ void Text::guessInterpretation(GlossItem *item, const QList<TextBit> & textForms
     }
 }
 
-void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
+bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
 {
+    qDebug( ) << filePath;
+
+    QXmlQuery query(QXmlQuery::XQuery10);
+    query.setFocus(QUrl(filePath));
+    query.setMessageHandler(new MessageHandler(this));
+    query.setQuery("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/languages/language[@abg:is-baseline='true'] return string($x/@lang)");
+    if (query.isValid())
+    {
+        QStringList result;
+        query.evaluateTo(&result);
+        qDebug() << result;
+
+        if( result.isEmpty() )
+            return false;
+
+        mBaselineWritingSystem = mProject->dbAdapter()->writingSystem( result.at(0) );
+
+        return false; // change
+    }
+    else
+    {
+        qDebug() << "Invalid query";
+        return false;
+    }
+}
+
+bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
+{
+    qDebug() << baselineInfoFromFile;
+    if( baselineInfoFromFile)
+    {
+        if( !setBaselineWritingSystemFromFile(file->fileName()) )
+            return false;
+    }
+
+    qDebug() << "Text::importTextFromFlexText writing system id:" << mBaselineWritingSystem.id();
+
     file->open(QFile::ReadOnly);
+
+    QFileInfo info(file->fileName());
+    mName = info.baseName();
 
     clearGlossItems();
 
     bool inWord = false;
+    bool inPhrase = false;
     QXmlStreamReader stream(file);
     QList<TextBit> textForms;
     QList<TextBit> glossForms;
@@ -182,6 +230,7 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             }
             else if ( name == "phrase" )
             {
+                inPhrase = true;
                 mGlossItems.append( new Phrase );
             }
             else if ( name == "item" )
@@ -190,12 +239,14 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 if( attr.hasAttribute("type") && attr.hasAttribute("lang") )
                 {
                     QString type = attr.value("type").toString();
-                    WritingSystem *lang = mProject->dbAdapter()->writingSystem( attr.value("lang").toString() );
+                    WritingSystem lang = mProject->dbAdapter()->writingSystem( attr.value("lang").toString() );
                     QString text = stream.readElementText();
                     if( type == "txt" )
                     {
+//                        qDebug() << lang->flexString();
+//                        qDebug() << mBaselineWritingSystem.flexString();
                         textForms.append( TextBit( text , lang ) );
-                        if( lang->flexString() == mBaselineWritingSystem->flexString() )
+                        if( lang.flexString() == mBaselineWritingSystem.flexString() )
                         {
                             baselineText = text;
                         }
@@ -207,27 +258,38 @@ void Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 }
             }
         }
-        else if( stream.tokenType() == QXmlStreamReader::EndElement && name == "word" )
+        else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
-            inWord = false;
-            mGlossItems.last()->append(new GlossItem(new TextBit(baselineText,mBaselineWritingSystem)));
-            guessInterpretation(mGlossItems.last()->last(), textForms, glossForms);
+            if(name == "word")
+            {
+                inWord = false;
+                mGlossItems.last()->append(new GlossItem(new TextBit(baselineText, mBaselineWritingSystem), textForms, glossForms));
+                guessInterpretation(mGlossItems.last()->last(), textForms, glossForms);
+            }
+            else if(name == "phrase")
+            {
+                inPhrase = false;
+            }
         }
     }
     if (stream.hasError()) {
         qDebug() << "Text::readTextFromFlexText error with xml reading";
+        return false;
     }
+    return true;
 }
 
 bool Text::serialize(const QString & filename) const
 {
     QFile outFile(filename);
-    if( !outFile.open(QFile::WriteOnly) )
+    if( !outFile.open(QFile::WriteOnly | QFile::Text) )
         return false;
 
     QXmlStreamWriter stream(&outFile);
     stream.setCodec("UTF-8");
     stream.setAutoFormatting(true);
+    stream.writeNamespace("http://www.adambaker.org/gloss.php", "abg" );
+
     stream.writeStartDocument();
     stream.writeStartElement("document");
     stream.writeAttribute("version", "2");
@@ -243,6 +305,9 @@ bool Text::serialize(const QString & filename) const
 bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
 {
     // TODO do something else with these references to mBaselineWritingSystem
+    stream->writeStartElement("interlinear-text");
+
+    stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mBaselineWritingSystem.flexString() );
 
     if( !mName.isEmpty() )
         writeItem( "title" , mBaselineWritingSystem , mName , stream );
@@ -250,23 +315,41 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         writeItem( "comment" , mBaselineWritingSystem , mComment , stream );
 
     stream->writeStartElement("paragraphs");
-    stream->writeStartElement("paragraph");
-    stream->writeStartElement("phrases");
 
     for(int i=0; i<mGlossItems.count(); i++)
     {
+        // this rather profligate nesting seems to be a feature of flextext files
+        stream->writeStartElement("paragraph");
+        stream->writeStartElement("phrases");
         stream->writeStartElement("phrase");
         writeItem("segnum", mBaselineWritingSystem, QString("%1").arg(i+1) , stream );
         stream->writeStartElement("words");
         for(int j=0; j<mGlossItems.at(i)->count(); j++)
         {
+            stream->writeStartElement("word");
 
+            stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(mGlossItems.at(i)->at(j)->id()) );
+
+            QHashIterator<WritingSystem, QString> textIter(*mGlossItems.at(i)->at(j)->textItems());
+            while (textIter.hasNext())
+            {
+                textIter.next();
+                writeItem("txt",textIter.key(),textIter.value(),stream);
+            }
+
+            QHashIterator<WritingSystem, QString> glossIter(*mGlossItems.at(i)->at(j)->glossItems());
+            while (glossIter.hasNext())
+            {
+                glossIter.next();
+                writeItem("gls",glossIter.key(),glossIter.value(),stream);
+            }
+            stream->writeEndElement(); // word
         }
 
         stream->writeEndElement(); // words
 
         // phrase-level glosses
-        QHashIterator<WritingSystem*, QString> iter(mGlossItems.at(iter)->glosses());
+        QHashIterator<WritingSystem, QString> iter(*mGlossItems.at(i)->glosses());
         while (iter.hasNext())
         {
             iter.next();
@@ -274,21 +357,50 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         }
 
         stream->writeEndElement(); // phrase
+        stream->writeEndElement(); // phrases
+        stream->writeEndElement(); // paragraph
     }
 
 
-    stream->writeEndElement(); // phrases
-    stream->writeEndElement(); // paragraph
     stream->writeEndElement(); // paragraphs
+
+    stream->writeStartElement("languages");
+    QList<WritingSystem*> ws = mProject->dbAdapter()->writingSystems();
+    for( int i=0; i<ws.count(); i++ )
+    {
+        stream->writeStartElement("language");
+        stream->writeAttribute("lang", ws.at(i)->flexString() );
+        stream->writeAttribute("font", ws.at(i)->fontFamily() );
+        stream->writeAttribute("http://www.adambaker.org/gloss.php","font-size", QString("%1").arg(ws.at(i)->fontSize()) );
+        if( ws.at(i)->layoutDirection() == Qt::RightToLeft )
+            stream->writeAttribute("RightToLeft", "true" );
+        if( mBaselineWritingSystem.flexString() == ws.at(i)->flexString() )
+            stream->writeAttribute("http://www.adambaker.org/gloss.php","is-baseline", "true" );
+
+        stream->writeEndElement(); // language
+    }
+    stream->writeEndElement(); // languages
+
+    stream->writeEndElement(); // interlinear-text
 
     return true;
 }
 
-void Text::writeItem(const QString & type, const WritingSystem * ws, const QString & text , QXmlStreamWriter *stream) const
+void Text::writeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream) const
 {
     stream->writeStartElement("item");
     stream->writeAttribute("type",type);
-    stream->writeAttribute("lang",ws->flexString());
-    stream->writeCharacters(mName);
+    stream->writeAttribute("lang",ws.flexString());
+    stream->writeCharacters(text);
     stream->writeEndElement();
+}
+
+void Text::saveText(QDir tempDir) const
+{
+    serialize( tempDir.absoluteFilePath( QString("%1.flextext").arg(mName) ) );
+}
+
+bool Text::isValid() const
+{
+    return mValid;
 }
