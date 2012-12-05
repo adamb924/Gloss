@@ -23,8 +23,6 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->baselineTextEdit->setPlainText( text->baselineText() );
 
     mInterlinear = new InterlinearDisplayWidget(mText, mProject, this);
-    // TODO does this work?
-    mInterlinear->setLayoutDirection(Qt::RightToLeft);
 
     QScrollArea *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);

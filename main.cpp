@@ -1,6 +1,7 @@
 /*!
  \defgroup GUI User interface classes
- \defgroup Data Data classes
+ \defgroup Data Data interface classes
+ \defgroup DataStructures Data structure classes
  */
 
 #include <QtGui/QApplication>

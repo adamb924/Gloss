@@ -33,7 +33,6 @@ public:
     void updateEdit( const TextBit & bit, GlossLine::LineType type );
 
 private:
-    Project *mProject;
     GlossItem *mGlossItem;
     Qt::Alignment mAlignment;
 
@@ -41,7 +40,7 @@ private:
 
     void fillData();
 
-    Qt::Alignment calculateAlignment() const;
+    Qt::Alignment calculateAlignment( Qt::LayoutDirection match , Qt::LayoutDirection current ) const;
 
     void contextMenuEvent ( QContextMenuEvent * event );
 

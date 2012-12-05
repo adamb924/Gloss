@@ -24,7 +24,8 @@ ImportFlexTextDialog::ImportFlexTextDialog(Project *project, QWidget *parent) :
     connect(ui->choose, SIGNAL(clicked()), this, SLOT(chooseFile()));
     connect(ui->filename, SIGNAL(textChanged(QString)), this, SLOT(fillDataFromFlexText()));
 
-    chooseFile();
+    if( !chooseFile() )
+        QTimer::singleShot(0, this, SLOT(close()));
 }
 
 ImportFlexTextDialog::~ImportFlexTextDialog()
@@ -32,11 +33,18 @@ ImportFlexTextDialog::~ImportFlexTextDialog()
     delete ui;
 }
 
-void ImportFlexTextDialog::chooseFile()
+bool ImportFlexTextDialog::chooseFile()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open") , QString(), "FlexText (*.flextext)" );
-    if( !filename.isNull() )
+    if( filename.isNull() )
+    {
+        return false;
+    }
+    else
+    {
         ui->filename->setText(filename);
+        return true;
+    }
 }
 
 void ImportFlexTextDialog::fillDataFromFlexText()

@@ -37,7 +37,7 @@ private:
     Project *mProject;
 
 private slots:
-    void chooseFile();
+    bool chooseFile();
     void fillDataFromFlexText();
 };
 

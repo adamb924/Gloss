@@ -27,11 +27,17 @@ public:
     //! \brief Initializes the database at the path \a filename
     void initialize(QString filename);
 
-    //! \brief Returns a list of possible interpretations of the text form TextBit \a bit
+    //! \brief Returns a list of possible interpretations of the text from TextBit \a bit
     QList<qlonglong> candidateInterpretations(const TextBit & bit) const;
+
+    //! \brief Returns a list of possible interpretations of the text from TextBit \a bit, along with associated text summaries.
+    QHash<qlonglong,QString> candidateInterpretationWithSummaries(const TextBit & bit) const;
 
     //! \brief Returns a list of possible interpretations of the given text and gloss forms
     QList<qlonglong> candidateInterpretations(const TextBitHash & textForms , const TextBitHash & glossForms );
+
+    //! \brief Returns true if a the specified TextBit could belong to more than one Interpretation in the database, otherwise false.
+    bool hasMultipleCandidateInterpretations(const TextBit & bit) const;
 
     //! \brief Creates a new interpretation of the baseline TextBit \a bit and returns the database index of the Interpreation
     qlonglong newInterpretation( const TextBit & bit );
@@ -54,6 +60,7 @@ public:
 
     //! \brief Returns a pointer to the WritingSystem specified by \a flexString, or 0 if none exists.
     WritingSystem writingSystem(const QString &  flexString) const;
+
 
     QList<WritingSystem*> writingSystems() const;
     bool writingSystemExists(const QString & flexstring) const;

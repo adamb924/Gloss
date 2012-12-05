@@ -1,6 +1,6 @@
 /*!
   \class Project
-  \ingroup Data
+  \ingroup DataStructures
   \brief A data class holding data for a project.
 */
 

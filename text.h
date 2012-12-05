@@ -1,6 +1,6 @@
 /*!
   \class Text
-  \ingroup Data
+  \ingroup DataStructures
   \brief A data class holding data for a text.
 */
 
@@ -20,6 +20,7 @@ class Project;
 class QFile;
 class QXmlStreamWriter;
 class QDir;
+class DatabaseAdapter;
 
 class Text : public QObject
 {
@@ -68,6 +69,7 @@ private:
     bool mValid;
 
     Project *mProject;
+    DatabaseAdapter *mDbAdapter;
 
     WritingSystem mBaselineWritingSystem;
 

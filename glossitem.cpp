@@ -101,13 +101,13 @@ GlossItem::CandidateStatus GlossItem::candidateStatus() const
 
 void GlossItem::updateGloss( const TextBit & bit )
 {
-    mDbAdapter->updateInterpretationTextForm(bit);
+    mDbAdapter->updateInterpretationGloss(bit);
     mGlossItems.insert(bit.writingSystem(), bit.text());
 }
 
 void GlossItem::updateText( const TextBit & bit )
 {
-    mDbAdapter->updateInterpretationGloss(bit);
+    mDbAdapter->updateInterpretationTextForm(bit);
     mTextItems.insert(bit.writingSystem(), bit.text());
 }
 
@@ -146,4 +146,9 @@ void GlossItem::toggleApproval()
         setApprovalStatus(GlossItem::Unapproved);
     else
         setApprovalStatus(GlossItem::Approved);
+}
+
+WritingSystem GlossItem::writingSystem() const
+{
+    return mBaselineWritingSystem;
 }

@@ -1,6 +1,6 @@
 /*!
   \class GlossItem
-  \ingroup Data
+  \ingroup DataStructures
   \brief A data class representing a gloss item in an interlinear text. This consists of an id (the _id field of the Interpretations SQL table), hashes of text and gloss lines, and a pointer to the TextBit of the baseline text.
 */
 
@@ -49,6 +49,8 @@ public:
 
     ApprovalStatus approvalStatus() const;
     CandidateStatus candidateStatus() const;
+
+    WritingSystem writingSystem() const;
 
 signals:
     void candidateStatusChanged(CandidateStatus status);

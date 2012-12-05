@@ -16,7 +16,7 @@
 
 Text::Text()
 {
-    mValid = true;
+    mValid = false;
 }
 
 Text::Text(const WritingSystem & ws, const QString & name, Project *project)
@@ -24,6 +24,7 @@ Text::Text(const WritingSystem & ws, const QString & name, Project *project)
     mName = name;
     mBaselineWritingSystem = ws;
     mProject = project;
+    mDbAdapter = mProject->dbAdapter();
     mValid = true;
 }
 
@@ -31,6 +32,7 @@ Text::Text(const QString & filePath, Project *project)
 {
     QFile *file = new QFile(filePath);
     mProject = project;
+    mDbAdapter = mProject->dbAdapter();
     mValid = importTextFromFlexText(file,true);
 }
 
@@ -38,6 +40,7 @@ Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
 {
     QFile *file = new QFile(filePath);
     mProject = project;
+    mDbAdapter = mProject->dbAdapter();
     mBaselineWritingSystem = ws;
     mValid = importTextFromFlexText(file,false);
 }
@@ -177,6 +180,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 
     bool inWord = false;
     bool inPhrase = false;
+    bool hasId = false;
     QXmlStreamReader stream(file);
     TextBitHash textForms;
     TextBitHash glossForms;
@@ -196,14 +200,19 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
+                    hasId = true;
                     qlonglong id = stream.attributes().value("http://www.adambaker.org/gloss.php","id").toString().toLongLong();
                     mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, id, mProject->dbAdapter()));
-                    stream.skipCurrentElement();
+//                    stream.skipCurrentElement();
 
                     if(stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php", "approval-status") && stream.attributes().value("http://www.adambaker.org/gloss.php", "approval-status").toString() == "true" )
                         mGlossItems.last()->last()->setApprovalStatus(GlossItem::Approved);
                     else
                         mGlossItems.last()->last()->setApprovalStatus(GlossItem::Unapproved);
+                }
+                else
+                {
+                    hasId = false;
                 }
             }
             else if ( name == "phrase" )
@@ -238,8 +247,22 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
         {
             if(name == "word")
             {
-                inWord = false;
-                mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, mProject->dbAdapter()));
+                if( hasId )
+                {
+                    if( mDbAdapter->hasMultipleCandidateInterpretations( mGlossItems.last()->last()->baselineText() ) )
+                        mGlossItems.last()->last()->setCandidateStatus(GlossItem::MultipleOption);
+                    else
+                        mGlossItems.last()->last()->setCandidateStatus(GlossItem::SingleOption);
+
+                    inWord = false;
+                    hasId = false;
+                }
+                else
+                {
+                    inWord = false;
+                    hasId = false;
+                    mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, mProject->dbAdapter()));
+                }
             }
             else if(name == "phrase")
             {

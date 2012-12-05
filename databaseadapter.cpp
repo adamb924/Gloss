@@ -44,12 +44,37 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBit & bit) 
 {
     QList<qlonglong> candidates;
     QSqlQuery q(mDb);
-    QString query = QString("select Interpretations._id from Interpretations,TextForms,WritingSystems where Form='%1' and WritingSystem=WritingSystems._id and WritingSystems.FlexString='%2' and TextForms.InterpretationId=Interpretations._id;").arg(bit.text()).arg(bit.writingSystem().flexString());
+    QString query = QString("select InterpretationId from TextForms where Form='%1' and WritingSystem='%2';").arg(bit.text()).arg(bit.writingSystem().id());
     if( !q.exec(query)  )
         qDebug() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
     while( q.next() )
         candidates << q.value(0).toLongLong();
 
+    return candidates;
+}
+
+bool DatabaseAdapter::hasMultipleCandidateInterpretations(const TextBit & bit) const
+{
+    QSqlQuery q(mDb);
+    QString query = QString("select count(distinct InterpretationId) from TextForms where Form='%1' and WritingSystem='%2';").arg(bit.text()).arg(bit.writingSystem().id());
+    if( !q.exec(query)  )
+        qDebug() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
+    if( q.next() )
+        return q.value(0).toInt() > 1;
+    else
+        return false;
+}
+
+QHash<qlonglong,QString> DatabaseAdapter::candidateInterpretationWithSummaries(const TextBit & bit) const
+{
+    QHash<qlonglong,QString> candidates;
+
+    QSqlQuery q(mDb);
+    QString query = QString("select InterpretationId,group_concat(Form) from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') ) group by InterpretationId;").arg(bit.text()).arg(bit.writingSystem().flexString());
+    if( !q.exec(query)  )
+        qDebug() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
+    while( q.next() )
+        candidates.insert( q.value(0).toLongLong() , q.value(1).toString() );
     return candidates;
 }
 

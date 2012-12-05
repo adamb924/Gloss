@@ -25,9 +25,17 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(ApprovalStatus)), this, SLOT(updateBaselineLabelStyle()) );
+    connect( mGlossItem, SIGNAL(candidateStatusChanged(CandidateStatus)), this, SLOT(updateBaselineLabelStyle()) );
 
     fillData();
-
+/*
+    TextBitHashIterator iter( *item->textItems() );
+    while(iter.hasNext())
+    {
+        iter.next();
+        qDebug() << iter.value();
+    }
+*/
     updateBaselineLabelStyle();
 }
 
@@ -38,15 +46,20 @@ void WordDisplayWidget::setupLayout()
 
     mEdits.clear();
 
+//    QLineEdit *edit = new QLineEdit;
+//    edit->setAlignment(Qt::AlignRight);
+//    mLayout->addWidget(edit);
+
 
     mBaselineWordLabel = new QLabel(mGlossItem->baselineText().text());
+    mBaselineWordLabel->setAlignment( mGlossItem->writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
     updateBaselineLabelStyle();
 
     mLayout->addWidget(mBaselineWordLabel);
     for(int i=0; i<mGlossLines.count(); i++)
     {
         LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mGlossItem->id() ), this);
-        edit->setAlignment(calculateAlignment());
+        edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() , mGlossLines.at(i).writingSystem().layoutDirection() ) );
         mLayout->addWidget(edit);
         mEdits.insert(mGlossLines.at(i).writingSystem(), edit);
 
@@ -71,6 +84,20 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
     menu.addAction(tr("New gloss..."),this,SLOT(newGloss()));
+
+//    QAction *approved = new QAction(tr("Approved"),&menu);
+//    approved->setCheckable(true);
+//    approved->setChecked(mGlossItem->approvalStatus() == GlossItem::Approved );
+//    connect( approved, SIGNAL(triggered()), mGlossItem, SLOT(toggleApproval()) );
+//    menu.addAction(approved);
+
+    QAction *approved = menu.addAction(tr("Approved"),mGlossItem,SLOT(toggleApproval()), );
+    approved->setCheckable(true);
+    approved->setChecked(mGlossItem->approvalStatus() == GlossItem::Approved );
+    qDebug() << (bool)(mGlossItem->approvalStatus() == GlossItem::Approved);
+
+//    QHash<qlonglong,QString> candidates = mDbAdapter->candidateInterpretationWithSummaries( mGlossItem->baselineText() );
+
     menu.exec(event->globalPos());
 }
 
@@ -78,6 +105,7 @@ void WordDisplayWidget::newGloss()
 {
     qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
     mGlossItem->setInterpretation(id);
+    mGlossItem->setCandidateStatus(GlossItem::MultipleOption);
     fillData();
 }
 
@@ -111,11 +139,11 @@ void WordDisplayWidget::updateEdit( const TextBit & bit, GlossLine::LineType typ
 }
 
 // TODO this has no effect
-Qt::Alignment WordDisplayWidget::calculateAlignment() const
+Qt::Alignment WordDisplayWidget::calculateAlignment( Qt::LayoutDirection match , Qt::LayoutDirection current ) const
 {
-    if( mGlossItem->baselineText().writingSystem().layoutDirection() == Qt::LeftToRight )
+    if( match == Qt::LeftToRight )
     {
-        if( mAlignment == Qt::AlignLeft )
+        if( current == Qt::LeftToRight )
         {
             return Qt::AlignLeft;
         }
@@ -126,9 +154,9 @@ Qt::Alignment WordDisplayWidget::calculateAlignment() const
     }
     else // Qt::RightToLeft
     {
-        if( mAlignment == Qt::AlignLeft )
+        if( current == Qt::LeftToRight )
         {
-            return Qt::AlignLeft;
+            return Qt::AlignRight;
         }
         else
         {
@@ -141,9 +169,9 @@ void WordDisplayWidget::updateBaselineLabelStyle()
 {
     QString color;
     if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateStatus() == GlossItem::SingleOption )
-        color = "#00ff00";
+        color = "#9aff67";
     else if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateStatus() == GlossItem::MultipleOption )
-        color = "#ffff00";
+        color = "#fff6a8";
     else
         color = "#ffffff";
     mBaselineWordLabel->setStyleSheet(QString("font-family: %1; font-size: %2pt; background-color: %3;").arg(mGlossItem->baselineText().writingSystem().fontFamily()).arg(mGlossItem->baselineText().writingSystem().fontSize()).arg(color));
