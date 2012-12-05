@@ -28,8 +28,6 @@ public:
     bool create(QString filename);
     bool readFromFile(QString filename);
 
-    QList<GlossLine> glossLines() const;
-
     DatabaseAdapter* dbAdapter();
 
     QStringList* textPaths();
@@ -40,13 +38,15 @@ public:
     Text* textFromFlexText(const QString & filePath, const WritingSystem & ws);
     Text* textFromFlexText(const QString & filePath);
 
-    QDir getTempDir();
+    QDir getTempDir() const;
 
     void removeTempDirectory();
 
     QHash<QString,Text*>* texts();
 
     bool openText(const QString & name);
+
+    QString filepathFromName(const QString & name) const;
 
 public slots:
 
@@ -56,12 +56,12 @@ private:
     QString mDatabasePath;
 
     QString mProjectPath;
-    QString mTempPath;
 
     void readTextPaths();
     bool maybeDelete(QDir tempDir);
 
     QString tempDirName() const;
+
 
     //! \brief Paths of all texts in the temp directory
     QStringList mTextPaths;

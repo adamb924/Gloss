@@ -107,13 +107,16 @@ void Text::clearGlossItems()
 
 void Text::setGlossItemsFromBaseline()
 {
+    // TODO something more subtle here, e.g., comparing line by line
+    clearGlossItems();
+
     QStringList lines = mBaselineText.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
     for(int i=0; i<lines.count(); i++)
     {
         mGlossItems.append( new Phrase );
         QStringList words = lines.at(i).split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
         for(int j=0; j<words.count(); j++)
-            mGlossItems.last()->append(new GlossItem(TextBit(words.at(j),mBaselineWritingSystem), mProject));
+            mGlossItems.last()->append(new GlossItem(TextBit(words.at(j),mBaselineWritingSystem), mProject->dbAdapter()));
     }
 }
 
@@ -194,7 +197,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
                     qlonglong id = stream.attributes().value("http://www.adambaker.org/gloss.php","id").toString().toLongLong();
-                    mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, id, mProject));
+                    mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, id, mProject->dbAdapter()));
                     stream.skipCurrentElement();
 
                     if(stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php", "approval-status") && stream.attributes().value("http://www.adambaker.org/gloss.php", "approval-status").toString() == "true" )
@@ -236,7 +239,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             if(name == "word")
             {
                 inWord = false;
-                mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, mProject));
+                mGlossItems.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, mProject->dbAdapter()));
             }
             else if(name == "phrase")
             {
@@ -308,7 +311,7 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
             if( mGlossItems.at(i)->at(j)->approvalStatus() == GlossItem::Approved )
                 stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "true" );
             else
-                stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "true" );
+                stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "false" );
 
 
             TextBitHashIterator textIter(*mGlossItems.at(i)->at(j)->textItems());
@@ -376,9 +379,9 @@ void Text::writeItem(const QString & type, const WritingSystem & ws, const QStri
     stream->writeEndElement();
 }
 
-void Text::saveText(QDir tempDir) const
+void Text::saveText() const
 {
-    serialize( tempDir.absoluteFilePath( QString("%1.flextext").arg(mName) ) );
+    serialize( mProject->filepathFromName(mName) );
 }
 
 bool Text::isValid() const

@@ -95,6 +95,11 @@ bool WritingSystem::operator==(const WritingSystem & other) const
     return mFlexString == other.flexString();
 }
 
+bool WritingSystem::operator==(const QString & flexString) const
+{
+    return mFlexString == flexString;
+}
+
 WritingSystem& WritingSystem::operator=(const WritingSystem & other)
 {
     mId = other.mId;

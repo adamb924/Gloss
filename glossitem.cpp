@@ -5,46 +5,50 @@
 
 #include <QtDebug>
 
-GlossItem::GlossItem(const TextBit & baselineText, Project *project, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
 {
     mTextItems.insert(baselineText.writingSystem(), baselineText.text() );
     mBaselineWritingSystem = baselineText.writingSystem();
     mId = -1;
 
-    mProject = project;
+    mDbAdapter = dbAdapter;
 
     guessInterpretation();
 }
 
-GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
 {
     mBaselineWritingSystem = ws;
 
     mTextItems = textForms;
     mGlossItems = glossForms;
 
-    mProject = project;
+    mDbAdapter = dbAdapter;
 
     guessInterpretation();
 }
 
-GlossItem::GlossItem(const WritingSystem & ws, qlonglong id, Project *project, QObject *parent)
+GlossItem::GlossItem(const WritingSystem & ws, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent)
 {
-    mProject = project;
+    mDbAdapter = dbAdapter;
     mBaselineWritingSystem = ws;
     setInterpretation(id);
+    setApprovalStatus(GlossItem::Approved);
 }
 
 void GlossItem::setInterpretation(qlonglong id)
 {
-    mId = id;
-    mTextItems.clear();
-    mGlossItems.clear();
+    if( mId != id )
+    {
+        mId = id;
+        mTextItems.clear();
+        mGlossItems.clear();
 
-    mTextItems = mProject->dbAdapter()->getInterpretationTextForms(mId);
-    mGlossItems = mProject->dbAdapter()->getInterpretationGlosses(mId);
+        mTextItems = mDbAdapter->getInterpretationTextForms(mId);
+        mGlossItems = mDbAdapter->getInterpretationGlosses(mId);
 
-    mApprovalStatus = GlossItem::Approved;
+        emit idChanged(mId);
+    }
 }
 
 qlonglong GlossItem::id() const
@@ -90,13 +94,20 @@ GlossItem::ApprovalStatus GlossItem::approvalStatus() const
     return mApprovalStatus;
 }
 
+GlossItem::CandidateStatus GlossItem::candidateStatus() const
+{
+    return mCandidateStatus;
+}
+
 void GlossItem::updateGloss( const TextBit & bit )
 {
+    mDbAdapter->updateInterpretationTextForm(bit);
     mGlossItems.insert(bit.writingSystem(), bit.text());
 }
 
 void GlossItem::updateText( const TextBit & bit )
 {
+    mDbAdapter->updateInterpretationGloss(bit);
     mTextItems.insert(bit.writingSystem(), bit.text());
 }
 
@@ -104,16 +115,16 @@ void GlossItem::guessInterpretation()
 {
     QList<qlonglong> candidates;
     if( mTextItems.count() > 0 || mGlossItems.count() > 0 )
-        candidates = mProject->dbAdapter()->candidateInterpretations(mTextItems,mGlossItems);
+        candidates = mDbAdapter->candidateInterpretations(mTextItems,mGlossItems);
     else
-        candidates =  mProject->dbAdapter()->candidateInterpretations( baselineText() );
+        candidates =  mDbAdapter->candidateInterpretations( baselineText() );
 
     if( candidates.length() == 0 )
     {
         if( mTextItems.count() > 0)
-            setInterpretation( mProject->dbAdapter()->newInterpretation(mTextItems,mGlossItems) );
+            setInterpretation( mDbAdapter->newInterpretation(mTextItems,mGlossItems) );
         else
-            setInterpretation( mProject->dbAdapter()->newInterpretation(baselineText()) );
+            setInterpretation( mDbAdapter->newInterpretation(baselineText()) );
         setCandidateStatus(GlossItem::SingleOption);
     }
     else if ( candidates.length() == 1 )
@@ -129,3 +140,10 @@ void GlossItem::guessInterpretation()
     setApprovalStatus(GlossItem::Unapproved);
 }
 
+void GlossItem::toggleApproval()
+{
+    if( mApprovalStatus == GlossItem::Approved )
+        setApprovalStatus(GlossItem::Unapproved);
+    else
+        setApprovalStatus(GlossItem::Approved);
+}

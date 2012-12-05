@@ -5,7 +5,7 @@
 
   The corresponding SQL table is WritingSystems.
 
-  Note that the equality operator for this class is defined so that two WritingSystem objects are identical if they have the same mFlexString value.
+  Note that the equality operator for this class is defined so that two WritingSystem objects are identical if they have the same mFlexString value. Similarly, a WritingSystem object can be compared directly to a QString that has a flex string.
 */
 
 #ifndef WRITINGSYSTEM_H
@@ -33,6 +33,7 @@ public:
     QString summaryString() const;
 
     bool operator==(const WritingSystem & other) const;
+    bool operator==(const QString & flexString) const;
     WritingSystem& operator=(const WritingSystem & other);
 
     QString fontFamily() const;

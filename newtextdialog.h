@@ -24,11 +24,13 @@ public:
     explicit NewTextDialog( const QList<WritingSystem*> & ws, QWidget *parent = 0);
     ~NewTextDialog();
 
-    QString writingSystem() const;
+    WritingSystem writingSystem() const;
     QString name() const;
 
 private:
     Ui::Dialog *ui;
+
+    QList<WritingSystem*> mWritingSystems;
 };
 
 #endif // NEWTEXTDIALOG_H

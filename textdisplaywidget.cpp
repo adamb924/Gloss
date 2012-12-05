@@ -19,9 +19,12 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->setupUi(this);
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
+    ui->baselineTextEdit->setWritingSystem(text->writingSystem());
     ui->baselineTextEdit->setPlainText( text->baselineText() );
 
     mInterlinear = new InterlinearDisplayWidget(mText, mProject, this);
+    // TODO does this work?
+    mInterlinear->setLayoutDirection(Qt::RightToLeft);
 
     QScrollArea *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
@@ -40,15 +43,12 @@ TextDisplayWidget::~TextDisplayWidget()
 
 void TextDisplayWidget::tabChanged(int i)
 {
-    // TODO eventually we'll need something finer-grained here
     if( i == 1 )
-    {
         mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
-    }
 }
 
 void TextDisplayWidget::closeEvent(QCloseEvent *event)
 {
-    mText->saveText(mProject->getTempDir());
+    mText->saveText();
     event->accept();
 }

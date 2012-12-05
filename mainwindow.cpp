@@ -125,6 +125,7 @@ void MainWindow::projectClose()
     delete mProject;
     mProject = 0;
     setProjectActionsEnabled(false);
+    setWindowTitle(tr("Gloss"));
 }
 
 
@@ -157,7 +158,7 @@ void MainWindow::addBlankText()
     NewTextDialog dialog( mProject->dbAdapter()->writingSystems(), this);
     if( dialog.exec() == QDialog::Accepted )
     {
-        Text *text = mProject->newBlankText(dialog.name(), mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+        Text *text = mProject->newBlankText(dialog.name(), dialog.writingSystem());
         TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();

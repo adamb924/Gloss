@@ -10,8 +10,10 @@
 #include <QObject>
 #include <QtSql>
 #include <QHash>
+#include <QList>
 
 #include "textbit.h"
+#include "glossline.h"
 
 class WritingSystem;
 
@@ -56,6 +58,8 @@ public:
     QList<WritingSystem*> writingSystems() const;
     bool writingSystemExists(const QString & flexstring) const;
     QSqlDatabase* db();
+
+    QList<GlossLine> glossLines() const;
 
     void close();
 

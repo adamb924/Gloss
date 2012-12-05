@@ -29,6 +29,7 @@ signals:
 
 public slots:
     void textChanged();
+    void changeId(qlonglong id);
 };
 
 #endif // LINGEDIT_H

@@ -16,8 +16,9 @@
 #include "lingedit.h"
 #include "text.h"
 
-class Project;
+class DatabaseAdapter;
 class QVBoxLayout;
+class QLabel;
 class WritingSystem;
 class TextBit;
 class InterlinearDisplayWidget;
@@ -27,7 +28,7 @@ class WordDisplayWidget : public QWidget
     Q_OBJECT
 
 public:
-    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, Project *project);
+    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter);
 
     void updateEdit( const TextBit & bit, GlossLine::LineType type );
 
@@ -48,8 +49,16 @@ private:
 
     QVBoxLayout *mLayout;
 
+    QLabel *mBaselineWordLabel;
     QList<GlossLine> mGlossLines;
     QHash<WritingSystem, LingEdit*> mEdits;
+
+    void mouseDoubleClickEvent ( QMouseEvent * event );
+
+    DatabaseAdapter *mDbAdapter;
+
+public slots:
+    void updateBaselineLabelStyle();
 
 private slots:
     void newGloss();

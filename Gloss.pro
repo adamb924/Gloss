@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     text.cpp \
     glossitem.cpp \
     phrase.cpp \
-    messagehandler.cpp
+    messagehandler.cpp \
+    lingtextedit.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -45,7 +46,8 @@ HEADERS  += mainwindow.h \
     text.h \
     glossitem.h \
     phrase.h \
-    messagehandler.h
+    messagehandler.h \
+    lingtextedit.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

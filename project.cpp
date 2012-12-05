@@ -112,41 +112,17 @@ bool Project::readFromFile(QString filename)
     return true;
 }
 
-QList<GlossLine> Project::glossLines() const
-{
-    QList<GlossLine> lines;
-    QSqlQuery q(QSqlDatabase::database( "qt_sql_default_connection" ));
-
-    QString query = QString("select Type, _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
-    if( !q.exec(query)  )
-        qDebug() << "Project::glossLines" << q.lastError().text() << query;
-    while( q.next() )
-    {
-        GlossLine::LineType type;
-        QString sType = q.value(0).toString();
-        if ( sType == "Text" )
-            type = GlossLine::Text;
-        else
-            type = GlossLine::Gloss;
-        lines << GlossLine(type, WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
-    }
-    return lines;
-}
-
 DatabaseAdapter* Project::dbAdapter()
 {
     return mDbAdapter;
 }
 
-QDir Project::getTempDir()
+QDir Project::getTempDir() const
 {
     QString name = tempDirName();
     QDir tempDir = QDir::temp();
     tempDir.mkdir(name);
     tempDir.cd(name);
-
-    mTempPath = tempDir.absolutePath();
-
     return tempDir;
 }
 
@@ -173,12 +149,18 @@ Text* Project::newBlankText(const QString & name, const WritingSystem & ws)
     if( text->isValid() )
     {
         mTexts.insert(name, text);
+        mTextPaths << filepathFromName(name);
         return text;
     }
     else
     {
         return 0;
     }
+}
+
+QString Project::filepathFromName(const QString & name) const
+{
+    return getTempDir().absoluteFilePath( QString("%1.flextext").arg(name) );
 }
 
 Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem & ws)

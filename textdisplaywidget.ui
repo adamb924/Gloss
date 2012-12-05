@@ -22,7 +22,7 @@
    </attribute>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QPlainTextEdit" name="baselineTextEdit"/>
+     <widget class="LingTextEdit" name="baselineTextEdit"/>
     </item>
    </layout>
   </widget>
@@ -38,6 +38,13 @@
    </attribute>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LingTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>lingtextedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

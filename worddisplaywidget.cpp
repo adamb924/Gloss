@@ -9,14 +9,14 @@
 #include <QtGui>
 #include <QtDebug>
 
-WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, Project *project)
+WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter)
 {
+    mDbAdapter = dbAdapter;
     mGlossItem = item;
     mAlignment = alignment;
     mInterlinearDisplayWidget = ildw;
-    mProject = project;
 
-    mGlossLines = mProject->glossLines();
+    mGlossLines = mDbAdapter->glossLines();
 
     setupLayout();
 
@@ -24,7 +24,11 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
 
+    connect( mGlossItem, SIGNAL(approvalStatusChanged(ApprovalStatus)), this, SLOT(updateBaselineLabelStyle()) );
+
     fillData();
+
+    updateBaselineLabelStyle();
 }
 
 void WordDisplayWidget::setupLayout()
@@ -34,35 +38,31 @@ void WordDisplayWidget::setupLayout()
 
     mEdits.clear();
 
-    QLabel *baselineWord = new QLabel(mGlossItem->baselineText().text());
-    baselineWord->setStyleSheet(QString("font-family: %1; font-size: %2pt;").arg(mGlossItem->baselineText().writingSystem().fontFamily()).arg(mGlossItem->baselineText().writingSystem().fontSize()));
 
-    mLayout->addWidget(baselineWord);
+    mBaselineWordLabel = new QLabel(mGlossItem->baselineText().text());
+    updateBaselineLabelStyle();
+
+    mLayout->addWidget(mBaselineWordLabel);
     for(int i=0; i<mGlossLines.count(); i++)
     {
-        // TODO rethink how to do this
-//        if( mGlossItem->baselineText()->writingSystem()->flexString() != mGlossLines.at(i).writingSystem()->flexString() )
-//        {
-            LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mGlossItem->id() ), this);
-            edit->setAlignment(calculateAlignment());
-            mLayout->addWidget(edit);
-            mEdits.insert(mGlossLines.at(i).writingSystem(), edit);
+        LingEdit *edit = new LingEdit( TextBit( QString("") , mGlossLines.at(i).writingSystem(), mGlossItem->id() ), this);
+        edit->setAlignment(calculateAlignment());
+        mLayout->addWidget(edit);
+        mEdits.insert(mGlossLines.at(i).writingSystem(), edit);
 
-            switch( mGlossLines.at(i).type() )
-            {
-            case GlossLine::Text:
-                connect(edit, SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationTextForm(TextBit)));
-                // when the edit's text is changed, a signal is emitted, which is picked up by InterlinearDisplayWidget
-                connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
-                connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(updateText(TextBit)) );
-                break;
-            case GlossLine::Gloss:
-                connect(edit,SIGNAL(stringChanged(TextBit)), mProject->dbAdapter(), SLOT(updateInterpretationGloss(TextBit)));
-                connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
-                connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(updateGloss(TextBit)) );
-                break;
-            }
-//        }
+        switch( mGlossLines.at(i).type() )
+        {
+        case GlossLine::Text:
+            // when the edit's text is changed, a signal is emitted, which is picked up by InterlinearDisplayWidget
+            connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
+            connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(updateText(TextBit)) );
+            break;
+        case GlossLine::Gloss:
+            connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
+            connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(updateGloss(TextBit)) );
+            break;
+        }
+        connect( mGlossItem , SIGNAL(idChanged(qlonglong)), edit, SLOT(changeId(qlonglong)) );
     }
 }
 
@@ -76,7 +76,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
 void WordDisplayWidget::newGloss()
 {
-    qlonglong id = mProject->dbAdapter()->newInterpretation( mGlossItem->baselineText() );
+    qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
     mGlossItem->setInterpretation(id);
     fillData();
 }
@@ -135,4 +135,21 @@ Qt::Alignment WordDisplayWidget::calculateAlignment() const
             return Qt::AlignLeft;
         }
     }
+}
+
+void WordDisplayWidget::updateBaselineLabelStyle()
+{
+    QString color;
+    if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateStatus() == GlossItem::SingleOption )
+        color = "#00ff00";
+    else if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateStatus() == GlossItem::MultipleOption )
+        color = "#ffff00";
+    else
+        color = "#ffffff";
+    mBaselineWordLabel->setStyleSheet(QString("font-family: %1; font-size: %2pt; background-color: %3;").arg(mGlossItem->baselineText().writingSystem().fontFamily()).arg(mGlossItem->baselineText().writingSystem().fontSize()).arg(color));
+}
+
+void WordDisplayWidget::mouseDoubleClickEvent ( QMouseEvent * event )
+{
+    mGlossItem->toggleApproval();
 }

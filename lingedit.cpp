@@ -32,3 +32,8 @@ void LingEdit::textChanged()
     mTextBit.setText(text());
     emit stringChanged( mTextBit );
 }
+
+void LingEdit::changeId(qlonglong id)
+{
+    mTextBit.setId(id);
+}

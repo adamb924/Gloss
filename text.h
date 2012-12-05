@@ -27,7 +27,7 @@ class Text : public QObject
 public:
     Text();
     ~Text();
-    Text(const WritingSystem &, const QString & name, Project *project);
+    Text(const WritingSystem & ws, const QString & name, Project *project);
     Text(const QString & filePath, Project *project);
     Text(const QString & filePath, const WritingSystem &, Project *project);
 
@@ -45,7 +45,7 @@ public:
 
     QList<Phrase*>* glossItems();
 
-    void saveText(QDir tempDir) const;
+    void saveText() const;
 
     //! \brief Serialize the text to an XML file
     bool serialize(const QString & filename) const;

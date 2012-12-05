@@ -9,8 +9,10 @@ NewTextDialog::NewTextDialog(const QList<WritingSystem*> & ws, QWidget *parent) 
 {
     ui->setupUi(this);
 
-    for(int i=0; i<ws.count(); i++)
-        ui->baselineWritingSystem->addItem(ws.at(i)->summaryString(), ws.at(i)->flexString());
+    mWritingSystems = ws;
+
+    for(int i=0; i<mWritingSystems.count(); i++)
+        ui->baselineWritingSystem->addItem(mWritingSystems.at(i)->summaryString(), mWritingSystems.at(i)->flexString());
 }
 
 NewTextDialog::~NewTextDialog()
@@ -18,9 +20,13 @@ NewTextDialog::~NewTextDialog()
     delete ui;
 }
 
-QString NewTextDialog::writingSystem() const
+WritingSystem NewTextDialog::writingSystem() const
 {
-    return ui->baselineWritingSystem->itemData(ui->baselineWritingSystem->currentIndex()).toString();
+    QString flexString = ui->baselineWritingSystem->itemData(ui->baselineWritingSystem->currentIndex()).toString();
+    for(int i=0; i<mWritingSystems.count(); i++)
+        if( *mWritingSystems.at(i) == flexString )
+            return *mWritingSystems.at(i);
+    return WritingSystem();
 }
 
 QString NewTextDialog::name() const
