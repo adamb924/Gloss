@@ -81,7 +81,7 @@ private:
     void setBaselineFromGlossItems();
 
     //! \brief Sets the text from the given file. Returns false if this fails.
-    bool importTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
+    bool readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 
 signals:
     void baselineTextChanged(const QString & baseline);

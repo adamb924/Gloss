@@ -1,7 +1,7 @@
 /*!
   \class MessageHandler
   \ingroup Data
-  \brief A message handler that sends error message output to qDebug(). Currently this is used only with QXmlQuery.
+  \brief A message handler that sends error message output to qWarning(). Currently this is used only with QXmlQuery.
 */
 
 #ifndef MESSAGEHANDLER_H

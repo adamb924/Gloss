@@ -12,8 +12,9 @@
 #include <QString>
 #include "writingsystem.h"
 
-class TextBit
+class TextBit : public QObject
 {
+    Q_OBJECT
 public:
     TextBit();
     TextBit(const QString & text, const WritingSystem &, qlonglong id = -1 );
@@ -21,16 +22,16 @@ public:
 
     bool operator==(const TextBit & other) const;
     TextBit& operator=(const TextBit & other);
+    bool operator!=(const TextBit & other) const;
 
-
-    void setText(const QString & text);
     QString text() const;
-
-    void setWritingSystem(const WritingSystem & ws);
     WritingSystem writingSystem() const;
-
-    void setId(qlonglong id);
     qlonglong id() const;
+
+public slots:
+    void setText(const QString & text);
+    void setWritingSystem(const WritingSystem & ws);
+    void setId(qlonglong id);
 
 private:
     QString mText;
@@ -46,5 +47,6 @@ inline uint qHash(const TextBit & key)
 
 typedef QHash<WritingSystem, TextBit> TextBitHash;
 typedef QHashIterator<WritingSystem, TextBit> TextBitHashIterator;
+typedef QMutableHashIterator<WritingSystem, TextBit> TextBitMutableHashIterator;
 
 #endif // TEXTBIT_H

@@ -21,7 +21,6 @@ public:
     WritingSystem();
     WritingSystem(const WritingSystem & other);
     WritingSystem(const qlonglong id, const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize);
-    WritingSystem(const qlonglong id, const QString & abbreviation, const QString & fontFamily, const QString & flexString, Qt::LayoutDirection layoutDirection);
 
     qlonglong id() const;
     QString name() const;
@@ -33,6 +32,7 @@ public:
     QString summaryString() const;
 
     bool operator==(const WritingSystem & other) const;
+    bool operator!=(const WritingSystem & other) const;
     bool operator==(const QString & flexString) const;
     WritingSystem& operator=(const WritingSystem & other);
 

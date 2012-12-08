@@ -36,15 +36,6 @@ WritingSystem::WritingSystem(const qlonglong id, const QString & name, const QSt
     mFontSize = fontSize;
 }
 
-WritingSystem::WritingSystem(const qlonglong id, const QString & abbreviation, const QString & fontFamily, const QString & flexString, Qt::LayoutDirection layoutDirection)
-{
-    mId = id;
-    mAbbreviation = abbreviation;
-    mFontFamily = fontFamily;
-    mFlexString = flexString;
-    mLayoutDirection = layoutDirection;
-}
-
 QString WritingSystem::keyboardCommand() const
 {
     return mKeyboardCommand;
@@ -93,6 +84,11 @@ QString WritingSystem::summaryString() const
 bool WritingSystem::operator==(const WritingSystem & other) const
 {
     return mFlexString == other.flexString();
+}
+
+bool WritingSystem::operator!=(const WritingSystem & other) const
+{
+    return mFlexString != other.flexString();
 }
 
 bool WritingSystem::operator==(const QString & flexString) const

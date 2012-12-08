@@ -36,6 +36,9 @@ public:
     //! \brief Sets the id of this GlossItem (corresponding to the _id row of the Interpretations SQL table), and sets the data for the GlossItem accordingly.
     void setInterpretation(qlonglong id);
 
+    void setGloss(const TextBit & gloss);
+    void setTextForm(const TextBit & textForm);
+
     //! \brief Returns the id of the GlossItem (corresponding to the _id row of the Interpretations SQL table)
     qlonglong id() const;
 
@@ -57,6 +60,9 @@ signals:
     void approvalStatusChanged(ApprovalStatus status);
     void idChanged(qlonglong id);
     void fieldsChanged();
+
+    void textFormIdChanged(qlonglong id);
+    void glossIdChanged(qlonglong id);
 
 public slots:
     void updateGloss( const TextBit & bit );

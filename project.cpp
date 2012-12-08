@@ -197,7 +197,7 @@ bool Project::save()
 
     if (!zip.open(QuaZip::mdCreate))
     {
-        qDebug() << "zip.open()" << zip.getZipError();
+        qWarning() << "zip.open()" << zip.getZipError();
         return false;
     }
     char c;
@@ -210,19 +210,19 @@ bool Project::save()
         inFile.setFileName( tempDir.absoluteFilePath(files.at(i)) );
         if( !inFile.open(QIODevice::ReadOnly))
         {
-            qDebug() << inFile.errorString();
+            qWarning() << inFile.errorString();
             return false;
         }
         if( !outFile.open(QIODevice::WriteOnly, QuaZipNewInfo(files.at(i) , tempDir.absoluteFilePath(files.at(i)) )))
         {
-            qDebug() << outFile.errorString();
+            qWarning() << outFile.errorString();
             return false;
         }
         while (inFile.getChar(&c) && outFile.putChar(c));
 
         if (outFile.getZipError() != UNZ_OK)
         {
-            qDebug() << outFile.getZipError();
+            qWarning() << outFile.getZipError();
             return false;
         }
 
@@ -230,7 +230,7 @@ bool Project::save()
 
         if (outFile.getZipError() != UNZ_OK)
         {
-            qDebug() << outFile.getZipError();
+            qWarning() << outFile.getZipError();
             return false;
         }
 
@@ -253,7 +253,7 @@ void Project::removeTempDirectory()
     {
         QFile f( tempDir.absoluteFilePath( files.at(i) ) );
         if( ! f.remove() )
-            qDebug() << f.errorString() << tempDir.absoluteFilePath( files.at(i) ) ;
+            qWarning() << f.errorString() << tempDir.absoluteFilePath( files.at(i) ) ;
     }
 
     tempDir.cdUp();

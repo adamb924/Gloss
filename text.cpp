@@ -33,7 +33,7 @@ Text::Text(const QString & filePath, Project *project)
     QFile *file = new QFile(filePath);
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
-    mValid = importTextFromFlexText(file,true);
+    mValid = readTextFromFlexText(file,true);
 }
 
 Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
@@ -42,7 +42,7 @@ Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
     mBaselineWritingSystem = ws;
-    mValid = importTextFromFlexText(file,false);
+    mValid = readTextFromFlexText(file,false);
 }
 
 Text::~Text()
@@ -158,12 +158,12 @@ bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
     }
     else
     {
-        qDebug() << "Invalid query";
+        qWarning() << "Invalid query";
         return false;
     }
 }
 
-bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
+bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 {
     if( baselineInfoFromFile)
     {
@@ -275,7 +275,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
     file->close();
 
     if (stream.hasError()) {
-        qDebug() << "Text::readTextFromFlexText error with xml reading";
+        qWarning() << "Text::readTextFromFlexText error with xml reading";
         return false;
     }
     setBaselineFromGlossItems();
@@ -349,7 +349,7 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
             while (glossIter.hasNext())
             {
                 glossIter.next();
-                writeItem("gls",glossIter.key(),glossIter.value().text(),stream, textIter.value().id());
+                writeItem("gls",glossIter.key(),glossIter.value().text(),stream, glossIter.value().id());
             }
             stream->writeEndElement(); // word
         }

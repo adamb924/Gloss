@@ -9,5 +9,5 @@ MessageHandler::MessageHandler(QObject *parent) :
 
 void MessageHandler::handleMessage( QtMsgType type, const QString & description, const QUrl & identifier, const QSourceLocation & sourceLocation )
 {
-    qDebug() << "MessageHandler::handleMessage" << description;
+    qWarning() << "MessageHandler::handleMessage" << description;
 }

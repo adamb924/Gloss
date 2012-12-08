@@ -41,14 +41,20 @@ private:
     Qt::Alignment calculateAlignment( Qt::LayoutDirection match , Qt::LayoutDirection current ) const;
 
     void contextMenuEvent ( QContextMenuEvent * event );
+    void addInterpretationSubmenu(QMenu *menu );
+    void addTextFormSubmenu(QMenu *menu, const WritingSystem & writingSystem );
+    void addGlossSubmenu(QMenu *menu, const WritingSystem & writingSystem );
 
     void setupLayout();
+    LingEdit* addGlossLine( const GlossLine & glossLine );
+    LingEdit* addTextFormLine( const GlossLine & glossLine );
 
     QVBoxLayout *mLayout;
 
     QLabel *mBaselineWordLabel;
     QList<GlossLine> mGlossLines;
     QHash<WritingSystem, LingEdit*> mEdits;
+
 
     void mouseDoubleClickEvent ( QMouseEvent * event );
 
@@ -58,9 +64,14 @@ public slots:
     void updateBaselineLabelStyle();
 
 private slots:
-    void newGloss();
-    void selectDifferentCandidate(QAction *action);
+    void newInterpretation();
+    void newGloss(QAction *action);
+    void newTextForm(QAction *action);
     void fillData();
+
+    void selectDifferentCandidate(QAction *action);
+    void selectDifferentGloss(QAction *action);
+    void selectDifferentTextForm(QAction *action);
 
 signals:
 

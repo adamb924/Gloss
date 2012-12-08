@@ -7,8 +7,8 @@
 
 GlossItem::GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
 {
-    mTextForms.insert(baselineText.writingSystem(), baselineText );
     mBaselineWritingSystem = baselineText.writingSystem();
+    mTextForms.insert(mBaselineWritingSystem, baselineText );
     mId = -1;
 
     mDbAdapter = dbAdapter;
@@ -52,6 +52,29 @@ void GlossItem::setInterpretation(qlonglong id)
     }
 }
 
+void GlossItem::setGloss(const TextBit & gloss)
+{
+    if( mGlosses.value(gloss.writingSystem()) != gloss )
+    {
+        mGlosses.insert( gloss.writingSystem(), gloss );
+
+        emit glossIdChanged(gloss.id());
+        // redundant?
+        emit fieldsChanged();
+    }
+}
+
+void GlossItem::setTextForm(const TextBit & textForm)
+{
+    if( mTextForms.value(textForm.writingSystem()) != textForm )
+    {
+        mTextForms.insert( textForm.writingSystem() , textForm );
+        emit textFormIdChanged(textForm.id());
+        // redundant?
+        emit fieldsChanged();
+    }
+}
+
 qlonglong GlossItem::id() const
 {
     return mId;
@@ -59,7 +82,7 @@ qlonglong GlossItem::id() const
 
 TextBit GlossItem::baselineText() const
 {
-    return TextBit( mTextForms.value(mBaselineWritingSystem).text() , mBaselineWritingSystem );
+    return mTextForms.value(mBaselineWritingSystem);
 }
 
 TextBitHash* GlossItem::textForms()

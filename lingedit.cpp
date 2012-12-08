@@ -15,7 +15,6 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
     setLayoutDirection(bit.writingSystem().layoutDirection());
     setAlignment(Qt::AlignCenter);
 
-
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
 
@@ -23,7 +22,6 @@ void LingEdit::focusInEvent ( QFocusEvent * e )
 {
     // http://msdn.microsoft.com/en-us/goglobal/bb896001
     QProcess *switchInput = new QProcess();
-//    qDebug() << mTextBit.writingSystem()->keyboardCommand();
     switchInput->start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mTextBit.writingSystem().keyboardCommand() );
 }
 
