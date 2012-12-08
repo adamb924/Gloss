@@ -337,17 +337,19 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
                 stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "false" );
 
 
-            TextBitHashIterator textIter(*mGlossItems.at(i)->at(j)->textItems());
+            TextBitHashIterator textIter(*mGlossItems.at(i)->at(j)->textForms());
             while (textIter.hasNext())
             {
                 textIter.next();
+                // TODO feed the id attribute here
                 writeItem("txt",textIter.key(),textIter.value(),stream);
             }
 
-            TextBitHashIterator glossIter(*mGlossItems.at(i)->at(j)->glossItems());
+            TextBitHashIterator glossIter(*mGlossItems.at(i)->at(j)->glosses());
             while (glossIter.hasNext())
             {
                 glossIter.next();
+                // TODO feed the id attribute here
                 writeItem("gls",glossIter.key(),glossIter.value(),stream);
             }
             stream->writeEndElement(); // word
@@ -393,9 +395,11 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
     return true;
 }
 
-void Text::writeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream) const
+void Text::writeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream, qlonglong id) const
 {
     stream->writeStartElement("item");
+    if( id != -1 )
+        stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(id) );
     stream->writeAttribute("type",type);
     stream->writeAttribute("lang",ws.flexString());
     stream->writeCharacters(text);

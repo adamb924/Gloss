@@ -8,6 +8,7 @@
 
 #include <QtGui>
 #include <QtDebug>
+#include <QActionGroup>
 
 WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter)
 {
@@ -26,16 +27,10 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(ApprovalStatus)), this, SLOT(updateBaselineLabelStyle()) );
     connect( mGlossItem, SIGNAL(candidateStatusChanged(CandidateStatus)), this, SLOT(updateBaselineLabelStyle()) );
+    connect( mGlossItem, SIGNAL(fieldsChanged()), this, SLOT(fillData()) );
 
     fillData();
-/*
-    TextBitHashIterator iter( *item->textItems() );
-    while(iter.hasNext())
-    {
-        iter.next();
-        qDebug() << iter.value();
-    }
-*/
+
     updateBaselineLabelStyle();
 }
 
@@ -46,9 +41,9 @@ void WordDisplayWidget::setupLayout()
 
     mEdits.clear();
 
-//    QLineEdit *edit = new QLineEdit;
-//    edit->setAlignment(Qt::AlignRight);
-//    mLayout->addWidget(edit);
+    //    QLineEdit *edit = new QLineEdit;
+    //    edit->setAlignment(Qt::AlignRight);
+    //    mLayout->addWidget(edit);
 
 
     mBaselineWordLabel = new QLabel(mGlossItem->baselineText().text());
@@ -83,20 +78,37 @@ void WordDisplayWidget::setupLayout()
 void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
-    menu.addAction(tr("New gloss..."),this,SLOT(newGloss()));
+    menu.addAction(tr("New interpretation..."),this,SLOT(newGloss()));
 
-//    QAction *approved = new QAction(tr("Approved"),&menu);
-//    approved->setCheckable(true);
-//    approved->setChecked(mGlossItem->approvalStatus() == GlossItem::Approved );
-//    connect( approved, SIGNAL(triggered()), mGlossItem, SLOT(toggleApproval()) );
-//    menu.addAction(approved);
-
-    QAction *approved = menu.addAction(tr("Approved"),mGlossItem,SLOT(toggleApproval()), );
+    // TODO verify that this mess is really necessary
+    QAction *approved = new QAction(tr("Approved"),&menu);
     approved->setCheckable(true);
     approved->setChecked(mGlossItem->approvalStatus() == GlossItem::Approved );
-    qDebug() << (bool)(mGlossItem->approvalStatus() == GlossItem::Approved);
+    QActionGroup *gApproved = new QActionGroup(&menu);
+    gApproved->addAction(approved);
+    menu.addAction(approved);
+    connect( gApproved, SIGNAL(triggered(QAction*)) , mGlossItem, SLOT(toggleApproval()) );
 
-//    QHash<qlonglong,QString> candidates = mDbAdapter->candidateInterpretationWithSummaries( mGlossItem->baselineText() );
+    QActionGroup *gCandidates = new QActionGroup(&menu);
+    QHash<qlonglong,QString> candidates = mDbAdapter->candidateInterpretationWithSummaries( mGlossItem->baselineText() );
+
+    if(candidates.count() > 1)
+    {
+        menu.addSeparator();
+        QHashIterator<qlonglong,QString> iter(candidates);
+        while(iter.hasNext())
+        {
+            iter.next();
+            QAction *candidate = new QAction( iter.value(), &menu );
+            candidate->setCheckable(true);
+            if( mGlossItem->id() == iter.key() )
+                candidate->setChecked(true);
+            candidate->setData(iter.key());
+            gCandidates->addAction(candidate);
+            menu.addAction(candidate);
+        }
+        connect(gCandidates, SIGNAL(triggered(QAction*)), this, SLOT(selectDifferentCandidate(QAction*)));
+    }
 
     menu.exec(event->globalPos());
 }
@@ -119,10 +131,10 @@ void WordDisplayWidget::fillData()
             switch( mGlossLines.at(i).type() )
             {
             case GlossLine::Text:
-                form = mGlossItem->textItems()->value( mGlossLines.at(i).writingSystem() );
+                form = mGlossItem->textForms()->value( mGlossLines.at(i).writingSystem() );
                 break;
             case GlossLine::Gloss:
-                form = mGlossItem->glossItems()->value( mGlossLines.at(i).writingSystem() );
+                form = mGlossItem->glosses()->value( mGlossLines.at(i).writingSystem() );
                 break;
             }
             mEdits[mGlossLines.at(i).writingSystem()]->setText( form );
@@ -180,4 +192,9 @@ void WordDisplayWidget::updateBaselineLabelStyle()
 void WordDisplayWidget::mouseDoubleClickEvent ( QMouseEvent * event )
 {
     mGlossItem->toggleApproval();
+}
+
+void WordDisplayWidget::selectDifferentCandidate(QAction *action)
+{
+    mGlossItem->setInterpretation( action->data().toLongLong() );
 }

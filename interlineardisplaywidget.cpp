@@ -91,18 +91,20 @@ void InterlinearDisplayWidget::updateConcordance( WordDisplayWidget *w, qlonglon
 
 void InterlinearDisplayWidget::updateGloss( const TextBit & bit )
 {
-    WordDisplayWidget* wdw;
-    QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
-    foreach(wdw, wdwList)
-        wdw->updateEdit(bit,GlossLine::Gloss);
+    // TODO FIX THIS
+//    WordDisplayWidget* wdw;
+//    QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
+//    foreach(wdw, wdwList)
+//        wdw->updateEdit(bit,GlossLine::Gloss);
 }
 
 void InterlinearDisplayWidget::updateText( const TextBit & bit )
 {
-    WordDisplayWidget* wdw;
-    QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
-    foreach(wdw, wdwList)
-        wdw->updateEdit(bit,GlossLine::Text);
+    // TODO FIX THIS
+//    WordDisplayWidget* wdw;
+//    QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
+//    foreach(wdw, wdwList)
+//        wdw->updateEdit(bit,GlossLine::Text);
 }
 
 void InterlinearDisplayWidget::updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString )

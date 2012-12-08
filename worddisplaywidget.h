@@ -38,8 +38,6 @@ private:
 
     InterlinearDisplayWidget *mInterlinearDisplayWidget;
 
-    void fillData();
-
     Qt::Alignment calculateAlignment( Qt::LayoutDirection match , Qt::LayoutDirection current ) const;
 
     void contextMenuEvent ( QContextMenuEvent * event );
@@ -61,6 +59,8 @@ public slots:
 
 private slots:
     void newGloss();
+    void selectDifferentCandidate(QAction *action);
+    void fillData();
 
 signals:
 

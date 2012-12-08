@@ -68,9 +68,8 @@ bool DatabaseAdapter::hasMultipleCandidateInterpretations(const TextBit & bit) c
 QHash<qlonglong,QString> DatabaseAdapter::candidateInterpretationWithSummaries(const TextBit & bit) const
 {
     QHash<qlonglong,QString> candidates;
-
     QSqlQuery q(mDb);
-    QString query = QString("select InterpretationId,group_concat(Form) from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') ) group by InterpretationId;").arg(bit.text()).arg(bit.writingSystem().flexString());
+    QString query = QString("select InterpretationId,group_concat(Form,', ') from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') ) group by InterpretationId;").arg(bit.text()).arg(bit.writingSystem().id());
     if( !q.exec(query)  )
         qDebug() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
     while( q.next() )

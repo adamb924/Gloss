@@ -7,7 +7,7 @@
 
 GlossItem::GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
 {
-    mTextItems.insert(baselineText.writingSystem(), baselineText.text() );
+    mTextForms.insert(baselineText.writingSystem(), baselineText.text() );
     mBaselineWritingSystem = baselineText.writingSystem();
     mId = -1;
 
@@ -20,8 +20,8 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
 {
     mBaselineWritingSystem = ws;
 
-    mTextItems = textForms;
-    mGlossItems = glossForms;
+    mTextForms = textForms;
+    mGlosses = glossForms;
 
     mDbAdapter = dbAdapter;
 
@@ -41,13 +41,14 @@ void GlossItem::setInterpretation(qlonglong id)
     if( mId != id )
     {
         mId = id;
-        mTextItems.clear();
-        mGlossItems.clear();
+        mTextForms.clear();
+        mGlosses.clear();
 
-        mTextItems = mDbAdapter->getInterpretationTextForms(mId);
-        mGlossItems = mDbAdapter->getInterpretationGlosses(mId);
+        mTextForms = mDbAdapter->getInterpretationTextForms(mId);
+        mGlosses = mDbAdapter->getInterpretationGlosses(mId);
 
         emit idChanged(mId);
+        emit fieldsChanged();
     }
 }
 
@@ -58,17 +59,17 @@ qlonglong GlossItem::id() const
 
 TextBit GlossItem::baselineText() const
 {
-    return TextBit( mTextItems.value(mBaselineWritingSystem) , mBaselineWritingSystem );
+    return TextBit( mTextForms.value(mBaselineWritingSystem) , mBaselineWritingSystem );
 }
 
-TextBitHash* GlossItem::textItems()
+TextBitHash* GlossItem::textForms()
 {
-    return &mTextItems;
+    return &mTextForms;
 }
 
-TextBitHash* GlossItem::glossItems()
+TextBitHash* GlossItem::glosses()
 {
-    return &mGlossItems;
+    return &mGlosses;
 }
 
 void GlossItem::setCandidateStatus(CandidateStatus status)
@@ -102,27 +103,27 @@ GlossItem::CandidateStatus GlossItem::candidateStatus() const
 void GlossItem::updateGloss( const TextBit & bit )
 {
     mDbAdapter->updateInterpretationGloss(bit);
-    mGlossItems.insert(bit.writingSystem(), bit.text());
+    mGlosses.insert(bit.writingSystem(), bit.text());
 }
 
 void GlossItem::updateText( const TextBit & bit )
 {
     mDbAdapter->updateInterpretationTextForm(bit);
-    mTextItems.insert(bit.writingSystem(), bit.text());
+    mTextForms.insert(bit.writingSystem(), bit.text());
 }
 
 void GlossItem::guessInterpretation()
 {
     QList<qlonglong> candidates;
-    if( mTextItems.count() > 0 || mGlossItems.count() > 0 )
-        candidates = mDbAdapter->candidateInterpretations(mTextItems,mGlossItems);
+    if( mTextForms.count() > 0 || mGlosses.count() > 0 )
+        candidates = mDbAdapter->candidateInterpretations(mTextForms,mGlosses);
     else
         candidates =  mDbAdapter->candidateInterpretations( baselineText() );
 
     if( candidates.length() == 0 )
     {
-        if( mTextItems.count() > 0)
-            setInterpretation( mDbAdapter->newInterpretation(mTextItems,mGlossItems) );
+        if( mTextForms.count() > 0)
+            setInterpretation( mDbAdapter->newInterpretation(mTextForms,mGlosses) );
         else
             setInterpretation( mDbAdapter->newInterpretation(baselineText()) );
         setCandidateStatus(GlossItem::SingleOption);

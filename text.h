@@ -55,7 +55,7 @@ public:
     bool serializeInterlinearText(QXmlStreamWriter *stream) const;
 
     //! \brief Write an <item> to the text stream, with specified attributes and text content
-    void writeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream) const;
+    void writeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream, qlonglong id = -1) const;
 
     //! \brief Reads the given flextext file to set the baseline writing system for the text
     bool setBaselineWritingSystemFromFile(const QString & filePath );
