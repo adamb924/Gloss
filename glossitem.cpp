@@ -7,7 +7,7 @@
 
 GlossItem::GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
 {
-    mTextForms.insert(baselineText.writingSystem(), baselineText.text() );
+    mTextForms.insert(baselineText.writingSystem(), baselineText );
     mBaselineWritingSystem = baselineText.writingSystem();
     mId = -1;
 
@@ -59,7 +59,7 @@ qlonglong GlossItem::id() const
 
 TextBit GlossItem::baselineText() const
 {
-    return TextBit( mTextForms.value(mBaselineWritingSystem) , mBaselineWritingSystem );
+    return TextBit( mTextForms.value(mBaselineWritingSystem).text() , mBaselineWritingSystem );
 }
 
 TextBitHash* GlossItem::textForms()
@@ -103,13 +103,13 @@ GlossItem::CandidateStatus GlossItem::candidateStatus() const
 void GlossItem::updateGloss( const TextBit & bit )
 {
     mDbAdapter->updateInterpretationGloss(bit);
-    mGlosses.insert(bit.writingSystem(), bit.text());
+    mGlosses.insert(bit.writingSystem(), bit );
 }
 
 void GlossItem::updateText( const TextBit & bit )
 {
     mDbAdapter->updateInterpretationTextForm(bit);
-    mTextForms.insert(bit.writingSystem(), bit.text());
+    mTextForms.insert(bit.writingSystem(), bit );
 }
 
 void GlossItem::guessInterpretation()

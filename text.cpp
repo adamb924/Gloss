@@ -225,12 +225,13 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("type") && attr.hasAttribute("lang") )
                 {
+                    qlonglong id = attr.hasAttribute("http://www.adambaker.org/gloss.php","id") ? attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() : -1;
                     QString type = attr.value("type").toString();
                     WritingSystem lang = mProject->dbAdapter()->writingSystem( attr.value("lang").toString() );
                     QString text = stream.readElementText();
                     if( type == "txt" )
                     {
-                        textForms.insert( lang, text );
+                        textForms.insert( lang, TextBit( text , lang, id) );
                         if( lang.flexString() == mBaselineWritingSystem.flexString() )
                         {
                             baselineText = text;
@@ -238,7 +239,7 @@ bool Text::importTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     }
                     else if( type == "gls" )
                     {
-                        glossForms.insert( lang, text );
+                        glossForms.insert( lang, TextBit( text , lang, id) );
                     }
                 }
             }
@@ -341,16 +342,14 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
             while (textIter.hasNext())
             {
                 textIter.next();
-                // TODO feed the id attribute here
-                writeItem("txt",textIter.key(),textIter.value(),stream);
+                writeItem("txt",textIter.key(),textIter.value().text() ,stream , textIter.value().id() );
             }
 
             TextBitHashIterator glossIter(*mGlossItems.at(i)->at(j)->glosses());
             while (glossIter.hasNext())
             {
                 glossIter.next();
-                // TODO feed the id attribute here
-                writeItem("gls",glossIter.key(),glossIter.value(),stream);
+                writeItem("gls",glossIter.key(),glossIter.value().text(),stream, textIter.value().id());
             }
             stream->writeEndElement(); // word
         }
@@ -362,7 +361,7 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         while (iter.hasNext())
         {
             iter.next();
-            writeItem("gls",iter.key(),iter.value(),stream);
+            writeItem("gls",iter.key(),iter.value().text(),stream);
         }
 
         stream->writeEndElement(); // phrase

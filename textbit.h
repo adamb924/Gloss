@@ -12,15 +12,16 @@
 #include <QString>
 #include "writingsystem.h"
 
-typedef QHash<WritingSystem, QString> TextBitHash;
-typedef QHashIterator<WritingSystem, QString> TextBitHashIterator;
-
 class TextBit
 {
 public:
     TextBit();
     TextBit(const QString & text, const WritingSystem &, qlonglong id = -1 );
-    TextBit(TextBit const & other);
+    TextBit(const TextBit & other);
+
+    bool operator==(const TextBit & other) const;
+    TextBit& operator=(const TextBit & other);
+
 
     void setText(const QString & text);
     QString text() const;
@@ -37,5 +38,13 @@ private:
     // user defined; not guaranteed to be set
     qlonglong mId;
 };
+
+inline uint qHash(const TextBit & key)
+{
+    return qHash(key.text() + key.id() + key.writingSystem().flexString() );
+}
+
+typedef QHash<WritingSystem, TextBit> TextBitHash;
+typedef QHashIterator<WritingSystem, TextBit> TextBitHashIterator;
 
 #endif // TEXTBIT_H

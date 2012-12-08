@@ -131,10 +131,10 @@ void WordDisplayWidget::fillData()
             switch( mGlossLines.at(i).type() )
             {
             case GlossLine::Text:
-                form = mGlossItem->textForms()->value( mGlossLines.at(i).writingSystem() );
+                form = mGlossItem->textForms()->value( mGlossLines.at(i).writingSystem() ).text();
                 break;
             case GlossLine::Gloss:
-                form = mGlossItem->glosses()->value( mGlossLines.at(i).writingSystem() );
+                form = mGlossItem->glosses()->value( mGlossLines.at(i).writingSystem() ).text();
                 break;
             }
             mEdits[mGlossLines.at(i).writingSystem()]->setText( form );

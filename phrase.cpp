@@ -10,12 +10,12 @@ Phrase::~Phrase()
 
 void Phrase::addGloss(const TextBit & bit)
 {
-    mGlosses.insert(bit.writingSystem(), bit.text());
+    mGlosses.insert(bit.writingSystem(), bit );
 }
 
 QString Phrase::gloss(const WritingSystem & ws)
 {
-    return mGlosses.value(ws);
+    return mGlosses.value(ws).text();
 }
 
 TextBitHash* Phrase::glosses()

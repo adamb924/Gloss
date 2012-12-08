@@ -125,14 +125,14 @@ qlonglong DatabaseAdapter::newInterpretation(const TextBitHash & textForms , con
         while (textIter.hasNext())
         {
             textIter.next();
-            q.exec(QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value() ));
+            q.exec(QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value().text() ));
         }
 
         textIter = TextBitHashIterator(glossForms);
         while (textIter.hasNext())
         {
             textIter.next();
-            q.exec(QString("insert into Glosses (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value() ));
+            q.exec(QString("insert into Glosses (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value().text() ));
         }
     }
     catch(int e)
@@ -173,10 +173,10 @@ TextBitHash DatabaseAdapter::getInterpretationGlosses(qlonglong id) const
 {
     TextBitHash glosses;
     QSqlQuery q(mDb);
-    QString query = QString("select Form,FlexString from Glosses,WritingSystems where InterpretationId='%1' and WritingSystem=WritingSystems._id;").arg(id);
+    QString query = QString("select Form,FlexString,Glosses._id from Glosses,WritingSystems where InterpretationId='%1' and WritingSystem=WritingSystems._id;").arg(id);
     if( q.exec(query) )
         while( q.next() )
-            glosses.insert( writingSystem( q.value(1).toString() ) , q.value(0).toString() );
+            glosses.insert( writingSystem( q.value(1).toString() ) , TextBit( q.value(0).toString() , writingSystem( q.value(1).toString() ) , q.value(2).toLongLong() ) );
     return glosses;
 }
 
@@ -184,10 +184,10 @@ TextBitHash DatabaseAdapter::getInterpretationTextForms(qlonglong id) const
 {
     TextBitHash textForms;
     QSqlQuery q(mDb);
-    QString query = QString("select Form,FlexString from TextForms,WritingSystems where InterpretationId='%1' and WritingSystem=WritingSystems._id;").arg(id);
+    QString query = QString("select Form,FlexString,TextForms._id from TextForms,WritingSystems where InterpretationId='%1' and WritingSystem=WritingSystems._id;").arg(id);
     if( q.exec(query) )
         while( q.next() )
-            textForms.insert( writingSystem( q.value(1).toString() ) , q.value(0).toString() );
+            textForms.insert( writingSystem( q.value(1).toString() ) , TextBit( q.value(0).toString() , writingSystem( q.value(1).toString() ) , q.value(2).toLongLong() ) );
     return textForms;
 }
 
@@ -330,7 +330,7 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
     {
         textIter.next();
 
-        query.append( QString("select distinct(InterpretationId) from TextForms where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from TextForms where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( textIter.value() ) );
+        query.append( QString("select distinct(InterpretationId) from TextForms where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from TextForms where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( textIter.value().text() ) );
         if( textIter.hasNext() )
             query.append(" intersect ");
     }
@@ -343,7 +343,7 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
     {
         textIter.next();
 
-        query.append( QString("select distinct(InterpretationId) from Glosses where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from Glosses where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( textIter.value() ) );
+        query.append( QString("select distinct(InterpretationId) from Glosses where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from Glosses where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( textIter.value().text() ) );
         if( textIter.hasNext() )
             query.append(" intersect ");
     }

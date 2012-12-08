@@ -12,13 +12,25 @@ TextBit::TextBit(const QString & text, const WritingSystem & ws, qlonglong id )
     mId = id;
 }
 
-TextBit::TextBit(TextBit const & other)
+TextBit::TextBit(const TextBit & other)
 {
     mText = other.mText;
     mWritingSystem = other.mWritingSystem;
     mId = other.mId;
 }
 
+TextBit& TextBit::operator=(const TextBit & other)
+                           {
+    mText = other.mText;
+    mWritingSystem = other.mWritingSystem;
+    mId = other.mId;
+    return *this;
+}
+
+bool TextBit::operator==(const TextBit & other) const
+{
+    return mText == other.mText && mWritingSystem == other.mWritingSystem && mId == other.mId;
+}
 
 void TextBit::setText(const QString & text)
 {
