@@ -66,7 +66,7 @@ void WordDisplayWidget::setupLayout()
 
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
-    LingEdit *edit = new LingEdit( mGlossItem->glosses()->value( glossLine.writingSystem() ) , this);
+    LingEdit *edit = new LingEdit( mGlossItem->gloss( glossLine.writingSystem() ) , this);
     edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() ,glossLine.writingSystem().layoutDirection() ) );
 
     connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
@@ -78,7 +78,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 
 LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossLine )
 {
-    LingEdit *edit = new LingEdit(  mGlossItem->textForms()->value( glossLine.writingSystem() ) , this);
+    LingEdit *edit = new LingEdit(  mGlossItem->textForm( glossLine.writingSystem() ) , this);
     edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() , glossLine.writingSystem().layoutDirection() ) );
 
     connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));

@@ -17,7 +17,7 @@ class TextBit : public QObject
     Q_OBJECT
 public:
     TextBit();
-    TextBit(const QString & text, const WritingSystem &, qlonglong id = -1 );
+    TextBit(const QString & text, const WritingSystem & ws, qlonglong id = -1 );
     TextBit(const TextBit & other);
 
     bool operator==(const TextBit & other) const;

@@ -171,3 +171,23 @@ WritingSystem GlossItem::writingSystem() const
 {
     return mBaselineWritingSystem;
 }
+
+TextBit GlossItem::textForm(const WritingSystem & ws)
+{
+    if( !mTextForms.contains( ws ) )
+    {
+        qlonglong id = mDbAdapter->newTextForm( mId , ws.id() );
+        setTextForm( TextBit("", ws, id) );
+    }
+    return mTextForms.value(ws);
+}
+
+TextBit GlossItem::gloss(const WritingSystem & ws)
+{
+    if( !mGlosses.contains( ws ) )
+    {
+        qlonglong id = mDbAdapter->newGloss( mId , ws.id() );
+        setGloss( TextBit("", ws, id) );
+    }
+    return mGlosses.value(ws);
+}

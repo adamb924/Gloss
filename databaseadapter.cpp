@@ -389,6 +389,8 @@ QList<InterlinearItemType> DatabaseAdapter::interlinearTextLines() const
         else
             type = InterlinearItemType::Gloss;
         lines << InterlinearItemType(type, WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
+
+//        qDebug() << "DatabaseAdapter::interlinearTextLines()" << lines.last().writingSystem().flexString() << lines.last().writingSystem().fontSize();
     }
     return lines;
 }

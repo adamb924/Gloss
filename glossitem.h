@@ -47,6 +47,12 @@ public:
     TextBitHash* textForms();
     TextBitHash* glosses();
 
+    //! \brief Returns the text form for the given writing system. If it does not exist, a new one is added to the database, an the corresponding TextBit is returned.
+    TextBit textForm(const WritingSystem & ws);
+
+    //! \brief Returns the gloss for the given writing system. If it does not exist, a new one is added to the database, an the corresponding TextBit is returned.
+    TextBit gloss(const WritingSystem & ws);
+
     void setCandidateStatus(CandidateStatus status);
     void setApprovalStatus(ApprovalStatus status);
 
