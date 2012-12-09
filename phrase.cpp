@@ -10,14 +10,9 @@ Phrase::~Phrase()
 {
 }
 
-void Phrase::addGloss(const TextBit & bit)
+TextBitHashIterator Phrase::glosses()
 {
-    mGlosses.insert(bit.writingSystem(), bit );
-}
-
-TextBitHash* Phrase::glosses()
-{
-    return &mGlosses;
+    return TextBitHashIterator(mGlosses);
 }
 
 TextBit Phrase::gloss(const WritingSystem & ws)

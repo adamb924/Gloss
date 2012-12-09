@@ -58,6 +58,7 @@ void GlossItem::setGloss(const TextBit & gloss)
 {
     if( mGlosses.value(gloss.writingSystem()) != gloss )
     {
+        mDbAdapter->updateInterpretationGloss(gloss);
         mGlosses.insert( gloss.writingSystem(), gloss );
         emit fieldsChanged();
     }
@@ -68,6 +69,7 @@ void GlossItem::setTextForm(const TextBit & textForm)
     WritingSystem ws = textForm.writingSystem();
     if( mTextForms.value(ws) != textForm )
     {
+        mDbAdapter->updateInterpretationTextForm(textForm);
         mTextForms.insert( ws , textForm );
         emit fieldsChanged();
     }
@@ -121,18 +123,6 @@ GlossItem::CandidateStatus GlossItem::candidateStatus() const
     return mCandidateStatus;
 }
 
-void GlossItem::updateGloss( const TextBit & bit )
-{
-    mDbAdapter->updateInterpretationGloss(bit);
-    mGlosses.insert(bit.writingSystem(), bit );
-}
-
-void GlossItem::updateText( const TextBit & bit )
-{
-    mDbAdapter->updateInterpretationTextForm(bit);
-    mTextForms.insert(bit.writingSystem(), bit );
-}
-
 void GlossItem::guessInterpretation()
 {
     QList<qlonglong> candidates;
@@ -170,7 +160,7 @@ void GlossItem::toggleApproval()
         setApprovalStatus(GlossItem::Approved);
 }
 
-WritingSystem GlossItem::writingSystem() const
+WritingSystem GlossItem::baselineWritingSystem() const
 {
     return mBaselineWritingSystem;
 }

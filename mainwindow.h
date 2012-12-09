@@ -1,7 +1,7 @@
 /*!
   \class MainWindow
   \ingroup GUI
-  \brief The main window of the application. A MainWindow can have a single project open at a time. Subwindows are texts of an opened project.
+  \brief The main window of the application. A MainWindow can have a single project open at a time. Subwindows are texts of an opened project.  The layout is mainwindow.ui.
 */
 
 #ifndef MAINWINDOW_H

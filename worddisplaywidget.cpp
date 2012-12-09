@@ -43,7 +43,7 @@ void WordDisplayWidget::setupLayout()
     mGlossEdits.clear();
 
     mBaselineWordLabel = new QLabel(mGlossItem->baselineText().text());
-    mBaselineWordLabel->setAlignment( mGlossItem->writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
+    mBaselineWordLabel->setAlignment( mGlossItem->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
     updateBaselineLabelStyle();
 
     mLayout->addWidget(mBaselineWordLabel);
@@ -67,10 +67,10 @@ void WordDisplayWidget::setupLayout()
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit( mGlossItem->gloss( glossLine.writingSystem() ) , this);
-    edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() ,glossLine.writingSystem().layoutDirection() ) );
+    edit->setAlignment(calculateAlignment( mGlossItem->baselineWritingSystem().layoutDirection() ,glossLine.writingSystem().layoutDirection() ) );
 
     connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
-    connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(updateGloss(TextBit)) );
+    connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
     connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
 
     return edit;
@@ -79,10 +79,10 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit(  mGlossItem->textForm( glossLine.writingSystem() ) , this);
-    edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() , glossLine.writingSystem().layoutDirection() ) );
+    edit->setAlignment(calculateAlignment( mGlossItem->baselineWritingSystem().layoutDirection() , glossLine.writingSystem().layoutDirection() ) );
 
     connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
-    connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(updateText(TextBit)) );
+    connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setTextForm(TextBit)) );
     connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
 
     return edit;

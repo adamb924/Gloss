@@ -250,7 +250,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     }
                     else if ( inPhrase && type == "gls" )
                     {
-                        mPhrases.last()->addGloss( TextBit( text , lang ) );
+                        mPhrases.last()->setPhrasalGloss( TextBit( text , lang ) );
                     }
                 }
             }
@@ -368,7 +368,7 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         stream->writeEndElement(); // words
 
         // phrase-level glosses
-        TextBitHashIterator iter(*mPhrases.at(i)->glosses());
+        TextBitHashIterator iter = mPhrases.at(i)->glosses();
         while (iter.hasNext())
         {
             iter.next();

@@ -1,7 +1,7 @@
 /*!
   \class TextDisplayWidget
   \ingroup GUI
-  \brief A QTabWidget subclass, providing three tabs for various interfaces to a text: Baseline, Glossing, and Morphological Analysis. Uses textdisplaywidget.ui.
+  \brief A QTabWidget subclass, providing three tabs for various interfaces to a text: Baseline, Glossing, and Morphological Analysis. The layout is textdisplaywidget.ui.
 */
 
 #ifndef TEXTDISPLAYWIDGET_H
