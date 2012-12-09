@@ -1,7 +1,7 @@
 /*!
   \class FlowLayout
   \ingroup GUI
-  \brief A QLayout subclass, providing a layout which arranges widgets as if it they were text. This is Qt example code, though I may have made modifications.
+  \brief A QLayout subclass, providing a layout which arranges widgets as if it they were text. This is Qt example code, modified to allow the layout to add widgets in left-to-right order.
 
   This is under the BSD license. I removed the header because it was interfering with my Doxygen comments.
 */
@@ -18,8 +18,8 @@
 class FlowLayout : public QLayout
 {
 public:
-    FlowLayout(QWidget *parent, int margin = -1, int hSpacing = -1, int vSpacing = -1);
-    FlowLayout(int margin = -1, int hSpacing = -1, int vSpacing = -1);
+    FlowLayout(Qt::LayoutDirection layoutDir, QWidget *parent, int margin = -1, int hSpacing = -1, int vSpacing = -1);
+    FlowLayout(Qt::LayoutDirection layoutDir, int margin = -1, int hSpacing = -1, int vSpacing = -1);
     ~FlowLayout();
 
     void addItem(QLayoutItem *item);
@@ -38,6 +38,8 @@ public:
 private:
     int doLayout(const QRect &rect, bool testOnly) const;
     int smartSpacing(QStyle::PixelMetric pm) const;
+
+    Qt::LayoutDirection mDir;
 
     QList<QLayoutItem *> itemList;
     int m_hSpace;

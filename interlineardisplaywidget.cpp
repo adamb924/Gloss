@@ -101,7 +101,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
 
 QLayout* InterlinearDisplayWidget::addLine()
 {
-    FlowLayout *flowLayout = new FlowLayout;
+    FlowLayout *flowLayout = new FlowLayout( mText->writingSystem().layoutDirection() );
     mLineLayouts << flowLayout;
     mLayout->addLayout(flowLayout);
     return flowLayout;

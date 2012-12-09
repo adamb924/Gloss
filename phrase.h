@@ -9,6 +9,7 @@
 
 #include <QList>
 #include <QHash>
+#include <QObject>
 #include "glossitem.h"
 #include "textbit.h"
 

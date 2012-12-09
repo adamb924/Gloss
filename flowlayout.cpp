@@ -42,15 +42,17 @@
 
 #include "flowlayout.h"
 //! [1]
-FlowLayout::FlowLayout(QWidget *parent, int margin, int hSpacing, int vSpacing)
+FlowLayout::FlowLayout(Qt::LayoutDirection layoutDir, QWidget *parent, int margin, int hSpacing, int vSpacing)
     : QLayout(parent), m_hSpace(hSpacing), m_vSpace(vSpacing)
 {
+    mDir = layoutDir;
     setContentsMargins(margin, margin, margin, margin);
 }
 
-FlowLayout::FlowLayout(int margin, int hSpacing, int vSpacing)
+FlowLayout::FlowLayout(Qt::LayoutDirection layoutDir, int margin, int hSpacing, int vSpacing)
     : m_hSpace(hSpacing), m_vSpace(vSpacing)
 {
+    mDir = layoutDir;
     setContentsMargins(margin, margin, margin, margin);
 }
 //! [1]
@@ -114,7 +116,7 @@ QLayoutItem *FlowLayout::takeAt(int index)
 //! [6]
 Qt::Orientations FlowLayout::expandingDirections() const
 {
-//    return 0;
+    //    return 0;
     return Qt::Vertical | Qt::Horizontal;
 }
 //! [6]
@@ -162,43 +164,79 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
     int left, top, right, bottom;
     getContentsMargins(&left, &top, &right, &bottom);
     QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
-    int x = effectiveRect.x();
-    int y = effectiveRect.y();
+    int x = effectiveRect.left();
+    int y = effectiveRect.top();
     int lineHeight = 0;
-//! [9]
+    //! [9]
 
-//! [10]
-    QLayoutItem *item;
-    foreach (item, itemList) {
-        QWidget *wid = item->widget();
-        int spaceX = horizontalSpacing();
-        if (spaceX == -1)
-            spaceX = wid->style()->layoutSpacing(
-                QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
-        int spaceY = verticalSpacing();
-        if (spaceY == -1)
-            spaceY = wid->style()->layoutSpacing(
-                QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
-//! [10]
-//! [11]
-        int nextX = x + item->sizeHint().width() + spaceX;
-        if (nextX - spaceX > effectiveRect.right() && lineHeight > 0) {
-            x = effectiveRect.x();
-            y = y + lineHeight + spaceY;
-            nextX = x + item->sizeHint().width() + spaceX;
-            lineHeight = 0;
+    if ( mDir == Qt::LeftToRight )
+    {
+        QLayoutItem *item;
+        foreach (item, itemList) {
+            QWidget *wid = item->widget();
+            int spaceX = horizontalSpacing();
+            if (spaceX == -1)
+                spaceX = wid->style()->layoutSpacing(
+                        QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
+            int spaceY = verticalSpacing();
+            if (spaceY == -1)
+                spaceY = wid->style()->layoutSpacing(
+                        QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
+            int nextX = x + item->sizeHint().width() + spaceX;
+            if (nextX - spaceX > effectiveRect.right() && lineHeight > 0) {
+                x = effectiveRect.left();
+                y = y + lineHeight + spaceY;
+                nextX = x + item->sizeHint().width() + spaceX;
+                lineHeight = 0;
+            }
+
+            if (!testOnly)
+                item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
+
+            x = nextX;
+            lineHeight = qMax(lineHeight, item->sizeHint().height());
         }
-
-        if (!testOnly)
-            item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
-
-        x = nextX;
-        lineHeight = qMax(lineHeight, item->sizeHint().height());
     }
+    else
+    {
+        if( itemList.count() > 0 )
+            x = effectiveRect.right() - itemList.first()->sizeHint().width();
+        else
+            x = effectiveRect.right();
+
+        QLayoutItem *item;
+        foreach (item, itemList) {
+            QWidget *wid = item->widget();
+            int spaceX = horizontalSpacing();
+            if (spaceX == -1)
+                spaceX = wid->style()->layoutSpacing(
+                        QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
+            int spaceY = verticalSpacing();
+            if (spaceY == -1)
+                spaceY = wid->style()->layoutSpacing(
+                        QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
+
+            int nextX = x - (item->sizeHint().width() + spaceX);
+
+            // Hack alert: I'm not totally clear on the geometry underlying adding item->sizeHint().width() in the expression nextX + spaceX + item->sizeHint().width(), but it produces the desired result
+            if (nextX + spaceX + item->sizeHint().width() < effectiveRect.left() && lineHeight > 0) {
+                x = effectiveRect.right() - item->sizeHint().width();
+                y = y + lineHeight + spaceY;
+                nextX = x - ( item->sizeHint().width() + spaceX );
+                lineHeight = 0;
+            }
+
+            if (!testOnly)
+                item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
+
+            x = nextX;
+            lineHeight = qMax(lineHeight, item->sizeHint().height());
+        }
+    }
+
     return y + lineHeight - rect.y() + bottom;
 }
-//! [11]
-//! [12]
+
 int FlowLayout::smartSpacing(QStyle::PixelMetric pm) const
 {
     QObject *parent = this->parent();
