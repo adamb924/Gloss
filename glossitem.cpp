@@ -13,6 +13,8 @@ GlossItem::GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, Q
 
     mDbAdapter = dbAdapter;
 
+    qDebug() << baselineText.text() << baselineText.writingSystem().flexString();
+
     guessInterpretation();
 }
 
@@ -47,7 +49,7 @@ void GlossItem::setInterpretation(qlonglong id)
         mTextForms = mDbAdapter->getInterpretationTextForms(mId);
         mGlosses = mDbAdapter->getInterpretationGlosses(mId);
 
-        emit idChanged(mId);
+        emit interpretationIdChanged(mId);
         emit fieldsChanged();
     }
 }
@@ -65,7 +67,17 @@ void GlossItem::setTextForm(const TextBit & textForm)
 {
     if( mTextForms.value(textForm.writingSystem()) != textForm )
     {
+        qDebug() << "GlossItem::setTextForm inserting";
         mTextForms.insert( textForm.writingSystem() , textForm );
+        if( mTextForms.contains( textForm.writingSystem() )  )
+        {
+            qDebug() << "mTextForms contains WS" << textForm.writingSystem().id();
+        }
+        else
+        {
+            qDebug() << "mTextForms does not contain WS" << textForm.writingSystem().id();
+        }
+        qDebug() << "now contains is: " << mTextForms.contains( textForm.writingSystem() );
         emit fieldsChanged();
     }
 }
@@ -174,8 +186,10 @@ WritingSystem GlossItem::writingSystem() const
 
 TextBit GlossItem::textForm(const WritingSystem & ws)
 {
+    qDebug() << "GlossItem::textForm(const WritingSystem & ws)" << mId << this;
     if( !mTextForms.contains( ws ) )
     {
+        qDebug() << "GlossItem::textForm  mTextForms does not contain WS" << ws.id();
         qlonglong id = mDbAdapter->newTextForm( mId , ws.id() );
         setTextForm( TextBit("", ws, id) );
     }
@@ -184,8 +198,10 @@ TextBit GlossItem::textForm(const WritingSystem & ws)
 
 TextBit GlossItem::gloss(const WritingSystem & ws)
 {
+    qDebug() << "GlossItem::gloss(const WritingSystem & ws)" << mId << this;
     if( !mGlosses.contains( ws ) )
     {
+        qDebug() << "GlossItem::gloss mTextForms does not contain WS" << ws.id();
         qlonglong id = mDbAdapter->newGloss( mId , ws.id() );
         setGloss( TextBit("", ws, id) );
     }

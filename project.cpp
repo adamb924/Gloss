@@ -17,6 +17,7 @@ Project::Project()
 
 Project::~Project()
 {
+    mDbAdapter->close();
     qDeleteAll(mTexts);
 }
 

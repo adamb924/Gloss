@@ -90,37 +90,9 @@ QHash<qlonglong,QString> DatabaseAdapter::interpretationGlosses(qlonglong interp
     return candidates;
 }
 
-qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
-{
-    QSqlDatabase db = QSqlDatabase::database(mFilename);
-    db.transaction();
-
-    QSqlQuery q(db);
-    QString query;
-    qlonglong id;
-
-    try
-    {
-        if(!q.exec("insert into Interpretations (_id) select null;"))
-            throw;
-        id = q.lastInsertId().toLongLong();
-
-        TextBit newBit(bit);
-        newBit.setId(id);
-        updateInterpretationTextForm(newBit);
-    }
-    catch(std::exception &e)
-    {
-        qWarning() << "DatabaseAdapter::newInterpretationFromOrthography" << q.lastError().text() << query;
-        db.rollback();
-        return -1;
-    }
-    db.commit();
-    return id;
-}
-
 qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong writingSystemId)
 {
+    qDebug() << "DatabaseAdapter::newTextForm" << interpretationId << writingSystemId;
     QSqlQuery q(QSqlDatabase::database(mFilename));
     QString query = QString("insert into TextForms (InterpretationId,WritingSystem) values ('%1','%2');").arg(interpretationId).arg(writingSystemId);
     if(q.exec( query ))
@@ -149,6 +121,36 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writin
     }
 }
 
+qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
+{
+    QSqlDatabase db = QSqlDatabase::database(mFilename);
+    db.transaction();
+
+    QSqlQuery q(db);
+    QString query;
+    qlonglong id;
+
+    try
+    {
+        if(!q.exec("insert into Interpretations (_id) select null;"))
+            throw;
+        id = q.lastInsertId().toLongLong();
+
+        qDebug() << "DatabaseAdapter::newInterpretation( const TextBit & bit )";
+        QString query = QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg( id ).arg( bit.writingSystem().id() ).arg(bit.text());
+        if( !q.exec(query)  )
+            qWarning() << "DatabaseAdapter::updateInterpretationTextForm" << q.lastError().text() << query;
+    }
+    catch(std::exception &e)
+    {
+        qWarning() << "DatabaseAdapter::newInterpretationFromOrthography" << q.lastError().text() << query;
+        db.rollback();
+        return -1;
+    }
+    db.commit();
+    return id;
+}
+
 qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitHash & glossForms )
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);
@@ -164,13 +166,12 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
             throw -1;
         id = q.lastInsertId().toLongLong();
 
-        // TODO do some error handling
-
         TextBitMutableHashIterator textIter(textForms);
         while (textIter.hasNext())
         {
             textIter.next();
-            q.exec(QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value().text() ));
+            if( ! q.exec(QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value().text() )) )
+                throw -1;
             textIter.value().setId( q.lastInsertId().toLongLong() );
         }
 
@@ -178,7 +179,8 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
         while (textIter.hasNext())
         {
             textIter.next();
-            q.exec(QString("insert into Glosses (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value().text() ));
+            if( ! q.exec(QString("insert into Glosses (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value().text() )) )
+                throw -1;
             textIter.value().setId( q.lastInsertId().toLongLong() );
         }
     }

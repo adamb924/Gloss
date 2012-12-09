@@ -25,6 +25,16 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
 
+void LingEdit::setTextBit( const TextBit & bit )
+{
+    if( mTextBit != bit )
+    {
+        mTextBit = bit;
+        setText( bit.text() );
+        emit stringChanged(mTextBit);
+    }
+}
+
 void LingEdit::focusInEvent ( QFocusEvent * e )
 {
     // http://msdn.microsoft.com/en-us/goglobal/bb896001

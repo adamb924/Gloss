@@ -65,6 +65,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
         {
             WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
             flowLayout->addWidget(wdw);
+            connect( mText->phrases()->at(i)->at(j), SIGNAL(interpretationIdChanged(qlonglong)), wdw, SLOT(sendConcordanceUpdates()) );
         }
 
         for(int j=0; j<mPhrasalGlossLines.count(); j++)
@@ -93,6 +94,8 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     mTextFormConcordance.unite( wdw->textFormEdits() );
     mGlossConcordance.unite( wdw->glossEdits() );
 
+    qDebug() << "InterlinearDisplayWidget::addWordDisplayWidget" << mTextFormConcordance;
+
     connect( wdw, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), this, SLOT(updateGlossFormConcordance(LingEdit*,qlonglong)));
     connect( wdw, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), this, SLOT(updateTextFormConcordance(LingEdit*,qlonglong)));
 
@@ -112,7 +115,7 @@ void InterlinearDisplayWidget::updateGloss( const TextBit & bit )
     LingEdit* edit;
     QList<LingEdit*> editList = mGlossConcordance.values(bit.id());
     foreach(edit, editList)
-        edit->setText( bit.text() );
+        edit->setTextBit(bit);
 }
 
 void InterlinearDisplayWidget::updateText( const TextBit & bit )
@@ -120,7 +123,7 @@ void InterlinearDisplayWidget::updateText( const TextBit & bit )
     LingEdit* edit;
     QList<LingEdit*> editList = mTextFormConcordance.values(bit.id());
     foreach(edit, editList)
-        edit->setText( bit.text() );
+        edit->setTextBit( bit );
 }
 
 void InterlinearDisplayWidget::updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString )
@@ -130,9 +133,11 @@ void InterlinearDisplayWidget::updateMorphologicalAnalysis( const TextBit & bit 
 
 void InterlinearDisplayWidget::updateTextFormConcordance(LingEdit * edit, qlonglong newId)
 {
+    qDebug() << "InterlinearDisplayWidget::updateTextFormConcordance before" << mTextFormConcordance;
     qlonglong oldId = mTextFormConcordance.key( edit );
     mTextFormConcordance.remove(oldId, edit);
     mTextFormConcordance.insert(newId, edit);
+    qDebug() << "InterlinearDisplayWidget::updateTextFormConcordance after" << mTextFormConcordance;
 }
 
 void InterlinearDisplayWidget::updateGlossFormConcordance(LingEdit * edit, qlonglong newId)

@@ -64,7 +64,7 @@ public:
 signals:
     void candidateStatusChanged(CandidateStatus status);
     void approvalStatusChanged(ApprovalStatus status);
-    void idChanged(qlonglong id);
+    void interpretationIdChanged(qlonglong id);
     void fieldsChanged();
 
 public slots:

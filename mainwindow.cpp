@@ -46,7 +46,7 @@ void MainWindow::addTableMenuItems()
 {
     QString table;
     QStringList tables;
-    tables << "Interpretations" << "TextForms" << "MorphologicalAnalyses" << "Glosses" << "WritingSystems" << "GlossLines";
+    tables << "Interpretations" << "TextForms" << "MorphologicalAnalyses" << "Glosses" << "WritingSystems" << "InterlinearTextLine" << "PhrasalGlossLine";
     foreach(table, tables)
     {
         QAction *action = new QAction(table,ui->menuGuts);

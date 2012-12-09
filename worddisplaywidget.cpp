@@ -249,16 +249,13 @@ void WordDisplayWidget::fillData()
     {
         for(int i=0; i<mGlossLines.count();i++)
         {
-            QString form;
             switch( mGlossLines.at(i).type() )
             {
             case InterlinearItemType::Text:
-                form = mGlossItem->textForms()->value( mGlossLines.at(i).writingSystem() ).text();
-                mTextFormEdits[mGlossLines.at(i).writingSystem()]->setText( form );
+                mTextFormEdits[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->textForm(mGlossLines.at(i).writingSystem()) );
                 break;
             case InterlinearItemType::Gloss:
-                form = mGlossItem->glosses()->value( mGlossLines.at(i).writingSystem() ).text();
-                mGlossEdits[mGlossLines.at(i).writingSystem()]->setText( form );
+                mGlossEdits[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
                 break;
             }
         }
@@ -287,7 +284,7 @@ void WordDisplayWidget::updateBaselineLabelStyle()
 {
     QString color;
     if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateStatus() == GlossItem::SingleOption )
-        color = "#9aff67";
+        color = "#CDFFB2";
     else if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateStatus() == GlossItem::MultipleOption )
         color = "#fff6a8";
     else
@@ -341,4 +338,21 @@ QHash<qlonglong, LingEdit*> WordDisplayWidget::glossEdits() const
         hash.insert( iter.value()->id() , iter.value() );
     }
     return hash;
+}
+
+void WordDisplayWidget::sendConcordanceUpdates()
+{
+    QHashIterator<WritingSystem, LingEdit*> iter(mTextFormEdits);
+    while(iter.hasNext())
+    {
+        iter.next();
+        emit textFormIdChanged( iter.value() , mGlossItem->gloss( iter.key() ).id() );
+    }
+
+    iter = QHashIterator<WritingSystem, LingEdit*>(mGlossEdits);
+    while(iter.hasNext())
+    {
+        iter.next();
+        emit glossIdChanged( iter.value() , mGlossItem->textForm( iter.key() ).id() );
+    }
 }

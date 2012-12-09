@@ -43,7 +43,6 @@ HEADERS  += mainwindow.h \
     newtextdialog.h \
     importflextextdialog.h \
     text.h \
-    glossitem.h \
     phrase.h \
     messagehandler.h \
     lingtextedit.h \

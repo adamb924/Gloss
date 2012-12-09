@@ -39,6 +39,7 @@ private slots:
 
     void updateTextFormConcordance(LingEdit * edit, qlonglong newId);
     void updateGlossFormConcordance(LingEdit * edit, qlonglong newId);
+//    void updateAllEdits(WordDisplayWidget * wdw, qlonglong newInterpretationId);
 
 private:
     Text *mText;

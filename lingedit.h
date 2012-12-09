@@ -21,6 +21,8 @@ public:
 
     qlonglong id() const;
 
+    void setTextBit( const TextBit & bit );
+
 private:
     TextBit mTextBit;
 

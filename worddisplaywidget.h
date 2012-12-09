@@ -67,6 +67,7 @@ signals:
 
 public slots:
     void updateBaselineLabelStyle();
+    void sendConcordanceUpdates();
 
 private slots:
     void newInterpretation();
