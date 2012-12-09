@@ -35,8 +35,10 @@ public slots:
     void updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
 
 private slots:
-    void updateConcordance( WordDisplayWidget *w, qlonglong oldId, qlonglong newId );
     void baselineTextUpdated(const QString & baselineText);
+
+    void updateTextFormConcordance(LingEdit * edit, qlonglong newId);
+    void updateGlossFormConcordance(LingEdit * edit, qlonglong newId);
 
 private:
     Text *mText;
@@ -50,7 +52,9 @@ private:
 
     QList<QLayout*> mLineLayouts;
     QList<QWidget*> mWordDisplayWidgets;
-    QMultiHash<qlonglong, WordDisplayWidget*> mConcordance;
+
+    QMultiHash<qlonglong,LingEdit*> mTextFormConcordance;
+    QMultiHash<qlonglong,LingEdit*> mGlossConcordance;
 
     QLayout* addLine();
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item);

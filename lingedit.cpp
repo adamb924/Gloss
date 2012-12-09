@@ -27,11 +27,19 @@ void LingEdit::focusInEvent ( QFocusEvent * e )
 
 void LingEdit::textChanged()
 {
-    mTextBit.setText(text());
-    emit stringChanged( mTextBit );
+    if( mTextBit.text() != text() )
+    {
+        mTextBit.setText(text());
+        emit stringChanged( mTextBit );
+    }
 }
 
-void LingEdit::changeId(qlonglong id)
+void LingEdit::setId(LingEdit * edit, qlonglong id)
 {
     mTextBit.setId(id);
+}
+
+qlonglong LingEdit::id() const
+{
+    return mTextBit.id();
 }

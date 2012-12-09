@@ -39,7 +39,8 @@ void WordDisplayWidget::setupLayout()
     mLayout = new QVBoxLayout;
     setLayout(mLayout);
 
-    mEdits.clear();
+    mTextFormEdits.clear();
+    mGlossEdits.clear();
 
     mBaselineWordLabel = new QLabel(mGlossItem->baselineText().text());
     mBaselineWordLabel->setAlignment( mGlossItem->writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
@@ -50,11 +51,16 @@ void WordDisplayWidget::setupLayout()
     {
         LingEdit *edit;
         if( mGlossLines.at(i).type() == GlossLine::Text )
+        {
             edit = addTextFormLine( mGlossLines.at(i) );
+            mTextFormEdits.insert(mGlossLines.at(i).writingSystem(), edit);
+        }
         else
+        {
             edit = addGlossLine( mGlossLines.at(i) );
+            mGlossEdits.insert(mGlossLines.at(i).writingSystem(), edit);
+        }
         mLayout->addWidget(edit);
-        mEdits.insert(mGlossLines.at(i).writingSystem(), edit);
     }
 }
 
@@ -63,22 +69,21 @@ LingEdit* WordDisplayWidget::addGlossLine( const GlossLine & glossLine )
     LingEdit *edit = new LingEdit( mGlossItem->glosses()->value( glossLine.writingSystem() ) , this);
     edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() ,glossLine.writingSystem().layoutDirection() ) );
 
-    connect( mGlossItem, SIGNAL(glossIdChanged(qlonglong)), edit, SLOT(changeId(qlonglong)));
-    connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
+    connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(updateGloss(TextBit)) );
+    connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
 
     return edit;
 }
 
 LingEdit* WordDisplayWidget::addTextFormLine( const GlossLine & glossLine )
 {
-    // this is right on the edge of being better handled with two methods
     LingEdit *edit = new LingEdit(  mGlossItem->textForms()->value( glossLine.writingSystem() ) , this);
     edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() , glossLine.writingSystem().layoutDirection() ) );
 
-    connect( mGlossItem, SIGNAL(textFormIdChanged(qlonglong)), edit, SLOT(changeId(qlonglong)));
-    connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
+    connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(updateText(TextBit)) );
+    connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
 
     return edit;
 }
@@ -222,7 +227,9 @@ void WordDisplayWidget::newGloss(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
     qlonglong id = mDbAdapter->newGloss( mGlossItem->id() , wsId );
-    mGlossItem->setGloss(TextBit("", mDbAdapter->writingSystem(wsId) , id ));
+    WritingSystem ws = mDbAdapter->writingSystem(wsId);
+    mGlossItem->setGloss(TextBit("", ws , id ));
+    emit glossIdChanged( mGlossEdits.value(ws) , id );
     fillData();
 }
 
@@ -230,7 +237,9 @@ void WordDisplayWidget::newTextForm(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
     qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , wsId );
-    mGlossItem->setTextForm(TextBit("", mDbAdapter->writingSystem(wsId), id ));
+    WritingSystem ws = mDbAdapter->writingSystem(wsId);
+    mGlossItem->setTextForm(TextBit("", ws, id ));
+    emit textFormIdChanged( mTextFormEdits.value(ws) , id );
     fillData();
 }
 
@@ -245,21 +254,15 @@ void WordDisplayWidget::fillData()
             {
             case GlossLine::Text:
                 form = mGlossItem->textForms()->value( mGlossLines.at(i).writingSystem() ).text();
+                mTextFormEdits[mGlossLines.at(i).writingSystem()]->setText( form );
                 break;
             case GlossLine::Gloss:
                 form = mGlossItem->glosses()->value( mGlossLines.at(i).writingSystem() ).text();
+                mGlossEdits[mGlossLines.at(i).writingSystem()]->setText( form );
                 break;
             }
-            mEdits[mGlossLines.at(i).writingSystem()]->setText( form );
         }
     }
-}
-
-void WordDisplayWidget::updateEdit( const TextBit & bit, GlossLine::LineType type )
-{
-    LingEdit *line = mEdits.value(bit.writingSystem());
-    if( line != 0 )
-        line->setText(bit.text());
 }
 
 Qt::Alignment WordDisplayWidget::calculateAlignment( Qt::LayoutDirection match , Qt::LayoutDirection current ) const
@@ -304,10 +307,38 @@ void WordDisplayWidget::selectDifferentCandidate(QAction *action)
 
 void WordDisplayWidget::selectDifferentGloss(QAction *action)
 {
-    mGlossItem->setGloss( mDbAdapter->glossFromId( action->data().toLongLong() ) );
+    TextBit bit = mDbAdapter->glossFromId( action->data().toLongLong() );
+    mGlossItem->setGloss( bit );
+    emit glossIdChanged( mGlossEdits.value( bit.writingSystem() ) , bit.id() );
 }
 
 void WordDisplayWidget::selectDifferentTextForm(QAction *action)
 {
-    mGlossItem->setTextForm( mDbAdapter->textFormFromId(action->data().toLongLong()) );
+    TextBit bit = mDbAdapter->textFormFromId(action->data().toLongLong());
+    mGlossItem->setTextForm( bit );
+    emit textFormIdChanged( mTextFormEdits.value(bit.writingSystem()), bit.id());
+}
+
+QHash<qlonglong, LingEdit*> WordDisplayWidget::textFormEdits() const
+{
+    QHash<qlonglong, LingEdit*> hash;
+    QHashIterator<WritingSystem, LingEdit*> iter(mTextFormEdits);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        hash.insert( iter.value()->id() , iter.value() );
+    }
+    return hash;
+}
+
+QHash<qlonglong, LingEdit*> WordDisplayWidget::glossEdits() const
+{
+    QHash<qlonglong, LingEdit*> hash;
+    QHashIterator<WritingSystem, LingEdit*> iter(mGlossEdits);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        hash.insert( iter.value()->id() , iter.value() );
+    }
+    return hash;
 }

@@ -19,6 +19,8 @@ public:
 
     explicit LingEdit(const TextBit & bit, QWidget *parent = 0);
 
+    qlonglong id() const;
+
 private:
     TextBit mTextBit;
 
@@ -29,7 +31,7 @@ signals:
 
 public slots:
     void textChanged();
-    void changeId(qlonglong id);
+    void setId(LingEdit * edit, qlonglong id);
 };
 
 #endif // LINGEDIT_H

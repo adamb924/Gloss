@@ -30,7 +30,8 @@ class WordDisplayWidget : public QWidget
 public:
     WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter);
 
-    void updateEdit( const TextBit & bit, GlossLine::LineType type );
+    QHash<qlonglong, LingEdit*> textFormEdits() const;
+    QHash<qlonglong, LingEdit*> glossEdits() const;
 
 private:
     GlossItem *mGlossItem;
@@ -53,12 +54,16 @@ private:
 
     QLabel *mBaselineWordLabel;
     QList<GlossLine> mGlossLines;
-    QHash<WritingSystem, LingEdit*> mEdits;
-
+    QHash<WritingSystem, LingEdit*> mTextFormEdits;
+    QHash<WritingSystem, LingEdit*> mGlossEdits;
 
     void mouseDoubleClickEvent ( QMouseEvent * event );
 
     DatabaseAdapter *mDbAdapter;
+
+signals:
+    void textFormIdChanged(LingEdit * edit, qlonglong newId);
+    void glossIdChanged(LingEdit * edit, qlonglong newId);
 
 public slots:
     void updateBaselineLabelStyle();
@@ -72,8 +77,6 @@ private slots:
     void selectDifferentCandidate(QAction *action);
     void selectDifferentGloss(QAction *action);
     void selectDifferentTextForm(QAction *action);
-
-signals:
 
 };
 

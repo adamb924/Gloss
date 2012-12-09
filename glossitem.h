@@ -61,9 +61,6 @@ signals:
     void idChanged(qlonglong id);
     void fieldsChanged();
 
-    void textFormIdChanged(qlonglong id);
-    void glossIdChanged(qlonglong id);
-
 public slots:
     void updateGloss( const TextBit & bit );
     void updateText( const TextBit & bit );

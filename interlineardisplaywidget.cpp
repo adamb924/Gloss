@@ -42,8 +42,8 @@ void InterlinearDisplayWidget::clearData()
     qDeleteAll(mLineLayouts);
     mLineLayouts.clear();
 
-    // does this belong here or would that defeat the purpose?
-    mConcordance.clear();
+    mGlossConcordance.clear();
+    mTextFormConcordance.clear();
 }
 
 void InterlinearDisplayWidget::setLayoutFromText()
@@ -65,12 +65,12 @@ void InterlinearDisplayWidget::setLayoutFromText()
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
     WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , this, mProject->dbAdapter() );
-    // TODO this will not work
-//    connect(wdw,SIGNAL(idChanged(WordDisplayWidget*,qlonglong,qlonglong)),this,SLOT(updateConcordance(WordDisplayWidget*,qlonglong,qlonglong)));
-    // this line is necessary because the signal from the constructor is emitted before the connection is made
-    mConcordance.insert( item->id() , wdw );
-
     mWordDisplayWidgets << wdw;
+    mTextFormConcordance.unite( wdw->textFormEdits() );
+    mGlossConcordance.unite( wdw->glossEdits() );
+
+    connect( wdw, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), this, SLOT(updateGlossFormConcordance(LingEdit*,qlonglong)));
+    connect( wdw, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), this, SLOT(updateTextFormConcordance(LingEdit*,qlonglong)));
 
     return wdw;
 }
@@ -83,31 +83,37 @@ QLayout* InterlinearDisplayWidget::addLine()
     return flowLayout;
 }
 
-void InterlinearDisplayWidget::updateConcordance( WordDisplayWidget *w, qlonglong oldId, qlonglong newId )
-{
-    mConcordance.remove(oldId,w);
-    mConcordance.insert(newId,w);
-}
-
 void InterlinearDisplayWidget::updateGloss( const TextBit & bit )
 {
-    // TODO FIX THIS
-//    WordDisplayWidget* wdw;
-//    QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
-//    foreach(wdw, wdwList)
-//        wdw->updateEdit(bit,GlossLine::Gloss);
+    LingEdit* edit;
+    QList<LingEdit*> editList = mGlossConcordance.values(bit.id());
+    foreach(edit, editList)
+        edit->setText( bit.text() );
 }
 
 void InterlinearDisplayWidget::updateText( const TextBit & bit )
 {
-    // TODO FIX THIS
-//    WordDisplayWidget* wdw;
-//    QList<WordDisplayWidget*> wdwList = mConcordance.values(bit.id());
-//    foreach(wdw, wdwList)
-//        wdw->updateEdit(bit,GlossLine::Text);
+    LingEdit* edit;
+    QList<LingEdit*> editList = mTextFormConcordance.values(bit.id());
+    foreach(edit, editList)
+        edit->setText( bit.text() );
 }
 
 void InterlinearDisplayWidget::updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString )
 {
 
+}
+
+void InterlinearDisplayWidget::updateTextFormConcordance(LingEdit * edit, qlonglong newId)
+{
+    qlonglong oldId = mTextFormConcordance.key( edit );
+    mTextFormConcordance.remove(oldId, edit);
+    mTextFormConcordance.insert(newId, edit);
+}
+
+void InterlinearDisplayWidget::updateGlossFormConcordance(LingEdit * edit, qlonglong newId)
+{
+    qlonglong oldId = mGlossConcordance.key( edit );
+    mGlossConcordance.remove(oldId, edit);
+    mGlossConcordance.insert(newId, edit);
 }

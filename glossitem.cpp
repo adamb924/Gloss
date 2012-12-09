@@ -57,9 +57,6 @@ void GlossItem::setGloss(const TextBit & gloss)
     if( mGlosses.value(gloss.writingSystem()) != gloss )
     {
         mGlosses.insert( gloss.writingSystem(), gloss );
-
-        emit glossIdChanged(gloss.id());
-        // redundant?
         emit fieldsChanged();
     }
 }
@@ -69,8 +66,6 @@ void GlossItem::setTextForm(const TextBit & textForm)
     if( mTextForms.value(textForm.writingSystem()) != textForm )
     {
         mTextForms.insert( textForm.writingSystem() , textForm );
-        emit textFormIdChanged(textForm.id());
-        // redundant?
         emit fieldsChanged();
     }
 }
