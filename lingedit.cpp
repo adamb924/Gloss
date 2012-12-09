@@ -10,10 +10,13 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
 {
     mTextBit = bit;
 
+    setText( bit.text() );
+
     setStyleSheet("border: 1px solid gray");
     setStyleSheet(QString("font-family: %1; font-size: %2pt;").arg(bit.writingSystem().fontFamily()).arg(bit.writingSystem().fontSize()));
     setLayoutDirection(bit.writingSystem().layoutDirection());
-    setAlignment(Qt::AlignCenter);
+
+    setToolTip(bit.writingSystem().name());
 
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }

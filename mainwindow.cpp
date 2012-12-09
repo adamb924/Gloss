@@ -83,10 +83,16 @@ void MainWindow::openProject()
         if( mProject != 0 )
             delete mProject;
         mProject = new Project();
-        mProject->readFromFile(filename);
-
-        setWindowTitle( tr("Gloss - %1").arg(filename) );
-        setProjectActionsEnabled(true);
+        if( mProject->readFromFile(filename) )
+        {
+            setWindowTitle( tr("Gloss - %1").arg(filename) );
+            setProjectActionsEnabled(true);
+        }
+        else
+        {
+            delete mProject;
+            mProject = 0;
+        }
     }
 }
 
@@ -233,7 +239,11 @@ void MainWindow::openText()
 
 void MainWindow::openText(const QString & textName)
 {
-    mProject->openText(textName);
+    if( ! mProject->openText(textName) )
+    {
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened.").arg(textName));
+        return;
+    }
     Text *text = mProject->texts()->value(textName, 0);
     if( text == 0 )
     {

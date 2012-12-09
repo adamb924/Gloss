@@ -9,6 +9,8 @@
 #include "worddisplaywidget.h"
 #include "text.h"
 #include "project.h"
+#include "databaseadapter.h"
+#include "phrase.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent) :
     QWidget(parent)
@@ -18,9 +20,11 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project,
     mLayout = new QVBoxLayout(this);
     setLayout(mLayout);
 
+    mPhrasalGlossLines = mProject->dbAdapter()->phrasalGlossLines();
+
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 
-    if( mText->glossItems()->length() > 0 )
+    if( mText->phrases()->length() > 0 )
         setLayoutFromText();
 }
 
@@ -39,8 +43,12 @@ void InterlinearDisplayWidget::clearData()
 {
     qDeleteAll(mWordDisplayWidgets);
     mWordDisplayWidgets.clear();
+
     qDeleteAll(mLineLayouts);
     mLineLayouts.clear();
+
+    qDeleteAll(mPhrasalGlossEdits);
+    mPhrasalGlossEdits.clear();
 
     mGlossConcordance.clear();
     mTextFormConcordance.clear();
@@ -50,16 +58,32 @@ void InterlinearDisplayWidget::setLayoutFromText()
 {
     clearData();
 
-    for(int i=0; i< mText->glossItems()->count(); i++)
+    for(int i=0; i< mText->phrases()->count(); i++)
     {
         QLayout *flowLayout = addLine();
-        for(int j=0; j<mText->glossItems()->at(i)->count(); j++)
+        for(int j=0; j<mText->phrases()->at(i)->count(); j++)
         {
-            WordDisplayWidget *wdw = addWordDisplayWidget(mText->glossItems()->at(i)->at(j));
+            WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
             flowLayout->addWidget(wdw);
         }
+
+        for(int j=0; j<mPhrasalGlossLines.count(); j++)
+        {
+            TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
+            LingEdit *edit = addPhrasalGlossLine( bit );
+            connect( edit, SIGNAL(stringChanged(TextBit)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
+        }
+
     }
     mLayout->addStretch(100);
+}
+
+LingEdit* InterlinearDisplayWidget::addPhrasalGlossLine( const TextBit & gloss )
+{
+    LingEdit *edit = new LingEdit( gloss , this);
+    mLayout->addWidget(edit);
+    mPhrasalGlossEdits << edit;
+    return edit;
 }
 
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item)

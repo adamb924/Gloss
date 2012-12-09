@@ -46,12 +46,17 @@ private:
 
     void setLayoutFromText();
 
+    LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
+
     void clearData();
 
     QVBoxLayout *mLayout;
 
     QList<QLayout*> mLineLayouts;
+    QList<LingEdit*> mPhrasalGlossEdits;
     QList<QWidget*> mWordDisplayWidgets;
+
+    QList<InterlinearItemType> mPhrasalGlossLines;
 
     QMultiHash<qlonglong,LingEdit*> mTextFormConcordance;
     QMultiHash<qlonglong,LingEdit*> mGlossConcordance;

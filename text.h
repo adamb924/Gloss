@@ -44,7 +44,7 @@ public:
     QString baselineText() const;
     void setBaselineText(const QString & text);
 
-    QList<Phrase*>* glossItems();
+    QList<Phrase*>* phrases();
 
     void saveText() const;
 
@@ -73,7 +73,7 @@ private:
 
     WritingSystem mBaselineWritingSystem;
 
-    QList<Phrase*> mGlossItems;
+    QList<Phrase*> mPhrases;
 
     void clearGlossItems();
 

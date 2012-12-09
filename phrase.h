@@ -12,15 +12,21 @@
 #include "glossitem.h"
 #include "textbit.h"
 
-class Phrase : public QList<GlossItem*>
+class Phrase : public QObject, public QList<GlossItem*>
 {
+    Q_OBJECT
 public:
     Phrase();
     ~Phrase();
 
     void addGloss(const TextBit & bit);
-    QString gloss(const WritingSystem & ws);
     TextBitHash* glosses();
+
+    //! \brief Returns the phrasal gloss for the given WritingSystem, or if this does not yet exist, creates an empty gloss and returns that.
+    TextBit gloss(const WritingSystem & ws);
+
+public slots:
+    void setPhrasalGloss( const TextBit & bit );
 
 private:
     TextBitHash mGlosses;

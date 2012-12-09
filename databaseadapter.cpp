@@ -22,16 +22,12 @@ DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
 
 DatabaseAdapter::~DatabaseAdapter()
 {
-//    QString connection;
-//    connection = mDb.connectionName();
-//    mDb.close();
-
-//    QSqlDatabase::removeDatabase(connection);
 }
 
 void DatabaseAdapter::initialize(QString filename)
 {
-    mDb.setDatabaseName(filename);
+    mFilename = filename;
+    mDb.setDatabaseName(mFilename);
     if(!mDb.open())
     {
         QMessageBox::information (0,"Error Message","There was a problem in opening the database. The program said: " + mDb.lastError().databaseText() + " It is unlikely that you will solve this on your own. Rather you had better contact the developer." );
@@ -268,7 +264,10 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
         qWarning() << q.lastError().text() << q.lastQuery();
 
-    if( !q.exec("create table if not exists GlossLines ( Type text, DisplayOrder integer, WritingSystem integer );") )
+    if( !q.exec("create table if not exists InterlinearTextLine ( Type text, DisplayOrder integer, WritingSystem integer );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists PhrasalGlossLine ( DisplayOrder integer, WritingSystem integer );") )
         qWarning() << q.lastError().text() << q.lastQuery();
 
     q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Persian','Prs', 'prd-Arab', 'persian.ahk' , '1' , 'Scheherazade' , '16' );");
@@ -276,10 +275,12 @@ void DatabaseAdapter::createTables()
     q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('English','Eng', 'en', 'english.ahk' , '0' , 'Times New Roman' , '12' );");
     q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('IPA','IPA', 'wbl-Qaaa-AF-fonipa-x-Zipa', 'ipa.ahk' , '0' , 'Times New Roman' , '12' );");
 
-//    q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Text','1', '2');");
-    q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Text','2', '4');");
-    q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Gloss','3', '1');");
-    q.exec("insert into GlossLines ( Type, DisplayOrder, WritingSystem )  values ('Gloss','4', '3');");
+    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Text','1', '4');");
+    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Gloss','2', '1');");
+    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Gloss','3', '3');");
+
+    q.exec("insert into PhrasalGlossLine ( DisplayOrder, WritingSystem )  values ('1', '1');");
+    q.exec("insert into PhrasalGlossLine ( DisplayOrder, WritingSystem )  values ('2', '3');");
 }
 
 WritingSystem DatabaseAdapter::writingSystem(const QString & flexString) const
@@ -376,17 +377,17 @@ void DatabaseAdapter::close()
 {
     mDb.close();
     QSqlDatabase::removeDatabase(mFilename);
-    QSqlDatabase::removeDatabase("qt_sql_default_connection");
 }
 
-QList<InterlinearItemType> DatabaseAdapter::glossLines() const
+QList<InterlinearItemType> DatabaseAdapter::interlinearTextLines() const
 {
     QList<InterlinearItemType> lines;
-    QSqlQuery q(QSqlDatabase::database( "qt_sql_default_connection" ));
+//    QSqlQuery q(QSqlDatabase::database( "qt_sql_default_connection" ));
+    QSqlQuery q(mDb);
 
-    QString query = QString("select Type, _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
+    QString query = QString("select Type, _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from InterlinearTextLine,WritingSystems where InterlinearTextLine.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
     if( !q.exec(query)  )
-        qWarning() << "DatabaseAdapter::glossLines" << q.lastError().text() << query;
+        qWarning() << "DatabaseAdapter::InterlinearTextLine" << q.lastError().text() << query;
     while( q.next() )
     {
         InterlinearItemType::LineType type;
@@ -397,6 +398,19 @@ QList<InterlinearItemType> DatabaseAdapter::glossLines() const
             type = InterlinearItemType::Gloss;
         lines << InterlinearItemType(type, WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
     }
+    return lines;
+}
+
+QList<InterlinearItemType> DatabaseAdapter::phrasalGlossLines() const
+{
+    QList<InterlinearItemType> lines;
+    QSqlQuery q(mDb);
+
+    QString query = QString("select _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from PhrasalGlossLine,WritingSystems where PhrasalGlossLine.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
+    if( !q.exec(query)  )
+        qWarning() << "DatabaseAdapter::phrasalGlossLines" << q.lastError().text() << query;
+    while( q.next() )
+        lines << InterlinearItemType(InterlinearItemType::Gloss, WritingSystem( q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString() , q.value(7).toInt() ) );
     return lines;
 }
 

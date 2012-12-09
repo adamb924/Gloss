@@ -17,7 +17,7 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     mAlignment = alignment;
     mInterlinearDisplayWidget = ildw;
 
-    mGlossLines = mDbAdapter->glossLines();
+    mGlossLines = mDbAdapter->interlinearTextLines();
 
     setupLayout();
 

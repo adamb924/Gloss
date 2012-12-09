@@ -77,7 +77,9 @@ public:
     bool writingSystemExists(const QString & flexstring) const;
     QSqlDatabase* db();
 
-    QList<InterlinearItemType> glossLines() const;
+    QList<InterlinearItemType> interlinearTextLines() const;
+
+    QList<InterlinearItemType> phrasalGlossLines() const;
 
     void close();
 
