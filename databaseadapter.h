@@ -75,7 +75,6 @@ public:
 
     QList<WritingSystem*> writingSystems() const;
     bool writingSystemExists(const QString & flexstring) const;
-    QSqlDatabase* db();
 
     QList<InterlinearItemType> interlinearTextLines() const;
 
@@ -83,8 +82,9 @@ public:
 
     void close();
 
+    QString dbFilename() const;
+
 private:
-    QSqlDatabase mDb;
     void createTables();
 
     QString mFilename;

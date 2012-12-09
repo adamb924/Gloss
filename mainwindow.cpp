@@ -174,7 +174,7 @@ void MainWindow::addBlankText()
 void MainWindow::sqlTableView( QAction * action )
 {
     QString name = action->data().toString();
-    QSqlTableModel *model = new QSqlTableModel(this,*mProject->dbAdapter()->db());
+    QSqlTableModel *model = new QSqlTableModel(this,QSqlDatabase::database(mProject->dbAdapter()->dbFilename()));
     model->setTable(name);
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->select();
