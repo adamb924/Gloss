@@ -47,10 +47,10 @@ public:
     TextBitHash* textForms();
     TextBitHash* glosses();
 
-    //! \brief Returns the text form for the given writing system. If it does not exist, a new one is added to the database, an the corresponding TextBit is returned.
+    //! \brief Returns the text form for the given writing system. If one is not available in the has, one is returned from the database. If there is none in the database, a new one is created.
     TextBit textForm(const WritingSystem & ws);
 
-    //! \brief Returns the gloss for the given writing system. If it does not exist, a new one is added to the database, an the corresponding TextBit is returned.
+    //! \brief Returns the gloss for the given writing system. If one is not available in the has, one is returned from the database. If there is none in the database, a new one is created.
     TextBit gloss(const WritingSystem & ws);
 
     void setCandidateStatus(CandidateStatus status);

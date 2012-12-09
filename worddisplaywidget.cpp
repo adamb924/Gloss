@@ -346,13 +346,14 @@ void WordDisplayWidget::sendConcordanceUpdates()
     while(iter.hasNext())
     {
         iter.next();
-        emit textFormIdChanged( iter.value() , mGlossItem->gloss( iter.key() ).id() );
+        WritingSystem ws = iter.key();
+        emit textFormIdChanged( iter.value() , mGlossItem->textForm( ws ).id() );
     }
 
     iter = QHashIterator<WritingSystem, LingEdit*>(mGlossEdits);
     while(iter.hasNext())
     {
         iter.next();
-        emit glossIdChanged( iter.value() , mGlossItem->textForm( iter.key() ).id() );
+        emit glossIdChanged( iter.value() , mGlossItem->gloss( iter.key() ).id() );
     }
 }

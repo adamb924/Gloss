@@ -33,8 +33,10 @@ public:
     //! \brief Returns a list of possible interpretations of the text from TextBit \a bit, along with associated text summaries.
     QHash<qlonglong,QString> candidateInterpretationWithSummaries(const TextBit & bit) const;
 
+    //! \brief Returns a list of possible text forms for the given interpretation (\a interpretationId) and writing system (with _id \a writingSystemId)
     QHash<qlonglong,QString> interpretationTextForms(qlonglong interpretationId, qlonglong writingSystemId) const;
 
+    //! \brief Returns a list of possible glosses for the given interpretation (\a interpretationId) and writing system (with _id \a writingSystemId)
     QHash<qlonglong,QString> interpretationGlosses(qlonglong interpretationId, qlonglong writingSystemId) const;
 
     //! \brief Returns a list of possible interpretations of the given text and gloss forms
@@ -61,7 +63,10 @@ public:
     //! \brief Returns a list of text forms for the given Interpretation _id (\a id)
     TextBitHash getInterpretationTextForms(qlonglong id) const;
 
+    //! \brief Returns a TextBit with the data from the \a row of Glosses
     TextBit glossFromId(qlonglong id) const;
+
+    //! \brief Returns a TextBit with the data from the \a row of TextForms
     TextBit textFormFromId(qlonglong id) const;
 
     //! \brief Adds the writing system to the database
@@ -73,18 +78,26 @@ public:
     //! \brief Returns the WritingSystem specified by \a id, or n empty WritingSystem if none exists.
     WritingSystem writingSystem(qlonglong id) const;
 
+    //! \brief Returns a list of all writing systems.
     QList<WritingSystem*> writingSystems() const;
+
+    //! \brief Returns true if a writing system with FlexString \a flexstring exists, otherwise false.
     bool writingSystemExists(const QString & flexstring) const;
 
+    //! \brief Returns a list of types of interlinear text lines (InterlinearItemType objects), from the database.
     QList<InterlinearItemType> interlinearTextLines() const;
 
+    //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects), from the database.
     QList<InterlinearItemType> phrasalGlossLines() const;
 
+    //! \brief Closes the database
     void close();
 
+    //! \brief Returns the filename of the database (not the full path)
     QString dbFilename() const;
 
 private:
+    //! \brief Creates the tables for the first time
     void createTables();
 
     QString mFilename;
@@ -92,11 +105,13 @@ private:
 signals:
 
 public slots:
+    //! \brief Updates a gloss in the database, where the id of the gloss is the id field of \a bit
     void updateInterpretationGloss( const TextBit & bit );
 
-    //! \brief Updates a text form in the database, where the id of the textform is the id field of \a bit
+    //! \brief Updates a text form in the database, where the id of the text form is the id field of \a bit
     void updateInterpretationTextForm( const TextBit & bit );
 
+    //! \brief Unimplemented.
     void updateInterpretationMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
 
 };

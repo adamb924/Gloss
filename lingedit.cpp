@@ -12,11 +12,6 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
 
     setText( bit.text() );
 
-//    if( bit.writingSystem().fontSize() == 0 )
-//    {
-//        qDebug() << "LingEdit::LingEdit" << bit.writingSystem().flexString() << bit.text() << bit.id();
-//    }
-
     setStyleSheet(QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid #f0f0f0; }").arg(bit.writingSystem().fontFamily()).arg(bit.writingSystem().fontSize()));
     setLayoutDirection(bit.writingSystem().layoutDirection());
 

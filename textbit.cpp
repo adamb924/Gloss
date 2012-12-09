@@ -3,6 +3,7 @@
 
 TextBit::TextBit()
 {
+    mId = -1;
 }
 
 TextBit::TextBit(const QString & text, const WritingSystem & ws, qlonglong id )
@@ -65,4 +66,9 @@ void TextBit::setId(qlonglong id)
 qlonglong TextBit::id() const
 {
     return mId;
+}
+
+bool TextBit::isNull()
+{
+    return mId == -1;
 }

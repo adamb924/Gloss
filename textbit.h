@@ -28,6 +28,8 @@ public:
     WritingSystem writingSystem() const;
     qlonglong id() const;
 
+    bool isNull();
+
 public slots:
     void setText(const QString & text);
     void setWritingSystem(const WritingSystem & ws);

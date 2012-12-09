@@ -22,6 +22,7 @@ DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
 
 DatabaseAdapter::~DatabaseAdapter()
 {
+    close();
 }
 
 void DatabaseAdapter::initialize(QString filename)
@@ -92,7 +93,6 @@ QHash<qlonglong,QString> DatabaseAdapter::interpretationGlosses(qlonglong interp
 
 qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong writingSystemId)
 {
-    qDebug() << "DatabaseAdapter::newTextForm" << interpretationId << writingSystemId;
     QSqlQuery q(QSqlDatabase::database(mFilename));
     QString query = QString("insert into TextForms (InterpretationId,WritingSystem) values ('%1','%2');").arg(interpretationId).arg(writingSystemId);
     if(q.exec( query ))
@@ -136,7 +136,6 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
             throw;
         id = q.lastInsertId().toLongLong();
 
-        qDebug() << "DatabaseAdapter::newInterpretation( const TextBit & bit )";
         QString query = QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg( id ).arg( bit.writingSystem().id() ).arg(bit.text());
         if( !q.exec(query)  )
             qWarning() << "DatabaseAdapter::updateInterpretationTextForm" << q.lastError().text() << query;
@@ -391,8 +390,6 @@ QList<InterlinearItemType> DatabaseAdapter::interlinearTextLines() const
         else
             type = InterlinearItemType::Gloss;
         lines << InterlinearItemType(type, WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
-
-//        qDebug() << "DatabaseAdapter::interlinearTextLines()" << lines.last().writingSystem().flexString() << lines.last().writingSystem().fontSize();
     }
     return lines;
 }
@@ -431,7 +428,8 @@ TextBit DatabaseAdapter::textFormFromId(qlonglong id) const
     QString query = QString("select _id,Form,WritingSystem from TextForms where _id='%1';").arg(id);
     if( q.exec(query) && q.next() )
     {
-        return TextBit( q.value(1).toString() , writingSystem( q.value(2).toLongLong() ) , q.value(0).toLongLong() );
+        WritingSystem ws = writingSystem( q.value(2).toLongLong() );
+        return TextBit( q.value(1).toString() , ws , q.value(0).toLongLong() );
     }
     else
     {

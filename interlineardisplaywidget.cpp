@@ -94,8 +94,6 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     mTextFormConcordance.unite( wdw->textFormEdits() );
     mGlossConcordance.unite( wdw->glossEdits() );
 
-    qDebug() << "InterlinearDisplayWidget::addWordDisplayWidget" << mTextFormConcordance;
-
     connect( wdw, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), this, SLOT(updateGlossFormConcordance(LingEdit*,qlonglong)));
     connect( wdw, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), this, SLOT(updateTextFormConcordance(LingEdit*,qlonglong)));
 
@@ -133,11 +131,9 @@ void InterlinearDisplayWidget::updateMorphologicalAnalysis( const TextBit & bit 
 
 void InterlinearDisplayWidget::updateTextFormConcordance(LingEdit * edit, qlonglong newId)
 {
-    qDebug() << "InterlinearDisplayWidget::updateTextFormConcordance before" << mTextFormConcordance;
     qlonglong oldId = mTextFormConcordance.key( edit );
     mTextFormConcordance.remove(oldId, edit);
     mTextFormConcordance.insert(newId, edit);
-    qDebug() << "InterlinearDisplayWidget::updateTextFormConcordance after" << mTextFormConcordance;
 }
 
 void InterlinearDisplayWidget::updateGlossFormConcordance(LingEdit * edit, qlonglong newId)
