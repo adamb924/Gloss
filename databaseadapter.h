@@ -13,7 +13,7 @@
 #include <QList>
 
 #include "textbit.h"
-#include "glossline.h"
+#include "interlinearitemtype.h"
 
 class WritingSystem;
 
@@ -77,7 +77,7 @@ public:
     bool writingSystemExists(const QString & flexstring) const;
     QSqlDatabase* db();
 
-    QList<GlossLine> glossLines() const;
+    QList<InterlinearItemType> glossLines() const;
 
     void close();
 

@@ -2,7 +2,7 @@
 #include "textbit.h"
 #include "project.h"
 #include "lingedit.h"
-#include "glossline.h"
+#include "interlinearitemtype.h"
 #include "databaseadapter.h"
 #include "interlineardisplaywidget.h"
 
@@ -50,7 +50,7 @@ void WordDisplayWidget::setupLayout()
     for(int i=0; i<mGlossLines.count(); i++)
     {
         LingEdit *edit;
-        if( mGlossLines.at(i).type() == GlossLine::Text )
+        if( mGlossLines.at(i).type() == InterlinearItemType::Text )
         {
             edit = addTextFormLine( mGlossLines.at(i) );
             mTextFormEdits.insert(mGlossLines.at(i).writingSystem(), edit);
@@ -64,7 +64,7 @@ void WordDisplayWidget::setupLayout()
     }
 }
 
-LingEdit* WordDisplayWidget::addGlossLine( const GlossLine & glossLine )
+LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit( mGlossItem->glosses()->value( glossLine.writingSystem() ) , this);
     edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() ,glossLine.writingSystem().layoutDirection() ) );
@@ -76,7 +76,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const GlossLine & glossLine )
     return edit;
 }
 
-LingEdit* WordDisplayWidget::addTextFormLine( const GlossLine & glossLine )
+LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit(  mGlossItem->textForms()->value( glossLine.writingSystem() ) , this);
     edit->setAlignment(calculateAlignment( mGlossItem->writingSystem().layoutDirection() , glossLine.writingSystem().layoutDirection() ) );
@@ -106,7 +106,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     for(int i=0; i<mGlossLines.count(); i++)
     {
-        if( mGlossLines.at(i).type() == GlossLine::Gloss )
+        if( mGlossLines.at(i).type() == InterlinearItemType::Gloss )
             addGlossSubmenu( &menu , mGlossLines.at(i).writingSystem() );
         else
             addTextFormSubmenu( &menu , mGlossLines.at(i).writingSystem() );
@@ -252,11 +252,11 @@ void WordDisplayWidget::fillData()
             QString form;
             switch( mGlossLines.at(i).type() )
             {
-            case GlossLine::Text:
+            case InterlinearItemType::Text:
                 form = mGlossItem->textForms()->value( mGlossLines.at(i).writingSystem() ).text();
                 mTextFormEdits[mGlossLines.at(i).writingSystem()]->setText( form );
                 break;
-            case GlossLine::Gloss:
+            case InterlinearItemType::Gloss:
                 form = mGlossItem->glosses()->value( mGlossLines.at(i).writingSystem() ).text();
                 mGlossEdits[mGlossLines.at(i).writingSystem()]->setText( form );
                 break;

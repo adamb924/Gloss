@@ -1,5 +1,5 @@
 #include "project.h"
-#include "glossline.h"
+#include "interlinearitemtype.h"
 #include "textbit.h"
 #include "databaseadapter.h"
 

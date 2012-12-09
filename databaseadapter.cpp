@@ -379,9 +379,9 @@ void DatabaseAdapter::close()
     QSqlDatabase::removeDatabase("qt_sql_default_connection");
 }
 
-QList<GlossLine> DatabaseAdapter::glossLines() const
+QList<InterlinearItemType> DatabaseAdapter::glossLines() const
 {
-    QList<GlossLine> lines;
+    QList<InterlinearItemType> lines;
     QSqlQuery q(QSqlDatabase::database( "qt_sql_default_connection" ));
 
     QString query = QString("select Type, _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from GlossLines,WritingSystems where GlossLines.WritingSystem=WritingSystems._id order by DisplayOrder asc;");
@@ -389,13 +389,13 @@ QList<GlossLine> DatabaseAdapter::glossLines() const
         qWarning() << "DatabaseAdapter::glossLines" << q.lastError().text() << query;
     while( q.next() )
     {
-        GlossLine::LineType type;
+        InterlinearItemType::LineType type;
         QString sType = q.value(0).toString();
         if ( sType == "Text" )
-            type = GlossLine::Text;
+            type = InterlinearItemType::Text;
         else
-            type = GlossLine::Gloss;
-        lines << GlossLine(type, WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
+            type = InterlinearItemType::Gloss;
+        lines << InterlinearItemType(type, WritingSystem( q.value(1).toLongLong(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toString(), (Qt::LayoutDirection)q.value(6).toInt() , q.value(7).toString() , q.value(8).toInt() ) );
     }
     return lines;
 }

@@ -19,7 +19,6 @@ SOURCES += main.cpp\
     worddisplaywidget.cpp \
     writingsystem.cpp \
     lingedit.cpp \
-    glossline.cpp \
     textbit.cpp \
     databaseadapter.cpp \
     newtextdialog.cpp \
@@ -28,7 +27,8 @@ SOURCES += main.cpp\
     glossitem.cpp \
     phrase.cpp \
     messagehandler.cpp \
-    lingtextedit.cpp
+    lingtextedit.cpp \
+    interlinearitemtype.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -38,7 +38,6 @@ HEADERS  += mainwindow.h \
     worddisplaywidget.h \
     writingsystem.h \
     lingedit.h \
-    glossline.h \
     textbit.h \
     databaseadapter.h \
     newtextdialog.h \
@@ -47,7 +46,9 @@ HEADERS  += mainwindow.h \
     glossitem.h \
     phrase.h \
     messagehandler.h \
-    lingtextedit.h
+    lingtextedit.h \
+    glossitem.h \
+    interlinearitemtype.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

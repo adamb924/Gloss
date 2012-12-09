@@ -4,20 +4,20 @@
   \brief A data class representing a line of a gloss: the type of the line (LineType: Text, Gloss), and the writing system of the line.
 */
 
-#ifndef GLOSSLINE_H
-#define GLOSSLINE_H
+#ifndef INTERLINEARITEM_H
+#define INTERLINEARITEM_H
 
 #include "writingsystem.h"
 
-class GlossLine {
+class InterlinearItemType {
 public:
     enum LineType {
         Text,
         Gloss
     };
 
-    GlossLine();
-    GlossLine(LineType type, const WritingSystem & ws);
+    InterlinearItemType();
+    InterlinearItemType(LineType type, const WritingSystem & ws);
 
     void setType(LineType type);
     void setWritingSystem(const WritingSystem & ws);

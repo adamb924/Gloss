@@ -12,7 +12,7 @@
 #include <QList>
 #include <QHash>
 
-#include "glossline.h"
+#include "interlinearitemtype.h"
 #include "lingedit.h"
 #include "text.h"
 
@@ -47,13 +47,13 @@ private:
     void addGlossSubmenu(QMenu *menu, const WritingSystem & writingSystem );
 
     void setupLayout();
-    LingEdit* addGlossLine( const GlossLine & glossLine );
-    LingEdit* addTextFormLine( const GlossLine & glossLine );
+    LingEdit* addGlossLine( const InterlinearItemType & glossLine );
+    LingEdit* addTextFormLine( const InterlinearItemType & glossLine );
 
     QVBoxLayout *mLayout;
 
     QLabel *mBaselineWordLabel;
-    QList<GlossLine> mGlossLines;
+    QList<InterlinearItemType> mGlossLines;
     QHash<WritingSystem, LingEdit*> mTextFormEdits;
     QHash<WritingSystem, LingEdit*> mGlossEdits;
 

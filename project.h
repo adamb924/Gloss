@@ -14,7 +14,7 @@
 #include "writingsystem.h"
 #include "text.h"
 
-class GlossLine;
+class InterlinearItemType;
 class TextBit;
 class DatabaseAdapter;
 
