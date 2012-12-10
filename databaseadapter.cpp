@@ -382,9 +382,6 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
 
 void DatabaseAdapter::close()
 {
-    {
-        QSqlDatabase::database(mFilename).close();
-    }
     QSqlDatabase::removeDatabase(mFilename);
 }
 
