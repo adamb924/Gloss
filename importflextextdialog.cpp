@@ -8,15 +8,14 @@
 #include <QStringList>
 
 #include "writingsystem.h"
-#include "project.h"
 #include "databaseadapter.h"
 #include "messagehandler.h"
 
-ImportFlexTextDialog::ImportFlexTextDialog(Project *project, QWidget *parent) :
+ImportFlexTextDialog::ImportFlexTextDialog(DatabaseAdapter *dbAdapter, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::ImportFlexTextDialog)
 {
-    mProject = project;
+    mDbAdapter = dbAdapter;
 
     ui->setupUi(this);
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
@@ -93,11 +92,10 @@ void ImportFlexTextDialog::fillDataFromFlexText()
             QStringList items = result.at(i).split(",");
             if( items.count() == 3)
             {
-                if( !mProject->dbAdapter()->writingSystemExists(items.at(0)) )
-                {
-                    mProject->dbAdapter()->addWritingSystem(items.at(0), items.at(1), items.at(2) == "true" ? Qt::RightToLeft : Qt::LeftToRight );
-                }
-                ui->baselineWritingSystem->addItem( items.at(0) , items.at(0) );
+                if( !mDbAdapter->writingSystemExists(items.at(0)) )
+                    mDbAdapter->addWritingSystem(items.at(0), items.at(1), items.at(2) == "true" ? Qt::RightToLeft : Qt::LeftToRight );
+                WritingSystem ws = mDbAdapter->writingSystem(items.at(0));
+                ui->baselineWritingSystem->addItem( ws.name() , items.at(0) );
             }
         }
         enable();

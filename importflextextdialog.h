@@ -7,22 +7,20 @@
 #ifndef IMPORTFLEXTEXTDIALOG_H
 #define IMPORTFLEXTEXTDIALOG_H
 
-#include "project.h"
-
 #include <QDialog>
 
 namespace Ui {
     class ImportFlexTextDialog;
 }
 
-class Project;
+class DatabaseAdapter;
 
 class ImportFlexTextDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit ImportFlexTextDialog(Project *project, QWidget *parent = 0);
+    explicit ImportFlexTextDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     ~ImportFlexTextDialog();
 
     QString filename() const;
@@ -34,7 +32,7 @@ private:
     void enable();
     void disable();
 
-    Project *mProject;
+    DatabaseAdapter *mDbAdapter;
 
 private slots:
     bool chooseFile();

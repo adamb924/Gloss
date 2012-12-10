@@ -188,7 +188,7 @@ void MainWindow::sqlTableView( QAction * action )
 
 void MainWindow::importFlexText()
 {
-    ImportFlexTextDialog dialog(mProject,this);
+    ImportFlexTextDialog dialog(mProject->dbAdapter(),this);
     if( dialog.exec() == QDialog::Accepted )
     {
         if( QFile::exists(dialog.filename()) )
