@@ -48,11 +48,14 @@ public:
     //! \brief Creates a new interpretation of the baseline TextBit \a bit and returns the database index of the Interpreation
     qlonglong newInterpretation( const TextBit & bit );
 
-    //! \brief Creates a new interpretation with the given text forms and glosses
+    //! \brief Creates a new interpretation with the given text forms and glosses. Returns the _id of the interpretation
     qlonglong newInterpretation( TextBitHash & textForms , TextBitHash & glossForms );
 
-    //! \brief Creates an empty text form for the given interpretation, with the given writing system
+    //! \brief Creates a text form for the given interpretation, with the given writing system. Returns the _id of the text form.
     qlonglong newTextForm(qlonglong interpretationId, qlonglong writingSystemId);
+
+    //! \brief Creates a text form for the given interpretation and content in the \a bit. Returns the _id of the text form.
+    qlonglong newTextForm(qlonglong interpretationId, const TextBit & bit);
 
     //! \brief Creates an empty gloss for the given interpretation, with the given writing system
     qlonglong newGloss(qlonglong interpretationId, qlonglong writingSystemId);

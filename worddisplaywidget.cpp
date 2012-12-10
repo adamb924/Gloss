@@ -5,6 +5,7 @@
 #include "interlinearitemtype.h"
 #include "databaseadapter.h"
 #include "interlineardisplaywidget.h"
+#include "interpretationsearchdialog.h"
 
 #include <QtGui>
 #include <QtDebug>
@@ -140,7 +141,8 @@ void WordDisplayWidget::addInterpretationSubmenu(QMenu *menu )
         submenu->addSeparator();
     }
 
-    submenu->addAction(tr("Alternate interpretation..."),this,SLOT(newInterpretation()));
+    submenu->addAction(tr("New interpretation..."),this,SLOT(newInterpretation()));
+    submenu->addAction(tr("Link to other interpretation..."),this,SLOT(otherInterpretation()));
 
     menu->addMenu(submenu);
 }
@@ -171,7 +173,7 @@ void WordDisplayWidget::addTextFormSubmenu(QMenu *menu, const WritingSystem & wr
 
     // Text forms
     QActionGroup *oneOffgroup = new QActionGroup(menu);
-    QAction *action = new QAction(tr("Alternate text form..."),menu);
+    QAction *action = new QAction(tr("New text form..."),menu);
     action->setData( writingSystem.id() );
     oneOffgroup->addAction(action);
     connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(newTextForm(QAction*)) );
@@ -206,7 +208,7 @@ void WordDisplayWidget::addGlossSubmenu(QMenu *menu, const WritingSystem & writi
 
     // Glosses
     QActionGroup *oneOffgroup = new QActionGroup(menu);
-    QAction *action = new QAction(tr("Alternate gloss..."),menu);
+    QAction *action = new QAction(tr("New gloss..."),menu);
     action->setData( writingSystem.id() );
     oneOffgroup->addAction(action);
     connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(newGloss(QAction*)) );
@@ -219,7 +221,6 @@ void WordDisplayWidget::newInterpretation()
 {
     qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
     mGlossItem->setInterpretation(id);
-    mGlossItem->setCandidateStatus(GlossItem::MultipleOption);
     fillData();
 }
 
@@ -355,5 +356,17 @@ void WordDisplayWidget::sendConcordanceUpdates()
     {
         iter.next();
         emit glossIdChanged( iter.value() , mGlossItem->gloss( iter.key() ).id() );
+    }
+}
+
+void WordDisplayWidget::otherInterpretation()
+{
+    InterpretationSearchDialog dialog( mDbAdapter, this );
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        qlonglong id = dialog.selectionId();
+        mDbAdapter->newTextForm( id , mGlossItem->baselineText() );
+        mGlossItem->setInterpretation(id);
+        fillData();
     }
 }

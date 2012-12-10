@@ -36,13 +36,14 @@ GlossItem::GlossItem(const WritingSystem & ws, qlonglong id, DatabaseAdapter *db
     setApprovalStatus(GlossItem::Approved);
 }
 
-void GlossItem::setInterpretation(qlonglong id)
+void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 {
     if( mId != id )
     {
         setCandidateStatus(GlossItem::MultipleOption);
 
         mId = id;
+
         mTextForms.clear();
         mGlosses.clear();
 
@@ -147,7 +148,6 @@ void GlossItem::guessInterpretation()
     else // greater than 1
     {
         setInterpretation( candidates.at(0) );
-        setCandidateStatus(GlossItem::MultipleOption);
     }
     setApprovalStatus(GlossItem::Unapproved);
 }

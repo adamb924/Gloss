@@ -2,6 +2,7 @@
 
 #include <QMessageBox>
 #include <QHashIterator>
+using namespace std;
 
 #include "textbit.h"
 #include "writingsystem.h"
@@ -95,6 +96,21 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong wri
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     QString query = QString("insert into TextForms (InterpretationId,WritingSystem) values ('%1','%2');").arg(interpretationId).arg(writingSystemId);
+    if(q.exec( query ))
+    {
+        return q.lastInsertId().toLongLong();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::newTextForm" << q.lastError().text() << query;
+        return -1;
+    }
+}
+
+qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit & bit)
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    QString query = QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(interpretationId).arg(bit.writingSystem().id()).arg(bit.text());
     if(q.exec( query ))
     {
         return q.lastInsertId().toLongLong();
