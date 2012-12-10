@@ -23,6 +23,8 @@ public:
 
     void setTextBit( const TextBit & bit );
 
+    void matchTextAlignmentTo( Qt::LayoutDirection target );
+
 private:
     TextBit mTextBit;
 

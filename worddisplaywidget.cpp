@@ -68,7 +68,7 @@ void WordDisplayWidget::setupLayout()
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit( mGlossItem->gloss( glossLine.writingSystem() ) , this);
-    edit->setAlignment(calculateAlignment( mGlossItem->baselineWritingSystem().layoutDirection() ,glossLine.writingSystem().layoutDirection() ) );
+    edit->matchTextAlignmentTo( mGlossItem->baselineWritingSystem().layoutDirection() );
 
     connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
@@ -80,7 +80,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit(  mGlossItem->textForm( glossLine.writingSystem() ) , this);
-    edit->setAlignment(calculateAlignment( mGlossItem->baselineWritingSystem().layoutDirection() , glossLine.writingSystem().layoutDirection() ) );
+    edit->matchTextAlignmentTo( mGlossItem->baselineWritingSystem().layoutDirection() );
 
     connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setTextForm(TextBit)) );
@@ -260,24 +260,6 @@ void WordDisplayWidget::fillData()
                 break;
             }
         }
-    }
-}
-
-Qt::Alignment WordDisplayWidget::calculateAlignment( Qt::LayoutDirection match , Qt::LayoutDirection current ) const
-{
-    if( match == Qt::LeftToRight )
-    {
-        if( current == Qt::LeftToRight )
-            return Qt::AlignLeft;
-        else
-            return Qt::AlignRight;
-    }
-    else // Qt::RightToLeft
-    {
-        if( current == Qt::LeftToRight )
-            return Qt::AlignRight;
-        else
-            return Qt::AlignLeft;
     }
 }
 

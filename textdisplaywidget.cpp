@@ -20,7 +20,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->setupUi(this);
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
-    ui->baselineTextEdit->setWritingSystem(text->writingSystem());
+    ui->baselineTextEdit->setWritingSystem(text->baselineWritingSystem());
     ui->baselineTextEdit->setPlainText( text->baselineText() );
 
     mInterlinear = new InterlinearDisplayWidget(mText, mProject, this);

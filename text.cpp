@@ -72,12 +72,12 @@ void Text::setComment(const QString & comment)
 }
 
 
-WritingSystem Text::writingSystem() const
+WritingSystem Text::baselineWritingSystem() const
 {
     return mBaselineWritingSystem;
 }
 
-void Text::setWritingSystem(const WritingSystem & ws)
+void Text::setBaselineWritingSystem(const WritingSystem & ws)
 {
     mBaselineWritingSystem = ws;
 }
@@ -110,17 +110,32 @@ void Text::clearGlossItems()
 
 void Text::setGlossItemsFromBaseline()
 {
-    // TODO something more subtle here, e.g., comparing line by line
-    clearGlossItems();
-
     QStringList lines = mBaselineText.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
-    for(int i=0; i<lines.count(); i++)
+    if( mPhrases.count() == lines.count() )
     {
-        mPhrases.append( new Phrase );
-        QStringList words = lines.at(i).split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
-        for(int j=0; j<words.count(); j++)
-            mPhrases.last()->append(new GlossItem(TextBit(words.at(j),mBaselineWritingSystem), mProject->dbAdapter()));
+        for(int i=0; i<lines.count(); i++)
+            if( mPhrases.at(i)->equivalentBaselineLineText() != lines.at(i) )
+                setLineOfGlossItems(mPhrases.at(i), lines.at(i));
     }
+    else
+    {
+        clearGlossItems();
+        for(int i=0; i<lines.count(); i++)
+        {
+            mPhrases.append( new Phrase );
+            setLineOfGlossItems(mPhrases.last(), lines.at(i));
+        }
+    }
+}
+
+void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
+{
+    qDeleteAll(*phrase);
+    phrase->clear();
+
+    QStringList words = line.split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
+    for(int i=0; i<words.count(); i++)
+        phrase->append(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject->dbAdapter()));
 }
 
 void Text::setBaselineFromGlossItems()

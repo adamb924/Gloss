@@ -72,6 +72,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
         {
             TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
             LingEdit *edit = addPhrasalGlossLine( bit );
+            edit->matchTextAlignmentTo( mText->baselineWritingSystem().layoutDirection() );
             connect( edit, SIGNAL(stringChanged(TextBit)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
         }
 
@@ -89,7 +90,7 @@ LingEdit* InterlinearDisplayWidget::addPhrasalGlossLine( const TextBit & gloss )
 
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , this, mProject->dbAdapter() );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , this, mProject->dbAdapter() );
     mWordDisplayWidgets << wdw;
     mTextFormConcordance.unite( wdw->textFormEdits() );
     mGlossConcordance.unite( wdw->glossEdits() );
@@ -102,7 +103,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
 
 QLayout* InterlinearDisplayWidget::addLine()
 {
-    FlowLayout *flowLayout = new FlowLayout( mText->writingSystem().layoutDirection() );
+    FlowLayout *flowLayout = new FlowLayout( mText->baselineWritingSystem().layoutDirection() );
     mLineLayouts << flowLayout;
     mLayout->addLayout(flowLayout);
     return flowLayout;

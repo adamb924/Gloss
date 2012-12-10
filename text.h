@@ -38,8 +38,8 @@ public:
     QString comment() const;
     void setComment(const QString & comment);
 
-    WritingSystem writingSystem() const;
-    void setWritingSystem(const WritingSystem & ws);
+    WritingSystem baselineWritingSystem() const;
+    void setBaselineWritingSystem(const WritingSystem & ws);
 
     QString baselineText() const;
     void setBaselineText(const QString & text);
@@ -79,6 +79,8 @@ private:
 
     void setGlossItemsFromBaseline();
     void setBaselineFromGlossItems();
+
+    void setLineOfGlossItems(Phrase *phrase , const QString & line );
 
     //! \brief Sets the text from the given file. Returns false if this fails.
     bool readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);

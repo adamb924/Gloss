@@ -39,8 +39,6 @@ private:
 
     InterlinearDisplayWidget *mInterlinearDisplayWidget;
 
-    Qt::Alignment calculateAlignment( Qt::LayoutDirection match , Qt::LayoutDirection current ) const;
-
     void contextMenuEvent ( QContextMenuEvent * event );
     void addInterpretationSubmenu(QMenu *menu );
     void addTextFormSubmenu(QMenu *menu, const WritingSystem & writingSystem );

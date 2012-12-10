@@ -55,3 +55,11 @@ qlonglong LingEdit::id() const
 {
     return mTextBit.id();
 }
+
+void LingEdit::matchTextAlignmentTo( Qt::LayoutDirection target )
+{
+    if( target == Qt::LeftToRight )
+        setAlignment( mTextBit.writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
+    else
+        setAlignment( mTextBit.writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignRight : Qt::AlignLeft );
+}
