@@ -4,7 +4,7 @@
 #include <QtDebug>
 
 LingTextEdit::LingTextEdit(QWidget *parent) :
-    QPlainTextEdit(parent)
+    QTextEdit(parent)
 {
 }
 
@@ -12,6 +12,7 @@ void LingTextEdit::setWritingSystem(const WritingSystem & ws)
 {
     mWritingSystem = ws;
     setStyleSheet(QString("font-family: %1; font-size: %2pt;").arg(mWritingSystem.fontFamily()).arg(mWritingSystem.fontSize()));
+    setLayoutDirection(ws.layoutDirection());
 }
 
 void LingTextEdit::focusInEvent ( QFocusEvent * e )

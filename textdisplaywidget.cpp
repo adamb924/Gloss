@@ -5,6 +5,7 @@
 #include "databaseadapter.h"
 #include "text.h"
 
+#include <QCloseEvent>
 #include <QScrollArea>
 
 TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *parent) :

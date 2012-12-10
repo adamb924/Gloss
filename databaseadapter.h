@@ -96,6 +96,12 @@ public:
     //! \brief Returns the filename of the database (not the full path)
     QString dbFilename() const;
 
+    //! \brief Returns a string escaped for use in a SQL query.
+    static QString sqlEscape(QString string)
+    {
+        return string.replace( "'" , "''");
+    }
+
 private:
     //! \brief Creates the tables for the first time
     void createTables();

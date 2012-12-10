@@ -1,17 +1,17 @@
 /*!
   \class LingTextEdit
   \ingroup GUI
-  \brief A QPlainTextEdit subclass. It has an extra signal compared to QLineEdit. It also implements focusInEvent(QFocusEvent*) so that when the widget receives focus, the current writing system is changed.
+  \brief A QTextEdit subclass. It has an extra signal compared to QLineEdit. It also implements focusInEvent(QFocusEvent*) so that when the widget receives focus, the current writing system is changed.
 */
 
 #ifndef LINGTEXTEDIT_H
 #define LINGTEXTEDIT_H
 
-#include <QPlainTextEdit>
+#include <QTextEdit>
 
 #include "writingsystem.h"
 
-class LingTextEdit : public QPlainTextEdit
+class LingTextEdit : public QTextEdit
 {
     Q_OBJECT
 public:

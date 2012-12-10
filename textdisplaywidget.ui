@@ -41,7 +41,7 @@
  <customwidgets>
   <customwidget>
    <class>LingTextEdit</class>
-   <extends>QPlainTextEdit</extends>
+   <extends>QTextEdit</extends>
    <header>lingtextedit.h</header>
   </customwidget>
  </customwidgets>

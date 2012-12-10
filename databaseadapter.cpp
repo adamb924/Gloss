@@ -34,7 +34,7 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBit & bit) 
 {
     QList<qlonglong> candidates;
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    QString query = QString("select InterpretationId from TextForms where Form='%1' and WritingSystem='%2';").arg(bit.text()).arg(bit.writingSystem().id());
+    QString query = QString("select InterpretationId from TextForms where Form='%1' and WritingSystem='%2';").arg(sqlEscape(bit.text())).arg(bit.writingSystem().id());
     if( !q.exec(query)  )
         qWarning() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
     while( q.next() )
@@ -46,9 +46,9 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBit & bit) 
 bool DatabaseAdapter::hasMultipleCandidateInterpretations(const TextBit & bit) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    QString query = QString("select count(distinct InterpretationId) from TextForms where Form='%1' and WritingSystem='%2';").arg(bit.text()).arg(bit.writingSystem().id());
+    QString query = QString("select count(distinct InterpretationId) from TextForms where Form='%1' and WritingSystem='%2';").arg(sqlEscape(bit.text())).arg(bit.writingSystem().id());
     if( !q.exec(query)  )
-        qWarning() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
+        qWarning() << "DatabaseAdapter::hasMultipleCandidateInterpretations" << q.lastError().text() << query;
     if( q.next() )
         return q.value(0).toInt() > 1;
     else
@@ -59,9 +59,9 @@ QHash<qlonglong,QString> DatabaseAdapter::candidateInterpretationWithSummaries(c
 {
     QHash<qlonglong,QString> candidates;
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    QString query = QString("select InterpretationId,group_concat(Form,', ') from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') ) group by InterpretationId;").arg(bit.text()).arg(bit.writingSystem().id());
+    QString query = QString("select InterpretationId,group_concat(Form,', ') from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where Form='%1' and WritingSystem='%2') ) group by InterpretationId;").arg(sqlEscape(bit.text())).arg(bit.writingSystem().id());
     if( !q.exec(query)  )
-        qWarning() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
+        qWarning() << "DatabaseAdapter::candidateInterpretationWithSummaries" << q.lastError().text() << query;
     while( q.next() )
         candidates.insert( q.value(0).toLongLong() , q.value(1).toString() );
     return candidates;
@@ -136,7 +136,7 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
             throw;
         id = q.lastInsertId().toLongLong();
 
-        QString query = QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg( id ).arg( bit.writingSystem().id() ).arg(bit.text());
+        QString query = QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg( id ).arg( bit.writingSystem().id() ).arg( sqlEscape(bit.text()) );
         if( !q.exec(query)  )
             qWarning() << "DatabaseAdapter::updateInterpretationTextForm" << q.lastError().text() << query;
     }
@@ -169,7 +169,7 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
         while (textIter.hasNext())
         {
             textIter.next();
-            if( ! q.exec(QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value().text() )) )
+            if( ! q.exec(QString("insert into TextForms (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( sqlEscape(textIter.value().text()) )) )
                 throw -1;
             textIter.value().setId( q.lastInsertId().toLongLong() );
         }
@@ -178,7 +178,7 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
         while (textIter.hasNext())
         {
             textIter.next();
-            if( ! q.exec(QString("insert into Glosses (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( textIter.value().text() )) )
+            if( ! q.exec(QString("insert into Glosses (InterpretationId,WritingSystem,Form) values ('%1','%2','%3');").arg(id).arg( textIter.key().id() ).arg( sqlEscape(textIter.value().text()) )) )
                 throw -1;
             textIter.value().setId( q.lastInsertId().toLongLong() );
         }
@@ -196,7 +196,7 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
 void DatabaseAdapter::updateInterpretationTextForm( const TextBit & bit )
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    QString query = QString("update TextForms set Form='%1' where _id='%2';").arg( bit.text() ).arg( bit.id() );
+    QString query = QString("update TextForms set Form='%1' where _id='%2';").arg( sqlEscape(bit.text()) ).arg( bit.id() );
     if( !q.exec(query)  )
         qWarning() << "DatabaseAdapter::updateInterpretationTextForm" << q.lastError().text() << query;
 }
@@ -204,7 +204,7 @@ void DatabaseAdapter::updateInterpretationTextForm( const TextBit & bit )
 void DatabaseAdapter::updateInterpretationGloss( const TextBit & bit )
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    QString query = QString("update Glosses set Form='%1' where _id='%2';").arg(bit.text()).arg(bit.id());
+    QString query = QString("update Glosses set Form='%1' where _id='%2';").arg(sqlEscape(bit.text())).arg(bit.id());
     if( !q.exec(query)  )
         qWarning() << "DatabaseAdapter::updateInterpretationGloss" << q.lastError().text() << query;
 }
@@ -277,7 +277,7 @@ void DatabaseAdapter::createTables()
 WritingSystem DatabaseAdapter::writingSystem(const QString & flexString) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    QString query = QString("select _id, Name, Abbreviation, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems where FlexString='%1';").arg(flexString);
+    QString query = QString("select _id, Name, Abbreviation, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems where FlexString='%1';").arg(sqlEscape(flexString));
     if( !q.exec(query)  )
         qWarning() << "DatabaseAdapter::writingSystem" << q.lastError().text() << query;
     if( q.first() )
@@ -313,7 +313,7 @@ QList<WritingSystem*> DatabaseAdapter::writingSystems() const
 bool DatabaseAdapter::writingSystemExists(const QString & flexstring) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    QString query = QString("select FlexString from WritingSystems where FlexString='%1';").arg(flexstring);
+    QString query = QString("select FlexString from WritingSystems where FlexString='%1';").arg(sqlEscape(flexstring));
     q.exec(query);
     return q.first();
 }
@@ -321,7 +321,7 @@ bool DatabaseAdapter::writingSystemExists(const QString & flexstring) const
 void DatabaseAdapter::addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection)
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.exec(QString("insert into WritingSystems ( FlexString, FontFamily, Direction )  values ( '%1' , '%2' , '%3' );").arg(flexString).arg(fontFamily).arg(layoutDirection));
+    q.exec(QString("insert into WritingSystems ( FlexString, FontFamily, Direction )  values ( '%1' , '%2' , '%3' );").arg(sqlEscape(flexString)).arg(sqlEscape(fontFamily)).arg(layoutDirection));
 }
 
 QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & textForms , const TextBitHash & glossForms )
@@ -333,7 +333,7 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
     {
         textIter.next();
 
-        query.append( QString("select distinct(InterpretationId) from TextForms where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from TextForms where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( textIter.value().text() ) );
+        query.append( QString("select distinct(InterpretationId) from TextForms where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from TextForms where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( sqlEscape( textIter.value().text() ) ) );
         if( textIter.hasNext() )
             query.append(" intersect ");
     }
@@ -346,7 +346,7 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
     {
         textIter.next();
 
-        query.append( QString("select distinct(InterpretationId) from Glosses where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from Glosses where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( textIter.value().text() ) );
+        query.append( QString("select distinct(InterpretationId) from Glosses where (WritingSystem='%1' and Form='%2') or InterpretationId not in (select InterpretationId from Glosses where WritingSystem= '%1') ").arg( textIter.key().id() ).arg( sqlEscape( textIter.value().text() ) ) );
         if( textIter.hasNext() )
             query.append(" intersect ");
     }
@@ -442,3 +442,4 @@ QString DatabaseAdapter::dbFilename() const
 {
     return mFilename;
 }
+
