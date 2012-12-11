@@ -13,11 +13,16 @@
 Project::Project()
 {
     mDatabaseFilename = "sqlite3-database.db";
+    mDbAdapter = 0;
 }
 
 Project::~Project()
 {
-    mDbAdapter->close();
+    if( mDbAdapter != 0 )
+    {
+        mDbAdapter->close();
+        delete mDbAdapter;
+    }
     qDeleteAll(mTexts);
 }
 
@@ -25,6 +30,12 @@ bool Project::create(QString filename)
 {
     mProjectPath = filename;
     QDir tempDir = getTempDir();
+
+    if( mDbAdapter != 0 )
+    {
+        delete mDbAdapter;
+        mDbAdapter = 0;
+    }
 
     if(maybeDelete(tempDir))
     {
@@ -96,6 +107,12 @@ bool Project::readFromFile(QString filename)
 
         if(QFile::exists(tempDir.absoluteFilePath(mDatabaseFilename)))
         {
+            if( mDbAdapter != 0 )
+            {
+                delete mDbAdapter;
+                mDbAdapter = 0;
+            }
+
             mDbAdapter = new DatabaseAdapter(tempDir.absoluteFilePath(mDatabaseFilename));
             readTextPaths();
         }
@@ -166,6 +183,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
     }
     else
     {
+        delete text;
         return 0;
     }
 }
@@ -187,6 +205,7 @@ Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem &
     }
     else
     {
+        delete text;
         return 0;
     }
 }
@@ -199,8 +218,13 @@ Text* Project::textFromFlexText(const QString & filePath)
         text->saveText();
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
+        return text;
     }
-    return text;
+    else
+    {
+        delete text;
+        return 0;
+    }
 }
 
 bool Project::save()
@@ -274,7 +298,7 @@ void Project::removeTempDirectory()
     tempDir.rmdir( tempDirName() );
 }
 
-QStringList* Project::textPaths()
+QSet<QString>* Project::textPaths()
 {
     return &mTextPaths;
 }
@@ -308,11 +332,17 @@ QStringList Project::textNames() const
 {
     QStringList texts;
     QFileInfo info;
-    for(int i=0; i <mTextPaths.count(); i++)
+    foreach( QString path , mTextPaths )
     {
-        info.setFile(mTextPaths.at(i));
+        info.setFile(path);
         texts << info.baseName();
     }
     texts.sort();
     return texts;
+}
+
+void Project::closeText(Text *text)
+{
+    mTexts.remove( text->name() );
+    delete text;
 }

@@ -35,6 +35,8 @@ public:
     //! \brief Construct a GlossItem with the id (and data) from the given id (corresponding to the _id row of the Interpretations SQL table).
     GlossItem(const WritingSystem & ws, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent = 0);
 
+    ~GlossItem();
+
     //! \brief Sets the id of this GlossItem (corresponding to the _id row of the Interpretations SQL table), and sets the data for the GlossItem accordingly. If \a takeFormsFromDatabase is true, the GlossItem is filled with values from the database.
     void setInterpretation(qlonglong id, bool takeFormsFromDatabase = true);
 

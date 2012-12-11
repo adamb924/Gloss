@@ -58,8 +58,13 @@ void InterlinearDisplayWidget::setLayoutFromText()
 {
     clearData();
 
+    QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mText->phrases()->count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+
     for(int i=0; i< mText->phrases()->count(); i++)
     {
+        progress.setValue(i);
+
         QLayout *flowLayout = addLine();
         for(int j=0; j<mText->phrases()->at(i)->count(); j++)
         {
@@ -77,6 +82,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
         }
 
     }
+    progress.setValue(mText->phrases()->count());
     mLayout->addStretch(100);
 }
 

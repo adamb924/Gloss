@@ -37,6 +37,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
 
 TextDisplayWidget::~TextDisplayWidget()
 {
+    mProject->closeText(mText);
     delete ui;
 }
 

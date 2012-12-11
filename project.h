@@ -7,9 +7,9 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
-#include <QtSql>
 #include <QHash>
-#include <QList>
+#include <QSet>
+#include <QString>
 
 #include "writingsystem.h"
 #include "text.h"
@@ -30,9 +30,11 @@ public:
 
     DatabaseAdapter* dbAdapter();
 
-    QStringList* textPaths();
+    QSet<QString>* textPaths();
 
     bool save();
+
+    void closeText(Text *text);
 
     Text* newText(const QString & name, const WritingSystem & ws, const QString &content = QString() , bool openText = true );
     Text* textFromFlexText(const QString & filePath, const WritingSystem & ws);
@@ -65,9 +67,8 @@ private:
 
     QString tempDirName() const;
 
-
     //! \brief Paths of all texts in the temp directory
-    QStringList mTextPaths;
+    QSet<QString> mTextPaths;
 
     //! \brief A hash containing all "opened" texts, keyed by name
     QHash<QString,Text*> mTexts;

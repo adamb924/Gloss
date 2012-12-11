@@ -31,19 +31,19 @@ Text::Text(const WritingSystem & ws, const QString & name, Project *project)
 
 Text::Text(const QString & filePath, Project *project)
 {
-    QFile *file = new QFile(filePath);
+    QFile file(filePath);
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
-    mValid = readTextFromFlexText(file,true);
+    mValid = readTextFromFlexText(&file,true);
 }
 
 Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
 {
-    QFile *file = new QFile(filePath);
+    QFile file(filePath);
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
     mBaselineWritingSystem = ws;
-    mValid = readTextFromFlexText(file,false);
+    mValid = readTextFromFlexText(&file,false);
 }
 
 Text::~Text()

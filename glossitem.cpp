@@ -36,6 +36,10 @@ GlossItem::GlossItem(const WritingSystem & ws, qlonglong id, DatabaseAdapter *db
     setApprovalStatus(GlossItem::Approved);
 }
 
+GlossItem::~GlossItem()
+{
+}
+
 void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 {
     if( mId != id )

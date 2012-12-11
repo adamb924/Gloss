@@ -18,6 +18,7 @@ class LingEdit : public QLineEdit
 public:
 
     explicit LingEdit(const TextBit & bit, QWidget *parent = 0);
+    ~LingEdit();
 
     qlonglong id() const;
 

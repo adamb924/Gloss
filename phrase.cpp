@@ -9,6 +9,8 @@ Phrase::Phrase()
 
 Phrase::~Phrase()
 {
+    // delete the gloss items
+    qDeleteAll(*this);
 }
 
 TextBitHashIterator Phrase::glosses()

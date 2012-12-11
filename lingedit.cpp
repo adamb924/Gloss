@@ -20,6 +20,10 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
 
+LingEdit::~LingEdit()
+{
+}
+
 void LingEdit::setTextBit( const TextBit & bit )
 {
     if( mTextBit != bit )
@@ -33,8 +37,9 @@ void LingEdit::setTextBit( const TextBit & bit )
 void LingEdit::focusInEvent ( QFocusEvent * e )
 {
     // http://msdn.microsoft.com/en-us/goglobal/bb896001
-    QProcess *switchInput = new QProcess();
-    switchInput->start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mTextBit.writingSystem().keyboardCommand() );
+    QProcess switchInput;
+    switchInput.start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mTextBit.writingSystem().keyboardCommand() );
+    switchInput.waitForFinished();
 }
 
 void LingEdit::textChanged()

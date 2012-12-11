@@ -35,15 +35,20 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     updateBaselineLabelStyle();
 }
 
+WordDisplayWidget::~WordDisplayWidget()
+{
+}
+
 void WordDisplayWidget::setupLayout()
 {
-    mLayout = new QVBoxLayout;
+    // TODO see if this doesn't cause an error
+    mLayout = new QVBoxLayout(this);
     setLayout(mLayout);
 
     mTextFormEdits.clear();
     mGlossEdits.clear();
 
-    mBaselineWordLabel = new QLabel(mGlossItem->baselineText().text());
+    mBaselineWordLabel = new QLabel(mGlossItem->baselineText().text(), this);
     mBaselineWordLabel->setAlignment( mGlossItem->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
     updateBaselineLabelStyle();
 

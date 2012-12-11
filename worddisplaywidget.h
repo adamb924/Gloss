@@ -29,6 +29,7 @@ class WordDisplayWidget : public QWidget
 
 public:
     WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter);
+    ~WordDisplayWidget();
 
     QHash<qlonglong, LingEdit*> textFormEdits() const;
     QHash<qlonglong, LingEdit*> glossEdits() const;

@@ -18,6 +18,7 @@ void LingTextEdit::setWritingSystem(const WritingSystem & ws)
 void LingTextEdit::focusInEvent ( QFocusEvent * e )
 {
     // http://msdn.microsoft.com/en-us/goglobal/bb896001
-    QProcess *switchInput = new QProcess();
-    switchInput->start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mWritingSystem.keyboardCommand() );
+    QProcess switchInput;
+    switchInput.start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mWritingSystem.keyboardCommand() );
+    switchInput.waitForFinished();
 }
