@@ -26,6 +26,44 @@ DatabaseAdapter::~DatabaseAdapter()
     close();
 }
 
+void DatabaseAdapter::createTables()
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    if( !q.exec("create table if not exists Interpretations ( _id integer primary key autoincrement );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists TextForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists MorphologicalAnalyses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, SplitString text );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists Glosses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists InterlinearTextLine ( Type text, DisplayOrder integer, WritingSystem integer );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists PhrasalGlossLine ( DisplayOrder integer, WritingSystem integer );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Persian','Prs', 'prd-Arab', 'persian.ahk' , '1' , 'Scheherazade' , '16' );");
+    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Wakhi','Wak', 'wbl-Arab-AF', 'wakhi.ahk' , '1' , 'Scheherazade' , '16' );");
+    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('English','Eng', 'en', 'english.ahk' , '0' , 'Times New Roman' , '12' );");
+    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('IPA','IPA', 'wbl-Qaaa-AF-fonipa-x-Zipa', 'ipa.ahk' , '0' , 'Times New Roman' , '12' );");
+
+    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Text','1', '4');");
+    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Gloss','2', '1');");
+    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Gloss','3', '3');");
+
+    q.exec("insert into PhrasalGlossLine ( DisplayOrder, WritingSystem )  values ('1', '1');");
+    q.exec("insert into PhrasalGlossLine ( DisplayOrder, WritingSystem )  values ('2', '3');");
+}
+
 QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBit & bit) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
@@ -288,44 +326,6 @@ TextBitHash DatabaseAdapter::getInterpretationTextForms(qlonglong id) const
         while( q.next() )
             textForms.insert( writingSystem( q.value(1).toString() ) , TextBit( q.value(0).toString() , writingSystem( q.value(1).toString() ) , q.value(2).toLongLong() ) );
     return textForms;
-}
-
-void DatabaseAdapter::createTables()
-{
-    QSqlQuery q(QSqlDatabase::database(mFilename));
-
-    if( !q.exec("create table if not exists Interpretations ( _id integer primary key autoincrement );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
-
-    if( !q.exec("create table if not exists TextForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
-
-    if( !q.exec("create table if not exists MorphologicalAnalyses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, SplitString text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
-
-    if( !q.exec("create table if not exists Glosses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
-
-    if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
-
-    if( !q.exec("create table if not exists InterlinearTextLine ( Type text, DisplayOrder integer, WritingSystem integer );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
-
-    if( !q.exec("create table if not exists PhrasalGlossLine ( DisplayOrder integer, WritingSystem integer );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
-
-    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Persian','Prs', 'prd-Arab', 'persian.ahk' , '1' , 'Scheherazade' , '16' );");
-    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Wakhi','Wak', 'wbl-Arab-AF', 'wakhi.ahk' , '1' , 'Scheherazade' , '16' );");
-    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('English','Eng', 'en', 'english.ahk' , '0' , 'Times New Roman' , '12' );");
-    q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('IPA','IPA', 'wbl-Qaaa-AF-fonipa-x-Zipa', 'ipa.ahk' , '0' , 'Times New Roman' , '12' );");
-
-    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Text','1', '4');");
-    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Gloss','2', '1');");
-    q.exec("insert into InterlinearTextLine ( Type, DisplayOrder, WritingSystem )  values ('Gloss','3', '3');");
-
-    q.exec("insert into PhrasalGlossLine ( DisplayOrder, WritingSystem )  values ('1', '1');");
-    q.exec("insert into PhrasalGlossLine ( DisplayOrder, WritingSystem )  values ('2', '3');");
 }
 
 WritingSystem DatabaseAdapter::writingSystem(const QString & flexString) const

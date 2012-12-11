@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     messagehandler.cpp \
     lingtextedit.cpp \
     interlinearitemtype.cpp \
-    interpretationsearchdialog.cpp
+    interpretationsearchdialog.cpp \
+    writingsystemsdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -49,13 +50,15 @@ HEADERS  += mainwindow.h \
     lingtextedit.h \
     glossitem.h \
     interlinearitemtype.h \
-    interpretationsearchdialog.h
+    interpretationsearchdialog.h \
+    writingsystemsdialog.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
     newtextdialog.ui \
     importflextextdialog.ui \
-    interpretationsearchdialog.ui
+    interpretationsearchdialog.ui \
+    writingsystemsdialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

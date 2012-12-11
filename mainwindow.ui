@@ -56,8 +56,15 @@
      <string>Guts</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuProject">
+    <property name="title">
+     <string>Project</string>
+    </property>
+    <addaction name="actionWriting_systems"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
+   <addaction name="menuProject"/>
    <addaction name="menuGuts"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -136,6 +143,11 @@
   <action name="actionImport_plain_text">
    <property name="text">
     <string>Import plain text...</string>
+   </property>
+  </action>
+  <action name="actionWriting_systems">
+   <property name="text">
+    <string>Writing systems...</string>
    </property>
   </action>
  </widget>

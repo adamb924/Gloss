@@ -7,6 +7,7 @@
 #include "newtextdialog.h"
 #include "importflextextdialog.h"
 #include "writingsystem.h"
+#include "writingsystemsdialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -31,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addBlankText()));
     connect(ui->actionImport_FlexText, SIGNAL(triggered()), this, SLOT(importFlexText()));
     connect(ui->actionImport_plain_text, SIGNAL(triggered()), this, SLOT(importPlainText()));
+    connect(ui->actionWriting_systems, SIGNAL(triggered()), this, SLOT(writingSystems()) );
 
     setProjectActionsEnabled(false);
 
@@ -121,10 +123,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if( mProject == 0 )
     {
         event->accept();
-        return;
     }
-    if( maybeSave() )
+    else if( maybeSave() )
+    {
         projectClose();
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
 }
 
 void MainWindow::projectClose()
@@ -281,11 +289,13 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
 {
     ui->menuData->setEnabled(enabled);
     ui->menuGuts->setEnabled(enabled);
+    ui->menuProject->setEnabled(enabled);
     ui->actionAdd_text->setEnabled(enabled);
     ui->actionImport_FlexText->setEnabled(enabled);
     ui->actionSave_Project->setEnabled(enabled);
     ui->actionSave_Project_As->setEnabled(enabled);
     ui->actionClose_Project->setEnabled(enabled);
+    ui->actionWriting_systems->setEnabled(enabled);
 }
 
 void MainWindow::openText()
@@ -319,4 +329,10 @@ void MainWindow::openText(const QString & textName)
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();
     }
+}
+
+void MainWindow::writingSystems()
+{
+    WritingSystemsDialog dialog(mProject->dbAdapter(), this);
+    dialog.exec();
 }

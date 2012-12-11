@@ -66,6 +66,13 @@ void InterlinearDisplayWidget::setLayoutFromText()
         progress.setValue(i);
 
         QLayout *flowLayout = addLine();
+
+        // TODO look into why this messes up the layout so much
+//        QLabel *lineNumber = new QLabel(QString("%1").arg(i+1), this);
+//        lineNumber->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//        lineNumber->setMinimumSize(30, 30);
+//        flowLayout->addWidget(lineNumber);
+
         for(int j=0; j<mText->phrases()->at(i)->count(); j++)
         {
             WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
