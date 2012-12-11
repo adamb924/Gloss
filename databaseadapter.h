@@ -24,9 +24,6 @@ public:
     explicit DatabaseAdapter(const QString & filename, QObject *parent = 0);
     ~DatabaseAdapter();
 
-    //! \brief Initializes the database at the path \a filename
-    void initialize(QString filename);
-
     //! \brief Returns a list of possible interpretations of the text from TextBit \a bit
     QList<qlonglong> candidateInterpretations(const TextBit & bit) const;
 
@@ -105,9 +102,10 @@ public:
         return string.replace( "'" , "''");
     }
 
-private:
     //! \brief Creates the tables for the first time
     void createTables();
+
+private:
 
     QString mFilename;
 
