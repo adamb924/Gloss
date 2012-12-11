@@ -45,9 +45,9 @@ void InterpretationSearchDialog::updateQuery()
 
 void InterpretationSearchDialog::fillWritingSystems()
 {
-    QList<WritingSystem*> writingSystems = mDbAdapter->writingSystems();
-    foreach( WritingSystem* ws , writingSystems )
-        ui->writingSystem->addItem( ws->name() , ws->id() );
+    QList<WritingSystem> writingSystems = mDbAdapter->writingSystems();
+    foreach( WritingSystem ws , writingSystems )
+        ui->writingSystem->addItem( ws.name() , ws.id() );
 }
 
 void InterpretationSearchDialog::setSelectionRowId()

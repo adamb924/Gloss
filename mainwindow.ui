@@ -49,6 +49,7 @@
     <addaction name="separator"/>
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
+    <addaction name="actionImport_plain_text"/>
    </widget>
    <widget class="QMenu" name="menuGuts">
     <property name="title">
@@ -130,6 +131,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionImport_plain_text">
+   <property name="text">
+    <string>Import plain text...</string>
    </property>
   </action>
  </widget>

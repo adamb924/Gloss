@@ -6,13 +6,14 @@
 #include "textdisplaywidget.h"
 #include "newtextdialog.h"
 #include "importflextextdialog.h"
+#include "writingsystem.h"
 
 #include <QtGui>
 #include <QtSql>
 
 MainWindow::MainWindow(QWidget *parent) :
-        QMainWindow(parent),
-        ui(new Ui::MainWindow)
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
     mProject = 0;
 
@@ -29,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen_text, SIGNAL(triggered()), this, SLOT(openText()));
     connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addBlankText()));
     connect(ui->actionImport_FlexText, SIGNAL(triggered()), this, SLOT(importFlexText()));
+    connect(ui->actionImport_plain_text, SIGNAL(triggered()), this, SLOT(importPlainText()));
 
     setProjectActionsEnabled(false);
 
@@ -164,26 +166,82 @@ void MainWindow::addBlankText()
     NewTextDialog dialog( mProject->dbAdapter()->writingSystems(), this);
     if( dialog.exec() == QDialog::Accepted )
     {
-        Text *text = mProject->newBlankText(dialog.name(), dialog.writingSystem());
+        Text *text = mProject->newText(dialog.name(), dialog.writingSystem());
         TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();
     }
 }
 
-void MainWindow::sqlTableView( QAction * action )
+WritingSystem MainWindow::selectWritingSystem(bool *ok)
 {
-    QString name = action->data().toString();
-    QSqlTableModel *model = new QSqlTableModel(this,QSqlDatabase::database(mProject->dbAdapter()->dbFilename()));
-    model->setTable(name);
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->select();
+    QList<WritingSystem> list = mProject->dbAdapter()->writingSystems();
+    QStringList names;
+    for(int i=0; i<list.count(); i++)
+        names << list.at(i).name();
+    QString item = QInputDialog::getItem(this, tr("Select writing system"), tr("Select the baseline writing system for these texts."), names, 0, false, ok );
+    if( names.contains(item) )
+        return list.at( names.indexOf( item ) );
+    else
+        return WritingSystem();
+}
 
-    QTableView *view = new QTableView;
-    view->setModel(model);
-    view->setSortingEnabled(true);
-    view->setWindowTitle(name);
-    view->show();
+void MainWindow::importPlainText()
+{
+    QFileDialog dialog( this, tr("Select file(s) to import"), QString(), "*.*" );
+    dialog.setFileMode(QFileDialog::ExistingFiles);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        bool ok;
+        WritingSystem ws = selectWritingSystem(&ok);
+        if( ok )
+        {
+            QStringList files = dialog.selectedFiles();
+            bool openText = files.count() == 1;
+
+            if( files.count() == 1 )
+            {
+                importPlainText( files.first() , ws , true );
+            }
+            else
+            {
+                QProgressDialog progress("Importing texts...", "Cancel", 0, files.count(), this);
+                progress.setWindowModality(Qt::WindowModal);
+                for(int i=0; i<files.count(); i++)
+                {
+                    progress.setValue(i);
+                    if( QFile::exists(files.at(i)))
+                        importPlainText( files.at(i) , ws , openText );
+                    if( progress.wasCanceled() )
+                        break;
+                }
+                progress.setValue(files.count());
+            }
+        }
+    }
+}
+
+void MainWindow::importPlainText(const QString & filepath , const WritingSystem & ws, bool openText)
+{
+    QFile file(filepath);
+    if( file.open(QFile::ReadOnly) )
+    {
+        QFileInfo info(filepath);
+        QString name = info.baseName();
+
+        QTextStream stream(&file);
+        stream.setCodec("UTF-8");
+        QString content = stream.readAll();
+        file.close();
+
+        Text *text = mProject->newText(name, ws, content, openText);
+        if( openText )
+        {
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
+            ui->mdiArea->addSubWindow(subWindow);
+            subWindow->show();
+        }
+    }
 }
 
 void MainWindow::importFlexText()
@@ -204,6 +262,21 @@ void MainWindow::importFlexText()
     }
 }
 
+void MainWindow::sqlTableView( QAction * action )
+{
+    QString name = action->data().toString();
+    QSqlTableModel *model = new QSqlTableModel(this,QSqlDatabase::database(mProject->dbAdapter()->dbFilename()));
+    model->setTable(name);
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->select();
+
+    QTableView *view = new QTableView;
+    view->setModel(model);
+    view->setSortingEnabled(true);
+    view->setWindowTitle(name);
+    view->show();
+}
+
 void MainWindow::setProjectActionsEnabled(bool enabled)
 {
     ui->menuData->setEnabled(enabled);
@@ -222,17 +295,8 @@ void MainWindow::openText()
         QMessageBox::information(this, tr("No texts"), tr("The project has no texts to open."));
         return;
     }
-
-    QStringList texts;
-    QFileInfo info;
-
-    for(int i=0; i<mProject->textPaths()->count(); i++)
-    {
-        info.setFile(mProject->textPaths()->at(i));
-        texts << info.baseName();
-    }
     bool ok;
-    QString whichText = QInputDialog::getItem( this, tr("Select text"), tr("Select the text to open"), texts, 0, false, &ok );
+    QString whichText = QInputDialog::getItem( this, tr("Select text"), tr("Select the text to open"), mProject->textNames(), 0, false, &ok );
     if( ok )
         openText(whichText);
 }

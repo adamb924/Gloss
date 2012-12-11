@@ -11,6 +11,7 @@
 
 class Project;
 class QAction;
+class WritingSystem;
 
 namespace Ui {
     class MainWindow;
@@ -36,6 +37,8 @@ private:
     void closeEvent(QCloseEvent *event);
     bool maybeSave();
 
+    WritingSystem selectWritingSystem(bool *ok);
+
 private slots:
     void newProject();
     void openProject();
@@ -52,6 +55,8 @@ private slots:
 
     void addBlankText();
     void importFlexText();
+    void importPlainText();
+    void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText);
 };
 
 #endif // MAINWINDOW_H

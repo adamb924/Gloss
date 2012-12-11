@@ -34,9 +34,12 @@ public:
 
     bool save();
 
-    Text* newBlankText(const QString & name, const WritingSystem & ws);
+    Text* newText(const QString & name, const WritingSystem & ws, const QString &content = QString() , bool openText = true );
     Text* textFromFlexText(const QString & filePath, const WritingSystem & ws);
     Text* textFromFlexText(const QString & filePath);
+
+    //! \brief Returns a list of text names, sorted alphabetically.
+    QStringList textNames() const;
 
     QDir getTempDir() const;
 

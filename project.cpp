@@ -144,12 +144,23 @@ void Project::readTextPaths()
         mTextPaths << tempDir.absoluteFilePath(entries.at(i));
 }
 
-Text* Project::newBlankText(const QString & name, const WritingSystem & ws)
+Text* Project::newText(const QString & name, const WritingSystem & ws, const QString & content , bool openText )
 {
+    if( mTexts.contains(name) )
+    {
+        QMessageBox::critical(0, tr("Cannot add text"), tr("The project already has a text with that name. You need to rename the file if you want to add it to this project."));
+        return 0;
+    }
+
     Text *text = new Text(ws,name,this);
+    text->setBaselineText(content);
     if( text->isValid() )
     {
-        mTexts.insert(name, text);
+        text->saveText();
+        if( openText )
+            mTexts.insert(name, text);
+        else
+            delete text;
         mTextPaths << filepathFromName(name);
         return text;
     }
@@ -169,6 +180,7 @@ Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem &
     Text *text = new Text(filePath,ws,this);
     if(text->isValid())
     {
+        text->saveText();
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
         return text;
@@ -184,6 +196,7 @@ Text* Project::textFromFlexText(const QString & filePath)
     Text *text = new Text(filePath,this);
     if( text->isValid() )
     {
+        text->saveText();
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
     }
@@ -289,4 +302,17 @@ bool Project::openText(const QString & name)
     {
         return false;
     }
+}
+
+QStringList Project::textNames() const
+{
+    QStringList texts;
+    QFileInfo info;
+    for(int i=0; i <mTextPaths.count(); i++)
+    {
+        info.setFile(mTextPaths.at(i));
+        texts << info.baseName();
+    }
+    texts.sort();
+    return texts;
 }

@@ -6,6 +6,7 @@
 #include <QtDebug>
 #include <QHashIterator>
 #include <QXmlQuery>
+#include <QProgressDialog>
 
 #include "writingsystem.h"
 #include "project.h"
@@ -120,11 +121,20 @@ void Text::setGlossItemsFromBaseline()
     else
     {
         clearGlossItems();
+        QProgressDialog progress(tr("Analyzing text %1...").arg(mName), "Cancel", 0, lines.count(), 0);
+        progress.setWindowModality(Qt::WindowModal);
         for(int i=0; i<lines.count(); i++)
         {
+            progress.setValue(i);
             mPhrases.append( new Phrase );
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
+            if( progress.wasCanceled() )
+            {
+                mValid = false;
+                break;
+            }
         }
+        progress.setValue(lines.count());
     }
 }
 
@@ -345,8 +355,15 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
 
     stream->writeStartElement("paragraphs");
 
+    QProgressDialog progress(tr("Saving text %1...").arg(mName), "Cancel", 0, mPhrases.count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+
     for(int i=0; i<mPhrases.count(); i++)
     {
+        progress.setValue(i);
+        if(progress.wasCanceled())
+            return false;
+
         // this rather profligate nesting seems to be a feature of flextext files
         stream->writeStartElement("paragraph");
         stream->writeStartElement("phrases");
@@ -395,20 +412,21 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         stream->writeEndElement(); // paragraph
     }
 
+    progress.setValue(mPhrases.count());
 
     stream->writeEndElement(); // paragraphs
 
     stream->writeStartElement("languages");
-    QList<WritingSystem*> ws = mProject->dbAdapter()->writingSystems();
+    QList<WritingSystem> ws = mProject->dbAdapter()->writingSystems();
     for( int i=0; i<ws.count(); i++ )
     {
         stream->writeStartElement("language");
-        stream->writeAttribute("lang", ws.at(i)->flexString() );
-        stream->writeAttribute("font", ws.at(i)->fontFamily() );
-        stream->writeAttribute("http://www.adambaker.org/gloss.php","font-size", QString("%1").arg(ws.at(i)->fontSize()) );
-        if( ws.at(i)->layoutDirection() == Qt::RightToLeft )
+        stream->writeAttribute("lang", ws.at(i).flexString() );
+        stream->writeAttribute("font", ws.at(i).fontFamily() );
+        stream->writeAttribute("http://www.adambaker.org/gloss.php","font-size", QString("%1").arg(ws.at(i).fontSize()) );
+        if( ws.at(i).layoutDirection() == Qt::RightToLeft )
             stream->writeAttribute("RightToLeft", "true" );
-        if( mBaselineWritingSystem.flexString() == ws.at(i)->flexString() )
+        if( mBaselineWritingSystem.flexString() == ws.at(i).flexString() )
             stream->writeAttribute("http://www.adambaker.org/gloss.php","is-baseline", "true" );
 
         stream->writeEndElement(); // language

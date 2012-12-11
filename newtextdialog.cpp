@@ -3,7 +3,7 @@
 
 #include <QtGui>
 
-NewTextDialog::NewTextDialog(const QList<WritingSystem*> & ws, QWidget *parent) :
+NewTextDialog::NewTextDialog(const QList<WritingSystem> & ws, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog)
 {
@@ -12,7 +12,7 @@ NewTextDialog::NewTextDialog(const QList<WritingSystem*> & ws, QWidget *parent) 
     mWritingSystems = ws;
 
     for(int i=0; i<mWritingSystems.count(); i++)
-        ui->baselineWritingSystem->addItem(mWritingSystems.at(i)->summaryString(), mWritingSystems.at(i)->flexString());
+        ui->baselineWritingSystem->addItem(mWritingSystems.at(i).summaryString(), mWritingSystems.at(i).flexString());
 }
 
 NewTextDialog::~NewTextDialog()
@@ -24,8 +24,8 @@ WritingSystem NewTextDialog::writingSystem() const
 {
     QString flexString = ui->baselineWritingSystem->itemData(ui->baselineWritingSystem->currentIndex()).toString();
     for(int i=0; i<mWritingSystems.count(); i++)
-        if( *mWritingSystems.at(i) == flexString )
-            return *mWritingSystems.at(i);
+        if( mWritingSystems.at(i) == flexString )
+            return mWritingSystems.at(i);
     return WritingSystem();
 }
 

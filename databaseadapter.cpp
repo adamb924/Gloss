@@ -314,15 +314,15 @@ WritingSystem DatabaseAdapter::writingSystem(qlonglong id) const
         return WritingSystem();
 }
 
-QList<WritingSystem*> DatabaseAdapter::writingSystems() const
+QList<WritingSystem> DatabaseAdapter::writingSystems() const
 {
-    QList<WritingSystem*> list;
+    QList<WritingSystem> list;
     QSqlQuery q(QSqlDatabase::database(mFilename));
     QString query = QString("select _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems;");
     if( !q.exec(query)  )
         qWarning() << "DatabaseAdapter::writingSystems" << q.lastError().text() << query;
     while( q.next() )
-        list << new WritingSystem(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString(), q.value(7).toInt() );
+        list << WritingSystem(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString(), q.value(7).toInt() );
     return list;
 }
 

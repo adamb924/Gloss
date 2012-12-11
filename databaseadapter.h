@@ -82,7 +82,7 @@ public:
     WritingSystem writingSystem(qlonglong id) const;
 
     //! \brief Returns a list of all writing systems.
-    QList<WritingSystem*> writingSystems() const;
+    QList<WritingSystem> writingSystems() const;
 
     //! \brief Returns true if a writing system with FlexString \a flexstring exists, otherwise false.
     bool writingSystemExists(const QString & flexstring) const;
