@@ -142,14 +142,12 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
     }
     else
     {
-        if( itemList.count() > 0 )
-            x = effectiveRect.right() - itemList.first()->sizeHint().width();
-        else
-            x = effectiveRect.right();
+        x = effectiveRect.right();
 
         QLayoutItem *item;
         foreach (item, itemList) {
             QWidget *wid = item->widget();
+
             int spaceX = horizontalSpacing();
             if (spaceX == -1)
                 spaceX = wid->style()->layoutSpacing(
@@ -161,16 +159,15 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
 
             int nextX = x - (item->sizeHint().width() + spaceX);
 
-            // Hack alert: I'm not totally clear on the geometry underlying adding item->sizeHint().width() in the expression nextX + spaceX + item->sizeHint().width(), but it produces the desired result
-            if (nextX + spaceX + item->sizeHint().width() < effectiveRect.left() && lineHeight > 0) {
-                x = effectiveRect.right() - item->sizeHint().width();
+            if (nextX + spaceX < effectiveRect.left() && lineHeight > 0) {
+                x = effectiveRect.right();
                 y = y + lineHeight + spaceY;
                 nextX = x - ( item->sizeHint().width() + spaceX );
                 lineHeight = 0;
             }
 
             if (!testOnly)
-                item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
+                item->setGeometry(QRect(QPoint(x - item->sizeHint().width(), y), item->sizeHint()));
 
             x = nextX;
             lineHeight = qMax(lineHeight, item->sizeHint().height());

@@ -54,7 +54,7 @@ private:
     void addPhrasalGlossLines( int i );
 
     //! \brief Add a line label for phrase \a i
-    void addLineLabel( int i );
+    void addLineLabel( int i , QLayout * flowLayout  );
 
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
     void addWordDisplayWidgets( int i , QLayout * flowLayout );

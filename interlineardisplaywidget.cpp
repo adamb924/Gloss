@@ -82,8 +82,8 @@ void InterlinearDisplayWidget::setLayoutFromText()
             continue;
         }
 
-        addLineLabel(i);
-        if( flowLayout->count() == 0 ) // it's either new or has been cleared for a refresh
+        addLineLabel(i, flowLayout);
+        if( flowLayout->count() == 1 ) // it's either new or has been cleared for a refresh
             addWordDisplayWidgets(i, flowLayout);
         addPhrasalGlossLines(i);
 
@@ -106,14 +106,12 @@ void InterlinearDisplayWidget::clearWidgets(QLayout * layout)
     }
 }
 
-void InterlinearDisplayWidget::addLineLabel( int i )
+void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 {
-    // TODO look into why this messes up the layout so much
-    // I figure the layout class must assume a fixed width somehow
-    //        QLabel *lineNumber = new QLabel(QString("%1").arg(i+1), this);
-    //        lineNumber->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    //        lineNumber->setMinimumSize(30, 30);
-    //        flowLayout->addWidget(lineNumber);
+    QLabel *lineNumber = new QLabel(QString("%1").arg(i+1), this);
+    lineNumber->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    lineNumber->setMinimumSize(30, 30);
+    flowLayout->addWidget(lineNumber);
 }
 
 void InterlinearDisplayWidget::addWordDisplayWidgets( int i , QLayout * flowLayout )
@@ -160,7 +158,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
 
 QLayout* InterlinearDisplayWidget::addLine()
 {
-    FlowLayout *flowLayout = new FlowLayout( mText->baselineWritingSystem().layoutDirection() );
+    FlowLayout *flowLayout = new FlowLayout( mText->baselineWritingSystem().layoutDirection() , 0, 5 , 5 , 5 );
     mLineLayouts << flowLayout;
     mLayout->addLayout(flowLayout);
     return flowLayout;

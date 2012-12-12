@@ -20,6 +20,8 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 
     mGlossLines = mDbAdapter->interlinearTextLines();
 
+    setMaximumWidth(100);
+
     setupLayout();
 
     setMinimumSize(128,128);
