@@ -22,6 +22,7 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
 
 LingEdit::~LingEdit()
 {
+    emit beingDestroyed(this);
 }
 
 void LingEdit::setTextBit( const TextBit & bit )

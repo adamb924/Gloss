@@ -35,6 +35,9 @@ public slots:
     void updateText( const TextBit & bit );
     void updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
 
+    void removeGlossFromConcordance( LingEdit * edit );
+    void removeTextFormFromConcordance( LingEdit * edit );
+
 private slots:
     void baselineTextUpdated(const QString & baselineText);
 

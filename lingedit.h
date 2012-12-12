@@ -33,6 +33,7 @@ private:
 
 signals:
     void stringChanged( const TextBit & );
+    void beingDestroyed( LingEdit * edit );
 
 public slots:
     void textChanged();

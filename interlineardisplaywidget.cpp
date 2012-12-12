@@ -198,3 +198,15 @@ void InterlinearDisplayWidget::updateGlossFormConcordance(LingEdit * edit, qlong
     mGlossConcordance.remove(oldId, edit);
     mGlossConcordance.insert(newId, edit);
 }
+
+void InterlinearDisplayWidget::removeGlossFromConcordance( LingEdit * edit )
+{
+    qlonglong id = mGlossConcordance.key( edit );
+    mGlossConcordance.remove( id , edit );
+}
+
+void InterlinearDisplayWidget::removeTextFormFromConcordance( LingEdit * edit )
+{
+    qlonglong id = mTextFormConcordance.key( edit );
+    mTextFormConcordance.remove( id , edit );
+}
