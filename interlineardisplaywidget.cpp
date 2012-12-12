@@ -3,6 +3,7 @@
 #include <QtDebug>
 #include <QtGui>
 #include <QStringList>
+#include <QLayout>
 
 #include "flowlayout.h"
 #include "textbit.h"
@@ -56,7 +57,7 @@ void InterlinearDisplayWidget::clearData()
 
 void InterlinearDisplayWidget::setLayoutFromText()
 {
-    clearData();
+    //    clearData();
 
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mText->phrases()->count(), 0);
     progress.setWindowModality(Qt::WindowModal);
@@ -65,32 +66,75 @@ void InterlinearDisplayWidget::setLayoutFromText()
     {
         progress.setValue(i);
 
-        QLayout *flowLayout = addLine();
+        QLayout *flowLayout;
 
-        // TODO look into why this messes up the layout so much
-//        QLabel *lineNumber = new QLabel(QString("%1").arg(i+1), this);
-//        lineNumber->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-//        lineNumber->setMinimumSize(30, 30);
-//        flowLayout->addWidget(lineNumber);
-
-        for(int j=0; j<mText->phrases()->at(i)->count(); j++)
+        if( i >= mLineLayouts.count() ) // there is no layout here
         {
-            WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
-            flowLayout->addWidget(wdw);
-            connect( mText->phrases()->at(i)->at(j), SIGNAL(interpretationIdChanged(qlonglong)), wdw, SLOT(sendConcordanceUpdates()) );
+            flowLayout = addLine();
+        }
+        else if( mText->phrases()->at(i)->guiRefreshRequest() )
+        {
+            flowLayout = mLineLayouts.at(i);
+            clearWidgets( flowLayout );
+        }
+        else
+        {
+            continue;
         }
 
-        for(int j=0; j<mPhrasalGlossLines.count(); j++)
-        {
-            TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
-            LingEdit *edit = addPhrasalGlossLine( bit );
-            edit->matchTextAlignmentTo( mText->baselineWritingSystem().layoutDirection() );
-            connect( edit, SIGNAL(stringChanged(TextBit)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
-        }
+        addLineLabel(i);
+        if( flowLayout->count() == 0 ) // it's either new or has been cleared for a refresh
+            addWordDisplayWidgets(i, flowLayout);
+        addPhrasalGlossLines(i);
 
+        mText->phrases()->at(i)->setGuiRefreshRequest(false);
     }
     progress.setValue(mText->phrases()->count());
     mLayout->addStretch(100);
+}
+
+void InterlinearDisplayWidget::clearWidgets(QLayout * layout)
+{
+    if( layout->count() == 0 )
+        return;
+    QLayoutItem * item;
+    while( ( item = layout->takeAt(0) ) != 0 )
+    {
+        mWordDisplayWidgets.remove(item->widget());
+        delete item->widget();
+        delete item;
+    }
+}
+
+void InterlinearDisplayWidget::addLineLabel( int i )
+{
+    // TODO look into why this messes up the layout so much
+    // I figure the layout class must assume a fixed width somehow
+    //        QLabel *lineNumber = new QLabel(QString("%1").arg(i+1), this);
+    //        lineNumber->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    //        lineNumber->setMinimumSize(30, 30);
+    //        flowLayout->addWidget(lineNumber);
+}
+
+void InterlinearDisplayWidget::addWordDisplayWidgets( int i , QLayout * flowLayout )
+{
+    for(int j=0; j<mText->phrases()->at(i)->count(); j++)
+    {
+        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
+        connect( mText->phrases()->at(i)->at(j), SIGNAL(interpretationIdChanged(qlonglong)), wdw, SLOT(sendConcordanceUpdates()) );
+        flowLayout->addWidget(wdw);
+    }
+}
+
+void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
+{
+    for(int j=0; j<mPhrasalGlossLines.count(); j++)
+    {
+        TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
+        LingEdit *edit = addPhrasalGlossLine( bit );
+        edit->matchTextAlignmentTo( mText->baselineWritingSystem().layoutDirection() );
+        connect( edit, SIGNAL(stringChanged(TextBit)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
+    }
 }
 
 LingEdit* InterlinearDisplayWidget::addPhrasalGlossLine( const TextBit & gloss )

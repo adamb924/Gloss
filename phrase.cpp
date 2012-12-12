@@ -5,6 +5,7 @@
 
 Phrase::Phrase()
 {
+    mRequestGuiRefresh = true;
 }
 
 Phrase::~Phrase()
@@ -39,4 +40,14 @@ QString Phrase::equivalentBaselineLineText() const
         text.append(" ");
     }
     return text.trimmed();
+}
+
+bool Phrase::guiRefreshRequest() const
+{
+    return mRequestGuiRefresh;
+}
+
+void Phrase::setGuiRefreshRequest(bool needed)
+{
+    mRequestGuiRefresh = needed;
 }

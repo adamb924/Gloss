@@ -29,12 +29,19 @@ public:
     //! \brief Returns a text string that is the
     QString equivalentBaselineLineText() const;
 
+    //! \brief Returns true if the Phrase thinks that the GUI should update itself.
+    bool guiRefreshRequest() const;
+
+    //! \brief Set whether the Phrase should request a GUI update or not.
+    void setGuiRefreshRequest(bool needed);
+
 public slots:
     //! \brief Adds or updates the phrase-level gloss to \a bit. The gloss to be added or updated is indicated by the WritingSystem of \bit.
     void setPhrasalGloss( const TextBit & bit );
 
 private:
     TextBitHash mGlosses;
+    bool mRequestGuiRefresh;
 };
 
 #endif // PHRASE_H

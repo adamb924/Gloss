@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QList>
 #include <QMultiHash>
+#include <QSet>
 
 class QVBoxLayout;
 class GlossItem;
@@ -46,6 +47,18 @@ private:
 
     void setLayoutFromText();
 
+    //! \brief Removes and deletes all widgets from the given \a layout
+    void clearWidgets(QLayout * layout);
+
+    //! \brief Add the phrasal gloss lines for phrase \a i
+    void addPhrasalGlossLines( int i );
+
+    //! \brief Add a line label for phrase \a i
+    void addLineLabel( int i );
+
+    //! \brief Add the word display widgets for phrase \a i to \a flowLayout
+    void addWordDisplayWidgets( int i , QLayout * flowLayout );
+
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
 
     void clearData();
@@ -54,7 +67,7 @@ private:
 
     QList<QLayout*> mLineLayouts;
     QList<LingEdit*> mPhrasalGlossEdits;
-    QList<QWidget*> mWordDisplayWidgets;
+    QSet<QWidget*> mWordDisplayWidgets;
 
     QList<InterlinearItemType> mPhrasalGlossLines;
 
