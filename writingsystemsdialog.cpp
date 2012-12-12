@@ -17,8 +17,8 @@ WritingSystemsDialog::WritingSystemsDialog(DatabaseAdapter *dbAdapter, QWidget *
 
     setWindowTitle("Writing Systems");
 
-    connect( ui->submit, SIGNAL(clicked()), mModel, SLOT(revertAll()));
-    connect( ui->revert, SIGNAL(clicked()), mModel, SLOT(submitAll()));
+    connect( ui->submit, SIGNAL(clicked()), mModel, SLOT(submitAll()));
+    connect( ui->revert, SIGNAL(clicked()), mModel, SLOT(revertAll()));
     connect( ui->dismiss, SIGNAL(clicked()), this, SLOT(accept()) );
     connect( ui->insertRow, SIGNAL(clicked()), this, SLOT(insert()));
     connect( ui->deleteRow, SIGNAL(clicked()), this, SLOT(remove()));
@@ -35,7 +35,6 @@ void WritingSystemsDialog::setupTable()
     mModel->setTable("WritingSystems");
     mModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
     mModel->select();
-    mModel->removeColumn(0); // don't show the ID
     mModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
     mModel->setHeaderData(1, Qt::Horizontal, tr("Abbreviation"));
     mModel->setHeaderData(2, Qt::Horizontal, tr("Flex String"));
@@ -45,6 +44,7 @@ void WritingSystemsDialog::setupTable()
     mModel->setHeaderData(6, Qt::Horizontal, tr("Font Size"));
 
     ui->tableView->setModel(mModel);
+    ui->tableView->hideColumn(0); // don't show the ID
 }
 
 void WritingSystemsDialog::insert()
