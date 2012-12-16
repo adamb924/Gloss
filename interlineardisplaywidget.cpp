@@ -52,6 +52,9 @@ void InterlinearDisplayWidget::clearData()
     qDeleteAll(mWordDisplayWidgets);
     mWordDisplayWidgets.clear();
 
+    qDeleteAll(mWdwByInterpretationId);
+    mWdwByInterpretationId.clear();
+
     qDeleteAll(mLineLayouts);
     mLineLayouts.clear();
 
@@ -107,6 +110,7 @@ void InterlinearDisplayWidget::clearWidgets(QLayout * layout)
     while( ( item = layout->takeAt(0) ) != 0 )
     {
         mWordDisplayWidgets.remove(item->widget());
+        mWdwByInterpretationId.remove( mWdwByInterpretationId.key(qobject_cast<WordDisplayWidget*>(item->widget())) );
         delete item->widget();
         delete item;
     }
@@ -126,6 +130,7 @@ void InterlinearDisplayWidget::addWordDisplayWidgets( int i , QLayout * flowLayo
     {
         WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
         connect( mText->phrases()->at(i)->at(j), SIGNAL(interpretationIdChanged(qlonglong)), wdw, SLOT(sendConcordanceUpdates()) );
+        connect( wdw, SIGNAL(alternateInterpretationAvailableFor(int)), this, SLOT(otherInterpretationsAvailableFor(int)) );
         flowLayout->addWidget(wdw);
     }
 }
@@ -153,6 +158,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
 {
     WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , this, mProject->dbAdapter() );
     mWordDisplayWidgets << wdw;
+    mWdwByInterpretationId.insert( item->id() , wdw );
     mTextFormConcordance.unite( wdw->textFormEdits() );
     mGlossConcordance.unite( wdw->glossEdits() );
 
@@ -258,3 +264,10 @@ void InterlinearDisplayWidget::scrollContentsBy ( int dx, int dy )
     }
 }
 
+void InterlinearDisplayWidget::otherInterpretationsAvailableFor(int id)
+{
+    QList<WordDisplayWidget*> list = mWdwByInterpretationId.values(id);
+    QListIterator<WordDisplayWidget*> iterator(list);
+    while(iterator.hasNext())
+        iterator.next()->glossItem()->setCandidateStatus(GlossItem::MultipleOption);
+}

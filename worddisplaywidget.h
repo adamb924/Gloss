@@ -33,6 +33,7 @@ public:
 
     QHash<qlonglong, LingEdit*> textFormEdits() const;
     QHash<qlonglong, LingEdit*> glossEdits() const;
+    GlossItem* glossItem();
 
 private:
     GlossItem *mGlossItem;
@@ -63,6 +64,7 @@ private:
 signals:
     void textFormIdChanged(LingEdit * edit, qlonglong newId);
     void glossIdChanged(LingEdit * edit, qlonglong newId);
+    void alternateInterpretationAvailableFor( int id );
 
 public slots:
     void updateBaselineLabelStyle();

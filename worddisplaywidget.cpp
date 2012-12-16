@@ -227,6 +227,7 @@ void WordDisplayWidget::addGlossSubmenu(QMenu *menu, const WritingSystem & writi
 
 void WordDisplayWidget::newInterpretation()
 {
+    emit alternateInterpretationAvailableFor(mGlossItem->id());
     qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
     mGlossItem->setInterpretation(id);
     fillData();
@@ -359,4 +360,9 @@ void WordDisplayWidget::otherInterpretation()
         mGlossItem->setInterpretation(id);
         fillData();
     }
+}
+
+GlossItem* WordDisplayWidget::glossItem()
+{
+    return mGlossItem;
 }

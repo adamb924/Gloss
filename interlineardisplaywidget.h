@@ -15,10 +15,13 @@
 class QVBoxLayout;
 class QScrollArea;
 class GlossItem;
+class WordDisplayWidget;
+class LingEdit;
+class Project;
 
 #include "flowlayout.h"
 #include "textbit.h"
-#include "worddisplaywidget.h"
+#include "interlinearitemtype.h"
 
 class Text;
 
@@ -43,6 +46,8 @@ public slots:
     void removeTextFormFromConcordance( LingEdit * edit );
 
     void scrollToLine(int line);
+
+    void otherInterpretationsAvailableFor(int id);
 
 protected:
     void scrollContentsBy ( int dx, int dy );
@@ -85,6 +90,7 @@ private:
     QList<QLayout*> mLineLayouts;
     QList<LingEdit*> mPhrasalGlossEdits;
     QSet<QWidget*> mWordDisplayWidgets;
+    QMultiHash<qlonglong,WordDisplayWidget*> mWdwByInterpretationId;
 
     QList<InterlinearItemType> mPhrasalGlossLines;
 
