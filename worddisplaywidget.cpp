@@ -43,7 +43,6 @@ WordDisplayWidget::~WordDisplayWidget()
 
 void WordDisplayWidget::setupLayout()
 {
-    // TODO see if this doesn't cause an error
     mLayout = new QVBoxLayout(this);
     setLayout(mLayout);
 

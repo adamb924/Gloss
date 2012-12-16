@@ -7,12 +7,13 @@
 #ifndef INTERLINEARDISPLAYWIDGET_H
 #define INTERLINEARDISPLAYWIDGET_H
 
-#include <QWidget>
+#include <QScrollArea>
 #include <QList>
 #include <QMultiHash>
 #include <QSet>
 
 class QVBoxLayout;
+class QScrollArea;
 class GlossItem;
 
 #include "flowlayout.h"
@@ -21,7 +22,7 @@ class GlossItem;
 
 class Text;
 
-class InterlinearDisplayWidget : public QWidget
+class InterlinearDisplayWidget : public QScrollArea
 {
     Q_OBJECT
 public:
@@ -29,6 +30,9 @@ public:
     ~InterlinearDisplayWidget();
 
 signals:
+    //! \brief Emitted whenever the top line number of the widget is changed. \a line is 0-indexed.
+    // TODO emit this at some point
+    void lineNumberChanged(int line);
 
 public slots:
     void updateGloss( const TextBit & bit );
@@ -38,15 +42,25 @@ public slots:
     void removeGlossFromConcordance( LingEdit * edit );
     void removeTextFormFromConcordance( LingEdit * edit );
 
+    void scrollToLine(int line);
+
+protected:
+    void scrollContentsBy ( int dx, int dy );
+
 private slots:
     void baselineTextUpdated(const QString & baselineText);
 
     void updateTextFormConcordance(LingEdit * edit, qlonglong newId);
     void updateGlossFormConcordance(LingEdit * edit, qlonglong newId);
 
+    void saveText();
+
 private:
     Text *mText;
     Project *mProject;
+    int mCurrentLine;
+
+    void contextMenuEvent ( QContextMenuEvent * event );
 
     void setLayoutFromText();
 

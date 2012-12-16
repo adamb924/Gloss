@@ -42,6 +42,18 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists Glosses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
         qWarning() << q.lastError().text() << q.lastQuery();
 
+    if( !q.exec("create table if not exists Allomorph ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists LexicalEntry ( _id integer primary key autoincrement, GrammaticalInformation text );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists LexicalEntryGloss ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
+    if( !q.exec("create table if not exists LexicalEntryCitationForm ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
+        qWarning() << q.lastError().text() << q.lastQuery();
+
     if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
         qWarning() << q.lastError().text() << q.lastQuery();
 

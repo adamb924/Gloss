@@ -25,12 +25,10 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
 
     mInterlinear = new InterlinearDisplayWidget(mText, mProject, this);
 
-    QScrollArea *scrollArea = new QScrollArea;
-    scrollArea->setWidgetResizable(true);
-    scrollArea->setBackgroundRole(QPalette::Light);
-    scrollArea->setWidget(mInterlinear);
+    connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), mInterlinear, SLOT(scrollToLine(int)) );
+    connect( mInterlinear, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
 
-    ui->glossTab->layout()->addWidget(scrollArea);
+    ui->glossTab->layout()->addWidget(mInterlinear);
 
     setWindowTitle(mText->name());
 }

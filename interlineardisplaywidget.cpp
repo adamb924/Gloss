@@ -14,12 +14,20 @@
 #include "phrase.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent) :
-    QWidget(parent)
+    QScrollArea(parent)
 {
     mText = text;
     mProject = project;
-    mLayout = new QVBoxLayout(this);
-    setLayout(mLayout);
+
+    mCurrentLine = -1;
+
+    mLayout = new QVBoxLayout;
+    QWidget *theWidget = new QWidget(this);
+    theWidget->setLayout(mLayout);
+
+    setWidgetResizable(true);
+    setBackgroundRole(QPalette::Light);
+    this->setWidget( theWidget );
 
     mPhrasalGlossLines = mProject->dbAdapter()->phrasalGlossLines();
 
@@ -36,7 +44,6 @@ InterlinearDisplayWidget::~InterlinearDisplayWidget()
 
 void InterlinearDisplayWidget::baselineTextUpdated(const QString & baselineText)
 {
-    // TODO it's not clear to me that this is the best way to do this
     setLayoutFromText();
 }
 
@@ -58,7 +65,6 @@ void InterlinearDisplayWidget::clearData()
 void InterlinearDisplayWidget::setLayoutFromText()
 {
     //    clearData();
-
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mText->phrases()->count(), 0);
     progress.setWindowModality(Qt::WindowModal);
 
@@ -210,3 +216,45 @@ void InterlinearDisplayWidget::removeTextFormFromConcordance( LingEdit * edit )
     qlonglong id = mTextFormConcordance.key( edit );
     mTextFormConcordance.remove( id , edit );
 }
+
+void InterlinearDisplayWidget::saveText()
+{
+    mText->saveText();
+}
+
+void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu menu(this);
+    menu.addAction(tr("Save this text"), this, SLOT(saveText()), QKeySequence("Ctrl+Shift+S"));
+    menu.exec(event->globalPos());
+}
+
+void InterlinearDisplayWidget::scrollToLine(int line)
+{
+    if( line < mLineLayouts.count() )
+    {
+        bool after = line > mCurrentLine;
+        mCurrentLine = line;
+        if( mLineLayouts.at(mCurrentLine)->count() > 1 )
+        {
+            if( after )
+            {
+                ensureWidgetVisible( mLineLayouts.at(mCurrentLine)->itemAt( mLineLayouts.at(mCurrentLine)->count() - 1 )->widget() , 0 , 300 );
+            }
+            else
+            {
+                ensureWidgetVisible( mLineLayouts.at(mCurrentLine)->itemAt(0)->widget() , 0 , 300 );
+            }
+        }
+    }
+}
+
+void InterlinearDisplayWidget::scrollContentsBy ( int dx, int dy )
+{
+    QScrollArea::scrollContentsBy(dx, dy);
+    if( dy != 0 )
+    {
+
+    }
+}
+
