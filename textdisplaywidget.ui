@@ -14,13 +14,16 @@
    <string>TabWidget</string>
   </property>
   <property name="currentIndex">
-   <number>0</number>
+   <number>2</number>
   </property>
   <widget class="QWidget" name="baselineTab">
    <attribute name="title">
     <string>Baseline</string>
    </attribute>
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="margin">
+     <number>3</number>
+    </property>
     <item>
      <widget class="LingTextEdit" name="baselineTextEdit"/>
     </item>
@@ -30,7 +33,11 @@
    <attribute name="title">
     <string>Gloss</string>
    </attribute>
-   <layout class="QVBoxLayout"/>
+   <layout class="QVBoxLayout">
+    <property name="margin">
+     <number>3</number>
+    </property>
+   </layout>
   </widget>
   <widget class="QWidget" name="morphologyTab">
    <attribute name="title">
