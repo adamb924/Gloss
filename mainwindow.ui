@@ -70,7 +70,6 @@
    <addaction name="menuProject"/>
    <addaction name="menuGuts"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew_Project">
    <property name="text">
     <string>New Project</string>
