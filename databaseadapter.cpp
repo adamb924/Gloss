@@ -214,7 +214,6 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
     db.transaction();
 
     QSqlQuery q(db);
-    QString query;
     qlonglong id;
 
     try
@@ -227,12 +226,12 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
         q.bindValue(":InterpretationId",id);
         q.bindValue(":WritingSystem",bit.writingSystem().id());
         q.bindValue(":Form",bit.text());
-        if( !q.exec(query)  )
-            qWarning() << "DatabaseAdapter::updateInterpretationTextForm" << q.lastError().text() << query;
+        if( !q.exec()  )
+            qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.lastQuery();
     }
     catch(std::exception &e)
     {
-        qWarning() << "DatabaseAdapter::newInterpretationFromOrthography" << q.lastError().text() << query;
+        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.lastQuery();
         db.rollback();
         return -1;
     }
@@ -246,7 +245,6 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
     db.transaction();
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    QString query;
     qlonglong id;
 
     try
@@ -283,7 +281,7 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
     }
     catch(int e)
     {
-        qWarning() << "DatabaseAdapter::newInterpretationFromOrthography" << q.lastError().text() << query;
+        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.lastQuery();
         db.rollback();
         return -1;
     }
