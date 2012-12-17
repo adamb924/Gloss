@@ -80,6 +80,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
         if( i >= mLineLayouts.count() ) // there is no layout here
         {
             flowLayout = addLine();
+            addPhrasalGlossLines(i);
         }
         else if( mText->phrases()->at(i)->guiRefreshRequest() )
         {
@@ -94,7 +95,6 @@ void InterlinearDisplayWidget::setLayoutFromText()
         addLineLabel(i, flowLayout);
         if( flowLayout->count() == 1 ) // it's either new or has been cleared for a refresh
             addWordDisplayWidgets(i, flowLayout);
-        addPhrasalGlossLines(i);
 
         mText->phrases()->at(i)->setGuiRefreshRequest(false);
     }
