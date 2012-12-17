@@ -23,7 +23,7 @@ class GlossItem : public QObject
 {
     Q_OBJECT
 public:
-    enum CandidateStatus { SingleOption, MultipleOption };
+    enum CandidateNumber { SingleOption, MultipleOption };
     enum ApprovalStatus { Approved, Unapproved };
 
     //! \brief Construct a GlossItem that is empty except for the baseline TextBit.
@@ -59,7 +59,7 @@ public:
     TextBit gloss(const WritingSystem & ws);
 
     //! \brief Set the candidate status of the GlossItem to \a status.
-    void setCandidateStatus(CandidateStatus status);
+    void setCandidateNumber(CandidateNumber status);
 
     //! \brief Set the approval status of the GlossItem to \a status.
     void setApprovalStatus(ApprovalStatus status);
@@ -68,14 +68,14 @@ public:
     ApprovalStatus approvalStatus() const;
 
     //! \brief Returns the candidate status of the GlossItem
-    CandidateStatus candidateStatus() const;
+    CandidateNumber candidateNumber() const;
 
     //! \brief Returns the WritingSystem of the GlossItem's baseline text
     WritingSystem baselineWritingSystem() const;
 
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
-    void candidateStatusChanged(CandidateStatus status);
+    void candidateNumberChanged(CandidateNumber status);
 
     //! \brief Emitted when the approval status of the GlossItem changes
     void approvalStatusChanged(ApprovalStatus status);
@@ -105,7 +105,7 @@ private:
 
     DatabaseAdapter *mDbAdapter;
 
-    CandidateStatus mCandidateStatus;
+    CandidateNumber mCandidateNumber;
     ApprovalStatus mApprovalStatus;
 
     qlonglong mId;

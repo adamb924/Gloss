@@ -44,7 +44,7 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 {
     if( mId != id )
     {
-        setCandidateStatus(GlossItem::MultipleOption);
+        setCandidateNumber(GlossItem::MultipleOption);
 
         mId = id;
 
@@ -100,12 +100,12 @@ TextBitHash* GlossItem::glosses()
     return &mGlosses;
 }
 
-void GlossItem::setCandidateStatus(CandidateStatus status)
+void GlossItem::setCandidateNumber(CandidateNumber status)
 {
-    if( mCandidateStatus != status )
+    if( mCandidateNumber != status )
     {
-        mCandidateStatus = status;
-        emit candidateStatusChanged(mCandidateStatus);
+        mCandidateNumber = status;
+        emit candidateNumberChanged(mCandidateNumber);
     }
 }
 
@@ -123,9 +123,9 @@ GlossItem::ApprovalStatus GlossItem::approvalStatus() const
     return mApprovalStatus;
 }
 
-GlossItem::CandidateStatus GlossItem::candidateStatus() const
+GlossItem::CandidateNumber GlossItem::candidateNumber() const
 {
-    return mCandidateStatus;
+    return mCandidateNumber;
 }
 
 void GlossItem::guessInterpretation()
@@ -142,12 +142,12 @@ void GlossItem::guessInterpretation()
             setInterpretation( mDbAdapter->newInterpretation(mTextForms,mGlosses) );
         else
             setInterpretation( mDbAdapter->newInterpretation(baselineText()) );
-        setCandidateStatus(GlossItem::SingleOption);
+        setCandidateNumber(GlossItem::SingleOption);
     }
     else if ( candidates.length() == 1 )
     {
         setInterpretation( candidates.at(0) );
-        setCandidateStatus(GlossItem::SingleOption);
+        setCandidateNumber(GlossItem::SingleOption);
     }
     else // greater than 1
     {
@@ -179,7 +179,7 @@ TextBit GlossItem::textForm(const WritingSystem & ws)
             qlonglong id = possible.keys().first();
             setTextForm( TextBit( possible.value(id) , ws , id ));
             if( possible.count() > 1 )
-                setCandidateStatus(GlossItem::MultipleOption);
+                setCandidateNumber(GlossItem::MultipleOption);
         }
         else
         {
@@ -200,7 +200,7 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
             qlonglong id = possible.keys().first();
             setGloss( TextBit( possible.value(id) , ws, id ) );
             if( possible.count() > 1 )
-                setCandidateStatus(GlossItem::MultipleOption);
+                setCandidateNumber(GlossItem::MultipleOption);
         }
         else
         {

@@ -313,9 +313,9 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     else
                     {
                         if( mDbAdapter->hasMultipleCandidateInterpretations( mPhrases.last()->last()->baselineText() ) )
-                            mPhrases.last()->last()->setCandidateStatus(GlossItem::MultipleOption);
+                            mPhrases.last()->last()->setCandidateNumber(GlossItem::MultipleOption);
                         else
-                            mPhrases.last()->last()->setCandidateStatus(GlossItem::SingleOption);
+                            mPhrases.last()->last()->setCandidateNumber(GlossItem::SingleOption);
                     }
                 }
                 else

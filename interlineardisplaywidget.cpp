@@ -269,5 +269,5 @@ void InterlinearDisplayWidget::otherInterpretationsAvailableFor(int id)
     QList<WordDisplayWidget*> list = mWdwByInterpretationId.values(id);
     QListIterator<WordDisplayWidget*> iterator(list);
     while(iterator.hasNext())
-        iterator.next()->glossItem()->setCandidateStatus(GlossItem::MultipleOption);
+        iterator.next()->glossItem()->setCandidateNumber(GlossItem::MultipleOption);
 }

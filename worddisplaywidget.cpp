@@ -29,7 +29,7 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(ApprovalStatus)), this, SLOT(updateBaselineLabelStyle()) );
-    connect( mGlossItem, SIGNAL(candidateStatusChanged(CandidateStatus)), this, SLOT(updateBaselineLabelStyle()) );
+    connect( mGlossItem, SIGNAL(candidateNumberChanged(CandidateNumber)), this, SLOT(updateBaselineLabelStyle()) );
     connect( mGlossItem, SIGNAL(fieldsChanged()), this, SLOT(fillData()) );
 
     fillData();
@@ -275,9 +275,9 @@ void WordDisplayWidget::fillData()
 void WordDisplayWidget::updateBaselineLabelStyle()
 {
     QString color;
-    if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateStatus() == GlossItem::SingleOption )
+    if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateNumber() == GlossItem::SingleOption )
         color = "#CDFFB2";
-    else if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateStatus() == GlossItem::MultipleOption )
+    else if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateNumber() == GlossItem::MultipleOption )
         color = "#fff6a8";
     else
         color = "#ffffff";
