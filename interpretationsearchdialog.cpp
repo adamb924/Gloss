@@ -3,6 +3,8 @@
 
 #include "databaseadapter.h"
 
+#include <QSqlQueryModel>
+
 InterpretationSearchDialog::InterpretationSearchDialog(DatabaseAdapter *dbAdapter, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::InterpretationSearchDialog)
@@ -37,9 +39,11 @@ void InterpretationSearchDialog::updateQuery()
     qlonglong ws = ui->writingSystem->itemData( ui->writingSystem->currentIndex() ).toLongLong();
     if( searchString.length() > 1 )
     {
-        QString query = QString("select InterpretationId,group_concat(Form,', ') from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where substr(Form,1,length('%2'))='%2' and WritingSystem='%1') union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where substr(Form,1,length('%2'))='%2' and WritingSystem='%1') ) group by InterpretationId;").arg(ws).arg(DatabaseAdapter::sqlEscape(searchString));
+        QString query = QString("select InterpretationId,group_concat(Form,', ') from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form like '%2%' and WritingSystem='%1') union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from Glosses where Form like '%2%' and WritingSystem='%1') ) group by InterpretationId;").arg(ws).arg(DatabaseAdapter::sqlEscape(searchString));
         mModel.setQuery(query, QSqlDatabase::database(mDbAdapter->dbFilename()) );
+
         ui->resultList->setColumnHidden(0, true);
+        ui->resultList->setEnabled(mModel.rowCount() != 0);
     }
 }
 
