@@ -14,9 +14,12 @@ GlossItem::GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, Q
     mDbAdapter = dbAdapter;
 
     guessInterpretation();
+
+    // it's possible that this will have been changed by guessInterpretation();
+    mTextForms.insert(mBaselineWritingSystem, baselineText );
 }
 
-GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
 {
     mBaselineWritingSystem = ws;
 
@@ -25,15 +28,12 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
 
     mDbAdapter = dbAdapter;
 
-    guessInterpretation();
-}
+    mId = id;
+    if( mId == -1 )
+        guessInterpretation();
+    else
+        setInterpretation(id, false); // false because we have text forms and glosses from the arguments of the constructor
 
-GlossItem::GlossItem(const WritingSystem & ws, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent)
-{
-    mDbAdapter = dbAdapter;
-    mBaselineWritingSystem = ws;
-    setInterpretation(id);
-    setApprovalStatus(GlossItem::Approved);
 }
 
 GlossItem::~GlossItem()
@@ -48,11 +48,13 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 
         mId = id;
 
-        mTextForms.clear();
-        mGlosses.clear();
-
-        mTextForms = mDbAdapter->getInterpretationTextForms(mId);
-        mGlosses = mDbAdapter->getInterpretationGlosses(mId);
+        if( takeFormsFromDatabase )
+        {
+            mTextForms.clear();
+            mGlosses.clear();
+            mTextForms = mDbAdapter->getInterpretationTextForms(mId);
+            mGlosses = mDbAdapter->getInterpretationGlosses(mId);
+        }
 
         emit interpretationIdChanged(mId);
         emit fieldsChanged();
@@ -139,19 +141,19 @@ void GlossItem::guessInterpretation()
     if( candidates.length() == 0 )
     {
         if( mTextForms.count() > 0)
-            setInterpretation( mDbAdapter->newInterpretation(mTextForms,mGlosses) );
+            setInterpretation( mDbAdapter->newInterpretation(mTextForms,mGlosses) , true ); // true because they'll all be blank
         else
-            setInterpretation( mDbAdapter->newInterpretation(baselineText()) );
+            setInterpretation( mDbAdapter->newInterpretation(baselineText()) , true ); // true because they'll all be blank
         setCandidateNumber(GlossItem::SingleOption);
     }
     else if ( candidates.length() == 1 )
     {
-        setInterpretation( candidates.at(0) );
+        setInterpretation( candidates.at(0) , true ); // true because the user hadn't had a chance to specify
         setCandidateNumber(GlossItem::SingleOption);
     }
     else // greater than 1
     {
-        setInterpretation( candidates.at(0) );
+        setInterpretation( candidates.at(0), true );  // true because the user hadn't had a chance to specify
     }
     setApprovalStatus(GlossItem::Unapproved);
 }

@@ -213,11 +213,13 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
     int lineNumber = -1;
     bool inWord = false;
     bool inPhrase = false;
-    bool hasId = false;
+    bool hasValidId = false;
+    qlonglong id = -1;
+    GlossItem::ApprovalStatus approvalStatus = GlossItem::Unapproved;
     QXmlStreamReader stream(file);
     TextBitHash textForms;
     TextBitHash glossForms;
-    QString baselineText;
+    QString baselineText = "";
 
     while (!stream.atEnd())
     {
@@ -233,27 +235,22 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
-                    qlonglong id = stream.attributes().value("http://www.adambaker.org/gloss.php","id").toString().toLongLong();
+                    id = stream.attributes().value("http://www.adambaker.org/gloss.php","id").toString().toLongLong();
                     if( mDbAdapter->interpretationExists(id) )
                     {
-                        hasId = true;
-                        qlonglong id = stream.attributes().value("http://www.adambaker.org/gloss.php","id").toString().toLongLong();
-                        mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, id, mProject->dbAdapter()));
-                        //                    stream.skipCurrentElement();
+                        hasValidId = true;
 
                         if(stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php", "approval-status") && stream.attributes().value("http://www.adambaker.org/gloss.php", "approval-status").toString() == "true" )
-                            mPhrases.last()->last()->setApprovalStatus(GlossItem::Approved);
-                        else
-                            mPhrases.last()->last()->setApprovalStatus(GlossItem::Unapproved);
+                            approvalStatus = GlossItem::Approved;
                     }
                     else
                     {
-                        hasId = false;
+                        hasValidId = false;
                     }
                 }
                 else
                 {
-                    hasId = false;
+                    hasValidId = false;
                 }
             }
             else if ( name == "phrase" )
@@ -275,10 +272,10 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 
                     if( inWord )
                     {
-                        qlonglong id = attr.hasAttribute("http://www.adambaker.org/gloss.php","id") ? attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() : -1;
+                        qlonglong itemId = attr.hasAttribute("http://www.adambaker.org/gloss.php","id") ? attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() : -1;
                         if( type == "txt" )
                         {
-                            textForms.insert( lang, TextBit( text , lang, id) );
+                            textForms.insert( lang, TextBit( text , lang, itemId) );
                             if( lang.flexString() == mBaselineWritingSystem.flexString() )
                             {
                                 baselineText = text;
@@ -286,7 +283,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                         }
                         else if( type == "gls" )
                         {
-                            glossForms.insert( lang, TextBit( text , lang, id) );
+                            glossForms.insert( lang, TextBit( text , lang, itemId) );
                         }
                     }
                     else if ( inPhrase && type == "gls" )
@@ -304,34 +301,33 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
         {
             if(name == "word")
             {
-                if( hasId )
+                if( baselineText.isEmpty() )
                 {
-                    if( baselineText.isEmpty() )
+                    if( id == -1 )
+                    {
+                        QMessageBox::information(0, tr("Parsing error"), tr("There is a word on line %1 that does not have an entry for the baseline writing system for this text, so the word has been removed. Make a note of the line number and see if your text is incomplete on that line.").arg(lineNumber) );
+                        continue;
+                    }
+                    else
                     {
                         QMessageBox::information(0, tr("Parsing error"), tr("There is a word on line %1 that does not have an entry for the baseline writing system for this text. Since the id was there, Gloss made a guess as to the proper baseline form, but this is not foolproof. Make a note of the line number and see if your text is incomplete on that line.").arg(lineNumber) );
                     }
-                    else
-                    {
-                        if( mDbAdapter->hasMultipleCandidateInterpretations( mPhrases.last()->last()->baselineText() ) )
-                            mPhrases.last()->last()->setCandidateNumber(GlossItem::MultipleOption);
-                        else
-                            mPhrases.last()->last()->setCandidateNumber(GlossItem::SingleOption);
-                    }
                 }
+
+                mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject->dbAdapter()));
+                mPhrases.last()->last()->setApprovalStatus(approvalStatus);
+
+                // check the database for whether there are multiple interpretations for the baseline text
+                if( mDbAdapter->hasMultipleCandidateInterpretations( mPhrases.last()->last()->baselineText() ) )
+                    mPhrases.last()->last()->setCandidateNumber(GlossItem::MultipleOption);
                 else
-                {
-                    if( baselineText.isEmpty() )
-                    {
-                        QMessageBox::information(0, tr("Parsing error"), tr("There is a word on line %1 that does not have an entry for the baseline writing system for this text, so the word has been removed. Make a note of the line number and see if your text is incomplete on that line.").arg(lineNumber) );
-                    }
-                    else
-                    {
-                        mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, mProject->dbAdapter()));
-                    }
-                }
+                    mPhrases.last()->last()->setCandidateNumber(GlossItem::SingleOption);
+
                 inWord = false;
-                hasId = false;
+                hasValidId = false;
                 baselineText = "";
+                id = -1;
+                approvalStatus = GlossItem::Unapproved;
             }
             else if(name == "phrase")
             {

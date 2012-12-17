@@ -229,7 +229,7 @@ void WordDisplayWidget::newInterpretation()
 {
     emit alternateInterpretationAvailableFor(mGlossItem->id());
     qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
-    mGlossItem->setInterpretation(id);
+    mGlossItem->setInterpretation(id, true); // true since there are no forms in the database, and so the fields need to be cleared
     fillData();
 }
 
@@ -291,7 +291,7 @@ void WordDisplayWidget::mouseDoubleClickEvent ( QMouseEvent * event )
 
 void WordDisplayWidget::selectDifferentCandidate(QAction *action)
 {
-    mGlossItem->setInterpretation( action->data().toLongLong() );
+    mGlossItem->setInterpretation( action->data().toLongLong() , true ); // true because the widget should start with at least some fields filled in
 }
 
 void WordDisplayWidget::selectDifferentGloss(QAction *action)
@@ -357,7 +357,7 @@ void WordDisplayWidget::otherInterpretation()
     {
         qlonglong id = dialog.selectionId();
         mDbAdapter->newTextForm( id , mGlossItem->baselineText() );
-        mGlossItem->setInterpretation(id);
+        mGlossItem->setInterpretation(id, true); // true because the user hadn't had a chance to specify more particularly yet
         fillData();
     }
 }

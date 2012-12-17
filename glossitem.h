@@ -30,15 +30,12 @@ public:
     explicit GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, QObject *parent = 0);
 
     //! \brief Construct a GlossItem with the given WritingSystem, and gloss and text forms.
-    GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, DatabaseAdapter *dbAdapter, QObject *parent = 0);
-
-    //! \brief Construct a GlossItem with the id (and data) from the given id (corresponding to the _id row of the Interpretations SQL table).
-    GlossItem(const WritingSystem & ws, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent = 0);
+    GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent = 0);
 
     ~GlossItem();
 
     //! \brief Sets the id of this GlossItem (corresponding to the _id row of the Interpretations SQL table), and sets the data for the GlossItem accordingly. If \a takeFormsFromDatabase is true, the GlossItem is filled with values from the database.
-    void setInterpretation(qlonglong id, bool takeFormsFromDatabase = true);
+    void setInterpretation(qlonglong id, bool takeFormsFromDatabase );
 
     //! \brief Returns the id of the GlossItem (corresponding to the _id row of the Interpretations SQL table)
     qlonglong id() const;
