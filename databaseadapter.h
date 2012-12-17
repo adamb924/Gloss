@@ -96,14 +96,17 @@ public:
     //! \brief Returns the filename of the database (not the full path)
     QString dbFilename() const;
 
+    //! \brief Creates the tables for the first time
+    void createTables();
+
+    //! \brief Returns true of an interpretation with _id \a id exists, otherwise false
+    bool interpretationExists(qlonglong id) const;
+
     //! \brief Returns a string escaped for use in a SQL query.
     static QString sqlEscape(QString string)
     {
         return string.replace( "'" , "''");
     }
-
-    //! \brief Creates the tables for the first time
-    void createTables();
 
 private:
 

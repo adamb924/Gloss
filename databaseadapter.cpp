@@ -31,37 +31,37 @@ void DatabaseAdapter::createTables()
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
     if( !q.exec("create table if not exists Interpretations ( _id integer primary key autoincrement );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists TextForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists MorphologicalAnalyses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, SplitString text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists Glosses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists Allomorph ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists LexicalEntry ( _id integer primary key autoincrement, GrammaticalInformation text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists LexicalEntryGloss ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists LexicalEntryCitationForm ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists InterlinearTextLine ( Type text, DisplayOrder integer, WritingSystem integer );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists PhrasalGlossLine ( DisplayOrder integer, WritingSystem integer );") )
-        qWarning() << q.lastError().text() << q.lastQuery();
+        qWarning() << q.lastError().text() << q.executedQuery();
 
     q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Persian','Prs', 'prd-Arab', 'persian.ahk' , '1' , 'Scheherazade' , '16' );");
     q.exec("insert into WritingSystems ( Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize )  values ('Wakhi','Wak', 'wbl-Arab-AF', 'wakhi.ahk' , '1' , 'Scheherazade' , '16' );");
@@ -227,11 +227,11 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
         q.bindValue(":WritingSystem",bit.writingSystem().id());
         q.bindValue(":Form",bit.text());
         if( !q.exec()  )
-            qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.lastQuery();
+            qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.executedQuery();
     }
     catch(std::exception &e)
     {
-        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.lastQuery();
+        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.executedQuery();
         db.rollback();
         return -1;
     }
@@ -257,6 +257,8 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
         while (textIter.hasNext())
         {
             textIter.next();
+            TextBit bit = textIter.value();
+            WritingSystem key = textIter.key();
             q.prepare("insert into TextForms (InterpretationId,WritingSystem,Form) values (:InterpretationId,:WritingSystem,:Form);");
             q.bindValue(":InterpretationId",id);
             q.bindValue(":WritingSystem",textIter.key().id());
@@ -281,7 +283,7 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
     }
     catch(int e)
     {
-        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.lastQuery();
+        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.executedQuery();
         db.rollback();
         return -1;
     }
@@ -399,6 +401,11 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
 {
     QString query;
 
+    // TODO if there is no interpretation for these text forms, this method returns a list of interpretations that don't have any text forms in that writing system
+    // what is the way to deal with that? treat the singleton case differently?
+    // should those "orphan" text forms be permitted?
+    // should I specify a baseline text form that has to be there?
+
     TextBitHashIterator textIter(textForms);
     while (textIter.hasNext())
     {
@@ -512,3 +519,13 @@ QString DatabaseAdapter::dbFilename() const
     return mFilename;
 }
 
+bool DatabaseAdapter::interpretationExists(qlonglong id) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from Interpretations where _id=:_id;");
+    q.bindValue(":_id", id);
+    if( q.exec() )
+        return q.next();
+    else
+        return false;
+}

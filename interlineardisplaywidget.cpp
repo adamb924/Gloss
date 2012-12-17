@@ -52,7 +52,7 @@ void InterlinearDisplayWidget::clearData()
     qDeleteAll(mWordDisplayWidgets);
     mWordDisplayWidgets.clear();
 
-    qDeleteAll(mWdwByInterpretationId);
+    // do not call qDeleteAll again because they've just been deleted. this is a convenience container.
     mWdwByInterpretationId.clear();
 
     qDeleteAll(mLineLayouts);
