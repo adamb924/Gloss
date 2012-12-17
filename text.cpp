@@ -293,10 +293,10 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     {
                         mPhrases.last()->setPhrasalGloss( TextBit( text , lang ) );
                     }
-                }
-                if( attr.hasAttribute("segnum") && attr.value("segnum").toString() == "segnum" )
-                {
-                    lineNumber = stream.readElementText().toInt();
+                    else if( type == "segnum" )
+                    {
+                        lineNumber = text.toInt();
+                    }
                 }
             }
         }
@@ -308,7 +308,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 {
                     if( baselineText.isEmpty() )
                     {
-                        QMessageBox::information(0, tr("Parsing error"), tr("There is a word on line %1 that does not have an entry for the baseline system, so this word has not been removed. Make a note of the line number and see if your text is incomplete oin that line.").arg(lineNumber) );
+                        QMessageBox::information(0, tr("Parsing error"), tr("There is a word on line %1 that does not have an entry for the baseline writing system for this text. Since the id was there, Gloss made a guess as to the proper baseline form, but this is not foolproof. Make a note of the line number and see if your text is incomplete on that line.").arg(lineNumber) );
                     }
                     else
                     {
@@ -320,7 +320,14 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 }
                 else
                 {
-                    mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, mProject->dbAdapter()));
+                    if( baselineText.isEmpty() )
+                    {
+                        QMessageBox::information(0, tr("Parsing error"), tr("There is a word on line %1 that does not have an entry for the baseline writing system for this text, so the word has been removed. Make a note of the line number and see if your text is incomplete on that line.").arg(lineNumber) );
+                    }
+                    else
+                    {
+                        mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, mProject->dbAdapter()));
+                    }
                 }
                 inWord = false;
                 hasId = false;
