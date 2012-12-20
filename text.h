@@ -48,6 +48,10 @@ public:
 
     void saveText() const;
 
+    bool mergeTranslation(const QString & filename, const WritingSystem & ws );
+
+    QString textNameFromPath(const QString & path) const;
+
     //! \brief Serialize the text to an XML file
     bool serialize(const QString & filename) const;
 

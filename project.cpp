@@ -346,3 +346,14 @@ void Project::closeText(Text *text)
     mTexts.remove( text->name() );
     delete text;
 }
+
+void Project::deleteText(QString textName)
+{
+    mTexts.remove( textName );
+    QString path = filepathFromName(textName);
+    mTextPaths.remove( path );
+
+    QFile f( path );
+    if( ! f.remove() )
+        qWarning() << f.errorString() << path ;
+}

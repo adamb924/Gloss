@@ -30,7 +30,9 @@ SOURCES += main.cpp\
     lingtextedit.cpp \
     interlinearitemtype.cpp \
     interpretationsearchdialog.cpp \
-    writingsystemsdialog.cpp
+    writingsystemsdialog.cpp \
+    mergetranslationdialog.cpp \
+    xsltproc.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -51,14 +53,23 @@ HEADERS  += mainwindow.h \
     glossitem.h \
     interlinearitemtype.h \
     interpretationsearchdialog.h \
-    writingsystemsdialog.h
+    writingsystemsdialog.h \
+    mergetranslationdialog.h \
+    xsltproc.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
     newtextdialog.ui \
     importflextextdialog.ui \
     interpretationsearchdialog.ui \
-    writingsystemsdialog.ui
+    writingsystemsdialog.ui \
+    mergetranslationdialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip
+
+LIBS += -L./ \
+    -lexslt \
+    -llibxslt \
+    -llibxml2 \
+    -liconv

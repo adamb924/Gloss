@@ -8,6 +8,7 @@
 #include "importflextextdialog.h"
 #include "writingsystem.h"
 #include "writingsystemsdialog.h"
+#include "mergetranslationdialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -27,12 +28,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave_Project, SIGNAL(triggered()), this, SLOT(saveProject()));
     connect(ui->actionSave_Project_As, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
     connect(ui->actionClose_Project, SIGNAL(triggered()), this, SLOT(closeProject()));
+    connect(ui->actionClose_project_without_saving, SIGNAL(triggered()), this, SLOT(closeProjectWithoutSaving()));
 
     connect(ui->actionOpen_text, SIGNAL(triggered()), this, SLOT(openText()));
     connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addBlankText()));
     connect(ui->actionImport_FlexText, SIGNAL(triggered()), this, SLOT(importFlexText()));
     connect(ui->actionImport_plain_text, SIGNAL(triggered()), this, SLOT(importPlainText()));
     connect(ui->actionWriting_systems, SIGNAL(triggered()), this, SLOT(writingSystems()) );
+
+    connect(ui->actionDelete_text, SIGNAL(triggered()), this, SLOT(deleteText()) );
+    connect(ui->actionMerge_translations_from_other_FlexText_file, SIGNAL(triggered()), this, SLOT(mergeTranslations()));
 
     setProjectActionsEnabled(false);
 
@@ -114,8 +119,13 @@ void MainWindow::closeProject()
 {
     if( mProject == 0 )
         return;
-    if( maybeSave() )
-        projectClose();
+    mProject->save();
+    projectClose();
+}
+
+void MainWindow::closeProjectWithoutSaving()
+{
+
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -335,4 +345,32 @@ void MainWindow::writingSystems()
 {
     WritingSystemsDialog dialog(mProject->dbAdapter(), this);
     dialog.exec();
+}
+
+void MainWindow::deleteText()
+{
+    if( mProject->textPaths()->count() == 0)
+    {
+        QMessageBox::information(this, tr("No texts"), tr("The project has no texts to delete."));
+        return;
+    }
+    bool ok;
+    QString whichText = QInputDialog::getItem( this, tr("Select text"), tr("Select the text to delete"), mProject->textNames(), 0, false, &ok );
+    if( ok )
+    {
+        if( QMessageBox::Yes == QMessageBox::warning(this, tr("Confirm"), tr("Are you sure you want to delete the text? (If you change your mind later, don't save this project when you close it.)')"), QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) )
+            mProject->deleteText(whichText);
+    }
+}
+
+void MainWindow::mergeTranslations()
+{
+    MergeTranslationDialog dialog(mProject, this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mProject->openText(dialog.text());
+        Text *text = mProject->texts()->value(dialog.text());
+        text->mergeTranslation( dialog.filename() , dialog.writingSystem() );
+        mProject->closeText(text);
+    }
 }

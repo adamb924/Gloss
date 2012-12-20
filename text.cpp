@@ -15,6 +15,7 @@
 #include "phrase.h"
 #include "glossitem.h"
 #include "messagehandler.h"
+#include "xsltproc.h"
 
 Text::Text()
 {
@@ -32,18 +33,22 @@ Text::Text(const WritingSystem & ws, const QString & name, Project *project)
 
 Text::Text(const QString & filePath, Project *project)
 {
-    QFile file(filePath);
+    mName = textNameFromPath(filePath);
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
+
+    QFile file(filePath);
     mValid = readTextFromFlexText(&file,true);
 }
 
 Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
 {
-    QFile file(filePath);
+    mName = textNameFromPath(filePath);
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
     mBaselineWritingSystem = ws;
+
+    QFile file(filePath);
     mValid = readTextFromFlexText(&file,false);
 }
 
@@ -485,4 +490,28 @@ void Text::saveText() const
 bool Text::isValid() const
 {
     return mValid;
+}
+
+bool Text::mergeTranslation(const QString & filename, const WritingSystem & ws )
+{
+    Xsltproc transformation;
+
+    QHash<QString,QString> parameters;
+    parameters.insert("flextext-with-translation", filename );
+    parameters.insert("writing-system", ws.flexString() );
+
+//    qDebug() << transformation.setStyleSheet( QDir::current().absoluteFilePath("merge-translation-by-line-number.xsl") );
+    transformation.setStyleSheet( QDir::current().absoluteFilePath("copy.xsl") );
+    transformation.setXmlFile( mProject->filepathFromName(mName) );
+
+    transformation.setOutputFile( mProject->filepathFromName(mName + "-output") );
+//    transformation.setParameters(parameters);
+    Xsltproc::ReturnValue retval = transformation.execute();
+    return true;
+}
+
+QString Text::textNameFromPath(const QString & path) const
+{
+    QFileInfo info(path);
+    return info.baseName();
 }

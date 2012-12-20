@@ -45,7 +45,10 @@ private slots:
     void saveProject();
     void saveProjectAs();
     void closeProject();
+    void closeProjectWithoutSaving();
     void openText();
+    void deleteText();
+    void mergeTranslations();
 
     void openText(const QString & textName);
 

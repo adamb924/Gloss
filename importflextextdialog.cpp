@@ -25,6 +25,8 @@ ImportFlexTextDialog::ImportFlexTextDialog(DatabaseAdapter *dbAdapter, QWidget *
 
     if( !chooseFile() )
         QTimer::singleShot(0, this, SLOT(close()));
+
+    setWindowTitle(tr("Import Flex Text"));
 }
 
 ImportFlexTextDialog::~ImportFlexTextDialog()

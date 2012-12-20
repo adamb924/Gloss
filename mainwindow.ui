@@ -41,6 +41,7 @@
     <addaction name="actionSave_Project"/>
     <addaction name="actionSave_Project_As"/>
     <addaction name="actionClose_Project"/>
+    <addaction name="actionClose_project_without_saving"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -53,6 +54,8 @@
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
     <addaction name="actionImport_plain_text"/>
+    <addaction name="separator"/>
+    <addaction name="actionMerge_translations_from_other_FlexText_file"/>
    </widget>
    <widget class="QMenu" name="menuGuts">
     <property name="title">
@@ -64,6 +67,7 @@
      <string>Project</string>
     </property>
     <addaction name="actionWriting_systems"/>
+    <addaction name="actionDelete_text"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
@@ -150,6 +154,21 @@
   <action name="actionWriting_systems">
    <property name="text">
     <string>Writing systems...</string>
+   </property>
+  </action>
+  <action name="actionDelete_text">
+   <property name="text">
+    <string>Delete text...</string>
+   </property>
+  </action>
+  <action name="actionClose_project_without_saving">
+   <property name="text">
+    <string>Close project without saving</string>
+   </property>
+  </action>
+  <action name="actionMerge_translations_from_other_FlexText_file">
+   <property name="text">
+    <string>Merge translations from other FlexText file...</string>
    </property>
   </action>
  </widget>
