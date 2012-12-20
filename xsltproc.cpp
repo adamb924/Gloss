@@ -83,32 +83,32 @@ Xsltproc::ReturnValue Xsltproc::execute()
         iter.next();
         byteArrays << new QByteArray(iter.key().toUtf8());
         params[i++] = byteArrays.last()->data();
-        byteArrays << new QByteArray(iter.value().toUtf8());
+        QString paramValue = "\"" + iter.value() + "\"";
+        byteArrays << new QByteArray(paramValue.toUtf8());
         params[i++] = byteArrays.last()->data();
     }
     params[i] = NULL;
 
-//    for(int i=0; i<mParameters.count(); i++)
-//    {
-//        qDebug() << QString(params[2*i]) << QString(params[2*i + 1]);
-//    }
-
     mOutput = xsltApplyStylesheet(mStylesheet, mXml, (const char**)params);
 
+    // TODO check for xsl:message output somehow
+
+    int bytesWritten;
     FILE *fid = fopen(mOutputFile.toUtf8().data(),"w");
-//    fprintf(fid, "test\n");
     if( fid == 0 )
     {
         qDebug() << "Could not open output file." << mOutputFile;
     }
     else
     {
-        qDebug() << xsltSaveResultToFile(fid, mOutput, mStylesheet);
+        bytesWritten = xsltSaveResultToFile(fid, mOutput, mStylesheet);
         fclose(fid);
     }
 
-
     qDeleteAll(byteArrays);
 
-    return Xsltproc::Success;
+    if( bytesWritten > 0 )
+        return Xsltproc::Success;
+    else
+        return Xsltproc::GenericFailure;
 }

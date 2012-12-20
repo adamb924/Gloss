@@ -496,17 +496,47 @@ bool Text::mergeTranslation(const QString & filename, const WritingSystem & ws )
 {
     Xsltproc transformation;
 
+    QString currentPath = mProject->filepathFromName(mName);
+    QString tempOutputPath = mProject->filepathFromName(mName + "-output");
+
     QHash<QString,QString> parameters;
     parameters.insert("flextext-with-translation", filename );
     parameters.insert("writing-system", ws.flexString() );
 
-//    qDebug() << transformation.setStyleSheet( QDir::current().absoluteFilePath("merge-translation-by-line-number.xsl") );
-    transformation.setStyleSheet( QDir::current().absoluteFilePath("copy.xsl") );
-    transformation.setXmlFile( mProject->filepathFromName(mName) );
+    transformation.setStyleSheet( QDir::current().absoluteFilePath("merge-translation-by-line-number.xsl") );
+    transformation.setXmlFile( currentPath );
 
-    transformation.setOutputFile( mProject->filepathFromName(mName + "-output") );
-//    transformation.setParameters(parameters);
+    transformation.setOutputFile( tempOutputPath );
+    transformation.setParameters(parameters);
     Xsltproc::ReturnValue retval = transformation.execute();
+
+    switch(retval)
+    {
+    case Xsltproc::InvalidStylesheet:
+        QMessageBox::critical(0, tr("Error"), tr("The XSL transformation is invalid."));
+        return false;
+    case Xsltproc::InvalidXmlFile:
+        QMessageBox::critical(0, tr("Error"), tr("The flextext file is invalid."));
+        return false;
+    case Xsltproc::GenericFailure:
+        QMessageBox::critical(0, tr("Error"), tr("Failure for unknown reasons."));
+        return false;
+    case Xsltproc::Success:
+        break;
+    }
+
+    if( QFile::remove(currentPath) )
+    {
+        if( QFile::rename(tempOutputPath, currentPath) )
+            QMessageBox::information(0, tr("Success!"), tr("The merge has completed succesfully."));
+        else
+            QMessageBox::warning(0, tr("Error"), tr("The merge file is stuck with the filename %1, but you can fix this yourself. The old flextext file has been deleted.").arg(tempOutputPath));
+    }
+    else
+    {
+        QMessageBox::warning(0, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with the filename %1, but you can fix this yourself.").arg(tempOutputPath));
+    }
+
     return true;
 }
 
