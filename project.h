@@ -30,9 +30,12 @@ public:
 
     DatabaseAdapter* dbAdapter();
 
+    QString projectPath() const;
+
     QSet<QString>* textPaths();
 
     bool save();
+    void saveOpenTexts();
 
     void closeText(Text *text);
 

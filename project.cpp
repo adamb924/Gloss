@@ -229,6 +229,8 @@ Text* Project::textFromFlexText(const QString & filePath)
 
 bool Project::save()
 {
+    saveOpenTexts();
+
     // indebted to: http://stackoverflow.com/questions/2598117/zipping-a-folder-file-using-qt
     QuaZip zip(mProjectPath);
     QuaZipFile outFile(&zip);
@@ -356,4 +358,19 @@ void Project::deleteText(QString textName)
     QFile f( path );
     if( ! f.remove() )
         qWarning() << f.errorString() << path ;
+}
+
+QString Project::projectPath() const
+{
+    return mProjectPath;
+}
+
+void Project::saveOpenTexts()
+{
+    QHashIterator<QString,Text*> iter(mTexts);
+    while(iter.hasNext())
+    {
+        iter.next();
+        iter.value()->saveText();
+    }
 }

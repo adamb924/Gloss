@@ -43,7 +43,6 @@ private slots:
     void newProject();
     void openProject();
     void saveProject();
-    void saveProjectAs();
     void closeProject();
     void closeProjectWithoutSaving();
     void openText();

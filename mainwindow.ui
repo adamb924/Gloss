@@ -39,7 +39,6 @@
     <addaction name="actionNew_Project"/>
     <addaction name="actionOpen_Project"/>
     <addaction name="actionSave_Project"/>
-    <addaction name="actionSave_Project_As"/>
     <addaction name="actionClose_Project"/>
     <addaction name="actionClose_project_without_saving"/>
     <addaction name="separator"/>

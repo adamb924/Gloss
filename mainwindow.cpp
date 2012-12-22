@@ -26,7 +26,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionNew_Project, SIGNAL(triggered()), this, SLOT(newProject()));
     connect(ui->actionOpen_Project, SIGNAL(triggered()), this, SLOT(openProject()));
     connect(ui->actionSave_Project, SIGNAL(triggered()), this, SLOT(saveProject()));
-    connect(ui->actionSave_Project_As, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
     connect(ui->actionClose_Project, SIGNAL(triggered()), this, SLOT(closeProject()));
     connect(ui->actionClose_project_without_saving, SIGNAL(triggered()), this, SLOT(closeProjectWithoutSaving()));
 
@@ -107,12 +106,7 @@ void MainWindow::openProject()
 
 void MainWindow::saveProject()
 {
-
-}
-
-void MainWindow::saveProjectAs()
-{
-
+    mProject->save();
 }
 
 void MainWindow::closeProject()
@@ -303,9 +297,9 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
     ui->actionAdd_text->setEnabled(enabled);
     ui->actionImport_FlexText->setEnabled(enabled);
     ui->actionSave_Project->setEnabled(enabled);
-    ui->actionSave_Project_As->setEnabled(enabled);
     ui->actionClose_Project->setEnabled(enabled);
     ui->actionWriting_systems->setEnabled(enabled);
+    ui->actionClose_project_without_saving->setEnabled(enabled);
 }
 
 void MainWindow::openText()
