@@ -16,16 +16,20 @@ public:
     enum ReturnValue { Success, InvalidStylesheet, InvalidXmlFile, GenericFailure };
 
     bool setStyleSheet(const QString & filename);
-    bool setXmlFile(const QString & filename);
-    void setOutputFile(const QString & filename);
+    bool setXmlFilename(const QString & filename);
+    void setOutputFilename(const QString & filename);
     void setParameters(const QHash<QString,QString> & parameters);
+    void setErrorFilename(const QString & filename);
     Xsltproc::ReturnValue execute();
 
 private:
     QString mStyleSheetFilename;
     QString mXmlFilename;
-    QString mOutputFile;
+    QString mErrorFilename;
+    QString mOutputFilename;
     QHash<QString,QString> mParameters;
+
+    bool mErrorRedirect;
 
     xsltStylesheetPtr mStylesheet;
     xmlDocPtr mXml;

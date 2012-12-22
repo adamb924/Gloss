@@ -8,6 +8,7 @@
 #include <QXmlQuery>
 #include <QProgressDialog>
 #include <QMessageBox>
+#include <QDesktopServices>
 
 #include "writingsystem.h"
 #include "project.h"
@@ -494,21 +495,23 @@ bool Text::isValid() const
 
 bool Text::mergeTranslation(const QString & filename, const WritingSystem & ws )
 {
-    Xsltproc transformation;
-
     QString currentPath = mProject->filepathFromName(mName);
     QString tempOutputPath = mProject->filepathFromName(mName + "-output");
+    QString errorOutputPath = QDir::temp().absoluteFilePath("merge-error.txt");
 
     QHash<QString,QString> parameters;
     parameters.insert("flextext-with-translation", filename );
     parameters.insert("writing-system", ws.flexString() );
 
+    Xsltproc transformation;
     transformation.setStyleSheet( QDir::current().absoluteFilePath("merge-translation-by-line-number.xsl") );
-    transformation.setXmlFile( currentPath );
-
-    transformation.setOutputFile( tempOutputPath );
+    transformation.setXmlFilename( currentPath );
+    transformation.setErrorFilename( errorOutputPath );
+    transformation.setOutputFilename( tempOutputPath );
     transformation.setParameters(parameters);
     Xsltproc::ReturnValue retval = transformation.execute();
+
+    QFileInfo errorInfo(errorOutputPath);
 
     switch(retval)
     {
@@ -519,11 +522,18 @@ bool Text::mergeTranslation(const QString & filename, const WritingSystem & ws )
         QMessageBox::critical(0, tr("Error"), tr("The flextext file is invalid."));
         return false;
     case Xsltproc::GenericFailure:
-        QMessageBox::critical(0, tr("Error"), tr("Failure for unknown reasons."));
+        if( errorInfo.size() > 0 )
+            QDesktopServices::openUrl(QUrl(errorOutputPath, QUrl::TolerantMode));
+        else
+            QMessageBox::critical(0, tr("Error"), tr("Failure for unknown reasons."));
+        QFile::remove(tempOutputPath);
         return false;
     case Xsltproc::Success:
         break;
     }
+
+    if( errorInfo.size() > 0 )
+        QDesktopServices::openUrl(QUrl(errorOutputPath, QUrl::TolerantMode));
 
     if( QFile::remove(currentPath) )
     {

@@ -26,17 +26,12 @@ Xsltproc::Xsltproc()
     mStylesheet = 0;
     mOutput = 0;
     mXml = 0;
+
+    mErrorRedirect = false;
 }
 
 Xsltproc::~Xsltproc()
 {
-    if( mStylesheet != 0 )
-        xsltFreeStylesheet(mStylesheet);
-    if( mOutput != 0 )
-        xmlFreeDoc(mOutput);
-    if( mXml != 0 )
-        xmlFreeDoc(mXml);
-
     xsltCleanupGlobals();
     xmlCleanupParser();
 }
@@ -48,16 +43,16 @@ bool Xsltproc::setStyleSheet(const QString & filename)
     return mStylesheet != 0;
 }
 
-bool Xsltproc::setXmlFile(const QString & filename)
+bool Xsltproc::setXmlFilename(const QString & filename)
 {
     mXmlFilename = filename;
     mXml = xmlParseFile( (const char*)filename.toUtf8().data() );
     return mXml != 0;
 }
 
-void Xsltproc::setOutputFile(const QString & filename)
+void Xsltproc::setOutputFilename(const QString & filename)
 {
-    mOutputFile = filename;
+    mOutputFilename = filename;
 }
 
 void Xsltproc::setParameters(const QHash<QString,QString> & parameters)
@@ -89,15 +84,21 @@ Xsltproc::ReturnValue Xsltproc::execute()
     }
     params[i] = NULL;
 
+    if( mErrorRedirect )
+        freopen(mErrorFilename.toUtf8().data(),"w",stderr);
+
     mOutput = xsltApplyStylesheet(mStylesheet, mXml, (const char**)params);
 
-    // TODO check for xsl:message output somehow
+    if( mErrorRedirect )
+        fclose(stderr);
+
+    qDeleteAll(byteArrays);
 
     int bytesWritten;
-    FILE *fid = fopen(mOutputFile.toUtf8().data(),"w");
+    FILE *fid = fopen(mOutputFilename.toUtf8().data(),"w");
     if( fid == 0 )
     {
-        qDebug() << "Could not open output file." << mOutputFile;
+        qDebug() << "Could not open output file." << mOutputFilename;
     }
     else
     {
@@ -105,10 +106,21 @@ Xsltproc::ReturnValue Xsltproc::execute()
         fclose(fid);
     }
 
-    qDeleteAll(byteArrays);
+    if( mStylesheet != 0 )
+        xsltFreeStylesheet(mStylesheet);
+    if( mOutput != 0 )
+        xmlFreeDoc(mOutput);
+    if( mXml != 0 )
+        xmlFreeDoc(mXml);
 
     if( bytesWritten > 0 )
         return Xsltproc::Success;
     else
         return Xsltproc::GenericFailure;
+}
+
+void Xsltproc::setErrorFilename(const QString & filename)
+{
+    mErrorRedirect = true;
+    mErrorFilename = filename;
 }
