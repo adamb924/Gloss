@@ -36,18 +36,14 @@ Xsltproc::~Xsltproc()
     xmlCleanupParser();
 }
 
-bool Xsltproc::setStyleSheet(const QString & filename)
+void Xsltproc::setStyleSheet(const QString & filename)
 {
     mStyleSheetFilename = filename;
-    mStylesheet = xsltParseStylesheetFile( (const xmlChar*)filename.toUtf8().data() );
-    return mStylesheet != 0;
 }
 
-bool Xsltproc::setXmlFilename(const QString & filename)
+void Xsltproc::setXmlFilename(const QString & filename)
 {
     mXmlFilename = filename;
-    mXml = xmlParseFile( (const char*)filename.toUtf8().data() );
-    return mXml != 0;
 }
 
 void Xsltproc::setOutputFilename(const QString & filename)
@@ -62,8 +58,11 @@ void Xsltproc::setParameters(const QHash<QString,QString> & parameters)
 
 Xsltproc::ReturnValue Xsltproc::execute()
 {
+    mStylesheet = xsltParseStylesheetFile( (const xmlChar*)mStyleSheetFilename.toUtf8().data() );
     if( mStylesheet == 0 )
         return Xsltproc::InvalidStylesheet;
+
+    mXml = xmlParseFile( (const char*)mXmlFilename.toUtf8().data() );
     if( mXml == 0 )
         return Xsltproc::InvalidXmlFile;
 
@@ -94,7 +93,7 @@ Xsltproc::ReturnValue Xsltproc::execute()
 
     qDeleteAll(byteArrays);
 
-    int bytesWritten;
+    int bytesWritten = 0;
     FILE *fid = fopen(mOutputFilename.toUtf8().data(),"w");
     if( fid == 0 )
     {

@@ -15,8 +15,8 @@ public:
 
     enum ReturnValue { Success, InvalidStylesheet, InvalidXmlFile, GenericFailure };
 
-    bool setStyleSheet(const QString & filename);
-    bool setXmlFilename(const QString & filename);
+    void setStyleSheet(const QString & filename);
+    void setXmlFilename(const QString & filename);
     void setOutputFilename(const QString & filename);
     void setParameters(const QHash<QString,QString> & parameters);
     void setErrorFilename(const QString & filename);
