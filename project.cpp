@@ -277,8 +277,6 @@ bool Project::save()
         inFile.close();
     }
 
-    removeTempDirectory();
-
     return true;
 }
 
