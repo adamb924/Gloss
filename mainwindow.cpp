@@ -119,7 +119,7 @@ void MainWindow::closeProject()
 
 void MainWindow::closeProjectWithoutSaving()
 {
-
+    projectClose();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -141,6 +141,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::projectClose()
 {
+    QList<QMdiSubWindow *> windows = ui->mdiArea->subWindowList();
+    while( windows.count() > 0 )
+        ui->mdiArea->removeSubWindow( windows.takeAt(0) );
+
     mProject->removeTempDirectory();
     delete mProject;
     mProject = 0;
