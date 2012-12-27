@@ -50,3 +50,10 @@ void TextDisplayWidget::closeEvent(QCloseEvent *event)
     mText->saveText();
     event->accept();
 }
+
+void TextDisplayWidget::focusGlossLine(int line)
+{
+    setCurrentWidget( ui->glossTab );
+    mInterlinear->scrollToLine(line);
+}
+

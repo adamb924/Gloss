@@ -9,6 +9,8 @@
 #include "writingsystem.h"
 #include "writingsystemsdialog.h"
 #include "mergetranslationdialog.h"
+#include "generictextinputdialog.h"
+#include "searchquerymodel.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -37,6 +39,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionDelete_text, SIGNAL(triggered()), this, SLOT(deleteText()) );
     connect(ui->actionMerge_translations_from_other_FlexText_file, SIGNAL(triggered()), this, SLOT(mergeTranslations()));
+
+    connect(ui->actionSearch_gloss_items, SIGNAL(triggered()), this, SLOT(searchGlossItems()));
+    connect(ui->actionSubstring_search_gloss_items, SIGNAL(triggered()), this, SLOT(substringSearchGlossItems()));
 
     setProjectActionsEnabled(false);
 
@@ -298,12 +303,14 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
     ui->menuData->setEnabled(enabled);
     ui->menuGuts->setEnabled(enabled);
     ui->menuProject->setEnabled(enabled);
+    ui->menuSearch->setEnabled(enabled);
     ui->actionAdd_text->setEnabled(enabled);
     ui->actionImport_FlexText->setEnabled(enabled);
     ui->actionSave_Project->setEnabled(enabled);
     ui->actionClose_Project->setEnabled(enabled);
     ui->actionWriting_systems->setEnabled(enabled);
     ui->actionClose_project_without_saving->setEnabled(enabled);
+    ui->actionSearch_gloss_items->setEnabled(enabled);
 }
 
 void MainWindow::openText()
@@ -319,23 +326,25 @@ void MainWindow::openText()
         openText(whichText);
 }
 
-void MainWindow::openText(const QString & textName)
+TextDisplayWidget* MainWindow::openText(const QString & textName)
 {
     if( ! mProject->openText(textName) )
     {
         QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened.").arg(textName));
-        return;
+        return 0;
     }
     Text *text = mProject->texts()->value(textName, 0);
     if( text == 0 )
     {
         QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened.").arg(textName));
+        return 0;
     }
     else
     {
         TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();
+        return subWindow;
     }
 }
 
@@ -371,4 +380,76 @@ void MainWindow::mergeTranslations()
         text->mergeTranslation( dialog.filename() , dialog.writingSystem() );
         mProject->closeText(text);
     }
+}
+
+void MainWindow::searchGlossItems()
+{
+    // Launch a dialog requesting input
+    GenericTextInputDialog dialog(mProject->dbAdapter(), this);
+    dialog.setWindowTitle(tr("Enter a search string"));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        // Do the search of the texts
+        QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
+        createSearchResultDock(query);
+    }
+}
+
+void MainWindow::substringSearchGlossItems()
+{
+    // Launch a dialog requesting input
+    GenericTextInputDialog dialog(mProject->dbAdapter(), this);
+    dialog.setWindowTitle(tr("Enter a search string"));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        // Do the search of the texts
+        QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
+        createSearchResultDock(query);
+    }
+}
+
+void MainWindow::createSearchResultDock(const QString & query)
+{
+    // Pop up a dockable window showing the results
+    SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+    QTreeView *tree = new QTreeView(this);
+    tree->setSortingEnabled(true);
+    tree->setModel(model);
+    tree->sortByColumn(0, Qt::AscendingOrder);
+    tree->setHeaderHidden(true);
+
+    connect( tree, SIGNAL(activated(QModelIndex)), this, SLOT(searchResultSelected(QModelIndex)) );
+
+    QDockWidget *dock = new QDockWidget(tr("Search Results"), this);
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    dock->setWidget(tree);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+}
+
+void MainWindow::searchResultSelected( const QModelIndex & index )
+{
+    int lineNumber = index.data(Qt::UserRole).toInt();
+    QString textName = index.parent().data(Qt::UserRole).toString();
+    if( !textName.isEmpty() )
+        focusTextPosition( textName, lineNumber );
+}
+
+void MainWindow::focusTextPosition( const QString & textName , int lineNumber )
+{
+    QList<QMdiSubWindow*> windows = ui->mdiArea->subWindowList();
+    QListIterator<QMdiSubWindow*> iter(windows);
+    while(iter.hasNext())
+    {
+        QMdiSubWindow* w = iter.next();
+        TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
+        if( w->windowTitle() == textName && tdw != 0 )
+        {
+            tdw->focusGlossLine( lineNumber );
+            return;
+        }
+    }
+    // at this point the window must not exist
+    TextDisplayWidget* tdw = openText(textName);
+    if( tdw != 0 )
+        tdw->focusGlossLine(lineNumber);
 }

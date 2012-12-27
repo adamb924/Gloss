@@ -68,9 +68,17 @@
     <addaction name="actionWriting_systems"/>
     <addaction name="actionDelete_text"/>
    </widget>
+   <widget class="QMenu" name="menuSearch">
+    <property name="title">
+     <string>Search</string>
+    </property>
+    <addaction name="actionSearch_gloss_items"/>
+    <addaction name="actionSubstring_search_gloss_items"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
    <addaction name="menuProject"/>
+   <addaction name="menuSearch"/>
    <addaction name="menuGuts"/>
   </widget>
   <action name="actionNew_Project">
@@ -168,6 +176,21 @@
   <action name="actionMerge_translations_from_other_FlexText_file">
    <property name="text">
     <string>Merge translations from other FlexText file...</string>
+   </property>
+  </action>
+  <action name="actionSearch_gloss_items">
+   <property name="text">
+    <string>Search gloss items...</string>
+   </property>
+  </action>
+  <action name="actionFor_Text_Form">
+   <property name="text">
+    <string>For Text Form...</string>
+   </property>
+  </action>
+  <action name="actionSubstring_search_gloss_items">
+   <property name="text">
+    <string>Substring-search gloss items...</string>
    </property>
   </action>
  </widget>

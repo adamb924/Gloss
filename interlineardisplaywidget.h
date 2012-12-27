@@ -38,14 +38,14 @@ signals:
     void lineNumberChanged(int line);
 
 public slots:
+    void scrollToLine(int line);
+
     void updateGloss( const TextBit & bit );
     void updateText( const TextBit & bit );
     void updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
 
     void removeGlossFromConcordance( LingEdit * edit );
     void removeTextFormFromConcordance( LingEdit * edit );
-
-    void scrollToLine(int line);
 
     void otherInterpretationsAvailableFor(int id);
 

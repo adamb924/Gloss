@@ -17,12 +17,12 @@ class LingEdit : public QLineEdit
     Q_OBJECT
 public:
 
-    explicit LingEdit(const TextBit & bit, QWidget *parent = 0);
+    explicit LingEdit(QWidget *parent = 0);
+    LingEdit(const TextBit & bit, QWidget *parent = 0);
     ~LingEdit();
 
     qlonglong id() const;
 
-    void setTextBit( const TextBit & bit );
 
     void matchTextAlignmentTo( Qt::LayoutDirection target );
 
@@ -38,6 +38,8 @@ signals:
 public slots:
     void textChanged();
     void setId(LingEdit * edit, qlonglong id);
+    void setTextBit( const TextBit & bit );
+    void setWritingSystem( const WritingSystem & ws );
 };
 
 #endif // LINGEDIT_H

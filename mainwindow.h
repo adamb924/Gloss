@@ -12,6 +12,8 @@
 class Project;
 class QAction;
 class WritingSystem;
+class QModelIndex;
+class TextDisplayWidget;
 
 namespace Ui {
     class MainWindow;
@@ -39,6 +41,8 @@ private:
 
     WritingSystem selectWritingSystem(bool *ok);
 
+    void createSearchResultDock(const QString & query);
+
 private slots:
     void newProject();
     void openProject();
@@ -49,7 +53,7 @@ private slots:
     void deleteText();
     void mergeTranslations();
 
-    void openText(const QString & textName);
+    TextDisplayWidget* openText(const QString & textName);
 
     void projectClose();
 
@@ -61,6 +65,11 @@ private slots:
     void importFlexText();
     void importPlainText();
     void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText);
+
+    void searchGlossItems();
+    void substringSearchGlossItems();
+    void searchResultSelected( const QModelIndex & index );
+    void focusTextPosition( const QString & textName , int lineNumber );
 };
 
 #endif // MAINWINDOW_H

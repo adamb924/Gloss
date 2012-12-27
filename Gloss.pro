@@ -32,7 +32,9 @@ SOURCES += main.cpp\
     interpretationsearchdialog.cpp \
     writingsystemsdialog.cpp \
     mergetranslationdialog.cpp \
-    xsltproc.cpp
+    xsltproc.cpp \
+    generictextinputdialog.cpp \
+    searchquerymodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -55,7 +57,9 @@ HEADERS  += mainwindow.h \
     interpretationsearchdialog.h \
     writingsystemsdialog.h \
     mergetranslationdialog.h \
-    xsltproc.h
+    xsltproc.h \
+    generictextinputdialog.h \
+    searchquerymodel.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -63,7 +67,8 @@ FORMS    += mainwindow.ui \
     importflextextdialog.ui \
     interpretationsearchdialog.ui \
     writingsystemsdialog.ui \
-    mergetranslationdialog.ui
+    mergetranslationdialog.ui \
+    generictextinputdialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

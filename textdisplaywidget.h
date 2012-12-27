@@ -26,6 +26,8 @@ public:
     explicit TextDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
     ~TextDisplayWidget();
 
+    void focusGlossLine(int line);
+
 private:
     Ui::TextDisplayWidget *ui;
     Project *mProject;
