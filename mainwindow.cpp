@@ -11,6 +11,7 @@
 #include "mergetranslationdialog.h"
 #include "generictextinputdialog.h"
 #include "searchquerymodel.h"
+#include "xqueryinputdialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionSearch_gloss_items, SIGNAL(triggered()), this, SLOT(searchGlossItems()));
     connect(ui->actionSubstring_search_gloss_items, SIGNAL(triggered()), this, SLOT(substringSearchGlossItems()));
+    connect(ui->actionRaw_XQuery, SIGNAL(triggered()), this, SLOT(rawXQuery()));
 
     setProjectActionsEnabled(false);
 
@@ -452,4 +454,13 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber )
     TextDisplayWidget* tdw = openText(textName);
     if( tdw != 0 )
         tdw->focusGlossLine(lineNumber);
+}
+
+void MainWindow::rawXQuery()
+{
+    // Launch a dialog requesting input
+    XQueryInputDialog dialog(this);
+    dialog.setWindowTitle(tr("Perform a raw XQuery on all texts"));
+    if( dialog.exec() == QDialog::Accepted )
+        createSearchResultDock(dialog.query());
 }

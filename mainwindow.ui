@@ -74,6 +74,7 @@
     </property>
     <addaction name="actionSearch_gloss_items"/>
     <addaction name="actionSubstring_search_gloss_items"/>
+    <addaction name="actionRaw_XQuery"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
@@ -191,6 +192,11 @@
   <action name="actionSubstring_search_gloss_items">
    <property name="text">
     <string>Substring-search gloss items...</string>
+   </property>
+  </action>
+  <action name="actionRaw_XQuery">
+   <property name="text">
+    <string>Raw XQuery...</string>
    </property>
   </action>
  </widget>

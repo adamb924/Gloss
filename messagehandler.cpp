@@ -1,6 +1,7 @@
 #include "messagehandler.h"
 
 #include <QtDebug>
+#include <QMessageBox>
 
 MessageHandler::MessageHandler(QObject *parent) :
     QAbstractMessageHandler(parent)
@@ -9,5 +10,5 @@ MessageHandler::MessageHandler(QObject *parent) :
 
 void MessageHandler::handleMessage( QtMsgType type, const QString & description, const QUrl & identifier, const QSourceLocation & sourceLocation )
 {
-    qWarning() << "MessageHandler::handleMessage" << description;
+    QMessageBox::warning(0, tr("XQuery Error"), QString("%1 (Line %2, Column %3)").arg(description).arg(sourceLocation.line()).arg(sourceLocation.column()));
 }

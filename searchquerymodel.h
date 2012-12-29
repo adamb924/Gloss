@@ -13,7 +13,7 @@ public:
 private:
     QString mQuery;
 
-    void query( QStandardItem *parentItem, const QString & filename );
+    bool query( QStandardItem *parentItem, const QString & filename );
 };
 
 #endif // SEARCHQUERYMODEL_H
