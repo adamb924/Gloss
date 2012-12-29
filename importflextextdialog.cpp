@@ -58,24 +58,6 @@ void ImportFlexTextDialog::fillDataFromFlexText()
         return;
     }
 
-    QDomDocument document;
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        QMessageBox::information(this,tr("Error reading file"), tr("The file you've chosen cannot be opened."));
-        disable();
-        return;
-    }
-
-    if (!document.setContent(&file))
-    {
-        QMessageBox::information(this,tr("Error reading file"), tr("The file you've chosen cannot be set to the content of a QDomDocument object (obscure error report, sorry)."));
-        file.close();
-        disable();
-        return;
-    }
-    file.close();
-
     QXmlQuery query(QXmlQuery::XQuery10);
     if(!query.setFocus(QUrl(filename)))
     {

@@ -30,20 +30,10 @@ SearchQueryModel::SearchQueryModel( const QString & queryString, const QSet<QStr
 
 bool SearchQueryModel::query( QStandardItem *parentItem, const QString & filename )
 {
-    QDomDocument document;
     QXmlResultItems result;
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly))
-        return false;
-
-    if (!document.setContent(&file))
-        return false;
-    file.close();
-
     QXmlQuery query(QXmlQuery::XQuery10);
     if(!query.setFocus(QUrl(filename)))
         return false;
-
     query.setMessageHandler(new MessageHandler(this));
     query.setQuery(mQuery);
     query.evaluateTo(&result);
