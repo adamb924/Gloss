@@ -58,6 +58,8 @@ public:
 
     QString filepathFromName(const QString & name) const;
 
+    int removeUnusedGlossItems();
+
 public slots:
 
 private:
@@ -70,6 +72,12 @@ private:
     void readTextPaths();
     bool maybeDelete(QDir tempDir);
 
+    //! \brief Get all interpretation ids in use in this project
+    QSet<qlonglong> getAllInterpretationIds();
+
+    //! \brief Get all interpretation ids in use in the specified file path
+    QSet<qlonglong> getInterpretationIds(const QString & filepath);
+
     QString tempDirName() const;
 
     //! \brief Paths of all texts in the temp directory
@@ -77,6 +85,7 @@ private:
 
     //! \brief A hash containing all "opened" texts, keyed by name
     QHash<QString,Text*> mTexts;
+
 };
 
 #endif // PROJECT_H

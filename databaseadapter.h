@@ -24,6 +24,12 @@ public:
     explicit DatabaseAdapter(const QString & filename, QObject *parent = 0);
     ~DatabaseAdapter();
 
+    //! \brief Returns a set with all gloss item ids
+    QSet<qlonglong> interpretationIds() const;
+
+    //! \brief Removes all interpretations with the given ids from the database
+    int removeInterpretations( QSet<qlonglong> ids );
+
     //! \brief Returns a list of possible interpretations of the text from TextBit \a bit
     QList<qlonglong> candidateInterpretations(const TextBit & bit) const;
 

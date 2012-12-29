@@ -9,6 +9,11 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <QCryptographicHash>
+#include <QXmlResultItems>
+#include <QDomDocument>
+#include <QXmlQuery>
+
+#include "messagehandler.h"
 
 Project::Project()
 {
@@ -371,4 +376,42 @@ void Project::saveOpenTexts()
         iter.next();
         iter.value()->saveText();
     }
+}
+
+int Project::removeUnusedGlossItems()
+{
+    QSet<qlonglong> fromDatabase = mDbAdapter->interpretationIds();
+    QSet<qlonglong> fromTexts = getAllInterpretationIds();
+    fromDatabase.subtract( fromTexts );
+    return mDbAdapter->removeInterpretations( fromDatabase );
+}
+
+QSet<qlonglong> Project::getAllInterpretationIds()
+{
+    QSet<qlonglong> ids;
+    QSetIterator<QString> iter(mTextPaths);
+    while(iter.hasNext())
+        ids.unite( getInterpretationIds( iter.next() ) );
+    return ids;
+}
+
+QSet<qlonglong> Project::getInterpretationIds(const QString & filepath)
+{
+    QSet<qlonglong> ids;
+    QXmlResultItems result;
+
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl(filepath)))
+        return ids;
+
+    query.setMessageHandler(new MessageHandler(this));
+    query.setQuery("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word return string( $x/@abg:id )");
+    query.evaluateTo(&result);
+    QXmlItem item(result.next());
+    while (!item.isNull())
+    {
+        ids << item.toAtomicValue().toLongLong();
+        item = result.next();
+    }
+    return ids;
 }

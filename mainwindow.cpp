@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSearch_gloss_items, SIGNAL(triggered()), this, SLOT(searchGlossItems()));
     connect(ui->actionSubstring_search_gloss_items, SIGNAL(triggered()), this, SLOT(substringSearchGlossItems()));
     connect(ui->actionRaw_XQuery, SIGNAL(triggered()), this, SLOT(rawXQuery()));
+    connect(ui->actionRemove_unused_gloss_items, SIGNAL(triggered()), this, SLOT(removeUnusedGlossItems()));
 
     setProjectActionsEnabled(false);
 
@@ -59,10 +60,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::addTableMenuItems()
 {
-    QString table;
+    ui->menuGuts->addSeparator();
+
     QStringList tables;
     tables << "Interpretations" << "TextForms" << "Glosses" << "MorphologicalAnalyses" << "WritingSystems" << "InterlinearTextLine" << "PhrasalGlossLine";
-    foreach(table, tables)
+    foreach(QString table, tables)
     {
         QAction *action = new QAction(table,ui->menuGuts);
         action->setData(table);
@@ -463,4 +465,10 @@ void MainWindow::rawXQuery()
     dialog.setWindowTitle(tr("Perform a raw XQuery on all texts"));
     if( dialog.exec() == QDialog::Accepted )
         createSearchResultDock(dialog.query());
+}
+
+void MainWindow::removeUnusedGlossItems()
+{
+    int numberRemoved = mProject->removeUnusedGlossItems();
+    QMessageBox::information(this, tr("Process complete"), tr("%n unused gloss item(s) removed", "", numberRemoved));
 }

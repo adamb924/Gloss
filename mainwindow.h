@@ -71,6 +71,7 @@ private slots:
     void searchResultSelected( const QModelIndex & index );
     void focusTextPosition( const QString & textName , int lineNumber );
     void rawXQuery();
+    void removeUnusedGlossItems();
 };
 
 #endif // MAINWINDOW_H

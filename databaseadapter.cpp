@@ -529,3 +529,38 @@ bool DatabaseAdapter::interpretationExists(qlonglong id) const
     else
         return false;
 }
+
+QSet<qlonglong> DatabaseAdapter::interpretationIds() const
+{
+    QSet<qlonglong> ids;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from Interpretations;");
+    if( q.exec() )
+        while( q.next() )
+            ids << q.value(0).toLongLong();
+    return ids;
+}
+
+int DatabaseAdapter::removeInterpretations( QSet<qlonglong> ids )
+{
+    int count = 0;
+    QSetIterator<qlonglong> iter(ids);
+    QSqlQuery q1(QSqlDatabase::database(mFilename));
+    q1.prepare("delete from Interpretations where _id=:_id;");
+    QSqlQuery q2(QSqlDatabase::database(mFilename));
+    q2.prepare("delete from TextForms where InterpretationId=:_id;");
+    QSqlQuery q3(QSqlDatabase::database(mFilename));
+    q3.prepare("delete from Glosses where InterpretationId=:_id;");
+    while( iter.hasNext() )
+    {
+        qlonglong id = iter.next();
+        q1.bindValue( ":_id", id );
+        q2.bindValue( ":_id", id );
+        q3.bindValue( ":_id", id );
+        if( q1.exec() )
+            count++;
+        q2.exec();
+        q3.exec();
+    }
+    return count;
+}

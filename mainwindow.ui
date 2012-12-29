@@ -58,8 +58,10 @@
    </widget>
    <widget class="QMenu" name="menuGuts">
     <property name="title">
-     <string>Guts</string>
+     <string>Database</string>
     </property>
+    <addaction name="separator"/>
+    <addaction name="actionRemove_unused_gloss_items"/>
    </widget>
    <widget class="QMenu" name="menuProject">
     <property name="title">
@@ -197,6 +199,11 @@
   <action name="actionRaw_XQuery">
    <property name="text">
     <string>Raw XQuery...</string>
+   </property>
+  </action>
+  <action name="actionRemove_unused_gloss_items">
+   <property name="text">
+    <string>Remove unused gloss items</string>
    </property>
   </action>
  </widget>
