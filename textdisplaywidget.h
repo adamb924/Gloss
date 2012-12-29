@@ -23,7 +23,7 @@ class TextDisplayWidget : public QTabWidget
     Q_OBJECT
 
 public:
-    explicit TextDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
+    TextDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
     ~TextDisplayWidget();
 
     void focusGlossLine(int line);

@@ -21,7 +21,7 @@ class NewTextDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NewTextDialog( const QList<WritingSystem> & ws, QWidget *parent = 0);
+    NewTextDialog( const QList<WritingSystem> & ws, QWidget *parent = 0);
     ~NewTextDialog();
 
     WritingSystem writingSystem() const;

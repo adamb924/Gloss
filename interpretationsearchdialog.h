@@ -15,7 +15,7 @@ class InterpretationSearchDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit InterpretationSearchDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    InterpretationSearchDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     ~InterpretationSearchDialog();
 
     qlonglong selectionId() const;

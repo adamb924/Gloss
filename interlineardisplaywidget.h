@@ -29,7 +29,7 @@ class InterlinearDisplayWidget : public QScrollArea
 {
     Q_OBJECT
 public:
-    explicit InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
+    InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
 signals:

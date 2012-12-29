@@ -15,7 +15,7 @@ class WritingSystemsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit WritingSystemsDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    WritingSystemsDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     ~WritingSystemsDialog();
 
 private slots:
