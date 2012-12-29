@@ -24,10 +24,7 @@ Project::Project()
 Project::~Project()
 {
     if( mDbAdapter != 0 )
-    {
-        mDbAdapter->close();
         delete mDbAdapter;
-    }
     qDeleteAll(mTexts);
 }
 

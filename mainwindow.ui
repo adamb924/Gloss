@@ -60,8 +60,8 @@
     <property name="title">
      <string>Database</string>
     </property>
-    <addaction name="separator"/>
     <addaction name="actionRemove_unused_gloss_items"/>
+    <addaction name="actionPerform_a_query"/>
    </widget>
    <widget class="QMenu" name="menuProject">
     <property name="title">
@@ -204,6 +204,11 @@
   <action name="actionRemove_unused_gloss_items">
    <property name="text">
     <string>Remove unused gloss items</string>
+   </property>
+  </action>
+  <action name="actionPerform_a_query">
+   <property name="text">
+    <string>Perform a query...</string>
    </property>
   </action>
  </widget>

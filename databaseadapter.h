@@ -24,6 +24,9 @@ public:
     explicit DatabaseAdapter(const QString & filename, QObject *parent = 0);
     ~DatabaseAdapter();
 
+    //! \brief Returns the database object
+    QSqlDatabase* sqlDatabase();
+
     //! \brief Returns a set with all gloss item ids
     QSet<qlonglong> interpretationIds() const;
 
@@ -115,7 +118,6 @@ public:
     }
 
 private:
-
     QString mFilename;
 
 signals:

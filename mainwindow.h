@@ -72,6 +72,7 @@ private slots:
     void focusTextPosition( const QString & textName , int lineNumber );
     void rawXQuery();
     void removeUnusedGlossItems();
+    void sqlQueryDialog();
 };
 
 #endif // MAINWINDOW_H

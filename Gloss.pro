@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     xsltproc.cpp \
     generictextinputdialog.cpp \
     searchquerymodel.cpp \
-    xqueryinputdialog.cpp
+    xqueryinputdialog.cpp \
+    databasequerydialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -61,7 +62,8 @@ HEADERS  += mainwindow.h \
     xsltproc.h \
     generictextinputdialog.h \
     searchquerymodel.h \
-    xqueryinputdialog.h
+    xqueryinputdialog.h \
+    databasequerydialog.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -71,7 +73,8 @@ FORMS    += mainwindow.ui \
     writingsystemsdialog.ui \
     mergetranslationdialog.ui \
     generictextinputdialog.ui \
-    xqueryinputdialog.ui
+    xqueryinputdialog.ui \
+    databasequerydialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

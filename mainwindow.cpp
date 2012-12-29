@@ -12,6 +12,7 @@
 #include "generictextinputdialog.h"
 #include "searchquerymodel.h"
 #include "xqueryinputdialog.h"
+#include "databasequerydialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -45,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSubstring_search_gloss_items, SIGNAL(triggered()), this, SLOT(substringSearchGlossItems()));
     connect(ui->actionRaw_XQuery, SIGNAL(triggered()), this, SLOT(rawXQuery()));
     connect(ui->actionRemove_unused_gloss_items, SIGNAL(triggered()), this, SLOT(removeUnusedGlossItems()));
+
+    connect(ui->actionPerform_a_query, SIGNAL(triggered()), this, SLOT(sqlQueryDialog()));
 
     setProjectActionsEnabled(false);
 
@@ -471,4 +474,10 @@ void MainWindow::removeUnusedGlossItems()
 {
     int numberRemoved = mProject->removeUnusedGlossItems();
     QMessageBox::information(this, tr("Process complete"), tr("%n unused gloss item(s) removed", "", numberRemoved));
+}
+
+void MainWindow::sqlQueryDialog()
+{
+    DatabaseQueryDialog dialog(mProject->dbAdapter()->dbFilename());
+    dialog.exec();
 }
