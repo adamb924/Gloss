@@ -1,0 +1,60 @@
+#include "allomorph.h"
+
+#include <QRegExp>
+
+Allomorph::Allomorph()
+{
+
+}
+
+Allomorph::Allomorph(const TextBit & bit)
+{
+    mTextBit = bit;
+    setTypeFromString(bit.text());
+}
+
+void Allomorph::setTypeFromString(const QString & string)
+{
+    QRegExp rePrefix("^[^-].*-$");
+    QRegExp reSuffix("^-.*[^-]$");
+    QRegExp reInfix("^-.*-$");
+    QRegExp reBoundStem("^\\*.*$");
+    QRegExp reProclitic("^[^=].*=$");
+    QRegExp reEnclitic("^=.*[^=]$");
+    QRegExp reSimulfix("^=.*=$");
+    QRegExp reSuprafix("^~.*~$");
+
+    if( rePrefix.exactMatch( string ) )
+        mType = Allomorph::Prefix;
+    else if( reSuffix.exactMatch( string ) )
+        mType = Allomorph::Suffix;
+    else if( reInfix.exactMatch( string ) )
+        mType = Allomorph::Infix;
+    else if( reBoundStem.exactMatch( string ) )
+        mType = Allomorph::BoundStem;
+    else if( reProclitic.exactMatch( string ) )
+        mType = Allomorph::Proclitic;
+    else if( reEnclitic.exactMatch( string ) )
+        mType = Allomorph::Enclitic;
+    else if( reSimulfix.exactMatch( string ) )
+        mType = Allomorph::Simulfix;
+    else if( reSuprafix.exactMatch( string ) )
+        mType = Allomorph::Suprafix;
+    else
+        mType = Allomorph::Stem;
+}
+
+Allomorph::Type Allomorph::type() const
+{
+    return mType;
+}
+
+QString Allomorph::typeString() const
+{
+    return getTypeString(mType);
+}
+
+QString Allomorph::text() const
+{
+    return mTextBit.text();
+}

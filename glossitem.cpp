@@ -212,3 +212,13 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
     }
     return mGlosses.value(ws);
 }
+
+MorphologicalAnalysis GlossItem::morphologicalAnalysis() const
+{
+    return mMorphologicalAnalysis;
+}
+
+void GlossItem::setMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
+{
+    mMorphologicalAnalysis = analysis;
+}

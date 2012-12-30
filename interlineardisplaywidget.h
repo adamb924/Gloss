@@ -15,8 +15,11 @@ class QVBoxLayout;
 class QScrollArea;
 class Text;
 class Project;
-
 class FlowLayout;
+class LingEdit;
+class TextBit;
+
+#include "interlinearitemtype.h"
 
 class InterlinearDisplayWidget : public QScrollArea
 {
@@ -48,6 +51,14 @@ protected:
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
+    //! \brief Removes and deletes all widgets from the given \a layout
+    virtual void clearWidgets(QLayout * layout) = 0;
+
+    virtual void setLayoutFromText() = 0;
+
+    //! \brief Add the word display widgets for phrase \a i to \a flowLayout
+    virtual void addWordWidgets( int i , QLayout * flowLayout ) = 0;
+
 protected:
     QList<QLayout*> mLineLayouts;
 
@@ -58,6 +69,16 @@ protected:
     QVBoxLayout *mLayout;
 
     void clearData();
+
+    QList<InterlinearItemType> mInterlinearDisplayLines;
+    QList<InterlinearItemType> mPhrasalGlossLines;
+
+    LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
+
+    QList<LingEdit*> mPhrasalGlossEdits;
+
+    //! \brief Add the phrasal gloss lines for phrase \a i
+    void addPhrasalGlossLines( int i );
 
     //! \brief Add a line label for phrase \a i
     void addLineLabel( int i , QLayout * flowLayout  );

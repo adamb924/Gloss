@@ -22,6 +22,8 @@ class QLabel;
 class WritingSystem;
 class TextBit;
 class InterlinearDisplayWidget;
+class ImmutableLabel;
+class AnalysisWidget;
 
 class WordDisplayWidget : public QWidget
 {
@@ -49,6 +51,8 @@ private:
     void setupLayout();
     LingEdit* addGlossLine( const InterlinearItemType & glossLine );
     LingEdit* addTextFormLine( const InterlinearItemType & glossLine );
+    ImmutableLabel* addImmutableLine( const InterlinearItemType & glossLine, bool technicolor );
+    AnalysisWidget* addAnalysisWidget( const InterlinearItemType & glossLine );
 
     QVBoxLayout *mLayout;
 
@@ -67,7 +71,6 @@ signals:
     void alternateInterpretationAvailableFor( int id );
 
 public slots:
-    void updateBaselineLabelStyle();
     void sendConcordanceUpdates();
 
 private slots:

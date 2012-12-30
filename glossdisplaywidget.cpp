@@ -11,11 +11,11 @@
 GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
 {
     mPhrasalGlossLines = mProject->glossPhrasalGlossLines();
+    mInterlinearDisplayLines = mProject->glossInterlinearLines();
 
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 
-    if( mText->phrases()->length() > 0 )
-        setLayoutFromText();
+    setLayoutFromText();
 }
 
 void GlossDisplayWidget::updateGloss( const TextBit & bit )
@@ -102,14 +102,14 @@ void GlossDisplayWidget::setLayoutFromText()
 
         addLineLabel(i, flowLayout);
         if( flowLayout->count() == 1 ) // it's either new or has been cleared for a refresh
-            addWordDisplayWidgets(i, flowLayout);
+            addWordWidgets(i, flowLayout);
 
         mText->phrases()->at(i)->setGuiRefreshRequest(false);
     }
     progress.setValue(mText->phrases()->count());
 }
 
-void GlossDisplayWidget::addWordDisplayWidgets( int i , QLayout * flowLayout )
+void GlossDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 {
     for(int j=0; j<mText->phrases()->at(i)->count(); j++)
     {
@@ -139,7 +139,7 @@ void GlossDisplayWidget::clearData()
 
 WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mProject->glossInterlinearLines() , this, mProject->dbAdapter() );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines , this, mProject->dbAdapter() );
     mWordDisplayWidgets << wdw;
     mWdwByInterpretationId.insert( item->id() , wdw );
     mTextFormConcordance.unite( wdw->textFormEdits() );
@@ -149,25 +149,6 @@ WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item)
     connect( wdw, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), this, SLOT(updateTextFormConcordance(LingEdit*,qlonglong)));
 
     return wdw;
-}
-
-void GlossDisplayWidget::addPhrasalGlossLines( int i )
-{
-    for(int j=0; j<mPhrasalGlossLines.count(); j++)
-    {
-        TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
-        LingEdit *edit = addPhrasalGlossLine( bit );
-        edit->matchTextAlignmentTo( mText->baselineWritingSystem().layoutDirection() );
-        connect( edit, SIGNAL(stringChanged(TextBit)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
-    }
-}
-
-LingEdit* GlossDisplayWidget::addPhrasalGlossLine( const TextBit & gloss )
-{
-    LingEdit *edit = new LingEdit( gloss , this);
-    mLayout->addWidget(edit);
-    mPhrasalGlossEdits << edit;
-    return edit;
 }
 
 void GlossDisplayWidget::clearWidgets(QLayout * layout)

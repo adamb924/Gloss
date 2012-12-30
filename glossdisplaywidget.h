@@ -43,26 +43,17 @@ private:
     //! \brief Removes and deletes all widgets from the given \a layout
     void clearWidgets(QLayout * layout);
 
-    LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
-
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
-    void addWordDisplayWidgets( int i , QLayout * flowLayout );
+    void addWordWidgets( int i , QLayout * flowLayout );
 
     void clearData();
-
-    QList<InterlinearItemType> mPhrasalGlossLines;
 
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
 
     QMultiHash<qlonglong,LingEdit*> mTextFormConcordance;
     QMultiHash<qlonglong,LingEdit*> mGlossConcordance;
 
-    QList<LingEdit*> mPhrasalGlossEdits;
-
     QMultiHash<qlonglong,WordDisplayWidget*> mWdwByInterpretationId; // change this to something generic?
-
-    //! \brief Add the phrasal gloss lines for phrase \a i
-    void addPhrasalGlossLines( int i );
 
 };
 

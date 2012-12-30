@@ -50,7 +50,7 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 
 QLayout* InterlinearDisplayWidget::addLine()
 {
-    FlowLayout *flowLayout = new FlowLayout( mText->baselineWritingSystem().layoutDirection() , 0, 5 , 5 , 5 );
+    FlowLayout *flowLayout = new FlowLayout( mInterlinearDisplayLines.first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
     mLineLayouts << flowLayout;
     mLayout->addLayout(flowLayout);
     return flowLayout;
@@ -95,4 +95,23 @@ void InterlinearDisplayWidget::scrollContentsBy ( int dx, int dy )
     {
 
     }
+}
+
+void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
+{
+    for(int j=0; j<mPhrasalGlossLines.count(); j++)
+    {
+        TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
+        LingEdit *edit = addPhrasalGlossLine( bit );
+        edit->matchTextAlignmentTo( mText->baselineWritingSystem().layoutDirection() );
+        connect( edit, SIGNAL(stringChanged(TextBit)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
+    }
+}
+
+LingEdit* InterlinearDisplayWidget::addPhrasalGlossLine( const TextBit & gloss )
+{
+    LingEdit *edit = new LingEdit( gloss , this);
+    mLayout->addWidget(edit);
+    mPhrasalGlossEdits << edit;
+    return edit;
 }

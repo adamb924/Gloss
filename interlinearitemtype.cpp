@@ -9,21 +9,22 @@ InterlinearItemType::InterlinearItemType(LineType type, const WritingSystem & ws
 
 InterlinearItemType::InterlinearItemType(const QString & type, const WritingSystem & ws)
 {
-    if( type == "text ")
+    QString string = type.toLower();
+    if( string == "text")
     {
         mType = InterlinearItemType::Text;
     }
-    else if( type == "gloss" )
+    else if( string == "gloss" )
     {
         mType = InterlinearItemType::Gloss;
     }
-    else if( type == "analysis" )
+    else if( string == "analysis" )
     {
         mType = InterlinearItemType::Analysis;
     }
     else
     {
-        mType = InterlinearItemType::Text;
+        mType = InterlinearItemType::Immutable;
     }
     mWritingSystem = ws;
 }

@@ -6,6 +6,8 @@
 #include "databaseadapter.h"
 #include "interlineardisplaywidget.h"
 #include "interpretationsearchdialog.h"
+#include "immutablelabel.h"
+#include "analysiswidget.h"
 
 #include <QtGui>
 #include <QtDebug>
@@ -24,17 +26,13 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 
     setupLayout();
 
-    setMinimumSize(128,128);
+    setMinimumSize(128,20);
 
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
 
-    connect( mGlossItem, SIGNAL(approvalStatusChanged(ApprovalStatus)), this, SLOT(updateBaselineLabelStyle()) );
-    connect( mGlossItem, SIGNAL(candidateNumberChanged(CandidateNumber)), this, SLOT(updateBaselineLabelStyle()) );
     connect( mGlossItem, SIGNAL(fieldsChanged()), this, SLOT(fillData()) );
 
     fillData();
-
-    updateBaselineLabelStyle();
 }
 
 WordDisplayWidget::~WordDisplayWidget()
@@ -49,32 +47,40 @@ void WordDisplayWidget::setupLayout()
     mTextFormEdits.clear();
     mGlossEdits.clear();
 
-    mBaselineWordLabel = new QLabel(mGlossItem->baselineText().text(), this);
-    mBaselineWordLabel->setAlignment( mGlossItem->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
-    updateBaselineLabelStyle();
+    QLabel *immutableLabel;
+    LingEdit *lineWidget;
+    AnalysisWidget *analysisWidget;
 
-    mLayout->addWidget(mBaselineWordLabel);
     for(int i=0; i<mGlossLines.count(); i++)
     {
-        LingEdit *edit;
-        if( mGlossLines.at(i).type() == InterlinearItemType::Text )
+        switch( mGlossLines.at(i).type() )
         {
-            edit = addTextFormLine( mGlossLines.at(i) );
-            mTextFormEdits.insert(mGlossLines.at(i).writingSystem(), edit);
+        case InterlinearItemType::Immutable:
+            immutableLabel = addImmutableLine( mGlossLines.at(i) , i == 0 );
+            mLayout->addWidget(immutableLabel);
+            break;
+        case InterlinearItemType::Text:
+            lineWidget = addTextFormLine( mGlossLines.at(i) );
+            mTextFormEdits.insert(mGlossLines.at(i).writingSystem(), lineWidget);
+            mLayout->addWidget(lineWidget);
+            break;
+        case InterlinearItemType::Gloss:
+            lineWidget = addGlossLine( mGlossLines.at(i) );
+            mGlossEdits.insert(mGlossLines.at(i).writingSystem(), lineWidget);
+            mLayout->addWidget(lineWidget);
+            break;
+        case InterlinearItemType::Analysis:
+            analysisWidget = addAnalysisWidget( mGlossLines.at(i) );
+            mLayout->addWidget(analysisWidget);
+            break;
         }
-        else
-        {
-            edit = addGlossLine( mGlossLines.at(i) );
-            mGlossEdits.insert(mGlossLines.at(i).writingSystem(), edit);
-        }
-        mLayout->addWidget(edit);
     }
 }
 
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit( mGlossItem->gloss( glossLine.writingSystem() ) , this);
-    edit->matchTextAlignmentTo( mGlossItem->baselineWritingSystem().layoutDirection() );
+    edit->matchTextAlignmentTo( mGlossLines.first().writingSystem().layoutDirection() );
 
     connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
@@ -87,7 +93,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit(  mGlossItem->textForm( glossLine.writingSystem() ) , this);
-    edit->matchTextAlignmentTo( mGlossItem->baselineWritingSystem().layoutDirection() );
+    edit->matchTextAlignmentTo( mGlossLines.first().writingSystem().layoutDirection() );
 
     connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setTextForm(TextBit)) );
@@ -95,6 +101,31 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
     connect(edit, SIGNAL(beingDestroyed(LingEdit*)), mInterlinearDisplayWidget, SLOT(removeTextFormFromConcordance(LingEdit*)));
 
     return edit;
+}
+
+ImmutableLabel* WordDisplayWidget::addImmutableLine( const InterlinearItemType & glossLine, bool technicolor )
+{
+    TextBit bit("",glossLine.writingSystem());
+    if( mGlossItem->textForms()->contains( glossLine.writingSystem() ))
+        bit = mGlossItem->textForm( glossLine.writingSystem() );
+    else if( mGlossItem->glosses()->contains( glossLine.writingSystem() ) )
+        bit = mGlossItem->gloss( glossLine.writingSystem() );
+
+    ImmutableLabel *immutableLabel = new ImmutableLabel( bit, technicolor , this);
+    immutableLabel->setAlignment( mGlossLines.first().writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
+    immutableLabel->setCandidateNumber(mGlossItem->candidateNumber());
+    immutableLabel->setApprovalStatus(mGlossItem->approvalStatus());
+
+    connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
+    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
+
+    return immutableLabel;
+}
+
+AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType & glossLine )
+{
+    AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mDbAdapter, this);
+    return analysisWidget;
 }
 
 void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -115,10 +146,19 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     for(int i=0; i<mGlossLines.count(); i++)
     {
-        if( mGlossLines.at(i).type() == InterlinearItemType::Gloss )
-            addGlossSubmenu( &menu , mGlossLines.at(i).writingSystem() );
-        else
+        switch( mGlossLines.at(i).type() )
+        {
+        case InterlinearItemType::Immutable:
+            break;
+        case InterlinearItemType::Text:
             addTextFormSubmenu( &menu , mGlossLines.at(i).writingSystem() );
+            break;
+        case InterlinearItemType::Gloss:
+            addGlossSubmenu( &menu , mGlossLines.at(i).writingSystem() );
+            break;
+        case InterlinearItemType::Analysis:
+            break;
+        }
     }
 
     menu.exec(event->globalPos());
@@ -267,23 +307,12 @@ void WordDisplayWidget::fillData()
             case InterlinearItemType::Gloss:
                 mGlossEdits[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
                 break;
+            case InterlinearItemType::Immutable:
             case InterlinearItemType::Analysis:
                 break;
             }
         }
     }
-}
-
-void WordDisplayWidget::updateBaselineLabelStyle()
-{
-    QString color;
-    if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateNumber() == GlossItem::SingleOption )
-        color = "#CDFFB2";
-    else if ( mGlossItem->approvalStatus() == GlossItem::Unapproved && mGlossItem->candidateNumber() == GlossItem::MultipleOption )
-        color = "#fff6a8";
-    else
-        color = "#ffffff";
-    mBaselineWordLabel->setStyleSheet(QString("font-family: %1; font-size: %2pt; background-color: %3;").arg(mGlossItem->baselineText().writingSystem().fontFamily()).arg(mGlossItem->baselineText().writingSystem().fontSize()).arg(color));
 }
 
 void WordDisplayWidget::mouseDoubleClickEvent ( QMouseEvent * event )

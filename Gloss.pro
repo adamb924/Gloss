@@ -38,7 +38,13 @@ SOURCES += main.cpp\
     xqueryinputdialog.cpp \
     databasequerydialog.cpp \
     analysisdisplaywidget.cpp \
-    glossdisplaywidget.cpp
+    glossdisplaywidget.cpp \
+    immutablelabel.cpp \
+    analysiswidget.cpp \
+    createanalysisdialog.cpp \
+    lexicalentryform.cpp \
+    createlexicalentriesdialog.cpp \
+    allomorph.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -67,7 +73,13 @@ HEADERS  += mainwindow.h \
     xqueryinputdialog.h \
     databasequerydialog.h \
     analysisdisplaywidget.h \
-    glossdisplaywidget.h
+    glossdisplaywidget.h \
+    immutablelabel.h \
+    analysiswidget.h \
+    createanalysisdialog.h \
+    lexicalentryform.h \
+    createlexicalentriesdialog.h \
+    allomorph.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -78,7 +90,9 @@ FORMS    += mainwindow.ui \
     mergetranslationdialog.ui \
     generictextinputdialog.ui \
     xqueryinputdialog.ui \
-    databasequerydialog.ui
+    databasequerydialog.ui \
+    createanalysisdialog.ui \
+    lexicalentryform.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

@@ -89,7 +89,17 @@ void Text::setBaselineWritingSystem(const WritingSystem & ws)
 {
     mBaselineWritingSystem = ws;
 }
+/*
+WritingSystem Text::analysisWritingSystem() const
+{
+    return mAnalysisWritingSystem;
+}
 
+void Text::setAnalysisWritingSystem(const WritingSystem & ws)
+{
+    mAnalysisWritingSystem = ws;
+}
+*/
 QString Text::baselineText() const
 {
     return mBaselineText;
