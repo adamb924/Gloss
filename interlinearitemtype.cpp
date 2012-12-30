@@ -1,13 +1,30 @@
 #include "interlinearitemtype.h"
 #include "writingsystem.h"
 
-InterlinearItemType::InterlinearItemType()
-{
-}
-
 InterlinearItemType::InterlinearItemType(LineType type, const WritingSystem & ws)
 {
     mType = type;
+    mWritingSystem = ws;
+}
+
+InterlinearItemType::InterlinearItemType(const QString & type, const WritingSystem & ws)
+{
+    if( type == "text ")
+    {
+        mType = InterlinearItemType::Text;
+    }
+    else if( type == "gloss" )
+    {
+        mType = InterlinearItemType::Gloss;
+    }
+    else if( type == "analysis" )
+    {
+        mType = InterlinearItemType::Analysis;
+    }
+    else
+    {
+        mType = InterlinearItemType::Text;
+    }
     mWritingSystem = ws;
 }
 

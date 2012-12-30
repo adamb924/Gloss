@@ -13,11 +13,12 @@ class InterlinearItemType {
 public:
     enum LineType {
         Text,
-        Gloss
+        Gloss,
+        Analysis
     };
 
-    InterlinearItemType();
     InterlinearItemType(LineType type, const WritingSystem & ws);
+    InterlinearItemType(const QString & type, const WritingSystem & ws);
 
     void setType(LineType type);
     void setWritingSystem(const WritingSystem & ws);

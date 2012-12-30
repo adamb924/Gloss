@@ -10,7 +10,7 @@
 
 GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
 {
-    mPhrasalGlossLines = mProject->dbAdapter()->phrasalGlossLines();
+    mPhrasalGlossLines = mProject->glossPhrasalGlossLines();
 
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 
@@ -139,7 +139,7 @@ void GlossDisplayWidget::clearData()
 
 WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight , this, mProject->dbAdapter() );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mProject->glossInterlinearLines() , this, mProject->dbAdapter() );
     mWordDisplayWidgets << wdw;
     mWdwByInterpretationId.insert( item->id() , wdw );
     mTextFormConcordance.unite( wdw->textFormEdits() );

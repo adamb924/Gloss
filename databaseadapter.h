@@ -93,12 +93,6 @@ public:
     //! \brief Returns true if a writing system with FlexString \a flexstring exists, otherwise false.
     bool writingSystemExists(const QString & flexstring) const;
 
-    //! \brief Returns a list of types of interlinear text lines (InterlinearItemType objects), from the database.
-    QList<InterlinearItemType> interlinearTextLines() const;
-
-    //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects), from the database.
-    QList<InterlinearItemType> phrasalGlossLines() const;
-
     //! \brief Closes the database
     void close();
 

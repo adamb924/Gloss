@@ -11,14 +11,14 @@
 #include <QtDebug>
 #include <QActionGroup>
 
-WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter)
+WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter)
 {
     mDbAdapter = dbAdapter;
     mGlossItem = item;
     mAlignment = alignment;
     mInterlinearDisplayWidget = ildw;
 
-    mGlossLines = mDbAdapter->interlinearTextLines();
+    mGlossLines = lines;
 
     setMaximumWidth(100);
 
@@ -266,6 +266,8 @@ void WordDisplayWidget::fillData()
                 break;
             case InterlinearItemType::Gloss:
                 mGlossEdits[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
+                break;
+            case InterlinearItemType::Analysis:
                 break;
             }
         }
