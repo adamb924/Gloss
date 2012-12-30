@@ -9,21 +9,14 @@
 
 #include <QScrollArea>
 #include <QList>
-#include <QMultiHash>
 #include <QSet>
 
 class QVBoxLayout;
 class QScrollArea;
-class GlossItem;
-class WordDisplayWidget;
-class LingEdit;
+class Text;
 class Project;
 
-#include "flowlayout.h"
-#include "textbit.h"
-#include "interlinearitemtype.h"
-
-class Text;
+class FlowLayout;
 
 class InterlinearDisplayWidget : public QScrollArea
 {
@@ -40,66 +33,34 @@ signals:
 public slots:
     void scrollToLine(int line);
 
-    void updateGloss( const TextBit & bit );
-    void updateText( const TextBit & bit );
-    void updateMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
-
-    void removeGlossFromConcordance( LingEdit * edit );
-    void removeTextFormFromConcordance( LingEdit * edit );
-
-    void otherInterpretationsAvailableFor(int id);
-
 protected:
     void scrollContentsBy ( int dx, int dy );
 
 private slots:
-    void baselineTextUpdated(const QString & baselineText);
-
-    void updateTextFormConcordance(LingEdit * edit, qlonglong newId);
-    void updateGlossFormConcordance(LingEdit * edit, qlonglong newId);
 
     void saveText();
 
-private:
+protected:
     Text *mText;
     Project *mProject;
     int mCurrentLine;
 
+private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
-    void setLayoutFromText();
+protected:
+    QList<QLayout*> mLineLayouts;
 
-    //! \brief Removes and deletes all widgets from the given \a layout
-    void clearWidgets(QLayout * layout);
+    QSet<QWidget*> mWordDisplayWidgets; // change to generic name
 
-    //! \brief Add the phrasal gloss lines for phrase \a i
-    void addPhrasalGlossLines( int i );
-
-    //! \brief Add a line label for phrase \a i
-    void addLineLabel( int i , QLayout * flowLayout  );
-
-    //! \brief Add the word display widgets for phrase \a i to \a flowLayout
-    void addWordDisplayWidgets( int i , QLayout * flowLayout );
-
-    LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
-
-    void clearData();
+    QLayout* addLine();
 
     QVBoxLayout *mLayout;
 
-    QList<QLayout*> mLineLayouts;
-    QList<LingEdit*> mPhrasalGlossEdits;
-    QSet<QWidget*> mWordDisplayWidgets;
-    QMultiHash<qlonglong,WordDisplayWidget*> mWdwByInterpretationId;
+    void clearData();
 
-    QList<InterlinearItemType> mPhrasalGlossLines;
-
-    QMultiHash<qlonglong,LingEdit*> mTextFormConcordance;
-    QMultiHash<qlonglong,LingEdit*> mGlossConcordance;
-
-    QLayout* addLine();
-    WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
-
+    //! \brief Add a line label for phrase \a i
+    void addLineLabel( int i , QLayout * flowLayout  );
 };
 
 #endif // INTERLINEARDISPLAYWIDGET_H

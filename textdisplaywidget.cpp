@@ -1,12 +1,13 @@
 #include "textdisplaywidget.h"
 #include "ui_textdisplaywidget.h"
 
-#include "interlineardisplaywidget.h"
 #include "databaseadapter.h"
 #include "text.h"
+#include "glossdisplaywidget.h"
+#include "analysisdisplaywidget.h"
 
 #include <QCloseEvent>
-#include <QScrollArea>
+#include <QLabel>
 
 TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *parent) :
     QTabWidget(parent),
@@ -23,12 +24,16 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->baselineTextEdit->setWritingSystem(text->baselineWritingSystem());
     ui->baselineTextEdit->setPlainText( text->baselineText() );
 
-    mInterlinear = new InterlinearDisplayWidget(mText, mProject, this);
+    mInterlinear = new GlossDisplayWidget(mText, mProject, this);
 
     connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), mInterlinear, SLOT(scrollToLine(int)) );
     connect( mInterlinear, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
 
     ui->glossTab->layout()->addWidget(mInterlinear);
+
+    mAnalysis = new AnalysisDisplayWidget(mText, mProject, this);
+    ui->morphologyTab->layout()->addWidget(mAnalysis);
+//    ui->morphologyTab->layout()->addWidget( new QLabel(tr("Different widget")));
 
     setWindowTitle(mText->name());
 }

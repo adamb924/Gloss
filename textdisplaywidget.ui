@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>472</width>
+    <height>354</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>TabWidget</string>
   </property>
   <property name="currentIndex">
-   <number>1</number>
+   <number>2</number>
   </property>
   <widget class="QWidget" name="baselineTab">
    <attribute name="title">
@@ -43,6 +43,11 @@
    <attribute name="title">
     <string>Morphology</string>
    </attribute>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <property name="margin">
+     <number>3</number>
+    </property>
+   </layout>
   </widget>
  </widget>
  <customwidgets>

@@ -36,7 +36,9 @@ SOURCES += main.cpp\
     generictextinputdialog.cpp \
     searchquerymodel.cpp \
     xqueryinputdialog.cpp \
-    databasequerydialog.cpp
+    databasequerydialog.cpp \
+    analysisdisplaywidget.cpp \
+    glossdisplaywidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -63,7 +65,9 @@ HEADERS  += mainwindow.h \
     generictextinputdialog.h \
     searchquerymodel.h \
     xqueryinputdialog.h \
-    databasequerydialog.h
+    databasequerydialog.h \
+    analysisdisplaywidget.h \
+    glossdisplaywidget.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
