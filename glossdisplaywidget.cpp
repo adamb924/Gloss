@@ -10,8 +10,8 @@
 
 GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
 {
-    mPhrasalGlossLines = mProject->glossPhrasalGlossLines();
-    mInterlinearDisplayLines = mProject->glossInterlinearLines();
+    mPhrasalGlossLines = mProject->dbAdapter()->glossPhrasalGlossLines();
+    mInterlinearDisplayLines = mProject->dbAdapter()->glossInterlinearLines();
 
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 

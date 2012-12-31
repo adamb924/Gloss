@@ -2,10 +2,13 @@
 
 #include <QMessageBox>
 #include <QHashIterator>
-using namespace std;
+#include <QXmlResultItems>
+#include <QDomDocument>
+#include <QXmlQuery>
 
 #include "textbit.h"
 #include "writingsystem.h"
+#include "messagehandler.h"
 
 DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
         QObject(parent)
@@ -516,4 +519,86 @@ int DatabaseAdapter::removeInterpretations( QSet<qlonglong> ids )
         q3.exec();
     }
     return count;
+}
+
+QList<InterlinearItemType> DatabaseAdapter::glossInterlinearLines() const
+{
+    return mGlossInterlinearLines;
+}
+
+QList<InterlinearItemType> DatabaseAdapter::glossPhrasalGlossLines() const
+{
+    return mGlossPhrasalGlossLines;
+}
+
+QList<InterlinearItemType> DatabaseAdapter::analysisInterlinearLines() const
+{
+    return mAnalysisInterlinearLines;
+}
+
+QList<InterlinearItemType> DatabaseAdapter::analysisPhrasalGlossLines() const
+{
+    return mAnalysisPhrasalGlossLines;
+}
+
+QList<WritingSystem> DatabaseAdapter::lexicalEntryCitationForms() const
+{
+    return mLexicalEntryCitationForms;
+}
+
+QList<WritingSystem> DatabaseAdapter::lexicalEntryGlosses() const
+{
+    return mLexicalEntryGlosses;
+}
+
+QList<InterlinearItemType> DatabaseAdapter::interlinearItemsFromConfigurationFile(const QString & queryString) const
+{
+    QList<InterlinearItemType> items;
+    QXmlResultItems result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
+        return items;
+    query.setMessageHandler(new MessageHandler());
+    query.setQuery(queryString);
+    query.evaluateTo(&result);
+    QXmlItem item(result.next());
+    while (!item.isNull())
+    {
+        QStringList values = item.toAtomicValue().toString().split(',');
+        items << InterlinearItemType( values.at(0) , writingSystem(values.at(1)) );
+        item = result.next();
+    }
+    return items;
+}
+
+void DatabaseAdapter::parseConfigurationFile(const QString & filename)
+{
+    mConfigurationXmlPath = filename;
+
+    mGlossInterlinearLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/gloss-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
+    mGlossPhrasalGlossLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/gloss-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
+    mAnalysisInterlinearLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/analysis-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
+    mAnalysisPhrasalGlossLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/analysis-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
+
+    mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("for $i in /gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
+    mLexicalEntryGlosses = writingSystemListFromConfigurationFile("for $i in /gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
+}
+
+QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(const QString & queryString) const
+{
+    QList<WritingSystem> items;
+    QXmlResultItems result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
+        return items;
+    query.setMessageHandler(new MessageHandler());
+    query.setQuery(queryString);
+    query.evaluateTo(&result);
+    QXmlItem item(result.next());
+    while (!item.isNull())
+    {
+        items << writingSystem(item.toAtomicValue().toString());
+        item = result.next();
+    }
+    return items;
 }

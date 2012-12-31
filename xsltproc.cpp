@@ -97,7 +97,7 @@ Xsltproc::ReturnValue Xsltproc::execute()
     FILE *fid = fopen(mOutputFilename.toUtf8().data(),"w");
     if( fid == 0 )
     {
-        qDebug() << "Could not open output file." << mOutputFilename;
+        qWarning() << "Could not open output file." << mOutputFilename;
     }
     else
     {

@@ -44,7 +44,9 @@ SOURCES += main.cpp\
     createanalysisdialog.cpp \
     lexicalentryform.cpp \
     createlexicalentriesdialog.cpp \
-    allomorph.cpp
+    allomorph.cpp \
+    genericlexicalentryform.cpp \
+    createlexicalentrydialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -79,7 +81,9 @@ HEADERS  += mainwindow.h \
     createanalysisdialog.h \
     lexicalentryform.h \
     createlexicalentriesdialog.h \
-    allomorph.h
+    allomorph.h \
+    genericlexicalentryform.h \
+    createlexicalentrydialog.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -92,7 +96,9 @@ FORMS    += mainwindow.ui \
     xqueryinputdialog.ui \
     databasequerydialog.ui \
     createanalysisdialog.ui \
-    lexicalentryform.ui
+    lexicalentryform.ui \
+    genericlexicalentryform.ui \
+    createlexicalentrydialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

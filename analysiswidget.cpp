@@ -32,7 +32,6 @@ void AnalysisWidget::enterAnalysis()
     CreateAnalysisDialog dialog( mGlossItem->textForm( mWritingSystem ) );
     if( dialog.exec() == QDialog::Accepted )
     {
-        qDebug() << dialog.analysisString();
         CreateLexicalEntriesDialog leDialog( TextBit( dialog.analysisString(), mWritingSystem), mDbAdapter , this);
         leDialog.exec();
     }

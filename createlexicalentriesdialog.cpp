@@ -16,7 +16,7 @@ CreateLexicalEntriesDialog::CreateLexicalEntriesDialog(const TextBit & parseStri
 
     connect( this, SIGNAL(accepted()), this, SLOT(commitChangesToDatabase()));
 
-    setWindowTitle(tr("Create lexical entries"))
+    setWindowTitle(tr("Create lexical entries"));
 }
 
 void CreateLexicalEntriesDialog::commitChangesToDatabase()
@@ -31,10 +31,7 @@ void CreateLexicalEntriesDialog::fillMorphologicalAnalysis()
     QStringList bits = mParseString.text().split(QRegExp("\\s"), QString::SkipEmptyParts );
     QStringListIterator iter(bits);
     while(iter.hasNext())
-    {
         mAnalysis << Allomorph( TextBit( iter.next() , mParseString.writingSystem()) );
-        qDebug() << mAnalysis.last().typeString();
-    }
 }
 
 void CreateLexicalEntriesDialog::setupLayout()
@@ -45,10 +42,12 @@ void CreateLexicalEntriesDialog::setupLayout()
     MorphologicalAnalysisIterator iter(mAnalysis);
     while(iter.hasNext())
     {
-        LexicalEntryForm *form = new LexicalEntryForm( iter.next(), this );
+        LexicalEntryForm *form = new LexicalEntryForm( iter.next(), mDbAdapter, this );
         layout->addWidget(form);
     }
 
-    // TODO add ok/cancel buttons
-    // QDialogButtonBox
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(buttonBox);
 }

@@ -130,7 +130,7 @@ bool Project::readFromFile(QString filename)
         }
         else
         {
-            parseConfigurationFile();
+            mDbAdapter->parseConfigurationFile( tempDir.absoluteFilePath("configuration.xml") );
         }
     }
     else
@@ -420,54 +420,4 @@ QSet<qlonglong> Project::getInterpretationIds(const QString & filepath)
         item = result.next();
     }
     return ids;
-}
-
-QList<InterlinearItemType> Project::glossInterlinearLines() const
-{
-    return mGlossInterlinearLines;
-}
-
-QList<InterlinearItemType> Project::glossPhrasalGlossLines() const
-{
-    return mGlossPhrasalGlossLines;
-}
-
-QList<InterlinearItemType> Project::analysisInterlinearLines() const
-{
-    return mAnalysisInterlinearLines;
-}
-
-QList<InterlinearItemType> Project::analysisPhrasalGlossLines() const
-{
-    return mAnalysisPhrasalGlossLines;
-}
-
-QList<InterlinearItemType> Project::interlinearItemsFromConfigurationFile(const QString & queryString) const
-{
-    QList<InterlinearItemType> items;
-
-    QXmlResultItems result;
-    QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( getTempDir().absoluteFilePath("configuration.xml") )))
-        return items;
-    query.setMessageHandler(new MessageHandler());
-    query.setQuery(queryString);
-    query.evaluateTo(&result);
-    QXmlItem item(result.next());
-    while (!item.isNull())
-    {
-        QStringList values = item.toAtomicValue().toString().split(',');
-        items << InterlinearItemType( values.at(0) , mDbAdapter->writingSystem(values.at(1)) );
-        item = result.next();
-    }
-
-    return items;
-}
-
-void Project::parseConfigurationFile()
-{
-    mGlossInterlinearLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/gloss-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
-    mGlossPhrasalGlossLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/gloss-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
-    mAnalysisInterlinearLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/analysis-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
-    mAnalysisPhrasalGlossLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/analysis-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
 }

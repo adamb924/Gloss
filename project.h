@@ -60,34 +60,12 @@ public:
 
     int removeUnusedGlossItems();
 
-    QList<InterlinearItemType> interlinearItemsFromConfigurationFile(const QString & queryString) const;
-
-    //! \brief Returns a list of types of interlinear text lines (InterlinearItemType objects) for the gloss tab.
-    QList<InterlinearItemType> glossInterlinearLines() const;
-
-    //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects) for the gloss tab.
-    QList<InterlinearItemType> glossPhrasalGlossLines() const;
-
-    //! \brief Returns a list of types of interlinear text lines (InterlinearItemType objects) for the analysis tab.
-    QList<InterlinearItemType> analysisInterlinearLines() const;
-
-    //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects) for the analysis tab.
-    QList<InterlinearItemType> analysisPhrasalGlossLines() const;
-
-
 public slots:
 
 private:
     DatabaseAdapter *mDbAdapter;
     QString mDatabaseFilename;
     QString mDatabasePath;
-
-    QList<InterlinearItemType> mGlossInterlinearLines;
-    QList<InterlinearItemType> mGlossPhrasalGlossLines;
-    QList<InterlinearItemType> mAnalysisInterlinearLines;
-    QList<InterlinearItemType> mAnalysisPhrasalGlossLines;
-
-    void parseConfigurationFile();
 
     QString mProjectPath;
 
