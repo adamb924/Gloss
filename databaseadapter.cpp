@@ -602,3 +602,83 @@ QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(con
     }
     return items;
 }
+
+QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit )
+{
+    QHash<qlonglong,QString> candidates;
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select LexicalEntryId from Allomorph where WritingSystem=:WritingSystem and Form=:Form;");
+    q.bindValue(":WritingSystem", bit.writingSystem().id());
+    q.bindValue(":Form", bit.text());
+    if( q.exec() )
+    {
+        while( q.next() )
+            candidates.insert( q.value(0).toLongLong() , tr("Better summary than %1").arg(q.value(0).toLongLong())  );
+    }
+    return candidates;
+}
+
+qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms )
+{
+    QSqlDatabase db = QSqlDatabase::database(mFilename);
+    db.transaction();
+
+    QSqlQuery q(db);
+    qlonglong id;
+
+    try
+    {
+        q.prepare("insert into LexicalEntry (GrammaticalInformation) values (:GrammaticalInformation);");
+        q.bindValue(":GrammaticalInformation",grammaticalInfo);
+
+        if(!q.exec())
+            throw -1;
+        id = q.lastInsertId().toLongLong();
+
+        QListIterator<TextBit> iter(glosses);
+        while (iter.hasNext())
+        {
+            TextBit bit = iter.next();
+            q.prepare("insert into LexicalEntryGloss (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
+            q.bindValue(":LexicalEntryId",id);
+            q.bindValue(":WritingSystem",bit.writingSystem().id());
+            q.bindValue(":Form",bit.text());
+            if( ! q.exec() )
+                throw -1;
+        }
+
+        iter = QListIterator<TextBit>(citationForms);
+        while (iter.hasNext())
+        {
+            TextBit bit = iter.next();
+            q.prepare("insert into LexicalEntryCitationForm (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
+            q.bindValue(":LexicalEntryId",id);
+            q.bindValue(":WritingSystem",bit.writingSystem().id());
+            q.bindValue(":Form",bit.text());
+            if( ! q.exec() )
+                throw -1;
+        }
+
+    }
+    catch(int e)
+    {
+        qWarning() << "DatabaseAdapter::addLexicalEntry" << q.lastError().text() << q.executedQuery();
+        db.rollback();
+        return -1;
+    }
+    db.commit();
+//    db.close();
+    return id;
+}
+
+void DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexicalEntryId )
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("insert into Allomorph (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
+    q.bindValue(":LexicalEntryId",lexicalEntryId);
+    q.bindValue(":WritingSystem",bit.writingSystem().id());
+    q.bindValue(":Form",bit.text());
+    if( !q.exec() )
+        qWarning() << "DatabaseAdapter::addAllomorph" << q.lastError().text() << q.executedQuery();
+}

@@ -10,22 +10,26 @@ namespace Ui {
 }
 
 class DatabaseAdapter;
+class GlossItem;
 
 class LexicalEntryForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    LexicalEntryForm(const Allomorph & allomorph, DatabaseAdapter *dbAdapter,  QWidget *parent = 0);
+    LexicalEntryForm(const Allomorph & allomorph, GlossItem *glossItem, DatabaseAdapter *dbAdapter,  QWidget *parent = 0);
     ~LexicalEntryForm();
 
 private:
     Ui::LexicalEntryForm *ui;
     Allomorph mAllomorph;
     DatabaseAdapter *mDbAdapter;
+    GlossItem *mGlossItem;
 
     void fillData();
-    void setupLayout();
+
+private slots:
+    void newLexicalEntry();
 };
 
 #endif // LEXICALENTRYFORM_H

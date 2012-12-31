@@ -58,3 +58,13 @@ QString Allomorph::text() const
 {
     return mTextBit.text();
 }
+
+TextBit Allomorph::textBit() const
+{
+    return mTextBit;
+}
+
+WritingSystem Allomorph::writingSystem() const
+{
+    return mTextBit.writingSystem();
+}

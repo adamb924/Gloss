@@ -29,6 +29,7 @@ private:
 
 private slots:
     void enterAnalysis();
+    void createMonomorphemicLexicalEntry();
 };
 
 #endif // ANALYSISWIDGET_H

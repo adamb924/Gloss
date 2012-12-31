@@ -78,3 +78,8 @@ void LingEdit::setWritingSystem( const WritingSystem & ws )
     setToolTip(ws.name());
     mTextBit.setWritingSystem( ws );
 }
+
+TextBit LingEdit::textBit() const
+{
+    return TextBit( text(), mTextBit.writingSystem() );
+}

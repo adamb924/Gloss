@@ -43,10 +43,10 @@ SOURCES += main.cpp\
     analysiswidget.cpp \
     createanalysisdialog.cpp \
     lexicalentryform.cpp \
-    createlexicalentriesdialog.cpp \
     allomorph.cpp \
     genericlexicalentryform.cpp \
-    createlexicalentrydialog.cpp
+    createlexicalentrydialog.cpp \
+    chooselexicalentriesdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -80,10 +80,10 @@ HEADERS  += mainwindow.h \
     analysiswidget.h \
     createanalysisdialog.h \
     lexicalentryform.h \
-    createlexicalentriesdialog.h \
     allomorph.h \
     genericlexicalentryform.h \
-    createlexicalentrydialog.h
+    createlexicalentrydialog.h \
+    chooselexicalentriesdialog.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

@@ -23,6 +23,7 @@ public:
 
     qlonglong id() const;
 
+    TextBit textBit() const;
 
     void matchTextAlignmentTo( Qt::LayoutDirection target );
 

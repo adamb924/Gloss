@@ -128,6 +128,10 @@ public:
     QList<WritingSystem> lexicalEntryCitationForms() const;
     QList<WritingSystem> lexicalEntryGlosses() const;
 
+    QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit );
+
+    qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms );
+    void addAllomorph( const TextBit & bit , qlonglong lexicalEntryId );
 
 private:
     QString mFilename;

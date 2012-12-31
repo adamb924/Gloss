@@ -1,30 +1,31 @@
-#include "createlexicalentriesdialog.h"
+#include "chooselexicalentriesdialog.h"
 
 #include "lexicalentryform.h"
 
 #include <QtGui>
 #include <QtDebug>
 
-CreateLexicalEntriesDialog::CreateLexicalEntriesDialog(const TextBit & parseString, DatabaseAdapter *dbAdapter, QWidget *parent) :
+ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent) :
     QDialog(parent)
 {
     mDbAdapter = dbAdapter;
     mParseString = parseString;
+    mGlossItem = glossItem;
 
     fillMorphologicalAnalysis();
     setupLayout();
 
     connect( this, SIGNAL(accepted()), this, SLOT(commitChangesToDatabase()));
 
-    setWindowTitle(tr("Create lexical entries"));
+    setWindowTitle(tr("Choose lexical entries"));
 }
 
-void CreateLexicalEntriesDialog::commitChangesToDatabase()
+void ChooseLexicalEntriesDialog::commitChangesToDatabase()
 {
 
 }
 
-void CreateLexicalEntriesDialog::fillMorphologicalAnalysis()
+void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
 {
     mAnalysis.clear();
 
@@ -34,7 +35,7 @@ void CreateLexicalEntriesDialog::fillMorphologicalAnalysis()
         mAnalysis << Allomorph( TextBit( iter.next() , mParseString.writingSystem()) );
 }
 
-void CreateLexicalEntriesDialog::setupLayout()
+void ChooseLexicalEntriesDialog::setupLayout()
 {
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
@@ -42,7 +43,7 @@ void CreateLexicalEntriesDialog::setupLayout()
     MorphologicalAnalysisIterator iter(mAnalysis);
     while(iter.hasNext())
     {
-        LexicalEntryForm *form = new LexicalEntryForm( iter.next(), mDbAdapter, this );
+        LexicalEntryForm *form = new LexicalEntryForm( iter.next(), mGlossItem, mDbAdapter, this );
         layout->addWidget(form);
     }
 

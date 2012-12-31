@@ -3,17 +3,20 @@
 
 #include "databaseadapter.h"
 #include "genericlexicalentryform.h"
+#include "createlexicalentrydialog.h"
 
-LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, DatabaseAdapter *dbAdapter,  QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::LexicalEntryForm)
+LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, GlossItem *glossItem, DatabaseAdapter *dbAdapter,  QWidget *parent) :
+        QWidget(parent),
+        ui(new Ui::LexicalEntryForm)
 {
     ui->setupUi(this);
     mAllomorph = allomorph;
     mDbAdapter = dbAdapter;
+    mGlossItem = glossItem;
 
-    setupLayout();
     fillData();
+
+    connect(ui->newForm, SIGNAL(clicked()), this, SLOT(newLexicalEntry()));
 }
 
 LexicalEntryForm::~LexicalEntryForm()
@@ -25,23 +28,28 @@ void LexicalEntryForm::fillData()
 {
     ui->formLabel->setText( mAllomorph.text() );
     ui->morphemeTypeLabel->setText( mAllomorph.typeString() );
+
+    ui->candidatesCombo->clear();
+    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mAllomorph.textBit());
+    QHashIterator<qlonglong,QString> iter(candidates);
+
+    while(iter.hasNext())
+    {
+        iter.next();
+        ui->candidatesCombo->addItem( iter.value(), iter.key() );
+    }
+    ui->candidatesCombo->setEnabled( ui->candidatesCombo->count() != 0 );
 }
 
-void LexicalEntryForm::setupLayout()
+void LexicalEntryForm::newLexicalEntry()
 {
-    // glosses
-    QList<WritingSystem> glosses = mDbAdapter->lexicalEntryGlosses();
-    foreach(WritingSystem ws, glosses)
+    CreateLexicalEntryDialog dialog(mAllomorph.textBit(), mGlossItem, mDbAdapter, this);
+    if( dialog.exec() == QDialog::Accepted )
     {
-        GenericLexicalEntryForm *form = new GenericLexicalEntryForm( ws );
-        ui->glossesLayout->addWidget(form);
-    }
-
-    // citation forms
-    QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationForms();
-    foreach(WritingSystem ws, citationForms)
-    {
-        GenericLexicalEntryForm *form = new GenericLexicalEntryForm( ws );
-        ui->glossesLayout->addWidget(form);
+        if( dialog.id() != -1 )
+        {
+            mDbAdapter->addAllomorph( mAllomorph.textBit() , dialog.id() );
+            fillData();
+        }
     }
 }

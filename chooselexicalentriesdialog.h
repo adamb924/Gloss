@@ -1,17 +1,18 @@
-#ifndef CREATELEXICALENTRIESDIALOG_H
-#define CREATELEXICALENTRIESDIALOG_H
+#ifndef CHOOSELEXICALENTRIESDIALOG_H
+#define CHOOSELEXICALENTRIESDIALOG_H
 
 #include <QDialog>
 
 class DatabaseAdapter;
+class GlossItem;
 
 #include "allomorph.h"
 
-class CreateLexicalEntriesDialog : public QDialog
+class ChooseLexicalEntriesDialog : public QDialog
 {
     Q_OBJECT
 public:
-    CreateLexicalEntriesDialog(const TextBit & parseString, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    ChooseLexicalEntriesDialog(const TextBit & parseString, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
 signals:
 
@@ -24,10 +25,11 @@ private:
 
     void fillMorphologicalAnalysis();
     void setupLayout();
+    GlossItem *mGlossItem;
 
 private slots:
     void commitChangesToDatabase();
 
 };
 
-#endif // CREATELEXICALENTRIESDIALOG_H
+#endif // CHOOSELEXICALENTRIESDIALOG_H

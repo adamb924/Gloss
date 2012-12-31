@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>524</width>
-    <height>40</height>
+    <height>43</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,42 +37,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="grammaticalInformation">
-       <property name="toolTip">
-        <string>Grammatical information</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <widget class="QComboBox" name="candidatesCombo">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
       </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="citationFormLayout">
-       <item>
-        <widget class="QLabel" name="citationFormLabel">
-         <property name="text">
-          <string>Citation Form</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="glossesLayout">
-       <item>
-        <widget class="QLabel" name="glossesLabel">
-         <property name="text">
-          <string>Glosses</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QPushButton" name="newForm">
+       <property name="text">
+        <string>Create new...</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

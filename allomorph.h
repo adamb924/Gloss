@@ -15,6 +15,8 @@ public:
     QString typeString() const;
 
     QString text() const;
+    TextBit textBit() const;
+    WritingSystem writingSystem() const;
 
     static QString getTypeString(Type t)
     {
