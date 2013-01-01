@@ -10,13 +10,14 @@
 #include "glossitem.h"
 #include "textbit.h"
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & bit, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent) :
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & bit, bool isMonomorphemic, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog)
 {
     mDbAdapter = dbAdapter;
     mTextBit = bit;
     mGlossItem = glossItem;
+    mIsMonomorphemic = isMonomorphemic;
 
     mId = -1;
 
@@ -50,14 +51,28 @@ void CreateLexicalEntryDialog::fillData()
             edit->setText( mGlossItem->glosses()->value(ws).text() );
     }
 
-    QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationForms();
-    foreach( WritingSystem ws , citationForms )
+    if( mIsMonomorphemic )
     {
-        LingEdit *edit = new LingEdit( TextBit("", ws) );
-        ui->citationFormLayout->addWidget(edit);
-        mCitationFormEdits << edit;
-        if( ws == mTextBit.writingSystem() )
-            edit->setText( mTextBit.text() );
+        QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationForms();
+        foreach( WritingSystem ws , citationForms )
+        {
+            LingEdit *edit = new LingEdit( TextBit("", ws) );
+            ui->citationFormLayout->addWidget(edit);
+            mCitationFormEdits << edit;
+            edit->setText( mGlossItem->textForms()->value(ws).text() );
+        }
+    }
+    else
+    {
+        QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationForms();
+        foreach( WritingSystem ws , citationForms )
+        {
+            LingEdit *edit = new LingEdit( TextBit("", ws) );
+            ui->citationFormLayout->addWidget(edit);
+            mCitationFormEdits << edit;
+            if( ws == mTextBit.writingSystem() )
+                edit->setText( mTextBit.text() );
+        }
     }
 }
 
@@ -73,4 +88,12 @@ void CreateLexicalEntryDialog::createLexicalEntry()
         citationForms << mCitationFormEdits.at(i)->textBit();
 
     mId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), glosses, citationForms );
+}
+
+TextBitHash CreateLexicalEntryDialog::glosses() const
+{
+    TextBitHash glosses;
+    for(int i=0; i<mGlossEdits.count(); i++)
+        glosses.insert( mGlossEdits.at(i)->textBit().writingSystem(),  mGlossEdits.at(i)->textBit() );
+    return glosses;
 }

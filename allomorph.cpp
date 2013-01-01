@@ -14,6 +14,13 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit)
     setTypeFromString(bit.text());
 }
 
+Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses )
+{
+    mId = id;
+    mTextBit = bit;
+    mGlosses = glosses;
+}
+
 void Allomorph::setTypeFromString(const QString & string)
 {
     QRegExp rePrefix("^[^-].*-$");
@@ -78,4 +85,14 @@ qlonglong Allomorph::id() const
 void Allomorph::setId(qlonglong id)
 {
     mId = id;
+}
+
+TextBit Allomorph::gloss(const WritingSystem & ws) const
+{
+    return mGlosses.value(ws);
+}
+
+void Allomorph::setGlosses(const TextBitHash & glosses)
+{
+    mGlosses = glosses;
 }

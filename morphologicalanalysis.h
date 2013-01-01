@@ -11,6 +11,7 @@ public:
     explicit MorphologicalAnalysis();
 
     QString baselineSummary() const;
+    QString glossSummary(const WritingSystem & ws) const;
 
 signals:
 

@@ -140,6 +140,8 @@ public:
     void addMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs );
     void addMorphologicalAnalysis( qlonglong textFormId, const Allomorph & allomorph );
 
+    TextBitHash lexicalItemGlosses(qlonglong id) const;
+
 private:
     QString mFilename;
 

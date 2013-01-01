@@ -52,6 +52,10 @@ void AnalysisWidget::createInitializedLayout()
 
     QLabel *baselineSummary = new QLabel( mGlossItem->morphologicalAnalysis(mWritingSystem)->baselineSummary() );
     mLayout->addWidget(baselineSummary);
+
+    QList<WritingSystem> glossLines = mDbAdapter->lexicalEntryGlosses();
+    for(int i=0; i<glossLines.count(); i++)
+        mLayout->addWidget( new QLabel( mGlossItem->morphologicalAnalysis(mWritingSystem)->glossSummary(glossLines.at(i)) ) );
 }
 
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -76,7 +80,7 @@ void AnalysisWidget::enterAnalysis()
 void AnalysisWidget::createMonomorphemicLexicalEntry()
 {
     TextBit textForm = mGlossItem->textForm(mWritingSystem);
-    CreateLexicalEntryDialog dialog( textForm , mGlossItem, mDbAdapter, this);
+    CreateLexicalEntryDialog dialog( textForm, true, mGlossItem, mDbAdapter, this);
     if( dialog.exec() == QDialog::Accepted )
     {
         qlonglong lexicalEntryId = dialog.id();
@@ -84,7 +88,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         {
             qlonglong allomorphId = mDbAdapter->addAllomorph( textForm , lexicalEntryId );
 
-            Allomorph allomorph = Allomorph( allomorphId, textForm );
+            Allomorph allomorph = Allomorph( allomorphId, textForm, dialog.glosses() );
             mGlossItem->addAllomorphToAnalysis( allomorph, mWritingSystem );
             mDbAdapter->addMorphologicalAnalysis( textForm.id(), allomorph );
             createInitializedLayout();

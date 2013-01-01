@@ -44,7 +44,7 @@ void LexicalEntryForm::fillData()
 
 void LexicalEntryForm::newLexicalEntry()
 {
-    CreateLexicalEntryDialog dialog(mAllomorph.textBit(), mGlossItem, mDbAdapter, this);
+    CreateLexicalEntryDialog dialog(mAllomorph.textBit(), false, mGlossItem, mDbAdapter, this);
     if( dialog.exec() == QDialog::Accepted )
     {
         if( dialog.id() != -1 )
@@ -58,7 +58,10 @@ void LexicalEntryForm::newLexicalEntry()
 
 qlonglong LexicalEntryForm::id() const
 {
-    return ui->candidatesCombo->itemData( ui->candidatesCombo->currentIndex() ).toLongLong();
+    if( ui->candidatesCombo->currentIndex() == -1)
+        return -1;
+    else
+        return ui->candidatesCombo->itemData( ui->candidatesCombo->currentIndex() ).toLongLong();
 }
 
 TextBit LexicalEntryForm::textBit() const

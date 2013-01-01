@@ -31,6 +31,7 @@ void ChooseLexicalEntriesDialog::commitChangesToDatabase()
     {
         qlonglong allomorphId = mDbAdapter->addAllomorph( mEntries.at(i)->textBit() , mEntries.at(i)->id() );
         mAnalysis[i].setId(allomorphId);
+        mAnalysis[i].setGlosses( mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ) );
         mGlossItem->addAllomorphToAnalysis( mAnalysis.at(i), mParseString.writingSystem() );
     }
     mDbAdapter->addMorphologicalAnalysis( mGlossItem->textForm( mParseString.writingSystem() ).id() , mAnalysis );

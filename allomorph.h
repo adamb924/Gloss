@@ -10,6 +10,7 @@ public:
 
     Allomorph();
     Allomorph(qlonglong id, const TextBit & bit);
+    Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses );
 
     Type type() const;
     QString typeString() const;
@@ -18,8 +19,12 @@ public:
     TextBit textBit() const;
     WritingSystem writingSystem() const;
 
+    TextBit gloss(const WritingSystem & ws) const;
+    void setGlosses(const TextBitHash & glosses);
+
     qlonglong id() const;
     void setId(qlonglong id);
+
 
     static QString getTypeString(Type t)
     {
@@ -53,6 +58,7 @@ private:
     Type mType;
     TextBit mTextBit;
     qlonglong mId;
+    TextBitHash mGlosses;
 };
 
 

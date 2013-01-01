@@ -735,3 +735,24 @@ void DatabaseAdapter::metalanguageFromConfigurationFile()
     query.evaluateTo(&result);
     mMetaLanguage = writingSystem(result.trimmed());
 }
+
+TextBitHash DatabaseAdapter::lexicalItemGlosses(qlonglong id) const
+{
+    TextBitHash glosses;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select Form,WritingSystem from LexicalEntryGloss where LexicalEntryId=:LexicalEntryId;");
+    q.bindValue(":LexicalEntryId",id);
+    if( q.exec() )
+    {
+        while( q.next() )
+        {
+            WritingSystem ws = writingSystem( q.value(1).toLongLong() );
+            glosses.insert( ws , TextBit( q.value(0).toString() , ws ) );
+        }
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::lexicalItemGlosses" << q.lastError().text() << q.executedQuery();
+    }
+    return glosses;
+}
