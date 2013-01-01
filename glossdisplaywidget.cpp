@@ -164,3 +164,4 @@ void GlossDisplayWidget::clearWidgets(QLayout * layout)
         delete item;
     }
 }
+

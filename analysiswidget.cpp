@@ -73,7 +73,10 @@ void AnalysisWidget::enterAnalysis()
     {
         ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), mWritingSystem), mGlossItem,  mDbAdapter , this);
         if( leDialog.exec() == QDialog::Accepted )
+        {
             createInitializedLayout();
+            emit morphologicalAnalysisChanged( mGlossItem->textForm(mWritingSystem).id() );
+        }
     }
 }
 
@@ -90,8 +93,11 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
 
             Allomorph allomorph = Allomorph( allomorphId, textForm, dialog.glosses() );
             mGlossItem->addAllomorphToAnalysis( allomorph, mWritingSystem );
-            mDbAdapter->addMorphologicalAnalysis( textForm.id(), allomorph );
+            MorphologicalAnalysis analysis;
+            analysis << allomorph;
+            mDbAdapter->addMorphologicalAnalysis( textForm.id(), analysis );
             createInitializedLayout();
+            emit morphologicalAnalysisChanged( mGlossItem->textForm(mWritingSystem).id() );
         }
     }
 }
@@ -106,4 +112,9 @@ void AnalysisWidget::clearWidgetsFromLayout()
         delete item->widget();
         delete item;
     }
+}
+
+void AnalysisWidget::refreshAnalysisFromDatabase()
+{
+    qDebug() << "AnalysisWidget::refreshAnalysisFromDatabase()" << mGlossItem << mGlossItem->id();
 }

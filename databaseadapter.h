@@ -138,7 +138,6 @@ public:
     qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms );
     qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId );
     void addMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs );
-    void addMorphologicalAnalysis( qlonglong textFormId, const Allomorph & allomorph );
 
     TextBitHash lexicalItemGlosses(qlonglong id) const;
 

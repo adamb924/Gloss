@@ -13,6 +13,9 @@ public:
     QString baselineSummary() const;
     QString glossSummary(const WritingSystem & ws) const;
 
+private:
+    qlonglong mId;
+
 signals:
 
 public slots:

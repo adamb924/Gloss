@@ -46,6 +46,7 @@ void WordDisplayWidget::setupLayout()
 
     mTextFormEdits.clear();
     mGlossEdits.clear();
+    mAnalysisWidgets.clear();
 
     QLabel *immutableLabel;
     LingEdit *lineWidget;
@@ -61,12 +62,10 @@ void WordDisplayWidget::setupLayout()
             break;
         case InterlinearItemType::Text:
             lineWidget = addTextFormLine( mGlossLines.at(i) );
-            mTextFormEdits.insert(mGlossLines.at(i).writingSystem(), lineWidget);
             mLayout->addWidget(lineWidget);
             break;
         case InterlinearItemType::Gloss:
             lineWidget = addGlossLine( mGlossLines.at(i) );
-            mGlossEdits.insert(mGlossLines.at(i).writingSystem(), lineWidget);
             mLayout->addWidget(lineWidget);
             break;
         case InterlinearItemType::Analysis:
@@ -80,7 +79,9 @@ void WordDisplayWidget::setupLayout()
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
     LingEdit *edit = new LingEdit( mGlossItem->gloss( glossLine.writingSystem() ) , this);
-    edit->matchTextAlignmentTo( mGlossLines.first().writingSystem().layoutDirection() );
+    edit->matchTextAlignmentTo( glossLine.writingSystem().layoutDirection() );
+
+    mGlossEdits.insert(glossLine.writingSystem(), edit);
 
     connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
@@ -94,6 +95,8 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
 {
     LingEdit *edit = new LingEdit(  mGlossItem->textForm( glossLine.writingSystem() ) , this);
     edit->matchTextAlignmentTo( mGlossLines.first().writingSystem().layoutDirection() );
+
+    mTextFormEdits.insert(glossLine.writingSystem(), edit);
 
     connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setTextForm(TextBit)) );
@@ -125,6 +128,10 @@ ImmutableLabel* WordDisplayWidget::addImmutableLine( const InterlinearItemType &
 AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType & glossLine )
 {
     AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mDbAdapter, this);
+    mAnalysisWidgets.insert( glossLine.writingSystem(), analysisWidget );
+
+    connect( analysisWidget, SIGNAL(morphologicalAnalysisChanged(qlonglong)), this, SIGNAL(morphologicalAnalysisChanged(qlonglong)) );
+
     return analysisWidget;
 }
 
@@ -309,6 +316,7 @@ void WordDisplayWidget::fillData()
                 break;
             case InterlinearItemType::Immutable:
             case InterlinearItemType::Analysis:
+                // TODO how does one fill the data here? what does this function even do?
                 break;
             }
         }
@@ -379,6 +387,15 @@ void WordDisplayWidget::sendConcordanceUpdates()
         iter.next();
         emit glossIdChanged( iter.value() , mGlossItem->gloss( iter.key() ).id() );
     }
+
+//    QHashIterator<WritingSystem, AnalysisWidget*> iter2(mAnalysisWidgets);
+//    while(iter2.hasNext())
+//    {
+//        iter2.next();
+//        // TODO connect this signal to something
+//        emit analysisChanged( iter2.value() , mGlossItem->morphologicalAnalysis( iter2.key() )->id() );
+//    }
+
 }
 
 void WordDisplayWidget::otherInterpretation()
@@ -396,4 +413,10 @@ void WordDisplayWidget::otherInterpretation()
 GlossItem* WordDisplayWidget::glossItem()
 {
     return mGlossItem;
+}
+
+void WordDisplayWidget::refreshMorphologicalAnalysis(const WritingSystem & ws)
+{
+    if( mAnalysisWidgets.contains(ws) )
+        mAnalysisWidgets[ws]->refreshAnalysisFromDatabase();
 }

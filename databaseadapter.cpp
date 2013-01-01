@@ -667,7 +667,6 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
         return -1;
     }
     db.commit();
-    //    db.close();
     return id;
 }
 
@@ -703,16 +702,6 @@ void DatabaseAdapter::addMorphologicalAnalysis( qlonglong textFormId, const Morp
     }
 }
 
-void DatabaseAdapter::addMorphologicalAnalysis( qlonglong textFormId, const Allomorph & allomorph )
-{
-    QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("insert into MorphologicalAnalysisMembers (TextFormId,AllomorphId,AllomorphOrder) values (:TextFormId,:AllomorphId,:AllomorphOrder);");
-    q.bindValue(":TextFormId", textFormId );
-    q.bindValue(":AllomorphId", allomorph.id() );
-    q.bindValue(":AllomorphOrder", 0 );
-    if( !q.exec() )
-        qWarning() << "DatabaseAdapter::addMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
-}
 
 WritingSystem DatabaseAdapter::metaLanguage() const
 {

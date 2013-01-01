@@ -37,6 +37,8 @@ public:
     QHash<qlonglong, LingEdit*> glossEdits() const;
     GlossItem* glossItem();
 
+    void refreshMorphologicalAnalysis(const WritingSystem & ws);
+
 private:
     GlossItem *mGlossItem;
     Qt::Alignment mAlignment;
@@ -60,6 +62,7 @@ private:
     QList<InterlinearItemType> mGlossLines;
     QHash<WritingSystem, LingEdit*> mTextFormEdits;
     QHash<WritingSystem, LingEdit*> mGlossEdits;
+    QHash<WritingSystem, AnalysisWidget*> mAnalysisWidgets;
 
     void mouseDoubleClickEvent ( QMouseEvent * event );
 
@@ -69,6 +72,8 @@ signals:
     void textFormIdChanged(LingEdit * edit, qlonglong newId);
     void glossIdChanged(LingEdit * edit, qlonglong newId);
     void alternateInterpretationAvailableFor( int id );
+//    void analysisChanged(AnalysisWidget * analysisWidget, qlonglong textFormId);
+    void morphologicalAnalysisChanged(qlonglong textFormId);
 
 public slots:
     void sendConcordanceUpdates();

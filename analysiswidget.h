@@ -15,7 +15,10 @@ class AnalysisWidget : public QWidget
 public:
     AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
+    void refreshAnalysisFromDatabase();
+
 signals:
+    void morphologicalAnalysisChanged(qlonglong textFormId);
 
 public slots:
 

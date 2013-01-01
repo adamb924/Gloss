@@ -37,6 +37,7 @@ private slots:
     void updateTextFormConcordance(LingEdit * edit, qlonglong newId);
     void updateGlossFormConcordance(LingEdit * edit, qlonglong newId);
 
+
 private:
     void setLayoutFromText();
 

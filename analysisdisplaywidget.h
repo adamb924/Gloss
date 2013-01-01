@@ -15,6 +15,8 @@ class Text;
 class Project;
 class WordDisplayWidget;
 class GlossItem;
+class AnalysisWidget;
+class DatabaseAdapter;
 
 class AnalysisDisplayWidget : public InterlinearDisplayWidget
 {
@@ -32,6 +34,14 @@ private:
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
 
     void setLayoutFromText();
+
+    //! \brief A concordance of analysis widgets, indexed by TextForm id
+    QMultiHash<qlonglong,WordDisplayWidget*> mAnalysisWidgetConcordance;
+
+    DatabaseAdapter *mDbAdapter;
+
+public slots:
+    void updateAnalysis(qlonglong textFormId);
 };
 
 #endif // ANALYSISINTERLINEARDISPLAYWIDGET_H

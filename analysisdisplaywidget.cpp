@@ -7,11 +7,14 @@
 #include "text.h"
 #include "worddisplaywidget.h"
 #include "databaseadapter.h"
+#include "analysiswidget.h"
 
 AnalysisDisplayWidget::AnalysisDisplayWidget(Text *text, Project *project, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
 {
     mPhrasalGlossLines = mProject->dbAdapter()->analysisPhrasalGlossLines();
     mInterlinearDisplayLines = mProject->dbAdapter()->analysisInterlinearLines();
+
+    mDbAdapter = project->dbAdapter();
 
     // TODO connect to some signal when the analysis baseline text forms change
 
@@ -80,14 +83,27 @@ void AnalysisDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 WordDisplayWidget* AnalysisDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
     // TODO don't hardwire the text direction like this
+    // make it read the alignment from the writing system of the first member of mInterlinearDisplayLines
     WordDisplayWidget *wdw = new WordDisplayWidget( item , Qt::AlignLeft, mInterlinearDisplayLines , this, mProject->dbAdapter() );
     mWordDisplayWidgets << wdw;
-//    mWdwByInterpretationId.insert( item->id() , wdw );
-//    mTextFormConcordance.unite( wdw->textFormEdits() );
-//    mGlossConcordance.unite( wdw->glossEdits() );
+
+    for(int i=0; i<mInterlinearDisplayLines.count(); i++)
+        if( mInterlinearDisplayLines.at(i).type() == InterlinearItemType::Analysis )
+            mAnalysisWidgetConcordance.insert( item->textForm(mInterlinearDisplayLines.at(i).writingSystem()).id(), wdw );
+
+    connect( wdw, SIGNAL(morphologicalAnalysisChanged(qlonglong)), this, SLOT(updateAnalysis(qlonglong)) );
 
 //    connect( wdw, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), this, SLOT(updateGlossFormConcordance(LingEdit*,qlonglong)));
 //    connect( wdw, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), this, SLOT(updateTextFormConcordance(LingEdit*,qlonglong)));
 
     return wdw;
+}
+
+void AnalysisDisplayWidget::updateAnalysis(qlonglong textFormId)
+{
+//     QMultiHash<qlonglong,WordDisplayWidget*> mAnalysisWidgetConcordance;
+    WritingSystem ws = mDbAdapter->textFormFromId( textFormId ).writingSystem();
+    QList<WordDisplayWidget*> widgetList = mAnalysisWidgetConcordance.values(textFormId);
+    foreach(WordDisplayWidget *widget, widgetList)
+        widget->refreshMorphologicalAnalysis( ws );
 }
