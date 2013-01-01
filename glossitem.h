@@ -73,7 +73,6 @@ public:
     //! \brief Returns the WritingSystem of the GlossItem's baseline text
     WritingSystem baselineWritingSystem() const;
 
-    // TODO consider whether this should return a const pointer
     //! \brief Returns the morphological analysis for the given writing system, which is created if none exists
     MorphologicalAnalysis* morphologicalAnalysis(const WritingSystem & ws);
 

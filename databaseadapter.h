@@ -170,9 +170,6 @@ public slots:
     //! \brief Updates a text form in the database, where the id of the text form is the id field of \a bit
     void updateInterpretationTextForm( const TextBit & bit );
 
-    //! \brief Unimplemented.
-    void updateInterpretationMorphologicalAnalysis( const TextBit & bit , const QString & splitString );
-
 };
 
 #endif // DATABASEADAPTER_H

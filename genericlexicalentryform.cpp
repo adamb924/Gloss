@@ -7,10 +7,6 @@ GenericLexicalEntryForm::GenericLexicalEntryForm(const WritingSystem & ws, const
 {
     ui->setupUi(this);
 
-    // TODO maybe we don't need to store these
-    mWritingSystem = ws;
-    mCandidates = candidates;
-
     ui->lineEdit->setWritingSystem(ws);
     ui->languageLabel->setText(ws.name());
 

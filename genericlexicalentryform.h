@@ -23,8 +23,6 @@ public:
 
 private:
     Ui::GenericLexicalEntryForm *ui;
-    WritingSystem mWritingSystem;
-    QHash<qlonglong,TextBit> mCandidates;
 };
 
 #endif // GENERICLEXICALENTRYFORM_H

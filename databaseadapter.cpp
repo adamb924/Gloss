@@ -303,11 +303,6 @@ void DatabaseAdapter::updateInterpretationGloss( const TextBit & bit )
         qWarning() << "DatabaseAdapter::updateInterpretationGloss" << q.lastError().text() << q.executedQuery();
 }
 
-void DatabaseAdapter::updateInterpretationMorphologicalAnalysis( const TextBit & bit, const QString & splitString )
-{
-    // TODO implement this eventually
-}
-
 TextBitHash DatabaseAdapter::getInterpretationGlosses(qlonglong id) const
 {
     TextBitHash glosses;
