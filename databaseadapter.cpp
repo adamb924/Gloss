@@ -584,6 +584,8 @@ void DatabaseAdapter::parseConfigurationFile(const QString & filename)
 
     mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("for $i in /gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
     mLexicalEntryGlosses = writingSystemListFromConfigurationFile("for $i in /gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
+
+    metalanguageFromConfigurationFile();
 }
 
 QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(const QString & queryString) const
@@ -715,4 +717,21 @@ void DatabaseAdapter::addMorphologicalAnalysis( qlonglong textFormId, const Allo
     q.bindValue(":AllomorphOrder", 0 );
     if( !q.exec() )
         qWarning() << "DatabaseAdapter::addMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
+}
+
+WritingSystem DatabaseAdapter::metaLanguage() const
+{
+    return mMetaLanguage;
+}
+
+void DatabaseAdapter::metalanguageFromConfigurationFile()
+{
+    QString result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
+        return;
+    query.setMessageHandler(new MessageHandler());
+    query.setQuery("for $i in /gloss-configuration/meta-language return string($i/@lang)");
+    query.evaluateTo(&result);
+    mMetaLanguage = writingSystem(result.trimmed());
 }

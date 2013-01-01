@@ -127,6 +127,9 @@ public:
     //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects) for the analysis tab.
     QList<InterlinearItemType> analysisPhrasalGlossLines() const;
 
+    //! \brief Returns the meta analysis language
+    WritingSystem metaLanguage() const;
+
     QList<WritingSystem> lexicalEntryCitationForms() const;
     QList<WritingSystem> lexicalEntryGlosses() const;
 
@@ -142,6 +145,7 @@ private:
 
     QList<InterlinearItemType> interlinearItemsFromConfigurationFile(const QString & queryString) const;
     QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
+    void metalanguageFromConfigurationFile();
 
     QList<InterlinearItemType> mGlossInterlinearLines;
     QList<InterlinearItemType> mGlossPhrasalGlossLines;
@@ -150,6 +154,8 @@ private:
 
     QList<WritingSystem> mLexicalEntryCitationForms;
     QList<WritingSystem> mLexicalEntryGlosses;
+
+    WritingSystem mMetaLanguage;
 
     QString mConfigurationXmlPath;
 

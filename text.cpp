@@ -387,15 +387,14 @@ bool Text::serialize(const QString & filename) const
 
 bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
 {
-    // TODO do something else with these references to mBaselineWritingSystem -- see the <meta-language lang="en"/> tag in configuration.xml
     stream->writeStartElement("interlinear-text");
 
-    stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mBaselineWritingSystem.flexString() );
+    stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mDbAdapter->metaLanguage().flexString() );
 
     if( !mName.isEmpty() )
-        writeItem( "title" , mBaselineWritingSystem , mName , stream );
+        writeItem( "title" , mDbAdapter->metaLanguage() , mName , stream );
     if( !mComment.isEmpty() )
-        writeItem( "comment" , mBaselineWritingSystem , mComment , stream );
+        writeItem( "comment" , mDbAdapter->metaLanguage() , mComment , stream );
 
     stream->writeStartElement("paragraphs");
 
@@ -412,7 +411,7 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         stream->writeStartElement("paragraph");
         stream->writeStartElement("phrases");
         stream->writeStartElement("phrase");
-        writeItem("segnum", mBaselineWritingSystem, QString("%1").arg(i+1) , stream );
+        writeItem("segnum", mDbAdapter->metaLanguage(), QString("%1").arg(i+1) , stream );
         stream->writeStartElement("words");
         for(int j=0; j<mPhrases.at(i)->count(); j++)
         {
