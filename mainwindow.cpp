@@ -66,7 +66,7 @@ void MainWindow::addTableMenuItems()
     ui->menuGuts->addSeparator();
 
     QStringList tables;
-    tables << "Interpretations" << "TextForms" << "Glosses" << "MorphologicalAnalyses" << "WritingSystems" << "Allomorph" << "LexicalEntry" << "LexicalEntryGloss" << "LexicalEntryCitationForm";
+    tables << "Interpretations" << "TextForms" << "Glosses" << "WritingSystems" << "Allomorph" << "LexicalEntry" << "LexicalEntryGloss" << "LexicalEntryCitationForm" << "MorphologicalAnalysisMembers";
     foreach(QString table, tables)
     {
         QAction *action = new QAction(table,ui->menuGuts);

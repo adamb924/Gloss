@@ -1,6 +1,10 @@
 #include "chooselexicalentriesdialog.h"
 
 #include "lexicalentryform.h"
+#include "morphologicalanalysis.h"
+#include "allomorph.h"
+#include "databaseadapter.h"
+#include "glossitem.h"
 
 #include <QtGui>
 #include <QtDebug>
@@ -22,7 +26,14 @@ ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseStri
 
 void ChooseLexicalEntriesDialog::commitChangesToDatabase()
 {
-
+    Q_ASSERT( mEntries.count() == mAnalysis.count() );
+    for(int i=0; i<mAnalysis.count(); i++)
+    {
+        qlonglong allomorphId = mDbAdapter->addAllomorph( mEntries.at(i)->textBit() , mEntries.at(i)->id() );
+        mAnalysis[i].setId(allomorphId);
+        mGlossItem->addAllomorphToAnalysis( mAnalysis.at(i), mParseString.writingSystem() );
+    }
+    mDbAdapter->addMorphologicalAnalysis( mGlossItem->textForm( mParseString.writingSystem() ).id() , mAnalysis );
 }
 
 void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
@@ -31,8 +42,9 @@ void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
 
     QStringList bits = mParseString.text().split(QRegExp("\\s"), QString::SkipEmptyParts );
     QStringListIterator iter(bits);
+    // TODO garbage data
     while(iter.hasNext())
-        mAnalysis << Allomorph( TextBit( iter.next() , mParseString.writingSystem()) );
+        mAnalysis << Allomorph( -1, TextBit( iter.next() , mParseString.writingSystem()) );
 }
 
 void ChooseLexicalEntriesDialog::setupLayout()
@@ -44,11 +56,25 @@ void ChooseLexicalEntriesDialog::setupLayout()
     while(iter.hasNext())
     {
         LexicalEntryForm *form = new LexicalEntryForm( iter.next(), mGlossItem, mDbAdapter, this );
+        connect(form, SIGNAL(entryChanged()), this, SLOT(setAcceptable()) );
+
         layout->addWidget(form);
+        mEntries << form;
     }
 
-    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    layout->addWidget(buttonBox);
+    mButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+    connect(mButtonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(mButtonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(mButtonBox);
+
+    setAcceptable();
+}
+
+void ChooseLexicalEntriesDialog::setAcceptable()
+{
+    bool acceptable = true;
+    foreach(LexicalEntryForm *form, mEntries)
+        if( form->id() == -1 )
+            acceptable = false;
+    mButtonBox->button(QDialogButtonBox::Ok)->setEnabled(acceptable);
 }

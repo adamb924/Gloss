@@ -213,12 +213,17 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
     return mGlosses.value(ws);
 }
 
-MorphologicalAnalysis GlossItem::morphologicalAnalysis() const
+MorphologicalAnalysis* GlossItem::morphologicalAnalysis(const WritingSystem & ws)
 {
-    return mMorphologicalAnalysis;
+    return &mMorphologicalAnalysis[ ws ];
 }
 
-void GlossItem::setMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
+void GlossItem::setMorphologicalAnalysis( const WritingSystem & ws, const MorphologicalAnalysis & analysis )
 {
-    mMorphologicalAnalysis = analysis;
+    mMorphologicalAnalysis.insert(ws, analysis);
+}
+
+void GlossItem::addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem )
+{
+    mMorphologicalAnalysis[writingSystem].append( allomorph );
 }

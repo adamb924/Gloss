@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     allomorph.cpp \
     genericlexicalentryform.cpp \
     createlexicalentrydialog.cpp \
-    chooselexicalentriesdialog.cpp
+    chooselexicalentriesdialog.cpp \
+    morphologicalanalysis.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -83,7 +84,8 @@ HEADERS  += mainwindow.h \
     allomorph.h \
     genericlexicalentryform.h \
     createlexicalentrydialog.h \
-    chooselexicalentriesdialog.h
+    chooselexicalentriesdialog.h \
+    morphologicalanalysis.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

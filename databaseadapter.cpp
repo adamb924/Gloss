@@ -9,6 +9,8 @@
 #include "textbit.h"
 #include "writingsystem.h"
 #include "messagehandler.h"
+#include "allomorph.h"
+#include "morphologicalanalysis.h"
 
 DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
         QObject(parent)
@@ -39,9 +41,6 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists TextForms ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
-    if( !q.exec("create table if not exists MorphologicalAnalyses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text, SplitString text );") )
-        qWarning() << q.lastError().text() << q.executedQuery();
-
     if( !q.exec("create table if not exists Glosses ( _id integer primary key autoincrement, InterpretationId integer, WritingSystem integer, Form text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
@@ -55,6 +54,9 @@ void DatabaseAdapter::createTables()
         qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists LexicalEntryCitationForm ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    if( !q.exec("create table if not exists MorphologicalAnalysisMembers ( _id integer primary key autoincrement, TextFormId integer, AllomorphId integer, AllomorphOrder integer );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
@@ -668,17 +670,49 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
         return -1;
     }
     db.commit();
-//    db.close();
+    //    db.close();
     return id;
 }
 
-void DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexicalEntryId )
+qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexicalEntryId )
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("insert into Allomorph (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
     q.bindValue(":LexicalEntryId",lexicalEntryId);
     q.bindValue(":WritingSystem",bit.writingSystem().id());
     q.bindValue(":Form",bit.text());
-    if( !q.exec() )
+    if( q.exec() )
+    {
+        return q.lastInsertId().toLongLong();
+    }
+    else
+    {
         qWarning() << "DatabaseAdapter::addAllomorph" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+}
+
+void DatabaseAdapter::addMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs )
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("insert into MorphologicalAnalysisMembers (TextFormId,AllomorphId,AllomorphOrder) values (:TextFormId,:AllomorphId,:AllomorphOrder);");
+    for(int i=0; i<allomorphs.count(); i++)
+    {
+        q.bindValue(":TextFormId", textFormId );
+        q.bindValue(":AllomorphId", allomorphs.at(i).id() );
+        q.bindValue(":AllomorphOrder", i );
+        if( !q.exec() )
+            qWarning() << "DatabaseAdapter::addMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
+    }
+}
+
+void DatabaseAdapter::addMorphologicalAnalysis( qlonglong textFormId, const Allomorph & allomorph )
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("insert into MorphologicalAnalysisMembers (TextFormId,AllomorphId,AllomorphOrder) values (:TextFormId,:AllomorphId,:AllomorphOrder);");
+    q.bindValue(":TextFormId", textFormId );
+    q.bindValue(":AllomorphId", allomorph.id() );
+    q.bindValue(":AllomorphOrder", 0 );
+    if( !q.exec() )
+        qWarning() << "DatabaseAdapter::addMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
 }

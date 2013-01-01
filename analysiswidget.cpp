@@ -19,21 +19,47 @@ AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analy
 
 void AnalysisWidget::setupLayout()
 {
-    QVBoxLayout *layout = new QVBoxLayout;
-    setLayout(layout);
+    mLayout = new QVBoxLayout;
+    setLayout(mLayout);
+
+    if( mGlossItem->morphologicalAnalysis(mWritingSystem)->isEmpty() )
+        createUninitializedLayout();
+    else
+        createInitializedLayout();
+}
+
+void AnalysisWidget::createUninitializedLayout()
+{
+    clearWidgetsFromLayout();
 
     QPushButton *analyze = new QPushButton(tr("Analyze"), this);
     analyze->setFlat(true);
     analyze->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; }");
-    layout->addWidget(analyze);
+    mLayout->addWidget(analyze);
     connect(analyze, SIGNAL(clicked()), this, SLOT(enterAnalysis()));
 
     QPushButton *createMle = new QPushButton(tr("Create MLE"), this);
     createMle->setToolTip(tr("Create monomorphemic lexical entry"));
     createMle->setFlat(true);
     createMle->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; }");
-    layout->addWidget(createMle);
+    mLayout->addWidget(createMle);
     connect(createMle, SIGNAL(clicked()), this, SLOT(createMonomorphemicLexicalEntry()));
+}
+
+void AnalysisWidget::createInitializedLayout()
+{
+    clearWidgetsFromLayout();
+
+    QLabel *baselineSummary = new QLabel( mGlossItem->morphologicalAnalysis(mWritingSystem)->baselineSummary() );
+    mLayout->addWidget(baselineSummary);
+}
+
+void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu menu(this);
+    menu.addAction(tr("Analyze"), this, SLOT(enterAnalysis()));
+    menu.addAction(tr("Create MLE"), this, SLOT(createMonomorphemicLexicalEntry()));
+    menu.exec(event->globalPos());
 }
 
 void AnalysisWidget::enterAnalysis()
@@ -42,17 +68,38 @@ void AnalysisWidget::enterAnalysis()
     if( dialog.exec() == QDialog::Accepted )
     {
         ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), mWritingSystem), mGlossItem,  mDbAdapter , this);
-        leDialog.exec();
+        if( leDialog.exec() == QDialog::Accepted )
+            createInitializedLayout();
     }
 }
 
 void AnalysisWidget::createMonomorphemicLexicalEntry()
 {
-    CreateLexicalEntryDialog dialog(mGlossItem->textForm(mWritingSystem), mGlossItem, mDbAdapter, this);
+    TextBit textForm = mGlossItem->textForm(mWritingSystem);
+    CreateLexicalEntryDialog dialog( textForm , mGlossItem, mDbAdapter, this);
     if( dialog.exec() == QDialog::Accepted )
     {
-        qlonglong id = dialog.id();
-        if( id != -1 )
-            mDbAdapter->addAllomorph( mGlossItem->textForm(mWritingSystem) , id );
+        qlonglong lexicalEntryId = dialog.id();
+        if( lexicalEntryId != -1 )
+        {
+            qlonglong allomorphId = mDbAdapter->addAllomorph( textForm , lexicalEntryId );
+
+            Allomorph allomorph = Allomorph( allomorphId, textForm );
+            mGlossItem->addAllomorphToAnalysis( allomorph, mWritingSystem );
+            mDbAdapter->addMorphologicalAnalysis( textForm.id(), allomorph );
+            createInitializedLayout();
+        }
+    }
+}
+
+void AnalysisWidget::clearWidgetsFromLayout()
+{
+    if( mLayout->count() == 0 )
+        return;
+    QLayoutItem * item;
+    while( ( item = mLayout->takeAt(0) ) != 0 )
+    {
+        delete item->widget();
+        delete item;
     }
 }

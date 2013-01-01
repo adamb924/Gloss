@@ -16,6 +16,7 @@
 #include "writingsystem.h"
 #include "textbit.h"
 #include "allomorph.h"
+#include "morphologicalanalysis.h"
 
 class TextBit;
 class Project;
@@ -72,8 +73,14 @@ public:
     //! \brief Returns the WritingSystem of the GlossItem's baseline text
     WritingSystem baselineWritingSystem() const;
 
-    MorphologicalAnalysis morphologicalAnalysis() const;
-    void setMorphologicalAnalysis( const MorphologicalAnalysis & analysis );
+    // TODO consider whether this should return a const pointer
+    //! \brief Returns the morphological analysis for the given writing system, which is created if none exists
+    MorphologicalAnalysis* morphologicalAnalysis(const WritingSystem & ws);
+
+    //! \brief Sets the morphological analysis for the given writing system
+    void setMorphologicalAnalysis( const WritingSystem & ws, const MorphologicalAnalysis & analysis );
+
+    void addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem );
 
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
@@ -102,7 +109,7 @@ private:
     //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with the text forms and gloss forms, or if there are none, than for those compatible with the baseline bit. If no compatible interpretation is found, a new interpretation is created.
     void guessInterpretation();
 
-    MorphologicalAnalysis mMorphologicalAnalysis;
+    QHash<WritingSystem,MorphologicalAnalysis> mMorphologicalAnalysis;
 
     TextBitHash mTextForms;
     TextBitHash mGlosses;

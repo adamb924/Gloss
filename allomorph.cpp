@@ -7,8 +7,9 @@ Allomorph::Allomorph()
 
 }
 
-Allomorph::Allomorph(const TextBit & bit)
+Allomorph::Allomorph(qlonglong id, const TextBit & bit)
 {
+    mId = id;
     mTextBit = bit;
     setTypeFromString(bit.text());
 }
@@ -67,4 +68,14 @@ TextBit Allomorph::textBit() const
 WritingSystem Allomorph::writingSystem() const
 {
     return mTextBit.writingSystem();
+}
+
+qlonglong Allomorph::id() const
+{
+    return mId;
+}
+
+void Allomorph::setId(qlonglong id)
+{
+    mId = id;
 }

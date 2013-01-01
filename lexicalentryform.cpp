@@ -16,6 +16,7 @@ LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, GlossItem *gloss
 
     fillData();
 
+    connect(ui->candidatesCombo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(entryChanged()) );
     connect(ui->newForm, SIGNAL(clicked()), this, SLOT(newLexicalEntry()));
 }
 
@@ -50,6 +51,17 @@ void LexicalEntryForm::newLexicalEntry()
         {
             mDbAdapter->addAllomorph( mAllomorph.textBit() , dialog.id() );
             fillData();
+            emit entryChanged();
         }
     }
+}
+
+qlonglong LexicalEntryForm::id() const
+{
+    return ui->candidatesCombo->itemData( ui->candidatesCombo->currentIndex() ).toLongLong();
+}
+
+TextBit LexicalEntryForm::textBit() const
+{
+    return mAllomorph.textBit();
 }

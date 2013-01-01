@@ -10,12 +10,12 @@
 #include "glossitem.h"
 #include "textbit.h"
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph & allomorph, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent) :
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & bit, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog)
 {
     mDbAdapter = dbAdapter;
-    mAllomorph = allomorph;
+    mTextBit = bit;
     mGlossItem = glossItem;
 
     mId = -1;
@@ -56,8 +56,8 @@ void CreateLexicalEntryDialog::fillData()
         LingEdit *edit = new LingEdit( TextBit("", ws) );
         ui->citationFormLayout->addWidget(edit);
         mCitationFormEdits << edit;
-        if( mGlossItem->textForms()->contains(ws) )
-            edit->setText( mGlossItem->textForms()->value(ws).text() );
+        if( ws == mTextBit.writingSystem() )
+            edit->setText( mTextBit.text() );
     }
 }
 

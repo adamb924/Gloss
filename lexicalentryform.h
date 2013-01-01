@@ -1,3 +1,11 @@
+/*!
+  \class LexicalEntryForm
+  \ingroup GUI
+  \brief A (piece of a) form for choosing a lexical entry for a particular allomorph. Every ChooseLexicalEntriesDialog has one or more of these.
+
+  The associated form is lexicalentryform.ui
+*/
+
 #ifndef LEXICALENTRYFORM_H
 #define LEXICALENTRYFORM_H
 
@@ -20,6 +28,9 @@ public:
     LexicalEntryForm(const Allomorph & allomorph, GlossItem *glossItem, DatabaseAdapter *dbAdapter,  QWidget *parent = 0);
     ~LexicalEntryForm();
 
+    qlonglong id() const;
+    TextBit textBit() const;
+
 private:
     Ui::LexicalEntryForm *ui;
     Allomorph mAllomorph;
@@ -27,6 +38,9 @@ private:
     GlossItem *mGlossItem;
 
     void fillData();
+
+signals:
+    void entryChanged();
 
 private slots:
     void newLexicalEntry();

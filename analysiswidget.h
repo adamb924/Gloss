@@ -5,6 +5,7 @@
 
 class GlossItem;
 class DatabaseAdapter;
+class QVBoxLayout;
 
 #include "writingsystem.h"
 
@@ -26,6 +27,15 @@ private:
     WritingSystem mWritingSystem;
 
     DatabaseAdapter *mDbAdapter;
+
+    QVBoxLayout *mLayout;
+
+    void createUninitializedLayout();
+    void createInitializedLayout();
+    void clearWidgetsFromLayout();
+
+protected:
+    void contextMenuEvent ( QContextMenuEvent * event );
 
 private slots:
     void enterAnalysis();

@@ -387,7 +387,7 @@ bool Text::serialize(const QString & filename) const
 
 bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
 {
-    // TODO do something else with these references to mBaselineWritingSystem
+    // TODO do something else with these references to mBaselineWritingSystem -- see the <meta-language lang="en"/> tag in configuration.xml
     stream->writeStartElement("interlinear-text");
 
     stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mBaselineWritingSystem.flexString() );

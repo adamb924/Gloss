@@ -16,6 +16,8 @@
 #include "interlinearitemtype.h"
 
 class WritingSystem;
+class Allomorph;
+class MorphologicalAnalysis;
 
 class DatabaseAdapter : public QObject
 {
@@ -131,7 +133,9 @@ public:
     QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit );
 
     qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms );
-    void addAllomorph( const TextBit & bit , qlonglong lexicalEntryId );
+    qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId );
+    void addMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs );
+    void addMorphologicalAnalysis( qlonglong textFormId, const Allomorph & allomorph );
 
 private:
     QString mFilename;

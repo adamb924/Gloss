@@ -9,7 +9,7 @@ public:
     enum Type { Stem,Prefix,Suffix,Infix,BoundStem,Proclitic,Enclitic,Simulfix,Suprafix };
 
     Allomorph();
-    Allomorph(const TextBit & bit);
+    Allomorph(qlonglong id, const TextBit & bit);
 
     Type type() const;
     QString typeString() const;
@@ -17,6 +17,9 @@ public:
     QString text() const;
     TextBit textBit() const;
     WritingSystem writingSystem() const;
+
+    qlonglong id() const;
+    void setId(qlonglong id);
 
     static QString getTypeString(Type t)
     {
@@ -49,9 +52,8 @@ private:
 
     Type mType;
     TextBit mTextBit;
+    qlonglong mId;
 };
 
-typedef QList<Allomorph> MorphologicalAnalysis;
-typedef QListIterator<Allomorph> MorphologicalAnalysisIterator;
 
 #endif // ALLOMORPH_H
