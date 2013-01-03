@@ -502,11 +502,11 @@ bool Text::isValid() const
     return mValid;
 }
 
-bool Text::mergeTranslation(const QString & filename, const WritingSystem & ws )
+Text::MergeTranslationResult Text::mergeTranslation(const QString & filename, const WritingSystem & ws )
 {
     QString currentPath = mProject->filepathFromName(mName);
     QString tempOutputPath = mProject->filepathFromName(mName + "-output");
-    QString errorOutputPath = QDir::temp().absoluteFilePath("merge-error.txt");
+    QString errorOutputPath = QDir::temp().absoluteFilePath(mName + "merge-error.txt");
 
     QHash<QString,QString> parameters;
     parameters.insert("flextext-with-translation", filename );
@@ -525,18 +525,18 @@ bool Text::mergeTranslation(const QString & filename, const WritingSystem & ws )
     switch(retval)
     {
     case Xsltproc::InvalidStylesheet:
-        QMessageBox::critical(0, tr("Error"), tr("The XSL transformation is invalid."));
-        return false;
+        QMessageBox::critical(0, tr("Error"), tr("The XSL transformation %1 is invalid.").arg(QDir::current().absoluteFilePath("merge-translation-by-line-number.xsl")));
+        return XslTranslationError;
     case Xsltproc::InvalidXmlFile:
-        QMessageBox::critical(0, tr("Error"), tr("The flextext file is invalid."));
-        return false;
+        QMessageBox::critical(0, tr("Error"), tr("The flextext file %1 is invalid.").arg(currentPath) );
+        return XslTranslationError;
     case Xsltproc::GenericFailure:
         if( errorInfo.size() > 0 )
             QDesktopServices::openUrl(QUrl(errorOutputPath, QUrl::TolerantMode));
         else
             QMessageBox::critical(0, tr("Error"), tr("Failure for unknown reasons."));
         QFile::remove(tempOutputPath);
-        return false;
+        return XslTranslationError;
     case Xsltproc::Success:
         break;
     }
@@ -547,16 +547,21 @@ bool Text::mergeTranslation(const QString & filename, const WritingSystem & ws )
     if( QFile::remove(currentPath) )
     {
         if( QFile::rename(tempOutputPath, currentPath) )
-            QMessageBox::information(0, tr("Success!"), tr("The merge has completed succesfully."));
+        {
+//            QMessageBox::information(0, tr("Success!"), tr("The merge has completed succesfully."));
+            return Success;
+        }
         else
-            QMessageBox::warning(0, tr("Error"), tr("The merge file is stuck with the filename %1, but you can fix this yourself. The old flextext file has been deleted.").arg(tempOutputPath));
+        {
+//            QMessageBox::warning(0, tr("Error"), tr("The merge file is stuck with the filename %1, but you can fix this yourself. The old flextext file has been deleted.").arg(tempOutputPath));
+            return MergeStuckOldFileDeleted;
+        }
     }
     else
     {
-        QMessageBox::warning(0, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with the filename %1, but you can fix this yourself.").arg(tempOutputPath));
+//        QMessageBox::warning(0, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with the filename %1, but you can fix this yourself.").arg(tempOutputPath));
+        return MergeStuckOldFileStillThere;
     }
-
-    return true;
 }
 
 QString Text::textNameFromPath(const QString & path) const

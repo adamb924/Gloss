@@ -88,9 +88,6 @@ Xsltproc::ReturnValue Xsltproc::execute()
 
     mOutput = xsltApplyStylesheet(mStylesheet, mXml, (const char**)params);
 
-    if( mErrorRedirect )
-        fclose(stderr);
-
     qDeleteAll(byteArrays);
 
     int bytesWritten = 0;

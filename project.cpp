@@ -421,3 +421,15 @@ QSet<qlonglong> Project::getInterpretationIds(const QString & filepath)
     }
     return ids;
 }
+
+QStringList Project::flextextNames() const
+{
+    QStringList names;
+    QSetIterator<QString> iter(mTextPaths);
+    while( iter.hasNext() )
+    {
+        QFileInfo info(iter.next());
+        names << info.baseName();
+    }
+    return names;
+}

@@ -16,10 +16,11 @@
 
 #include <QtGui>
 #include <QtSql>
+#include <QStringList>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+        QMainWindow(parent),
+        ui(new Ui::MainWindow)
 {
     mProject = 0;
 
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionDelete_text, SIGNAL(triggered()), this, SLOT(deleteText()) );
     connect(ui->actionMerge_translations_from_other_FlexText_file, SIGNAL(triggered()), this, SLOT(mergeTranslations()));
+    connect(ui->actionBulk_merge_translations, SIGNAL(triggered()), this, SLOT(bulkMergeTranslations()));
 
     connect(ui->actionSearch_gloss_items, SIGNAL(triggered()), this, SLOT(searchGlossItems()));
     connect(ui->actionSubstring_search_gloss_items, SIGNAL(triggered()), this, SLOT(substringSearchGlossItems()));
@@ -201,13 +203,13 @@ void MainWindow::addBlankText()
     }
 }
 
-WritingSystem MainWindow::selectWritingSystem(bool *ok)
+WritingSystem MainWindow::selectWritingSystem(const QString & message, bool *ok)
 {
     QList<WritingSystem> list = mProject->dbAdapter()->writingSystems();
     QStringList names;
     for(int i=0; i<list.count(); i++)
-        names << list.at(i).name();
-    QString item = QInputDialog::getItem(this, tr("Select writing system"), tr("Select the baseline writing system for these texts."), names, 0, false, ok );
+        names << list.at(i).name() + " (" + list.at(i).flexString() + ")";
+    QString item = QInputDialog::getItem(this, tr("Select writing system"), message, names, 0, false, ok );
     if( names.contains(item) )
         return list.at( names.indexOf( item ) );
     else
@@ -221,7 +223,7 @@ void MainWindow::importPlainText()
     if( dialog.exec() == QDialog::Accepted )
     {
         bool ok;
-        WritingSystem ws = selectWritingSystem(&ok);
+        WritingSystem ws = selectWritingSystem(tr("Select the baseline writing system for these texts."), &ok);
         if( ok )
         {
             QStringList files = dialog.selectedFiles();
@@ -384,8 +386,22 @@ void MainWindow::mergeTranslations()
     {
         mProject->openText(dialog.text());
         Text *text = mProject->texts()->value(dialog.text());
-        text->mergeTranslation( dialog.filename() , dialog.writingSystem() );
+        Text::MergeTranslationResult result = text->mergeTranslation( dialog.filename() , dialog.writingSystem() );
         mProject->closeText(text);
+        switch(result)
+        {
+        case Text::Success:
+            QMessageBox::information(0, tr("Success!"), tr("The merge into %1 has completed succesfully.").arg(dialog.text()));
+            break;
+        case Text::MergeStuckOldFileDeleted:
+            QMessageBox::warning(0, tr("Error"), tr("The merge file is stuck with a temporary filename, but you can fix this yourself. The old flextext file has been deleted."));
+            break;
+        case Text::MergeStuckOldFileStillThere:
+            QMessageBox::warning(0, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with a temporary filename, but you can fix this yourself."));
+            break;
+        case Text::XslTranslationError:
+            break;
+        }
     }
 }
 
@@ -480,4 +496,68 @@ void MainWindow::sqlQueryDialog()
 {
     DatabaseQueryDialog dialog(mProject->dbAdapter()->dbFilename());
     dialog.exec();
+}
+
+void MainWindow::bulkMergeTranslations()
+{
+    bool ok;
+    WritingSystem ws = selectWritingSystem(tr("Select the translations' writing system."), &ok);
+
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Choose directory with translations") );
+    if( !directory.isEmpty() )
+    {
+        QDir dir(directory);
+        dir.setFilter(QDir::Files);
+        dir.setNameFilters(QStringList("*.flextext"));
+        dir.setSorting(QDir::Name);
+        QStringList translationFiles = dir.entryList(QDir::Files,QDir::Name);
+
+        int total = translationFiles.count();
+        int successes = 0;
+        int failures = 0;
+        int nonmatches = 0;
+        QStringList failureNames;
+        QStringList unmatchedNames;
+
+        QStringList flextextNames = mProject->flextextNames();
+
+        QProgressDialog progress(tr("Merging translations..."), "Cancel", 0, translationFiles.count(), 0);
+        progress.setWindowModality(Qt::WindowModal);
+
+        for(int i=0; i<translationFiles.count(); i++)
+        {
+            progress.setValue(i);
+
+            QString filePath = dir.absoluteFilePath(translationFiles.at(i));
+            QString textName = translationFiles.at(i);
+            textName.replace(QRegExp("\\.flextext$"),"");
+
+            if( flextextNames.contains(textName) )
+            {
+                mProject->openText(textName);
+                Text *text = mProject->texts()->value(textName);
+                if( text->mergeTranslation( filePath , ws ) == Text::Success )
+                {
+                    successes++;
+                }
+                else
+                {
+                    failures++;
+                    failureNames << textName;
+                }
+                mProject->closeText(text);
+            }
+            else
+            {
+                nonmatches++;
+                unmatchedNames << textName;
+            }
+
+            if( progress.wasCanceled() )
+                break;
+        }
+        progress.setValue(translationFiles.count());
+
+        QMessageBox::information(this, tr("Result"), tr("%1 available translations, %2 that don't match (%3), %4 success(es), %5 failure(s) (%6). If there were failures you might get more information by merging them individually.").arg(total).arg(nonmatches).arg(unmatchedNames.join(", ")).arg(successes).arg(failures).arg(failureNames.join(", ")));
+    }
 }

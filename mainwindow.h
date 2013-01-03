@@ -39,7 +39,7 @@ private:
     void closeEvent(QCloseEvent *event);
     bool maybeSave();
 
-    WritingSystem selectWritingSystem(bool *ok);
+    WritingSystem selectWritingSystem(const QString & message, bool *ok);
 
     void createSearchResultDock(const QString & query);
 
@@ -73,6 +73,7 @@ private slots:
     void rawXQuery();
     void removeUnusedGlossItems();
     void sqlQueryDialog();
+    void bulkMergeTranslations();
 };
 
 #endif // MAINWINDOW_H

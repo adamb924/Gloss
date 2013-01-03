@@ -26,6 +26,8 @@ class Text : public QObject
 {
     Q_OBJECT
 public:
+    enum MergeTranslationResult { Success, MergeStuckOldFileDeleted, MergeStuckOldFileStillThere, XslTranslationError };
+
     Text();
     ~Text();
     Text(const WritingSystem & ws, const QString & name, Project *project);
@@ -51,7 +53,7 @@ public:
 
     void saveText() const;
 
-    bool mergeTranslation(const QString & filename, const WritingSystem & ws );
+    Text::MergeTranslationResult mergeTranslation(const QString & filename, const WritingSystem & ws );
 
     QString textNameFromPath(const QString & path) const;
 

@@ -60,6 +60,8 @@ public:
 
     int removeUnusedGlossItems();
 
+    QStringList flextextNames() const;
+
 public slots:
 
 private:
