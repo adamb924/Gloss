@@ -144,6 +144,11 @@ public:
 private:
     QString mFilename;
 
+    void loadWritingSystems();
+    QList<WritingSystem> mWritingSystems;
+    QHash<qlonglong, WritingSystem> mWritingSystemByRowId;
+    QHash<QString, WritingSystem> mWritingSystemByFlexString;
+
     QList<InterlinearItemType> interlinearItemsFromConfigurationFile(const QString & queryString) const;
     QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
     void metalanguageFromConfigurationFile();

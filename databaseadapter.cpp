@@ -24,6 +24,8 @@ DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
         QMessageBox::information (0,"Error Message","There was a problem in opening the database. The program said: " + db.lastError().databaseText() + " It is unlikely that you will solve this on your own. Rather you had better contact the developer." );
         return;
     }
+
+    loadWritingSystems();
 }
 
 DatabaseAdapter::~DatabaseAdapter()
@@ -331,40 +333,17 @@ TextBitHash DatabaseAdapter::getInterpretationTextForms(qlonglong id) const
 
 WritingSystem DatabaseAdapter::writingSystem(const QString & flexString) const
 {
-    QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select _id, Name, Abbreviation, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems where FlexString=:FlexString;");
-    q.bindValue(":FlexString", flexString);
-    if( !q.exec()  )
-        qWarning() << "DatabaseAdapter::writingSystem" << q.lastError().text() << q.executedQuery();
-    if( q.first() )
-        return WritingSystem(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), flexString, q.value(3).toString(), (Qt::LayoutDirection)q.value(4).toInt() , q.value(5).toString(), q.value(6).toInt() );
-    else
-        return WritingSystem();
+    return mWritingSystemByFlexString.value(flexString);
 }
 
 WritingSystem DatabaseAdapter::writingSystem(qlonglong id) const
 {
-    QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems where _id=:_id;");
-    q.bindValue(":_id",id);
-    if( !q.exec()  )
-        qWarning() << "DatabaseAdapter::writingSystem" << q.lastError().text() << q.executedQuery();
-    if( q.first() )
-        return WritingSystem(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString(), q.value(7).toInt() );
-    else
-        return WritingSystem();
+    return mWritingSystemByRowId.value(id);
 }
 
 QList<WritingSystem> DatabaseAdapter::writingSystems() const
 {
-    QList<WritingSystem> list;
-    QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems;");
-    if( !q.exec()  )
-        qWarning() << "DatabaseAdapter::writingSystems" << q.lastError().text() << q.executedQuery();
-    while( q.next() )
-        list << WritingSystem(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString(), q.value(7).toInt() );
-    return list;
+    return mWritingSystems;
 }
 
 bool DatabaseAdapter::writingSystemExists(const QString & flexstring) const
@@ -742,3 +721,24 @@ TextBitHash DatabaseAdapter::lexicalItemGlosses(qlonglong id) const
     }
     return glosses;
 }
+
+void DatabaseAdapter::loadWritingSystems()
+{
+    mWritingSystems.clear();
+    mWritingSystemByRowId.clear();
+    mWritingSystemByFlexString.clear();
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id, Name, Abbreviation, FlexString, KeyboardCommand, Direction, FontFamily, FontSize from WritingSystems;");
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::loadWritingSystems" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+    {
+        WritingSystem ws(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString(), q.value(7).toInt() );
+        mWritingSystems << ws;
+        mWritingSystemByRowId.insert( q.value(0).toLongLong(), ws );
+        mWritingSystemByFlexString.insert( q.value(3).toString(), ws );
+    }
+    qDebug() << mWritingSystems.count() << mWritingSystemByRowId.count() << mWritingSystemByFlexString.count();
+}
+
