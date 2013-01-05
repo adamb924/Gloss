@@ -10,13 +10,23 @@ GenericTextInputDialog::GenericTextInputDialog(DatabaseAdapter *dbAdapter, QWidg
 {
     ui->setupUi(this);
 
-    mDbAdapter = dbAdapter;
-
-    mWritingSystems = mDbAdapter->writingSystems();
+    mWritingSystems = dbAdapter->writingSystems();
 
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeCurrentWritingSystem(int)));
 
     fillWritingSystems();
+}
+
+GenericTextInputDialog::GenericTextInputDialog(const WritingSystem & writingSystem, QWidget *parent) :
+        QDialog(parent),
+        ui(new Ui::GenericTextInputDialog)
+{
+    ui->setupUi(this);
+    ui->writingSystemCombo->setVisible(false);
+
+    mWritingSystem = writingSystem;
+
+    ui->textEdit->setWritingSystem( mWritingSystem );
 }
 
 GenericTextInputDialog::~GenericTextInputDialog()
@@ -42,5 +52,8 @@ QString GenericTextInputDialog::text() const
 
 WritingSystem GenericTextInputDialog::writingSystem() const
 {
-    return mWritingSystems.at( ui->writingSystemCombo->itemData( ui->writingSystemCombo->currentIndex() ).toInt() );
+    if( ui->writingSystemCombo->isVisible() )
+        return mWritingSystems.at( ui->writingSystemCombo->itemData( ui->writingSystemCombo->currentIndex() ).toInt() );
+    else
+        return mWritingSystem;
 }

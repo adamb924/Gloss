@@ -16,7 +16,8 @@ class GenericTextInputDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GenericTextInputDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    GenericTextInputDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    GenericTextInputDialog(const WritingSystem & writingSystem, QWidget *parent = 0);
     ~GenericTextInputDialog();
 
     QString text() const;
@@ -26,8 +27,7 @@ private:
     Ui::GenericTextInputDialog *ui;
 
     QList<WritingSystem> mWritingSystems;
-
-    DatabaseAdapter *mDbAdapter;
+    WritingSystem mWritingSystem;
 
     void fillWritingSystems();
 
