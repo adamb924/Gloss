@@ -17,6 +17,8 @@ GlossItem::GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, Q
 
     // it's possible that this will have been changed by guessInterpretation();
     mTextForms.insert(mBaselineWritingSystem, baselineText );
+
+    setCandidateNumberFromDatabase();
 }
 
 GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
@@ -34,6 +36,7 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
     else
         setInterpretation(id, false); // false because we have text forms and glosses from the arguments of the constructor
 
+    setCandidateNumberFromDatabase();
 }
 
 GlossItem::~GlossItem()
@@ -111,6 +114,14 @@ void GlossItem::setCandidateNumber(CandidateNumber status)
     }
 }
 
+void GlossItem::setCandidateNumberFromDatabase()
+{
+    if( mDbAdapter->interpretationGlosses(mId, mBaselineWritingSystem.id() ).count() > 1)
+        setCandidateNumber(GlossItem::MultipleOption);
+    else
+        setCandidateNumber(GlossItem::SingleOption);
+}
+
 void GlossItem::setApprovalStatus(ApprovalStatus status)
 {
     if( mApprovalStatus != status )
@@ -144,12 +155,10 @@ void GlossItem::guessInterpretation()
             setInterpretation( mDbAdapter->newInterpretation(mTextForms,mGlosses) , true ); // true because they'll all be blank
         else
             setInterpretation( mDbAdapter->newInterpretation(baselineText()) , true ); // true because they'll all be blank
-        setCandidateNumber(GlossItem::SingleOption);
     }
     else if ( candidates.length() == 1 )
     {
         setInterpretation( candidates.at(0) , true ); // true because the user hadn't had a chance to specify
-        setCandidateNumber(GlossItem::SingleOption);
     }
     else // greater than 1
     {
@@ -180,8 +189,6 @@ TextBit GlossItem::textForm(const WritingSystem & ws)
         {
             qlonglong id = possible.keys().first();
             setTextForm( TextBit( possible.value(id) , ws , id ));
-            if( possible.count() > 1 )
-                setCandidateNumber(GlossItem::MultipleOption);
         }
         else
         {
@@ -201,8 +208,6 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
         {
             qlonglong id = possible.keys().first();
             setGloss( TextBit( possible.value(id) , ws, id ) );
-            if( possible.count() > 1 )
-                setCandidateNumber(GlossItem::MultipleOption);
         }
         else
         {

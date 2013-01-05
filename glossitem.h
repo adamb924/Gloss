@@ -61,6 +61,9 @@ public:
     //! \brief Set the candidate status of the GlossItem to \a status.
     void setCandidateNumber(CandidateNumber status);
 
+    //! \brief Set the candidate number status from what is stored in the database.
+    void setCandidateNumberFromDatabase();
+
     //! \brief Set the approval status of the GlossItem to \a status.
     void setApprovalStatus(ApprovalStatus status);
 
