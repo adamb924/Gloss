@@ -51,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionPerform_a_query, SIGNAL(triggered()), this, SLOT(sqlQueryDialog()));
 
+    connect(ui->actionSet_text_XML_from_database, SIGNAL(triggered()), this, SLOT(setTextXmlFromDatabase()));
+
     setProjectActionsEnabled(false);
 
     addTableMenuItems();
@@ -519,7 +521,7 @@ void MainWindow::bulkMergeTranslations()
         QStringList failureNames;
         QStringList unmatchedNames;
 
-        QStringList flextextNames = mProject->flextextNames();
+        QStringList flextextNames = mProject->textNames();
 
         QProgressDialog progress(tr("Merging translations..."), "Cancel", 0, translationFiles.count(), 0);
         progress.setWindowModality(Qt::WindowModal);
@@ -560,4 +562,10 @@ void MainWindow::bulkMergeTranslations()
 
         QMessageBox::information(this, tr("Result"), tr("%1 available translations, %2 that don't match (%3), %4 success(es), %5 failure(s) (%6). If there were failures you might get more information by merging them individually.").arg(total).arg(nonmatches).arg(unmatchedNames.join(", ")).arg(successes).arg(failures).arg(failureNames.join(", ")));
     }
+}
+
+void MainWindow::setTextXmlFromDatabase()
+{
+    mProject->setTextXmlFromDatabase();
+    QMessageBox::information(this, tr("Done!"), tr("The text files have been updated."));
 }

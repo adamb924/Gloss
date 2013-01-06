@@ -464,14 +464,17 @@ QSet<qlonglong> Project::getSetOfNumbersFromTextQuery(const QString & filepath, 
     return ids;
 }
 
-QStringList Project::flextextNames() const
+void Project::setTextXmlFromDatabase()
 {
-    QStringList names;
-    QSetIterator<QString> iter(mTextPaths);
-    while( iter.hasNext() )
+    QStringList names = textNames();
+    QStringListIterator iter(names);
+    while(iter.hasNext())
     {
-        QFileInfo info(iter.next());
-        names << info.baseName();
+        QString textName = iter.next();
+        if( openText(textName) )
+        {
+            mTexts[textName]->saveText();
+            closeText(mTexts[textName]);
+        }
     }
-    return names;
 }

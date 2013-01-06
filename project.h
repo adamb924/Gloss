@@ -63,7 +63,7 @@ public:
     int removeUnusedGlosses();
     int removeUnusedTextForms();
 
-    QStringList flextextNames() const;
+    void setTextXmlFromDatabase();
 
 public slots:
 

@@ -74,6 +74,7 @@ private slots:
     void removeUnusedGlossItems();
     void sqlQueryDialog();
     void bulkMergeTranslations();
+    void setTextXmlFromDatabase();
 };
 
 #endif // MAINWINDOW_H

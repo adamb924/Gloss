@@ -63,6 +63,8 @@
     </property>
     <addaction name="actionRemove_unused_gloss_items"/>
     <addaction name="actionPerform_a_query"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_text_XML_from_database"/>
    </widget>
    <widget class="QMenu" name="menuProject">
     <property name="title">
@@ -215,6 +217,11 @@
   <action name="actionBulk_merge_translations">
    <property name="text">
     <string>Bulk merge translations...</string>
+   </property>
+  </action>
+  <action name="actionSet_text_XML_from_database">
+   <property name="text">
+    <string>Set text XML from database</string>
    </property>
   </action>
  </widget>
