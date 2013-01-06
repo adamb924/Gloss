@@ -169,6 +169,9 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
         }
     }
 
+    menu.addSeparator();
+    menu.addAction(tr("Database report"), this, SLOT(displayDatabaseReport()) );
+
     menu.exec(event->globalPos());
 }
 
@@ -434,4 +437,27 @@ void WordDisplayWidget::refreshMorphologicalAnalysis(const WritingSystem & ws)
 {
     if( mAnalysisWidgets.contains(ws) )
         mAnalysisWidgets[ws]->refreshAnalysisFromDatabase();
+}
+
+void WordDisplayWidget::displayDatabaseReport()
+{
+    QString reportString;
+
+    TextBitHash textForms(*mGlossItem->textForms());
+
+    TextBitHashIterator iter( *mGlossItem->textForms() );
+    while(iter.hasNext())
+    {
+        iter.next();
+        reportString += tr("%1: %2\n").arg( iter.key().name() ).arg( iter.value().id() );
+    }
+
+    iter = TextBitHashIterator( *mGlossItem->glosses() );
+    while(iter.hasNext())
+    {
+        iter.next();
+        reportString += tr("%1: %2\n").arg( iter.key().name() ).arg( iter.value().id() );
+    }
+
+    QMessageBox::information(this, tr("Report"), reportString );
 }

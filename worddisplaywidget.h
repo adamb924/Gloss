@@ -90,6 +90,8 @@ private slots:
     void selectDifferentGloss(QAction *action);
     void selectDifferentTextForm(QAction *action);
 
+    void displayDatabaseReport();
+
 };
 
 #endif // WORDDISPLAYWIDGET_H
