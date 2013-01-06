@@ -758,4 +758,3 @@ void DatabaseAdapter::loadWritingSystems()
         mWritingSystemByFlexString.insert( q.value(3).toString(), ws );
     }
 }
-

@@ -116,7 +116,7 @@ void GlossItem::setCandidateNumber(CandidateNumber status)
 
 void GlossItem::setCandidateNumberFromDatabase()
 {
-    if( mDbAdapter->interpretationGlosses(mId, mBaselineWritingSystem.id() ).count() > 1)
+    if( mDbAdapter->hasMultipleCandidateInterpretations( mTextForms.value(mBaselineWritingSystem) ) )
         setCandidateNumber(GlossItem::MultipleOption);
     else
         setCandidateNumber(GlossItem::SingleOption);
