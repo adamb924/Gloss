@@ -6,6 +6,7 @@
 class DatabaseAdapter;
 
 #include "writingsystem.h"
+#include "textbit.h"
 
 namespace Ui {
     class GenericTextInputDialog;
@@ -21,6 +22,7 @@ public:
     ~GenericTextInputDialog();
 
     QString text() const;
+    TextBit textBit() const;
     WritingSystem writingSystem() const;
 
 private:

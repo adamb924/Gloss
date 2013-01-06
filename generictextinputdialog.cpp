@@ -50,6 +50,11 @@ QString GenericTextInputDialog::text() const
     return ui->textEdit->text();
 }
 
+TextBit GenericTextInputDialog::textBit() const
+{
+    return TextBit(ui->textEdit->text(), mWritingSystem);
+}
+
 WritingSystem GenericTextInputDialog::writingSystem() const
 {
     if( ui->writingSystemCombo->isVisible() )

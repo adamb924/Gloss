@@ -204,6 +204,24 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writin
     }
 }
 
+qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & bit)
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("insert into Glosses (InterpretationId,WritingSystem,Form) values (:InterpretationId,:WritingSystem,:Form);");
+    q.bindValue(":InterpretationId",interpretationId);
+    q.bindValue(":WritingSystem",bit.writingSystem().id());
+    q.bindValue(":Form",bit.text());
+    if(q.exec())
+    {
+        return q.lastInsertId().toLongLong();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::newGloss" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+}
+
 qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);
@@ -739,6 +757,5 @@ void DatabaseAdapter::loadWritingSystems()
         mWritingSystemByRowId.insert( q.value(0).toLongLong(), ws );
         mWritingSystemByFlexString.insert( q.value(3).toString(), ws );
     }
-    qDebug() << mWritingSystems.count() << mWritingSystemByRowId.count() << mWritingSystemByFlexString.count();
 }
 

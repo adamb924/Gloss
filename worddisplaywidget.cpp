@@ -8,6 +8,7 @@
 #include "interpretationsearchdialog.h"
 #include "immutablelabel.h"
 #include "analysiswidget.h"
+#include "generictextinputdialog.h"
 
 #include <QtGui>
 #include <QtDebug>
@@ -283,21 +284,35 @@ void WordDisplayWidget::newInterpretation()
 void WordDisplayWidget::newGloss(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
-    qlonglong id = mDbAdapter->newGloss( mGlossItem->id() , wsId );
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
-    mGlossItem->setGloss(TextBit("", ws , id ));
-    emit glossIdChanged( mGlossEdits.value(ws) , id );
-    fillData();
+    GenericTextInputDialog dialog( ws , this );
+    dialog.setWindowTitle(tr("New gloss"));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        TextBit newGloss = dialog.textBit();
+        qlonglong id = mDbAdapter->newGloss( mGlossItem->id() , newGloss );
+        newGloss.setId(id);
+        mGlossItem->setGloss( newGloss );
+        emit glossIdChanged( mGlossEdits.value(ws) , id );
+        fillData();
+    }
 }
 
 void WordDisplayWidget::newTextForm(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
-    qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , wsId );
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
-    mGlossItem->setTextForm(TextBit("", ws, id ));
-    emit textFormIdChanged( mTextFormEdits.value(ws) , id );
-    fillData();
+    GenericTextInputDialog dialog( ws , this );
+    dialog.setWindowTitle(tr("New text form"));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        TextBit newGloss = dialog.textBit();
+        qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , newGloss );
+        newGloss.setId(id);
+        mGlossItem->setTextForm( newGloss );
+        emit textFormIdChanged( mTextFormEdits.value(ws) , id );
+        fillData();
+    }
 }
 
 void WordDisplayWidget::fillData()
@@ -388,13 +403,13 @@ void WordDisplayWidget::sendConcordanceUpdates()
         emit glossIdChanged( iter.value() , mGlossItem->gloss( iter.key() ).id() );
     }
 
-//    QHashIterator<WritingSystem, AnalysisWidget*> iter2(mAnalysisWidgets);
-//    while(iter2.hasNext())
-//    {
-//        iter2.next();
-//        // TODO connect this signal to something
-//        emit analysisChanged( iter2.value() , mGlossItem->morphologicalAnalysis( iter2.key() )->id() );
-//    }
+    //    QHashIterator<WritingSystem, AnalysisWidget*> iter2(mAnalysisWidgets);
+    //    while(iter2.hasNext())
+    //    {
+    //        iter2.next();
+    //        // TODO connect this signal to something
+    //        emit analysisChanged( iter2.value() , mGlossItem->morphologicalAnalysis( iter2.key() )->id() );
+    //    }
 
 }
 

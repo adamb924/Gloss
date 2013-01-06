@@ -68,6 +68,9 @@ public:
     //! \brief Creates an empty gloss for the given interpretation, with the given writing system
     qlonglong newGloss(qlonglong interpretationId, qlonglong writingSystemId);
 
+    //! \brief Creates a gloss for the given interpretation and content in the \a bit. Returns the _id of the gloss.
+    qlonglong newGloss(qlonglong interpretationId, const TextBit & bit);
+
     //! \brief Returns a list of glosses for the given Interpretation _id (\a id)
     TextBitHash getInterpretationGlosses(qlonglong id) const;
 
