@@ -7,6 +7,7 @@
 #include "chooselexicalentriesdialog.h"
 #include "createlexicalentrydialog.h"
 #include "databaseadapter.h"
+#include "immutablelabel.h"
 
 AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, DatabaseAdapter *dbAdapter, QWidget *parent) :
     QWidget(parent)
@@ -50,12 +51,11 @@ void AnalysisWidget::createInitializedLayout()
 {
     clearWidgetsFromLayout();
 
-    QLabel *baselineSummary = new QLabel( mGlossItem->morphologicalAnalysis(mWritingSystem)->baselineSummary() );
-    mLayout->addWidget(baselineSummary);
+    mLayout->addWidget( new ImmutableLabel( TextBit( mGlossItem->morphologicalAnalysis(mWritingSystem)->baselineSummary() , mWritingSystem ) , false, this ) );
 
     QList<WritingSystem> glossLines = mDbAdapter->lexicalEntryGlosses();
     for(int i=0; i<glossLines.count(); i++)
-        mLayout->addWidget( new QLabel( mGlossItem->morphologicalAnalysis(mWritingSystem)->glossSummary(glossLines.at(i)) ) );
+        mLayout->addWidget( new ImmutableLabel( TextBit( mGlossItem->morphologicalAnalysis(mWritingSystem)->glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
 }
 
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )

@@ -8,6 +8,7 @@ ImmutableLabel::ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *p
     setText(bit.text());
     mTextBit = bit;
     mTechnicolor = technicolor;
+    updateStyle();
 }
 
 void ImmutableLabel::setCandidateNumber(GlossItem::CandidateNumber status)
