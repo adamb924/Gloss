@@ -384,7 +384,15 @@ void Project::saveOpenTexts()
     }
 }
 
-int Project::removeUnusedGlossItems()
+QString Project::doDatabaseCleanup()
+{
+    int nRemovedInterpretations = removeUnusedInterpretations();
+    int nRemovedGlosses = removeUnusedGlosses();
+    int nRemovedTextForms = removeUnusedTextForms();
+    return tr("%1 unused interpretations removed, %2 unused glosses removed, %3 unused text forms removed").arg(nRemovedInterpretations).arg(nRemovedGlosses).arg(nRemovedTextForms);
+}
+
+int Project::removeUnusedInterpretations()
 {
     QSet<qlonglong> fromDatabase = mDbAdapter->interpretationIds();
     QSet<qlonglong> fromTexts = getAllInterpretationIds();
@@ -392,16 +400,50 @@ int Project::removeUnusedGlossItems()
     return mDbAdapter->removeInterpretations( fromDatabase );
 }
 
+int Project::removeUnusedGlosses()
+{
+    QSet<qlonglong> fromDatabase = mDbAdapter->glossIds();
+    QSet<qlonglong> fromTexts = getAllGlossIds();
+    fromDatabase.subtract( fromTexts );
+    return mDbAdapter->removeGlosses( fromDatabase );
+}
+
+int Project::removeUnusedTextForms()
+{
+    QSet<qlonglong> fromDatabase = mDbAdapter->textFormIds();
+    QSet<qlonglong> fromTexts = getAllTextFormIds();
+    fromDatabase.subtract( fromTexts );
+    return mDbAdapter->removeTextForms( fromDatabase );
+}
+
 QSet<qlonglong> Project::getAllInterpretationIds()
 {
     QSet<qlonglong> ids;
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.unite( getInterpretationIds( iter.next() ) );
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word return string( $x/@abg:id )" ) );
     return ids;
 }
 
-QSet<qlonglong> Project::getInterpretationIds(const QString & filepath)
+QSet<qlonglong> Project::getAllGlossIds()
+{
+    QSet<qlonglong> ids;
+    QSetIterator<QString> iter(mTextPaths);
+    while(iter.hasNext())
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls'] return string( $x/@abg:id )" ) );
+    return ids;
+}
+
+QSet<qlonglong> Project::getAllTextFormIds()
+{
+    QSet<qlonglong> ids;
+    QSetIterator<QString> iter(mTextPaths);
+    while(iter.hasNext())
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt'] return string( $x/@abg:id )" ) );
+    return ids;
+}
+
+QSet<qlonglong> Project::getSetOfNumbersFromTextQuery(const QString & filepath, const QString & queryString)
 {
     QSet<qlonglong> ids;
     QXmlResultItems result;
@@ -411,7 +453,7 @@ QSet<qlonglong> Project::getInterpretationIds(const QString & filepath)
         return ids;
 
     query.setMessageHandler(new MessageHandler(this));
-    query.setQuery("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word return string( $x/@abg:id )");
+    query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
     while (!item.isNull())

@@ -29,11 +29,23 @@ public:
     //! \brief Returns the database object
     QSqlDatabase* sqlDatabase();
 
-    //! \brief Returns a set with all gloss item ids
+    //! \brief Returns a set with all interpretation ids
     QSet<qlonglong> interpretationIds() const;
+
+    //! \brief Returns a set with all text form ids
+    QSet<qlonglong> textFormIds() const;
+
+    //! \brief Returns a set with all gloss ids
+    QSet<qlonglong> glossIds() const;
 
     //! \brief Removes all interpretations with the given ids from the database
     int removeInterpretations( QSet<qlonglong> ids );
+
+    //! \brief Removes all glosses with the given ids from the database
+    int removeGlosses( QSet<qlonglong> ids );
+
+    //! \brief Removes all text forms with the given ids from the database
+    int removeTextForms( QSet<qlonglong> ids );
 
     //! \brief Returns a list of possible interpretations of the text from TextBit \a bit
     QList<qlonglong> candidateInterpretations(const TextBit & bit) const;

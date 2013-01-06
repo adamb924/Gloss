@@ -58,7 +58,10 @@ public:
 
     QString filepathFromName(const QString & name) const;
 
-    int removeUnusedGlossItems();
+    QString doDatabaseCleanup();
+    int removeUnusedInterpretations();
+    int removeUnusedGlosses();
+    int removeUnusedTextForms();
 
     QStringList flextextNames() const;
 
@@ -78,7 +81,13 @@ private:
     QSet<qlonglong> getAllInterpretationIds();
 
     //! \brief Get all interpretation ids in use in the specified file path
-    QSet<qlonglong> getInterpretationIds(const QString & filepath);
+    QSet<qlonglong> getSetOfNumbersFromTextQuery(const QString & filepath, const QString & queryString);
+
+    //! \brief Get all gloss ids in use in this project
+    QSet<qlonglong> getAllGlossIds();
+
+    //! \brief Get all text form ids in use in this project
+    QSet<qlonglong> getAllTextFormIds();
 
     QString tempDirName() const;
 

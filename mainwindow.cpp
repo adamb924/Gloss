@@ -488,8 +488,8 @@ void MainWindow::rawXQuery()
 
 void MainWindow::removeUnusedGlossItems()
 {
-    int numberRemoved = mProject->removeUnusedGlossItems();
-    QMessageBox::information(this, tr("Process complete"), tr("%n unused gloss item(s) removed", "", numberRemoved));
+    QString report = mProject->doDatabaseCleanup();
+    QMessageBox::information(this, tr("Process complete"), report );
 }
 
 void MainWindow::sqlQueryDialog()

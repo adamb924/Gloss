@@ -493,6 +493,28 @@ QSet<qlonglong> DatabaseAdapter::interpretationIds() const
     return ids;
 }
 
+QSet<qlonglong> DatabaseAdapter::textFormIds() const
+{
+    QSet<qlonglong> ids;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from TextForms;");
+    if( q.exec() )
+        while( q.next() )
+            ids << q.value(0).toLongLong();
+    return ids;
+}
+
+QSet<qlonglong> DatabaseAdapter::glossIds() const
+{
+    QSet<qlonglong> ids;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from Glosses;");
+    if( q.exec() )
+        while( q.next() )
+            ids << q.value(0).toLongLong();
+    return ids;
+}
+
 int DatabaseAdapter::removeInterpretations( QSet<qlonglong> ids )
 {
     int count = 0;
@@ -513,6 +535,36 @@ int DatabaseAdapter::removeInterpretations( QSet<qlonglong> ids )
             count++;
         q2.exec();
         q3.exec();
+    }
+    return count;
+}
+
+int DatabaseAdapter::removeGlosses( QSet<qlonglong> ids )
+{
+    int count = 0;
+    QSetIterator<qlonglong> iter(ids);
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("delete from Glosses where _id=:_id;");
+    while( iter.hasNext() )
+    {
+        q.bindValue( ":_id", iter.next() );
+        if( q.exec() )
+            count++;
+    }
+    return count;
+}
+
+int DatabaseAdapter::removeTextForms( QSet<qlonglong> ids )
+{
+    int count = 0;
+    QSetIterator<qlonglong> iter(ids);
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("delete from TextForms where _id=:_id;");
+    while( iter.hasNext() )
+    {
+        q.bindValue( ":_id", iter.next() );
+        if( q.exec() )
+            count++;
     }
     return count;
 }
