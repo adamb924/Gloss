@@ -29,7 +29,6 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
 
     mDbAdapter = dbAdapter;
 
-    mId = id;
     if( mId == -1 )
         guessInterpretation();
     else
@@ -56,6 +55,10 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
             mGlosses.clear();
             mTextForms = mDbAdapter->getInterpretationTextForms(mId);
             mGlosses = mDbAdapter->getInterpretationGlosses(mId);
+        }
+        else
+        {
+            ensureValidIds();
         }
 
         emit interpretationIdChanged(mId);
@@ -226,4 +229,23 @@ void GlossItem::setMorphologicalAnalysis( const WritingSystem & ws, const Morpho
 void GlossItem::addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem )
 {
     mMorphologicalAnalysis[writingSystem].append( allomorph );
+}
+
+void GlossItem::ensureValidIds()
+{
+    TextBitMutableHashIterator tfIter( mTextForms );
+    while(tfIter.hasNext())
+    {
+        tfIter.next();
+        if( tfIter.value().id() == -1 )
+            tfIter.value().setId( mDbAdapter->textFormId( tfIter.value(), mId ) );
+    }
+
+    TextBitMutableHashIterator gIter( mGlosses );
+    while(gIter.hasNext())
+    {
+        gIter.next();
+        if( gIter.value().id() == -1 )
+            gIter.value().setId( mDbAdapter->glossId( gIter.value(), mId ) );
+    }
 }

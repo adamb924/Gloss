@@ -111,6 +111,8 @@ private:
     //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with the text forms and gloss forms, or if there are none, than for those compatible with the baseline bit. If no compatible interpretation is found, a new interpretation is created.
     void guessInterpretation();
 
+    void ensureValidIds();
+
     QHash<WritingSystem,MorphologicalAnalysis> mMorphologicalAnalysis;
 
     TextBitHash mTextForms;

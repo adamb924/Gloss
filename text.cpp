@@ -294,9 +294,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                         {
                             textForms.insert( lang, TextBit( text , lang, itemId) );
                             if( lang.flexString() == mBaselineWritingSystem.flexString() )
-                            {
                                 baselineText = text;
-                            }
                         }
                         else if( type == "gls" )
                         {

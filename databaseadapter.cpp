@@ -464,6 +464,33 @@ TextBit DatabaseAdapter::textFormFromId(qlonglong id) const
     }
 }
 
+qlonglong DatabaseAdapter::textFormId(const TextBit & bit, qlonglong interpretationId)
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from TextForms where InterpretationId=:InterpretationId and Form=:Form and WritingSystem=:WritingSystem;");
+    q.bindValue(":InterpretationId", interpretationId);
+    q.bindValue(":Form", bit.text());
+    q.bindValue(":WritingSystem", bit.writingSystem().id());
+    if( q.exec() && q.next() )
+        return q.value(0).toLongLong();
+    else
+        return -1;
+}
+
+qlonglong DatabaseAdapter::glossId(const TextBit & bit, qlonglong interpretationId)
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from Glosses where InterpretationId=:InterpretationId and Form=:Form and WritingSystem=:WritingSystem;");
+    q.bindValue(":InterpretationId", interpretationId);
+    q.bindValue(":Form", bit.text());
+    q.bindValue(":WritingSystem", bit.writingSystem().id());
+    if( q.exec() && q.next() )
+        return q.value(0).toLongLong();
+    else
+        return -1;
+}
+
+
 QString DatabaseAdapter::dbFilename() const
 {
     return mFilename;

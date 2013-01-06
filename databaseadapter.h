@@ -95,6 +95,9 @@ public:
     //! \brief Returns a TextBit with the data from the \a row of TextForms
     TextBit textFormFromId(qlonglong id) const;
 
+    qlonglong textFormId(const TextBit & bit, qlonglong interpretationId);
+    qlonglong glossId(const TextBit & bit, qlonglong interpretationId);
+
     //! \brief Adds the writing system to the database
     void addWritingSystem(const QString & flexString, const QString & fontFamily, Qt::LayoutDirection layoutDirection);
 
