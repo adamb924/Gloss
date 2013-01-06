@@ -289,7 +289,7 @@ void WordDisplayWidget::newGloss(QAction *action)
     qlonglong wsId = action->data().toLongLong();
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
     GenericTextInputDialog dialog( ws , this );
-    dialog.setWindowTitle(tr("New gloss"));
+    dialog.setWindowTitle(tr("New %1 gloss").arg(ws.name()));
     if( dialog.exec() == QDialog::Accepted )
     {
         TextBit newGloss = dialog.textBit();
@@ -306,7 +306,7 @@ void WordDisplayWidget::newTextForm(QAction *action)
     qlonglong wsId = action->data().toLongLong();
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
     GenericTextInputDialog dialog( ws , this );
-    dialog.setWindowTitle(tr("New text form"));
+    dialog.setWindowTitle(tr("New %1 text form").arg(ws.name()));
     if( dialog.exec() == QDialog::Accepted )
     {
         TextBit newGloss = dialog.textBit();
