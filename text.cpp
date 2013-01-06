@@ -289,6 +289,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     if( inWord )
                     {
                         qlonglong itemId = attr.hasAttribute("http://www.adambaker.org/gloss.php","id") ? attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() : -1;
+                        // TODO there's no handling here for the case where itemId == -1
                         if( type == "txt" )
                         {
                             textForms.insert( lang, TextBit( text , lang, itemId) );

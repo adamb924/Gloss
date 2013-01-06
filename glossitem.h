@@ -30,7 +30,7 @@ public:
     enum ApprovalStatus { Approved, Unapproved };
 
     //! \brief Construct a GlossItem that is empty except for the baseline TextBit.
-    GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, QObject *parent = 0);
+    GlossItem(const TextBit & baselineBit, DatabaseAdapter *dbAdapter, QObject *parent = 0);
 
     //! \brief Construct a GlossItem with the given WritingSystem, and gloss and text forms.
     GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent = 0);

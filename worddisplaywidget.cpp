@@ -443,8 +443,6 @@ void WordDisplayWidget::displayDatabaseReport()
 {
     QString reportString;
 
-    TextBitHash textForms(*mGlossItem->textForms());
-
     TextBitHashIterator iter( *mGlossItem->textForms() );
     while(iter.hasNext())
     {

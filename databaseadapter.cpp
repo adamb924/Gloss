@@ -271,8 +271,6 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
         while (textIter.hasNext())
         {
             textIter.next();
-            TextBit bit = textIter.value();
-            WritingSystem key = textIter.key();
             q.prepare("insert into TextForms (InterpretationId,WritingSystem,Form) values (:InterpretationId,:WritingSystem,:Form);");
             q.bindValue(":InterpretationId",id);
             q.bindValue(":WritingSystem",textIter.key().id());

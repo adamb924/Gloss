@@ -4,19 +4,18 @@
 #include "databaseadapter.h"
 
 #include <QtDebug>
+#include <QHash>
+#include "textbit.h"
 
-GlossItem::GlossItem(const TextBit & baselineText, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const TextBit & baselineBit, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
 {
-    mBaselineWritingSystem = baselineText.writingSystem();
-    mTextForms.insert(mBaselineWritingSystem, baselineText );
+    mBaselineWritingSystem = baselineBit.writingSystem();
+    mTextForms.insert(mBaselineWritingSystem, baselineBit );
     mId = -1;
 
     mDbAdapter = dbAdapter;
 
     guessInterpretation();
-
-    // it's possible that this will have been changed by guessInterpretation();
-    mTextForms.insert(mBaselineWritingSystem, baselineText );
 
     setCandidateNumberFromDatabase();
 }
@@ -156,11 +155,7 @@ void GlossItem::guessInterpretation()
         else
             setInterpretation( mDbAdapter->newInterpretation(baselineText()) , true ); // true because they'll all be blank
     }
-    else if ( candidates.length() == 1 )
-    {
-        setInterpretation( candidates.at(0) , true ); // true because the user hadn't had a chance to specify
-    }
-    else // greater than 1
+    else
     {
         setInterpretation( candidates.at(0), true );  // true because the user hadn't had a chance to specify
     }
