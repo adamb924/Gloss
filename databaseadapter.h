@@ -155,8 +155,11 @@ public:
 
     qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms );
     qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId );
-    void addMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs );
 
+    //! \brief Adds the specified morphological analysis to the database. Any existing morphological analysis associated with the text form is deleted.
+    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs );
+    MorphologicalAnalysis morphologicalAnalysisFromTextFormId( qlonglong textFormId );
+    Allomorph allomorphFromId( qlonglong id );
     TextBitHash lexicalItemGlosses(qlonglong id) const;
 
 private:

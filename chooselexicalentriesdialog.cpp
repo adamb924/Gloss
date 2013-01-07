@@ -27,6 +27,7 @@ ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseStri
 void ChooseLexicalEntriesDialog::commitChangesToDatabase()
 {
     Q_ASSERT( mEntries.count() == mAnalysis.count() );
+    mGlossItem->morphologicalAnalysis(mParseString.writingSystem())->clear();
     for(int i=0; i<mAnalysis.count(); i++)
     {
         qlonglong allomorphId = mDbAdapter->addAllomorph( mEntries.at(i)->textBit() , mEntries.at(i)->id() );
@@ -34,7 +35,7 @@ void ChooseLexicalEntriesDialog::commitChangesToDatabase()
         mAnalysis[i].setGlosses( mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ) );
         mGlossItem->addAllomorphToAnalysis( mAnalysis.at(i), mParseString.writingSystem() );
     }
-    mDbAdapter->addMorphologicalAnalysis( mGlossItem->textForm( mParseString.writingSystem() ).id() , mAnalysis );
+    mDbAdapter->setMorphologicalAnalysis( mGlossItem->textForm( mParseString.writingSystem() ).id() , mAnalysis );
 }
 
 void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()

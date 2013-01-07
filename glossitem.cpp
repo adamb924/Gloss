@@ -228,6 +228,11 @@ void GlossItem::setMorphologicalAnalysis( const WritingSystem & ws, const Morpho
     mMorphologicalAnalysis.insert(ws, analysis);
 }
 
+void GlossItem::setMorphologicalAnalysisFromDatabase( const WritingSystem & ws )
+{
+    mMorphologicalAnalysis.insert(ws, mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
+}
+
 void GlossItem::addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem )
 {
     mMorphologicalAnalysis[writingSystem].append( allomorph );

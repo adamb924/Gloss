@@ -95,7 +95,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
             mGlossItem->addAllomorphToAnalysis( allomorph, mWritingSystem );
             MorphologicalAnalysis analysis;
             analysis << allomorph;
-            mDbAdapter->addMorphologicalAnalysis( textForm.id(), analysis );
+            mDbAdapter->setMorphologicalAnalysis( textForm.id(), analysis );
             createInitializedLayout();
             emit morphologicalAnalysisChanged( mGlossItem->textForm(mWritingSystem).id() );
         }
@@ -112,9 +112,4 @@ void AnalysisWidget::clearWidgetsFromLayout()
         delete item->widget();
         delete item;
     }
-}
-
-void AnalysisWidget::refreshAnalysisFromDatabase()
-{
-    qDebug() << "AnalysisWidget::refreshAnalysisFromDatabase()" << mGlossItem << mGlossItem->id();
 }

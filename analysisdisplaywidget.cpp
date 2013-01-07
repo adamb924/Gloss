@@ -101,7 +101,6 @@ WordDisplayWidget* AnalysisDisplayWidget::addWordDisplayWidget(GlossItem *item)
 
 void AnalysisDisplayWidget::updateAnalysis(qlonglong textFormId)
 {
-//     QMultiHash<qlonglong,WordDisplayWidget*> mAnalysisWidgetConcordance;
     WritingSystem ws = mDbAdapter->textFormFromId( textFormId ).writingSystem();
     QList<WordDisplayWidget*> widgetList = mAnalysisWidgetConcordance.values(textFormId);
     foreach(WordDisplayWidget *widget, widgetList)

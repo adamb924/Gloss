@@ -796,9 +796,17 @@ qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexical
     }
 }
 
-void DatabaseAdapter::addMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs )
+void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs )
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("delete from Allomorph where _id in (select TextFormId from MorphologicalAnalysisMembers where TextFormId=:TextFormId);");
+    q.bindValue(":TextFormId", textFormId );
+    q.exec();
+
+    q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId;");
+    q.bindValue(":TextFormId", textFormId );
+    q.exec();
+
     q.prepare("insert into MorphologicalAnalysisMembers (TextFormId,AllomorphId,AllomorphOrder) values (:TextFormId,:AllomorphId,:AllomorphOrder);");
     for(int i=0; i<allomorphs.count(); i++)
     {
@@ -806,10 +814,46 @@ void DatabaseAdapter::addMorphologicalAnalysis( qlonglong textFormId, const Morp
         q.bindValue(":AllomorphId", allomorphs.at(i).id() );
         q.bindValue(":AllomorphOrder", i );
         if( !q.exec() )
-            qWarning() << "DatabaseAdapter::addMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
+            qWarning() << "DatabaseAdapter::setMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
     }
 }
 
+MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId )
+{
+    MorphologicalAnalysis analysis;
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select Allomorphid from MorphologicalAnalysisMembers where TextFormId=:TextFormId order by AllomorphOrder;");
+    q.bindValue(":TextFormId", textFormId);
+    q.exec();
+    while(q.next())
+    {
+        qlonglong allomorphId = q.value(0).toLongLong();
+        analysis << allomorphFromId( allomorphId );
+    }
+    return analysis;
+}
+
+Allomorph DatabaseAdapter::allomorphFromId( qlonglong id )
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    q.prepare("select LexicalEntryId,Form,WritingSystem from Allomorph where _id=:_id;");
+    q.bindValue(":_id", id);
+    if( q.exec() && q.next() )
+    {
+        qlonglong lexicalEntryId = q.value(0).toLongLong();
+        TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
+        TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
+        return Allomorph(id, bit, glosses );
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::allomorphFromId" << q.lastError().text() << q.executedQuery();
+        return Allomorph();
+    }
+
+}
 
 WritingSystem DatabaseAdapter::metaLanguage() const
 {

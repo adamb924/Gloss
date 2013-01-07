@@ -1,3 +1,9 @@
+/*!
+  \class AnalysisDisplayWidget
+  \ingroup GUI
+  \brief This is a subclass of InterlinearDisplayWidget for displaying an interlinear text for doing morphological analysis.
+*/
+
 #ifndef ANALYSISINTERLINEARDISPLAYWIDGET_H
 #define ANALYSISINTERLINEARDISPLAYWIDGET_H
 

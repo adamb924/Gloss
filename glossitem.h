@@ -82,7 +82,11 @@ public:
     //! \brief Sets the morphological analysis for the given writing system
     void setMorphologicalAnalysis( const WritingSystem & ws, const MorphologicalAnalysis & analysis );
 
+    //! \brief Sets the morphological analysis for the given writing system
+    void setMorphologicalAnalysisFromDatabase( const WritingSystem & ws );
+
     void addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem );
+
 
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes

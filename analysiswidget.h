@@ -1,3 +1,9 @@
+/*!
+  \class AnalysisWidget
+  \ingroup GUI
+  \brief This is a widget for displaying a morphological analysis (and associated interface items). It is intended to be used in an WordDisplayWidget.
+*/
+
 #ifndef ANALYSISWIDGET_H
 #define ANALYSISWIDGET_H
 
@@ -15,12 +21,11 @@ class AnalysisWidget : public QWidget
 public:
     AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
-    void refreshAnalysisFromDatabase();
-
 signals:
     void morphologicalAnalysisChanged(qlonglong textFormId);
 
 public slots:
+    void createInitializedLayout();
 
 private:
     GlossItem *mGlossItem;
@@ -34,7 +39,6 @@ private:
     QVBoxLayout *mLayout;
 
     void createUninitializedLayout();
-    void createInitializedLayout();
     void clearWidgetsFromLayout();
 
 protected:

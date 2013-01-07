@@ -489,7 +489,10 @@ GlossItem* WordDisplayWidget::glossItem()
 void WordDisplayWidget::refreshMorphologicalAnalysis(const WritingSystem & ws)
 {
     if( mAnalysisWidgets.contains(ws) )
-        mAnalysisWidgets[ws]->refreshAnalysisFromDatabase();
+    {
+        mGlossItem->setMorphologicalAnalysisFromDatabase( ws );
+        mAnalysisWidgets[ws]->createInitializedLayout();
+    }
 }
 
 void WordDisplayWidget::displayDatabaseReport()
