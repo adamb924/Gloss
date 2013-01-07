@@ -478,3 +478,98 @@ void Project::setTextXmlFromDatabase()
         }
     }
 }
+
+bool Project::countItemsInTexts(const QString & filename, const QString & typeString)
+{
+    QList<qlonglong> ids;
+
+    QFile out(filename);
+    if( !out.open(QFile::WriteOnly) )
+        return false;
+    QTextStream stream(&out);
+    stream.setCodec("UTF-8");
+    stream << "'Id','Count','Form','WritingSystem'\n";
+
+    QSetIterator<QString> iter(mTextPaths);
+    while(iter.hasNext())
+        ids.append( getListOfNumbersFromXQuery( iter.next(), QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='%1'] return string( $x/@abg:id )").arg(typeString) ) );
+
+    QSet<qlonglong> set = ids.toSet();
+    QSetIterator<qlonglong> setIter(set);
+    TextBit bit;
+    while(setIter.hasNext())
+    {
+        qlonglong id;
+        id = setIter.next();
+        if( typeString == "txt" )
+            bit = mDbAdapter->textFormFromId(id);
+        else
+            bit = mDbAdapter->glossFromId(id);
+        stream << QString("'%1','%2','%3','%4'\n").arg(id).arg(ids.count(id)).arg(bit.text()).arg(bit.writingSystem().name());
+    }
+    out.close();
+
+    return true;
+}
+
+QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, const QString & queryString)
+{
+    QList<qlonglong> list;
+    QXmlResultItems result;
+
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl(filepath)))
+        return list;
+
+    query.setMessageHandler(new MessageHandler(this));
+    query.setQuery(queryString);
+    query.evaluateTo(&result);
+    QXmlItem item(result.next());
+    while (!item.isNull())
+    {
+        list << item.toAtomicValue().toLongLong();
+        item = result.next();
+    }
+    return list;
+}
+
+bool Project::interpretationUsageReport(const QString & filename)
+{
+    QFile out(filename);
+    if( !out.open(QFile::WriteOnly) )
+        return false;
+    QTextStream stream(&out);
+    stream.setCodec("UTF-8");
+
+    QStringList instances;
+
+    // TODO this XQuery string is pasted in from something else to make it compile
+    QSetIterator<QString> iter(mTextPaths);
+    while(iter.hasNext())
+        instances.append( getStringListFromXQuery( iter.next(), QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls'] return string( $x/@abg:id )") ) );
+
+    QSet<QString> set = instances.toSet();
+    QSetIterator<QString> setIter(set);
+    while(setIter.hasNext())
+    {
+        QString str = setIter.next();
+        // TODO better output here
+        stream << QString("'%1','%2'\n").arg(str).arg(instances.count(str));
+    }
+
+    out.close();
+    return true;
+}
+
+QStringList Project::getStringListFromXQuery(const QString & filepath, const QString & queryString)
+{
+    QStringList result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl(filepath)))
+        return result;
+
+    query.setMessageHandler(new MessageHandler(this));
+    query.setQuery(queryString);
+    query.evaluateTo(&result);
+    return result;
+}

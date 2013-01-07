@@ -18,6 +18,11 @@
 #include <QtSql>
 #include <QStringList>
 
+// these may move
+#include <QXmlQuery>
+#include <QXmlResultItems>
+#include "messagehandler.h"
+
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow)
@@ -52,6 +57,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionPerform_a_query, SIGNAL(triggered()), this, SLOT(sqlQueryDialog()));
 
     connect(ui->actionSet_text_XML_from_database, SIGNAL(triggered()), this, SLOT(setTextXmlFromDatabase()));
+
+    connect(ui->actionGenerate_report_from_texts, SIGNAL(triggered()), this, SLOT(generateTextReport()));
+
+    connect(ui->actionCounts_of_glosses, SIGNAL(triggered()), this, SLOT(countGlosses()));
+    connect(ui->actionCounts_of_text_forms, SIGNAL(triggered()), this, SLOT(countTextForms()));
 
     setProjectActionsEnabled(false);
 
@@ -568,4 +578,48 @@ void MainWindow::setTextXmlFromDatabase()
 {
     mProject->setTextXmlFromDatabase();
     QMessageBox::information(this, tr("Done!"), tr("The text files have been updated."));
+}
+
+void MainWindow::generateTextReport()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save report"), QString(), tr("Whatever format I end up using (*.*)") );
+    if( !filename.isNull() )
+    {
+        if( mProject->interpretationUsageReport(filename) )
+        {
+            if( QMessageBox::Yes == QMessageBox::question(this, tr("Gloss"), tr("The report is finished; would you like to open it?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes ) )
+                QDesktopServices::openUrl(QUrl(filename, QUrl::TolerantMode));
+        }
+        else
+        {
+            QMessageBox::warning(this, tr("Gloss"), tr("The report could not be generated, sorry.") );
+        }
+    }
+}
+
+void MainWindow::countTextForms()
+{
+    createCountReport("txt");
+}
+
+void MainWindow::countGlosses()
+{
+    createCountReport("gls");
+}
+
+void MainWindow::createCountReport(const QString & typeString)
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save report"), QString(), tr("Comma separated values (*.csv)") );
+    if( !filename.isNull() )
+    {
+        if( mProject->countItemsInTexts(filename, typeString) )
+        {
+            if( QMessageBox::Yes == QMessageBox::question(this, tr("Gloss"), tr("The report is finished; would you like to open it?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes ) )
+                QDesktopServices::openUrl(QUrl(filename, QUrl::TolerantMode));
+        }
+        else
+        {
+            QMessageBox::warning(this, tr("Gloss"), tr("The report could not be generated, sorry.") );
+        }
+    }
 }

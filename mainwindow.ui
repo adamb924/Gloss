@@ -56,6 +56,7 @@
     <addaction name="separator"/>
     <addaction name="actionMerge_translations_from_other_FlexText_file"/>
     <addaction name="actionBulk_merge_translations"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuGuts">
     <property name="title">
@@ -81,11 +82,20 @@
     <addaction name="actionSubstring_search_gloss_items"/>
     <addaction name="actionRaw_XQuery"/>
    </widget>
+   <widget class="QMenu" name="menuReports">
+    <property name="title">
+     <string>Reports</string>
+    </property>
+    <addaction name="actionGenerate_report_from_texts"/>
+    <addaction name="actionCounts_of_text_forms"/>
+    <addaction name="actionCounts_of_glosses"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
    <addaction name="menuProject"/>
    <addaction name="menuSearch"/>
    <addaction name="menuGuts"/>
+   <addaction name="menuReports"/>
   </widget>
   <action name="actionNew_Project">
    <property name="text">
@@ -222,6 +232,21 @@
   <action name="actionSet_text_XML_from_database">
    <property name="text">
     <string>Set text XML from database</string>
+   </property>
+  </action>
+  <action name="actionGenerate_report_from_texts">
+   <property name="text">
+    <string>Generate report from texts...</string>
+   </property>
+  </action>
+  <action name="actionCounts_of_text_forms">
+   <property name="text">
+    <string>Counts of text forms...</string>
+   </property>
+  </action>
+  <action name="actionCounts_of_glosses">
+   <property name="text">
+    <string>Counts of glosses...</string>
    </property>
   </action>
  </widget>

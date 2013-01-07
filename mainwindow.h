@@ -75,6 +75,11 @@ private slots:
     void sqlQueryDialog();
     void bulkMergeTranslations();
     void setTextXmlFromDatabase();
+
+    void generateTextReport();
+    void countTextForms();
+    void countGlosses();
+    void createCountReport(const QString & typeString);
 };
 
 #endif // MAINWINDOW_H

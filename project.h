@@ -65,6 +65,9 @@ public:
 
     void setTextXmlFromDatabase();
 
+    bool countItemsInTexts(const QString & filename, const QString & typeString);
+    bool interpretationUsageReport(const QString & filename);
+
 public slots:
 
 private:
@@ -97,6 +100,9 @@ private:
     //! \brief A hash containing all "opened" texts, keyed by name
     QHash<QString,Text*> mTexts;
 
+    QList<qlonglong> getListOfNumbersFromXQuery(const QString & filepath, const QString & queryString);
+
+    QStringList getStringListFromXQuery(const QString & filepath, const QString & queryString);
 };
 
 #endif // PROJECT_H
