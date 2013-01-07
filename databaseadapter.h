@@ -74,13 +74,13 @@ public:
     //! \brief Creates a text form for the given interpretation, with the given writing system. Returns the _id of the text form.
     qlonglong newTextForm(qlonglong interpretationId, qlonglong writingSystemId);
 
-    //! \brief Creates a text form for the given interpretation and content in the \a bit. Returns the _id of the text form.
+    //! \brief Creates a text form for the given interpretation and content in the \a bit. Or, if the a text form with the same form, writing system, and id already exists, the _id of that text form is returned and no new text form is created. Returns the _id of the text form.
     qlonglong newTextForm(qlonglong interpretationId, const TextBit & bit);
 
     //! \brief Creates an empty gloss for the given interpretation, with the given writing system
     qlonglong newGloss(qlonglong interpretationId, qlonglong writingSystemId);
 
-    //! \brief Creates a gloss for the given interpretation and content in the \a bit. Returns the _id of the gloss.
+    //! \brief Creates a gloss for the given interpretation and content in the \a bit. Or, if the a gloss with the same form, writing system, and id already exists, the _id of that gloss is returned and no new gloss is created. Returns the _id of the gloss.
     qlonglong newGloss(qlonglong interpretationId, const TextBit & bit);
 
     //! \brief Returns a list of glosses for the given Interpretation _id (\a id)

@@ -172,6 +172,22 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong wri
 qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit & bit)
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    q.prepare("select _id from TextForms where InterpretationId=:InterpretationId and WritingSystem=:WritingSystem and Form=:Form;");
+    q.bindValue(":InterpretationId",interpretationId);
+    q.bindValue(":WritingSystem",bit.writingSystem().id());
+    q.bindValue(":Form",bit.text());
+    if(q.exec())
+    {
+        if( q.next() )
+            return q.value(0).toLongLong();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::newTextForm" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+
     q.prepare("insert into TextForms (InterpretationId,WritingSystem,Form) values (:InterpretationId,:WritingSystem,:Form);");
     q.bindValue(":InterpretationId",interpretationId);
     q.bindValue(":WritingSystem",bit.writingSystem().id());
@@ -207,6 +223,22 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writin
 qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & bit)
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    q.prepare("select _id from Glosses where InterpretationId=:InterpretationId and WritingSystem=:WritingSystem and Form=:Form;");
+    q.bindValue(":InterpretationId",interpretationId);
+    q.bindValue(":WritingSystem",bit.writingSystem().id());
+    q.bindValue(":Form",bit.text());
+    if(q.exec())
+    {
+        if( q.next() )
+            return q.value(0).toLongLong();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::newGloss" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+
     q.prepare("insert into Glosses (InterpretationId,WritingSystem,Form) values (:InterpretationId,:WritingSystem,:Form);");
     q.bindValue(":InterpretationId",interpretationId);
     q.bindValue(":WritingSystem",bit.writingSystem().id());
