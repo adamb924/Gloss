@@ -80,8 +80,17 @@ public slots:
 
 private slots:
     void newInterpretation();
+
+
     void newGloss(QAction *action);
     void newTextForm(QAction *action);
+
+    void newGloss(const WritingSystem & ws);
+    void newTextForm(const WritingSystem & ws);
+
+    void copyGlossFromBaseline(QAction *action);
+    void copyTextFormFromBaseline(QAction *action);
+
     void fillData();
 
     void otherInterpretation();

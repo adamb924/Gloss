@@ -284,10 +284,34 @@ void WordDisplayWidget::newInterpretation()
     fillData();
 }
 
-void WordDisplayWidget::newGloss(QAction *action)
+void WordDisplayWidget::copyGlossFromBaseline(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
+    TextBit newGloss = mGlossItem->textForm(mGlossItem->baselineWritingSystem());
+    newGloss.setWritingSystem( ws );
+    qlonglong id = mDbAdapter->newGloss( mGlossItem->id() , newGloss );
+    newGloss.setId(id);
+    mGlossItem->setGloss( newGloss );
+    emit glossIdChanged( mGlossEdits.value(ws) , id );
+    fillData();
+}
+
+void WordDisplayWidget::copyTextFormFromBaseline(QAction *action)
+{
+    qlonglong wsId = action->data().toLongLong();
+    WritingSystem ws = mDbAdapter->writingSystem(wsId);
+    TextBit newTextForm = mGlossItem->textForm(mGlossItem->baselineWritingSystem());
+    newTextForm.setWritingSystem( ws );
+    qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , newTextForm );
+    newTextForm.setId(id);
+    mGlossItem->setTextForm( newTextForm );
+    emit textFormIdChanged( mTextFormEdits.value(ws) , id );
+    fillData();
+}
+
+void WordDisplayWidget::newGloss(const WritingSystem & ws)
+{
     GenericTextInputDialog dialog( ws , this );
     dialog.setWindowTitle(tr("New %1 gloss").arg(ws.name()));
     if( dialog.exec() == QDialog::Accepted )
@@ -301,10 +325,8 @@ void WordDisplayWidget::newGloss(QAction *action)
     }
 }
 
-void WordDisplayWidget::newTextForm(QAction *action)
+void WordDisplayWidget::newTextForm(const WritingSystem & ws)
 {
-    qlonglong wsId = action->data().toLongLong();
-    WritingSystem ws = mDbAdapter->writingSystem(wsId);
     GenericTextInputDialog dialog( ws , this );
     dialog.setWindowTitle(tr("New %1 text form").arg(ws.name()));
     if( dialog.exec() == QDialog::Accepted )
@@ -316,6 +338,21 @@ void WordDisplayWidget::newTextForm(QAction *action)
         emit textFormIdChanged( mTextFormEdits.value(ws) , id );
         fillData();
     }
+}
+
+
+void WordDisplayWidget::newGloss(QAction *action)
+{
+    qlonglong wsId = action->data().toLongLong();
+    WritingSystem ws = mDbAdapter->writingSystem(wsId);
+    newGloss(ws);
+}
+
+void WordDisplayWidget::newTextForm(QAction *action)
+{
+    qlonglong wsId = action->data().toLongLong();
+    WritingSystem ws = mDbAdapter->writingSystem(wsId);
+    newTextForm(ws);
 }
 
 void WordDisplayWidget::fillData()
