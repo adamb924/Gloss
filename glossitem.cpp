@@ -47,6 +47,8 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
     {
         setCandidateNumber(GlossItem::MultipleOption);
 
+        setApprovalStatus(GlossItem::Approved);
+
         mId = id;
 
         if( takeFormsFromDatabase )
