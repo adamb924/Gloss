@@ -238,6 +238,14 @@ void WordDisplayWidget::addTextFormSubmenu(QMenu *menu, const WritingSystem & wr
     connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(newTextForm(QAction*)) );
     submenu->addAction(action);
 
+    QActionGroup *oneOffgroup2 = new QActionGroup(menu);
+    action = new QAction(tr("Copy from baseline text..."),menu);
+    action->setData( writingSystem.id() );
+    oneOffgroup2->addAction(action);
+    connect( oneOffgroup2, SIGNAL(triggered(QAction*)), this, SLOT(copyTextFormFromBaseline(QAction*)) );
+    submenu->addAction(action);
+
+
     menu->addMenu(submenu);
 }
 
@@ -271,6 +279,14 @@ void WordDisplayWidget::addGlossSubmenu(QMenu *menu, const WritingSystem & writi
     action->setData( writingSystem.id() );
     oneOffgroup->addAction(action);
     connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(newGloss(QAction*)) );
+    submenu->addAction(action);
+
+
+    QActionGroup *oneOffgroup2 = new QActionGroup(menu);
+    action = new QAction(tr("Copy from baseline text..."),menu);
+    action->setData( writingSystem.id() );
+    oneOffgroup2->addAction(action);
+    connect( oneOffgroup2, SIGNAL(triggered(QAction*)), this, SLOT(copyGlossFromBaseline(QAction*)) );
     submenu->addAction(action);
 
     menu->addMenu(submenu);
