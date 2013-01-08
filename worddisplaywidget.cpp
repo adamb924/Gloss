@@ -79,7 +79,6 @@ void WordDisplayWidget::setupLayout()
 
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
-    qDebug() << "WordDisplayWidget::addGlossLine" << mGlossItem->gloss( glossLine.writingSystem() ).id();
     LingEdit *edit = new LingEdit( mGlossItem->gloss( glossLine.writingSystem() ) , this);
     edit->matchTextAlignmentTo( glossLine.writingSystem().layoutDirection() );
 
