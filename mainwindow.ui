@@ -81,6 +81,9 @@
     <addaction name="actionSearch_gloss_items"/>
     <addaction name="actionSubstring_search_gloss_items"/>
     <addaction name="actionRaw_XQuery"/>
+    <addaction name="actionInterpreation_by_id"/>
+    <addaction name="actionText_form_by_id"/>
+    <addaction name="actionGloss_by_id"/>
    </widget>
    <widget class="QMenu" name="menuReports">
     <property name="title">
@@ -236,7 +239,7 @@
   </action>
   <action name="actionGenerate_report_from_texts">
    <property name="text">
-    <string>Generate report from texts...</string>
+    <string>Interpretation usage report...</string>
    </property>
   </action>
   <action name="actionCounts_of_text_forms">
@@ -247,6 +250,21 @@
   <action name="actionCounts_of_glosses">
    <property name="text">
     <string>Counts of glosses...</string>
+   </property>
+  </action>
+  <action name="actionText_form_by_id">
+   <property name="text">
+    <string>Text form by id...</string>
+   </property>
+  </action>
+  <action name="actionInterpreation_by_id">
+   <property name="text">
+    <string>Interpreation by id...</string>
+   </property>
+  </action>
+  <action name="actionGloss_by_id">
+   <property name="text">
+    <string>Gloss by id...</string>
    </property>
   </action>
  </widget>

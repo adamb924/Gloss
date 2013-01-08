@@ -68,6 +68,11 @@ private slots:
 
     void searchGlossItems();
     void substringSearchGlossItems();
+
+    void searchForInterpretationById();
+    void searchForTextFormById();
+    void searchForGlossById();
+
     void searchResultSelected( const QModelIndex & index );
     void focusTextPosition( const QString & textName , int lineNumber );
     void rawXQuery();

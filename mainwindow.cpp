@@ -52,6 +52,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSearch_gloss_items, SIGNAL(triggered()), this, SLOT(searchGlossItems()));
     connect(ui->actionSubstring_search_gloss_items, SIGNAL(triggered()), this, SLOT(substringSearchGlossItems()));
     connect(ui->actionRaw_XQuery, SIGNAL(triggered()), this, SLOT(rawXQuery()));
+    connect(ui->actionInterpreation_by_id, SIGNAL(triggered()), this, SLOT(searchForInterpretationById()));
+    connect(ui->actionGloss_by_id, SIGNAL(triggered()), this, SLOT(searchForGlossById()));
+    connect(ui->actionText_form_by_id, SIGNAL(triggered()), this, SLOT(searchForTextFormById()));
+
     connect(ui->actionRemove_unused_gloss_items, SIGNAL(triggered()), this, SLOT(removeUnusedGlossItems()));
 
     connect(ui->actionPerform_a_query, SIGNAL(triggered()), this, SLOT(sqlQueryDialog()));
@@ -431,6 +435,45 @@ void MainWindow::searchGlossItems()
     }
 }
 
+void MainWindow::searchForInterpretationById()
+{
+    bool ok;
+    int id = QInputDialog::getInt ( this, tr("Search by interpretation ID"), tr("Interpretation ID"), 1, 1, 2147483647, 1, &ok );
+    if( ok )
+    {
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
+                                "return string( $x/item[@type='segnum']/text() )").arg(id);
+        createSearchResultDock(query);
+    }
+}
+
+void MainWindow::searchForTextFormById()
+{
+    bool ok;
+    int id = QInputDialog::getInt ( this, tr("Search by text form ID"), tr("Text form ID"), 1, 1, 2147483647, 1, &ok );
+    if( ok )
+    {
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
+                                "return string( $x/item[@type='segnum']/text() )").arg(id);
+        createSearchResultDock(query);
+    }
+}
+
+void MainWindow::searchForGlossById()
+{
+    bool ok;
+    int id = QInputDialog::getInt ( this, tr("Search by gloss ID"), tr("Gloss ID"), 1, 1, 2147483647, 1, &ok );
+    if( ok )
+    {
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
+                                "return string( $x/item[@type='segnum']/text() )").arg(id);
+        createSearchResultDock(query);
+    }
+}
+
 void MainWindow::substringSearchGlossItems()
 {
     // Launch a dialog requesting input
@@ -583,7 +626,7 @@ void MainWindow::setTextXmlFromDatabase()
 
 void MainWindow::generateTextReport()
 {
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save report"), QString(), tr("Whatever format I end up using (*.*)") );
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save report"), QString(), tr("Comma separated values (*.csv)") );
     if( !filename.isNull() )
     {
         if( mProject->interpretationUsageReport(filename) )
