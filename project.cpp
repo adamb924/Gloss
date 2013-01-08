@@ -535,30 +535,94 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
 
 bool Project::interpretationUsageReport(const QString & filename)
 {
+    QStringList instances;
+    QStringList settings;
+
+    QList<InterlinearItemType> lineTypes = mDbAdapter->glossInterlinearLines();
+    for( int i=0; i<lineTypes.count(); i++ )
+        settings << ( lineTypes.at(i).type() == InterlinearItemType::Gloss ? QString("gls") : QString("txt") ) + "=" + lineTypes.at(i).writingSystem().flexString();
+
+    QSetIterator<QString> iter(mTextPaths);
+    while(iter.hasNext())
+        instances.append( getInterpretationUsage( iter.next(), settings.join(",") ) );
+
+    return outputInterpretationUsageReport( filename, instances );
+}
+
+bool Project::outputInterpretationUsageReport(const QString & filename, const QStringList & instances )
+{
+    QList<InterlinearItemType> lineTypes = mDbAdapter->glossInterlinearLines();
+    QSet<QString> set = instances.toSet();
+
     QFile out(filename);
     if( !out.open(QFile::WriteOnly) )
         return false;
     QTextStream stream(&out);
     stream.setCodec("UTF-8");
 
-    QStringList instances;
+    QString header = "'Interpretation Id',";
+    for(int i=0; i<lineTypes.count(); i++)
+        header.append(QString("'%1 Id','%1',").arg(lineTypes.at(i).writingSystem().name()));
+    header.append("'Count'\n");
+    stream << header;
 
-    // TODO this XQuery string is pasted in from something else to make it compile
-    QSetIterator<QString> iter(mTextPaths);
-    while(iter.hasNext())
-        instances.append( getStringListFromXQuery( iter.next(), QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls'] return string( $x/@abg:id )") ) );
-
-    QSet<QString> set = instances.toSet();
     QSetIterator<QString> setIter(set);
     while(setIter.hasNext())
     {
         QString str = setIter.next();
-        // TODO better output here
-        stream << QString("'%1','%2'\n").arg(str).arg(instances.count(str));
+        QStringList tokens = str.split(",");
+        QString outputLine;
+        outputLine.append(QString("'%1',").arg(tokens.at(0)));
+        for(int i=0; i<lineTypes.count(); i++)
+        {
+            TextBit bit;
+            qlonglong id = tokens.at(i+1).toLongLong();
+            if( id > 0 )
+            {
+                if( lineTypes.at(i).type() == InterlinearItemType::Gloss )
+                    bit = mDbAdapter->glossFromId( id );
+                else
+                    bit = mDbAdapter->textFormFromId( id );
+                outputLine.append(QString("'%1','%2',").arg(tokens.at(i+1)).arg(  bit.text().replace("'","''") ));
+            }
+            else
+            {
+                outputLine.append("'-1','',");
+            }
+        }
+        outputLine.append(QString("'%1'\n").arg(instances.count(str)));
+
+        stream << outputLine;
     }
 
     out.close();
+
     return true;
+}
+
+QStringList Project::getInterpretationUsage(const QString & filepath, const QString & encodedSettings)
+{
+    QStringList result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl(filepath)))
+        return result;
+
+    QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                          "declare variable $settings external; "
+                          "declare variable $settings-array := tokenize($settings,',' ); "
+                          "declare function local:writing-system( $x as xs:string ) as xs:string { substring-after($x,'=') }; "
+                          "declare function local:line-type( $x as xs:string ) as xs:string { substring-before($x,'=') } ;"
+                          "declare function local:get-item( $x as element(word), $writing-system as xs:string, $type as xs:string ) as xs:string { if( $x/item[@lang=$writing-system and @type=$type] ) then string( $x/item[@lang=$writing-system and @type=$type]/@abg:id ) else string(-1) }; "
+                          "for $word in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
+                          "let $myset := for $setting in $settings-array return local:get-item( $word , local:writing-system($setting) , local:line-type($setting) )"
+                          "return string-join( (string( $word/@abg:id ), $myset) , ',')";
+
+    query.bindVariable("settings", QXmlItem(encodedSettings) );
+    query.setMessageHandler(new MessageHandler(this));
+    query.setQuery(queryString);
+    query.evaluateTo(&result);
+
+    return result;
 }
 
 QStringList Project::getStringListFromXQuery(const QString & filepath, const QString & queryString)

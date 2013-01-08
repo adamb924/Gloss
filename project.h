@@ -67,6 +67,7 @@ public:
 
     bool countItemsInTexts(const QString & filename, const QString & typeString);
     bool interpretationUsageReport(const QString & filename);
+    bool outputInterpretationUsageReport(const QString & filename, const QStringList & instances );
 
 public slots:
 
@@ -103,6 +104,8 @@ private:
     QList<qlonglong> getListOfNumbersFromXQuery(const QString & filepath, const QString & queryString);
 
     QStringList getStringListFromXQuery(const QString & filepath, const QString & queryString);
+
+    QStringList getInterpretationUsage(const QString & filepath, const QString & encodedSettings);
 };
 
 #endif // PROJECT_H

@@ -474,7 +474,7 @@ TextBit DatabaseAdapter::glossFromId(qlonglong id) const
     }
     else
     {
-        qWarning() << "DatabaseAdapter::glossFromId" << q.lastError().text() << q.executedQuery();
+        qWarning() << "DatabaseAdapter::glossFromId" << id << q.lastError().text() << q.executedQuery();
         return TextBit();
     }
 }
@@ -491,7 +491,7 @@ TextBit DatabaseAdapter::textFormFromId(qlonglong id) const
     }
     else
     {
-        qWarning() << "DatabaseAdapter::textFormFromId" << q.lastError().text() << q.executedQuery();
+        qWarning() << "DatabaseAdapter::textFormFromId" << id << q.lastError().text() << q.executedQuery();
         return TextBit();
     }
 }
