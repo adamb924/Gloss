@@ -325,6 +325,7 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
     ui->menuGuts->setEnabled(enabled);
     ui->menuProject->setEnabled(enabled);
     ui->menuSearch->setEnabled(enabled);
+    ui->menuReports->setEnabled(enabled);
     ui->actionAdd_text->setEnabled(enabled);
     ui->actionImport_FlexText->setEnabled(enabled);
     ui->actionSave_Project->setEnabled(enabled);
