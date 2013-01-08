@@ -81,5 +81,5 @@ void LingEdit::setWritingSystem( const WritingSystem & ws )
 
 TextBit LingEdit::textBit() const
 {
-    return TextBit( text(), mTextBit.writingSystem() );
+    return TextBit( text(), mTextBit.writingSystem(), mTextBit.id() );
 }

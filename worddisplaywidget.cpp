@@ -79,6 +79,7 @@ void WordDisplayWidget::setupLayout()
 
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
+    qDebug() << "WordDisplayWidget::addGlossLine" << mGlossItem->gloss( glossLine.writingSystem() ).id();
     LingEdit *edit = new LingEdit( mGlossItem->gloss( glossLine.writingSystem() ) , this);
     edit->matchTextAlignmentTo( glossLine.writingSystem().layoutDirection() );
 
@@ -304,26 +305,24 @@ void WordDisplayWidget::copyGlossFromBaseline(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
-    TextBit newGloss = mGlossItem->textForm(mGlossItem->baselineWritingSystem());
-    newGloss.setWritingSystem( ws );
-    qlonglong id = mDbAdapter->newGloss( mGlossItem->id() , newGloss );
-    newGloss.setId(id);
-    mGlossItem->setGloss( newGloss );
-    emit glossIdChanged( mGlossEdits.value(ws) , id );
-    fillData();
+
+    TextBit bit = mGlossEdits[ws]->textBit();
+    bit.setText( mGlossItem->textForm(mGlossItem->baselineWritingSystem()).text() );
+
+    mDbAdapter->updateInterpretationGloss( bit );
+    mGlossEdits[ws]->setTextBit( bit );
 }
 
 void WordDisplayWidget::copyTextFormFromBaseline(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
-    TextBit newTextForm = mGlossItem->textForm(mGlossItem->baselineWritingSystem());
-    newTextForm.setWritingSystem( ws );
-    qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , newTextForm );
-    newTextForm.setId(id);
-    mGlossItem->setTextForm( newTextForm );
-    emit textFormIdChanged( mTextFormEdits.value(ws) , id );
-    fillData();
+
+    TextBit bit = mTextFormEdits[ws]->textBit();
+    bit.setText( mGlossItem->textForm(mGlossItem->baselineWritingSystem()).text() );
+
+    mDbAdapter->updateInterpretationTextForm( bit );
+    mTextFormEdits[ws]->setTextBit( bit );
 }
 
 void WordDisplayWidget::newGloss(const WritingSystem & ws)
