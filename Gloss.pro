@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     genericlexicalentryform.cpp \
     createlexicalentrydialog.cpp \
     chooselexicalentriesdialog.cpp \
-    morphologicalanalysis.cpp
+    morphologicalanalysis.cpp \
+    interlinearlinelabel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -85,7 +86,8 @@ HEADERS  += mainwindow.h \
     genericlexicalentryform.h \
     createlexicalentrydialog.h \
     chooselexicalentriesdialog.h \
-    morphologicalanalysis.h
+    morphologicalanalysis.h \
+    interlinearlinelabel.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

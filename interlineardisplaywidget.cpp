@@ -12,6 +12,7 @@
 #include "project.h"
 #include "databaseadapter.h"
 #include "phrase.h"
+#include "interlinearlinelabel.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent) :
         QScrollArea(parent)
@@ -42,9 +43,9 @@ void InterlinearDisplayWidget::clearData()
 
 void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 {
-    QLabel *lineNumber = new QLabel(QString("%1").arg(i+1), this);
-    lineNumber->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    lineNumber->setMinimumSize(30, 30);
+    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), this);
+    connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
+    connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
     flowLayout->addWidget(lineNumber);
 }
 
@@ -115,3 +116,17 @@ LingEdit* InterlinearDisplayWidget::addPhrasalGlossLine( const TextBit & gloss )
     mPhrasalGlossEdits << edit;
     return edit;
 }
+
+void InterlinearDisplayWidget::approveAll(int lineNumber)
+{
+    if( lineNumber >= mText->phrases()->count() )
+        return;
+    for(int i=0; i < mText->phrases()->at(lineNumber)->count(); i++)
+        mText->phrases()->at(lineNumber)->at(i)->setApprovalStatus(GlossItem::Approved);
+}
+
+void InterlinearDisplayWidget::playSound(int lineNumber)
+{
+    // TODO implement this
+}
+

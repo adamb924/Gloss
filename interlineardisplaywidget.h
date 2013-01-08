@@ -43,6 +43,9 @@ private slots:
 
     void saveText();
 
+    void approveAll(int lineNumber);
+    void playSound(int lineNumber);
+
 protected:
     Text *mText;
     Project *mProject;
