@@ -440,7 +440,7 @@ void MainWindow::searchGlossItems()
 void MainWindow::searchForInterpretationById()
 {
     bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by interpretation ID"), tr("Interpretation ID"), 1, 1, 2147483647, 1, &ok );
+    int id = QInputDialog::getInt ( this, tr("Search by interpretation ID"), tr("Interpretation ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
@@ -453,7 +453,7 @@ void MainWindow::searchForInterpretationById()
 void MainWindow::searchForTextFormById()
 {
     bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by text form ID"), tr("Text form ID"), 1, 1, 2147483647, 1, &ok );
+    int id = QInputDialog::getInt ( this, tr("Search by text form ID"), tr("Text form ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
@@ -466,7 +466,7 @@ void MainWindow::searchForTextFormById()
 void MainWindow::searchForGlossById()
 {
     bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by gloss ID"), tr("Gloss ID"), 1, 1, 2147483647, 1, &ok );
+    int id = QInputDialog::getInt ( this, tr("Search by gloss ID"), tr("Gloss ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "

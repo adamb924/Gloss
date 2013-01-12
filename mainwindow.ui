@@ -260,7 +260,7 @@
   </action>
   <action name="actionInterpreation_by_id">
    <property name="text">
-    <string>Interpreation by id...</string>
+    <string>Interpretation by id...</string>
    </property>
   </action>
   <action name="actionGloss_by_id">
