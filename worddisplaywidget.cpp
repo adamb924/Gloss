@@ -73,6 +73,8 @@ void WordDisplayWidget::setupLayout()
             analysisWidget = addAnalysisWidget( mGlossLines.at(i) );
             mLayout->addWidget(analysisWidget);
             break;
+        case InterlinearItemType::Null:
+            break;
         }
     }
 }
@@ -165,6 +167,8 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
             addGlossSubmenu( &menu , mGlossLines.at(i).writingSystem() );
             break;
         case InterlinearItemType::Analysis:
+            break;
+        case InterlinearItemType::Null:
             break;
         }
     }
@@ -386,6 +390,8 @@ void WordDisplayWidget::fillData()
             case InterlinearItemType::Immutable:
             case InterlinearItemType::Analysis:
                 // TODO how does one fill the data here? what does this function even do?
+                break;
+            case InterlinearItemType::Null:
                 break;
             }
         }

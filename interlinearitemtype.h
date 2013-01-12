@@ -15,9 +15,11 @@ public:
         Immutable,
         Text,
         Gloss,
-        Analysis
+        Analysis,
+        Null
     };
 
+    InterlinearItemType();
     InterlinearItemType(LineType type, const WritingSystem & ws);
     InterlinearItemType(const QString & type, const WritingSystem & ws);
 

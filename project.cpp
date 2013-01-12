@@ -12,8 +12,10 @@
 #include <QXmlResultItems>
 #include <QDomDocument>
 #include <QXmlQuery>
+#include <QDesktopServices>
 
 #include "messagehandler.h"
+#include "xsltproc.h"
 
 Project::Project()
 {
@@ -636,4 +638,45 @@ QStringList Project::getStringListFromXQuery(const QString & filepath, const QSt
     query.setQuery(queryString);
     query.evaluateTo(&result);
     return result;
+}
+
+void Project::applyXslTransformationToTexts(const QString & xslFile, const QHash<QString,QString> & parameters)
+{
+qDebug() << xslFile;
+
+    QStringList names = textNames();
+    QStringListIterator iter(names);
+    while(iter.hasNext())
+        applyXslTransformationToText( iter.next(), xslFile, parameters );
+}
+
+bool Project::applyXslTransformationToText(const QString & name, const QString & xslFile, const QHash<QString,QString> & parameters)
+{
+    QString currentPath = filepathFromName(name);
+    QString tempOutputPath = filepathFromName(name + "-output");
+    QString errorOutputPath = QDir::temp().absoluteFilePath(name + "error.txt");
+
+    Xsltproc transformation;
+    transformation.setStyleSheet( xslFile );
+    transformation.setXmlFilename( currentPath );
+    transformation.setErrorFilename( errorOutputPath );
+    transformation.setOutputFilename( tempOutputPath );
+    transformation.setParameters(parameters);
+    Xsltproc::ReturnValue retval = transformation.execute();
+
+    QFileInfo errorInfo(errorOutputPath);
+
+    if( retval != Xsltproc::Success )
+    {
+        qWarning () << retval;
+        return false;
+    }
+
+    if( errorInfo.size() > 0 )
+        QDesktopServices::openUrl(QUrl(errorOutputPath, QUrl::TolerantMode));
+
+    QFile::remove(currentPath);
+    QFile::rename(tempOutputPath, currentPath);
+
+    return true;
 }

@@ -48,7 +48,9 @@ SOURCES += main.cpp\
     createlexicalentrydialog.cpp \
     chooselexicalentriesdialog.cpp \
     morphologicalanalysis.cpp \
-    interlinearlinelabel.cpp
+    interlinearlinelabel.cpp \
+    replacedialog.cpp \
+    searchreplaceform.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -87,7 +89,9 @@ HEADERS  += mainwindow.h \
     createlexicalentrydialog.h \
     chooselexicalentriesdialog.h \
     morphologicalanalysis.h \
-    interlinearlinelabel.h
+    interlinearlinelabel.h \
+    replacedialog.h \
+    searchreplaceform.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -102,7 +106,9 @@ FORMS    += mainwindow.ui \
     createanalysisdialog.ui \
     lexicalentryform.ui \
     genericlexicalentryform.ui \
-    createlexicalentrydialog.ui
+    createlexicalentrydialog.ui \
+    replacedialog.ui \
+    searchreplaceform.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip
@@ -112,3 +118,5 @@ LIBS += -L./ \
     -llibxslt \
     -llibxml2 \
     -liconv
+
+RESOURCES +=

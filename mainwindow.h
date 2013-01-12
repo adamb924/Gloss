@@ -85,6 +85,8 @@ private slots:
     void countTextForms();
     void countGlosses();
     void createCountReport(const QString & typeString);
+
+    void searchAndReplace();
 };
 
 #endif // MAINWINDOW_H

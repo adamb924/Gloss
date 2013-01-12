@@ -468,15 +468,15 @@ TextBit DatabaseAdapter::glossFromId(qlonglong id) const
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select _id,Form,WritingSystem from Glosses where _id=:_id;");
     q.bindValue(":_id", id);
-    if( q.exec() && q.next() )
-    {
-        return TextBit( q.value(1).toString() , writingSystem( q.value(2).toLongLong() ) , q.value(0).toLongLong() );
-    }
-    else
+    if( !q.exec() )
     {
         qWarning() << "DatabaseAdapter::glossFromId" << id << q.lastError().text() << q.executedQuery();
         return TextBit();
     }
+    if( q.next() )
+        return TextBit( q.value(1).toString() , writingSystem( q.value(2).toLongLong() ) , q.value(0).toLongLong() );
+    else
+        return TextBit();
 }
 
 TextBit DatabaseAdapter::textFormFromId(qlonglong id) const
@@ -484,16 +484,16 @@ TextBit DatabaseAdapter::textFormFromId(qlonglong id) const
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select _id,Form,WritingSystem from TextForms where _id=:_id;");
     q.bindValue(":_id", id);
-    if( q.exec() && q.next() )
-    {
-        WritingSystem ws = writingSystem( q.value(2).toLongLong() );
-        return TextBit( q.value(1).toString() , ws , q.value(0).toLongLong() );
-    }
-    else
+    if( !q.exec() )
     {
         qWarning() << "DatabaseAdapter::textFormFromId" << id << q.lastError().text() << q.executedQuery();
         return TextBit();
     }
+
+    if( q.next() )
+        return TextBit( q.value(1).toString() , writingSystem( q.value(2).toLongLong() ) , q.value(0).toLongLong() );
+    else
+        return TextBit();
 }
 
 qlonglong DatabaseAdapter::textFormId(const TextBit & bit, qlonglong interpretationId)

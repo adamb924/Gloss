@@ -17,6 +17,7 @@
 class InterlinearItemType;
 class TextBit;
 class DatabaseAdapter;
+class QUrl;
 
 class Project : public QObject
 {
@@ -68,6 +69,9 @@ public:
     bool countItemsInTexts(const QString & filename, const QString & typeString);
     bool interpretationUsageReport(const QString & filename);
     bool outputInterpretationUsageReport(const QString & filename, const QStringList & instances );
+
+    void applyXslTransformationToTexts(const QString & xslFile, const QHash<QString,QString> & parameters);
+    bool applyXslTransformationToText(const QString & name, const QString & xslFile, const QHash<QString,QString> & parameters);
 
 public slots:
 

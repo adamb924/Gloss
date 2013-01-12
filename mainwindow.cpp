@@ -13,6 +13,7 @@
 #include "searchquerymodel.h"
 #include "xqueryinputdialog.h"
 #include "databasequerydialog.h"
+#include "replacedialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -66,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionCounts_of_glosses, SIGNAL(triggered()), this, SLOT(countGlosses()));
     connect(ui->actionCounts_of_text_forms, SIGNAL(triggered()), this, SLOT(countTextForms()));
+    connect(ui->actionSearch_and_replace, SIGNAL(triggered()), this, SLOT(searchAndReplace()));
 
     setProjectActionsEnabled(false);
 
@@ -665,5 +667,17 @@ void MainWindow::createCountReport(const QString & typeString)
         {
             QMessageBox::warning(this, tr("Gloss"), tr("The report could not be generated, sorry.") );
         }
+    }
+}
+
+void MainWindow::searchAndReplace()
+{
+    ReplaceDialog dialog(mProject->dbAdapter(), this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        QHash<QString,QString> parameters;
+        parameters.insert( "transformation-schema" , dialog.xmlFilePath() );
+        mProject->applyXslTransformationToTexts( QDir::current().absoluteFilePath("search-replace.xsl"), parameters );
+        QMessageBox::information(this, tr("Gloss"), tr("The search-and-replace operation has been completed.") );
     }
 }

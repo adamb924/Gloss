@@ -23,7 +23,7 @@ class DatabaseAdapter : public QObject
 {
     Q_OBJECT
 public:
-    explicit DatabaseAdapter(const QString & filename, QObject *parent = 0);
+    DatabaseAdapter(const QString & filename, QObject *parent = 0);
     ~DatabaseAdapter();
 
     //! \brief Returns the database object

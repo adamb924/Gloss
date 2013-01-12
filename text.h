@@ -21,6 +21,7 @@ class QFile;
 class QXmlStreamWriter;
 class QDir;
 class DatabaseAdapter;
+class QUrl;
 
 class Text : public QObject
 {
@@ -81,7 +82,6 @@ private:
     DatabaseAdapter *mDbAdapter;
 
     WritingSystem mBaselineWritingSystem;
-//    WritingSystem mAnalysisWritingSystem;
 
     QList<Phrase*> mPhrases;
 

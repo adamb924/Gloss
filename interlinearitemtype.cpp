@@ -1,6 +1,11 @@
 #include "interlinearitemtype.h"
 #include "writingsystem.h"
 
+InterlinearItemType::InterlinearItemType()
+{
+    mType = Null;
+}
+
 InterlinearItemType::InterlinearItemType(LineType type, const WritingSystem & ws)
 {
     mType = type;
