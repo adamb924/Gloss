@@ -20,6 +20,7 @@ class GlossDisplayWidget : public InterlinearDisplayWidget
     Q_OBJECT
 public:
     GlossDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
+    GlossDisplayWidget(Text *text, Project *project, QList<int> lines, QWidget *parent = 0);
 
 public slots:
 
@@ -38,6 +39,7 @@ private slots:
 
 private:
     void setLayoutFromText();
+    void setLayoutFromText(QList<int> lines);
 
     //! \brief Removes and deletes all widgets from the given \a layout
     void clearWidgets(QLayout * layout);
@@ -46,6 +48,8 @@ private:
     void addWordWidgets( int i , QLayout * flowLayout );
 
     void clearData();
+
+    QList<int> lines;
 
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
 

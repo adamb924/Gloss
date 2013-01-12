@@ -1,6 +1,7 @@
 #include "glossdisplaywidget.h"
 
 #include <QtGui>
+#include <QList>
 
 #include "project.h"
 #include "text.h"
@@ -16,6 +17,16 @@ GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QWidget *pa
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 
     setLayoutFromText();
+}
+
+GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QList<int> lines, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
+{
+    mPhrasalGlossLines = mProject->dbAdapter()->glossPhrasalGlossLines();
+    mInterlinearDisplayLines = mProject->dbAdapter()->glossInterlinearLines();
+
+    connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
+
+    setLayoutFromText(lines);
 }
 
 void GlossDisplayWidget::updateGloss( const TextBit & bit )
@@ -93,6 +104,34 @@ void GlossDisplayWidget::setLayoutFromText()
         mText->phrases()->at(i)->setGuiRefreshRequest(false);
     }
     progress.setValue(mText->phrases()->count());
+}
+
+void GlossDisplayWidget::setLayoutFromText(QList<int> lines)
+{
+    QListIterator<int> iter(lines);
+    while(iter.hasNext())
+    {
+        int i = iter.next();
+
+        QLayout *flowLayout;
+
+        if( i >= mLineLayouts.count() ) // there is no layout here
+        {
+            flowLayout = addLine();
+            addPhrasalGlossLines(i);
+        }
+        else
+        {
+            flowLayout = mLineLayouts.at(i);
+            clearWidgets( flowLayout );
+        }
+
+        addLineLabel(i, flowLayout);
+        if( flowLayout->count() == 1 ) // it's either new or has been cleared for a refresh
+            addWordWidgets(i, flowLayout);
+
+        mText->phrases()->at(i)->setGuiRefreshRequest(false);
+    }
 }
 
 void GlossDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
