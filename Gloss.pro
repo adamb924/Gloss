@@ -53,7 +53,9 @@ SOURCES += main.cpp\
     searchreplaceform.cpp \
     singlephraseeditdialog.cpp \
     searchqueryview.cpp \
-    phrasedisplaywidget.cpp
+    phrasedisplaywidget.cpp \
+    mergeeafdialog.cpp \
+    annotation.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -97,7 +99,9 @@ HEADERS  += mainwindow.h \
     searchreplaceform.h \
     singlephraseeditdialog.h \
     searchqueryview.h \
-    phrasedisplaywidget.h
+    phrasedisplaywidget.h \
+    mergeeafdialog.h \
+    annotation.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -115,7 +119,8 @@ FORMS    += mainwindow.ui \
     createlexicalentrydialog.ui \
     replacedialog.ui \
     searchreplaceform.ui \
-    singlephraseeditdialog.ui
+    singlephraseeditdialog.ui \
+    mergeeafdialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

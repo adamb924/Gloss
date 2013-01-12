@@ -26,6 +26,7 @@
 #include <QXmlResultItems>
 #include "messagehandler.h"
 #include "searchqueryview.h"
+#include "mergeeafdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -52,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionDelete_text, SIGNAL(triggered()), this, SLOT(deleteText()) );
     connect(ui->actionMerge_translations_from_other_FlexText_file, SIGNAL(triggered()), this, SLOT(mergeTranslations()));
     connect(ui->actionBulk_merge_translations, SIGNAL(triggered()), this, SLOT(bulkMergeTranslations()));
+    connect(ui->actionBulk_merge_EAF, SIGNAL(triggered()), this, SLOT(bulkMergeEaf()));
+    connect(ui->actionMerge_EAF, SIGNAL(triggered()), this, SLOT(mergeEaf()));
 
     connect(ui->actionSearch_gloss_items, SIGNAL(triggered()), this, SLOT(searchGlossItems()));
     connect(ui->actionSubstring_search_gloss_items, SIGNAL(triggered()), this, SLOT(substringSearchGlossItems()));
@@ -657,6 +660,91 @@ void MainWindow::bulkMergeTranslations()
         progress.setValue(translationFiles.count());
 
         QMessageBox::information(this, tr("Result"), tr("%1 available translations, %2 that don't match (%3), %4 success(es), %5 failure(s) (%6). If there were failures you might get more information by merging them individually.").arg(total).arg(nonmatches).arg(unmatchedNames.join(", ")).arg(successes).arg(failures).arg(failureNames.join(", ")));
+    }
+}
+
+void MainWindow::mergeEaf()
+{
+    MergeEafDialog dialog(mProject, this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mProject->openText(dialog.text());
+        Text *text = mProject->texts()->value(dialog.text());
+        qDebug() << dialog.filename();
+        Text::MergeEafResult result = text->mergeEaf( dialog.filename() );
+        mProject->closeText(text);
+        switch(result)
+        {
+        case Text::Success:
+            QMessageBox::information(0, tr("Success!"), tr("The merge into %1 has completed succesfully.").arg(dialog.text()));
+            break;
+        case Text::MergeEafWrongNumberOfAnnotations:
+            QMessageBox::information(0, tr("Failure!"), tr("The merge into %1 has failed because the number of annotations is wrong.").arg(dialog.text()));
+        default:
+            QMessageBox::information(0, tr("Failure!"), tr("The merge into %1 has failed.").arg(dialog.text()));
+            break;
+        }
+    }
+}
+
+void MainWindow::bulkMergeEaf()
+{
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Choose directory with Elan files") );
+    if( !directory.isEmpty() )
+    {
+        QDir dir(directory);
+        dir.setFilter(QDir::Files);
+        dir.setNameFilters(QStringList("*.eaf"));
+        dir.setSorting(QDir::Name);
+        QStringList eafFiles = dir.entryList(QDir::Files,QDir::Name);
+
+        int total = eafFiles.count();
+        int successes = 0;
+        int failures = 0;
+        int nonmatches = 0;
+        QStringList failureNames;
+        QStringList unmatchedNames;
+
+        QStringList flextextNames = mProject->textNames();
+
+        QProgressDialog progress(tr("Merging EAF..."), "Cancel", 0, eafFiles.count(), 0);
+        progress.setWindowModality(Qt::WindowModal);
+
+        for(int i=0; i<eafFiles.count(); i++)
+        {
+            progress.setValue(i);
+
+            QString filePath = dir.absoluteFilePath(eafFiles.at(i));
+            QString textName = eafFiles.at(i);
+            textName.replace(QRegExp("\\.eaf"),"");
+
+            if( flextextNames.contains(textName) )
+            {
+                mProject->openText(textName);
+                Text *text = mProject->texts()->value(textName);
+                if( text->mergeEaf( filePath ) == Text::MergeEafSuccess )
+                {
+                    successes++;
+                }
+                else
+                {
+                    failures++;
+                    failureNames << textName;
+                }
+                mProject->closeText(text);
+            }
+            else
+            {
+                nonmatches++;
+                unmatchedNames << textName;
+            }
+
+            if( progress.wasCanceled() )
+                break;
+        }
+        progress.setValue(eafFiles.count());
+
+        QMessageBox::information(this, tr("Result"), tr("%1 available EAF files, %2 that don't match (%3), %4 success(es), %5 failure(s) (%6). If there were failures you might get more information by merging them individually.").arg(total).arg(nonmatches).arg(unmatchedNames.join(", ")).arg(successes).arg(failures).arg(failureNames.join(", ")));
     }
 }
 

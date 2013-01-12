@@ -9,6 +9,7 @@
 #include <QProgressDialog>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QStringList>
 
 #include "writingsystem.h"
 #include "project.h"
@@ -395,6 +396,11 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
     if( !mComment.isEmpty() )
         writeItem( "comment" , mDbAdapter->metaLanguage() , mComment , stream );
 
+    if( !mAudioFilePath.isEmpty() )
+        stream->writeAttribute("http://www.adambaker.org/gloss.php","audio-file", mAudioFilePath );
+    else
+        qDebug() << mAudioFilePath;
+
     stream->writeStartElement("paragraphs");
 
     QProgressDialog progress(tr("Saving text %1...").arg(mName), "Cancel", 0, mPhrases.count(), 0);
@@ -411,6 +417,13 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         stream->writeStartElement("phrases");
         stream->writeStartElement("phrase");
         writeItem("segnum", mDbAdapter->metaLanguage(), QString("%1").arg(i+1) , stream );
+
+        if( !mPhrases.at(i)->annotation()->isNull() )
+        {
+            stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-start", QString("%1").arg(mPhrases.at(i)->annotation()->start()) );
+            stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-end", QString("%1").arg(mPhrases.at(i)->annotation()->end()) );
+        }
+
         stream->writeStartElement("words");
         for(int j=0; j<mPhrases.at(i)->count(); j++)
         {
@@ -547,24 +560,71 @@ Text::MergeTranslationResult Text::mergeTranslation(const QString & filename, co
     {
         if( QFile::rename(tempOutputPath, currentPath) )
         {
-//            QMessageBox::information(0, tr("Success!"), tr("The merge has completed succesfully."));
+            //            QMessageBox::information(0, tr("Success!"), tr("The merge has completed succesfully."));
             return Success;
         }
         else
         {
-//            QMessageBox::warning(0, tr("Error"), tr("The merge file is stuck with the filename %1, but you can fix this yourself. The old flextext file has been deleted.").arg(tempOutputPath));
+            //            QMessageBox::warning(0, tr("Error"), tr("The merge file is stuck with the filename %1, but you can fix this yourself. The old flextext file has been deleted.").arg(tempOutputPath));
             return MergeStuckOldFileDeleted;
         }
     }
     else
     {
-//        QMessageBox::warning(0, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with the filename %1, but you can fix this yourself.").arg(tempOutputPath));
+        //        QMessageBox::warning(0, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with the filename %1, but you can fix this yourself.").arg(tempOutputPath));
         return MergeStuckOldFileStillThere;
     }
+}
+
+Text::MergeEafResult Text::mergeEaf(const QString & filename )
+{
+    QStringList result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl( filename )))
+        return MergeEafFailure;
+    query.setMessageHandler(new MessageHandler());
+    query.setQuery( "declare variable $settings-array := /ANNOTATION_DOCUMENT/TIME_ORDER/TIME_SLOT; "
+                    "for $phrase in /ANNOTATION_DOCUMENT/TIER/ANNOTATION/ALIGNABLE_ANNOTATION "
+                    "return string-join( ( $settings-array[@TIME_SLOT_ID=$phrase/@TIME_SLOT_REF1]/@TIME_VALUE , $settings-array[@TIME_SLOT_ID=$phrase/@TIME_SLOT_REF2]/@TIME_VALUE ) , ',')" );
+    query.evaluateTo(&result);
+
+    if( result.count() != mPhrases.count() )
+        return MergeEafWrongNumberOfAnnotations;
+
+    qDebug() << result.count();
+
+    for(int i=0; i<result.count(); i++)
+    {
+        QStringList tokens = result.at(i).split(",");
+        if( tokens.count() != 2)
+            continue;
+        qlonglong start = tokens.at(0).toLongLong();
+        qlonglong end = tokens.at(1).toLongLong();
+        qDebug() << start << end;
+        mPhrases.at(i)->setAnnotation(Annotation(start, end));
+    }
+
+    // read the audio path
+    query.setQuery( "string(/ANNOTATION_DOCUMENT/HEADER/MEDIA_DESCRIPTOR/@MEDIA_URL)" );
+    query.evaluateTo(&mAudioFilePath);
+
+    qDebug() << mAudioFilePath;
+
+    return MergeEafSuccess;
 }
 
 QString Text::textNameFromPath(const QString & path) const
 {
     QFileInfo info(path);
     return info.baseName();
+}
+
+QString Text::audioFilePath() const
+{
+    return mAudioFilePath;
+}
+
+void Text::setAudioFilePath(const QString & path)
+{
+    mAudioFilePath = path;
 }

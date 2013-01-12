@@ -51,3 +51,13 @@ void Phrase::setGuiRefreshRequest(bool needed)
 {
     mRequestGuiRefresh = needed;
 }
+
+void Phrase::setAnnotation( const Annotation & annotation )
+{
+    mAnnotation = annotation;
+}
+
+Annotation* Phrase::annotation()
+{
+    return & mAnnotation;
+}

@@ -28,6 +28,7 @@ class Text : public QObject
     Q_OBJECT
 public:
     enum MergeTranslationResult { Success, MergeStuckOldFileDeleted, MergeStuckOldFileStillThere, XslTranslationError };
+    enum MergeEafResult { MergeEafSuccess, MergeEafFailure, MergeEafWrongNumberOfAnnotations };
 
     Text();
     ~Text();
@@ -56,6 +57,8 @@ public:
 
     Text::MergeTranslationResult mergeTranslation(const QString & filename, const WritingSystem & ws );
 
+    Text::MergeEafResult mergeEaf(const QString & filename );
+
     QString textNameFromPath(const QString & path) const;
 
     //! \brief Serialize the text to an XML file
@@ -73,10 +76,14 @@ public:
     //! \brief Returns true if the Text is valid, otherwise false. A Text can be invalid if there has been some error, for instance.
     bool isValid() const;
 
+    QString audioFilePath() const;
+    void setAudioFilePath(const QString & path);
+
 private:
     QString mName, mComment;
     QString mBaselineText;
     bool mValid;
+    QString mAudioFilePath;
 
     Project *mProject;
     DatabaseAdapter *mDbAdapter;

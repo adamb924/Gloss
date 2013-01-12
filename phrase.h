@@ -12,6 +12,7 @@
 #include <QObject>
 #include "glossitem.h"
 #include "textbit.h"
+#include "annotation.h"
 
 class Phrase : public QObject, public QList<GlossItem*>
 {
@@ -35,11 +36,15 @@ public:
     //! \brief Set whether the Phrase should request a GUI update or not.
     void setGuiRefreshRequest(bool needed);
 
+    void setAnnotation( const Annotation & annotation );
+    Annotation* annotation();
+
 public slots:
     //! \brief Adds or updates the phrase-level gloss to \a bit. The gloss to be added or updated is indicated by the WritingSystem of \bit.
     void setPhrasalGloss( const TextBit & bit );
 
 private:
+    Annotation mAnnotation;
     TextBitHash mGlosses;
     bool mRequestGuiRefresh;
 };

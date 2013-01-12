@@ -81,6 +81,8 @@ private slots:
     void removeUnusedGlossItems();
     void sqlQueryDialog();
     void bulkMergeTranslations();
+    void mergeEaf();
+    void bulkMergeEaf();
     void setTextXmlFromDatabase();
 
     void generateTextReport();
@@ -89,6 +91,7 @@ private slots:
     void createCountReport(const QString & typeString);
 
     void searchAndReplace();
+
 };
 
 #endif // MAINWINDOW_H

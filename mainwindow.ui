@@ -57,6 +57,9 @@
     <addaction name="actionMerge_translations_from_other_FlexText_file"/>
     <addaction name="actionBulk_merge_translations"/>
     <addaction name="separator"/>
+    <addaction name="actionMerge_EAF"/>
+    <addaction name="actionBulk_merge_EAF"/>
+    <addaction name="separator"/>
     <addaction name="actionSearch_and_replace"/>
    </widget>
    <widget class="QMenu" name="menuGuts">
@@ -271,6 +274,16 @@
   <action name="actionSearch_and_replace">
    <property name="text">
     <string>Search and replace....</string>
+   </property>
+  </action>
+  <action name="actionBulk_merge_EAF">
+   <property name="text">
+    <string>Bulk merge EAF...</string>
+   </property>
+  </action>
+  <action name="actionMerge_EAF">
+   <property name="text">
+    <string>Merge EAF...</string>
    </property>
   </action>
  </widget>
