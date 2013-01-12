@@ -503,6 +503,8 @@ void WordDisplayWidget::displayDatabaseReport()
 {
     QString reportString;
 
+    reportString += tr("Interpretation ID: %1\n").arg( mGlossItem->id() );
+
     TextBitHashIterator iter( *mGlossItem->textForms() );
     while(iter.hasNext())
     {
