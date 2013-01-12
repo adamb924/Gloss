@@ -35,6 +35,8 @@ signals:
 
 public slots:
     void scrollToLine(int line);
+    void updateTextFormConcordance(LingEdit * edit, qlonglong newId);
+    void updateGlossFormConcordance(LingEdit * edit, qlonglong newId);
 
 protected:
     void scrollContentsBy ( int dx, int dy );
@@ -64,6 +66,9 @@ private:
 
 protected:
     QList<QLayout*> mLineLayouts;
+
+    QMultiHash<qlonglong,LingEdit*> mTextFormConcordance;
+    QMultiHash<qlonglong,LingEdit*> mGlossConcordance;
 
     QSet<QWidget*> mWordDisplayWidgets; // change to generic name
 

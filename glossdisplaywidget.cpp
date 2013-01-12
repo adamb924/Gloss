@@ -34,20 +34,6 @@ void GlossDisplayWidget::updateText( const TextBit & bit )
         edit->setTextBit( bit );
 }
 
-void GlossDisplayWidget::updateTextFormConcordance(LingEdit * edit, qlonglong newId)
-{
-    qlonglong oldId = mTextFormConcordance.key( edit );
-    mTextFormConcordance.remove(oldId, edit);
-    mTextFormConcordance.insert(newId, edit);
-}
-
-void GlossDisplayWidget::updateGlossFormConcordance(LingEdit * edit, qlonglong newId)
-{
-    qlonglong oldId = mGlossConcordance.key( edit );
-    mGlossConcordance.remove(oldId, edit);
-    mGlossConcordance.insert(newId, edit);
-}
-
 void GlossDisplayWidget::removeGlossFromConcordance( LingEdit * edit )
 {
     qlonglong id = mGlossConcordance.key( edit );

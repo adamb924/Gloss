@@ -130,3 +130,17 @@ void InterlinearDisplayWidget::playSound(int lineNumber)
     // TODO implement this
 }
 
+
+void InterlinearDisplayWidget::updateTextFormConcordance(LingEdit * edit, qlonglong newId)
+{
+    qlonglong oldId = mTextFormConcordance.key( edit );
+    mTextFormConcordance.remove(oldId, edit);
+    mTextFormConcordance.insert(newId, edit);
+}
+
+void InterlinearDisplayWidget::updateGlossFormConcordance(LingEdit * edit, qlonglong newId)
+{
+    qlonglong oldId = mGlossConcordance.key( edit );
+    mGlossConcordance.remove(oldId, edit);
+    mGlossConcordance.insert(newId, edit);
+}

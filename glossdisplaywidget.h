@@ -34,8 +34,6 @@ public slots:
 private slots:
     void baselineTextUpdated(const QString & baselineText);
 
-    void updateTextFormConcordance(LingEdit * edit, qlonglong newId);
-    void updateGlossFormConcordance(LingEdit * edit, qlonglong newId);
 
 
 private:
@@ -50,9 +48,6 @@ private:
     void clearData();
 
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
-
-    QMultiHash<qlonglong,LingEdit*> mTextFormConcordance;
-    QMultiHash<qlonglong,LingEdit*> mGlossConcordance;
 
     QMultiHash<qlonglong,WordDisplayWidget*> mWdwByInterpretationId; // change this to something generic?
 

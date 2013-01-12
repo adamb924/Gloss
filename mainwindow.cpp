@@ -14,6 +14,7 @@
 #include "xqueryinputdialog.h"
 #include "databasequerydialog.h"
 #include "replacedialog.h"
+#include "singlephraseeditdialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -23,6 +24,7 @@
 #include <QXmlQuery>
 #include <QXmlResultItems>
 #include "messagehandler.h"
+#include "searchqueryview.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -493,13 +495,15 @@ void MainWindow::createSearchResultDock(const QString & query)
 {
     // Pop up a dockable window showing the results
     SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
-    QTreeView *tree = new QTreeView(this);
+    SearchQueryView *tree = new SearchQueryView(this);
     tree->setSortingEnabled(true);
     tree->setModel(model);
     tree->sortByColumn(0, Qt::AscendingOrder);
     tree->setHeaderHidden(true);
 
-    connect( tree, SIGNAL(activated(QModelIndex)), this, SLOT(searchResultSelected(QModelIndex)) );
+    connect( tree, SIGNAL(requestOpenText(QString,int)), this, SLOT(focusTextPosition(QString,int)) );
+    connect( tree, SIGNAL(requestPlaySound(QString,int)), this, SLOT(playSoundForLine(QString,int)) );
+    connect( tree, SIGNAL(requestEditLine(QString,int)), this, SLOT(editLine(QString,int)) );
 
     QDockWidget *dock = new QDockWidget(tr("Search Results"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -533,6 +537,24 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber )
     TextDisplayWidget* tdw = openText(textName);
     if( tdw != 0 )
         tdw->focusGlossLine(lineNumber);
+}
+
+void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
+{
+
+}
+
+void MainWindow::editLine( const QString & textName , int lineNumber )
+{
+    mProject->openText(textName);
+    Text *text = mProject->texts()->value(textName, 0);
+    if( text == 0)
+        return;
+
+    lineNumber--; // make it 0-indexed instead
+
+    SinglePhraseEditDialog dialog( lineNumber, text->phrases()->at(lineNumber), text, mProject->dbAdapter(), this );
+    dialog.exec();
 }
 
 void MainWindow::rawXQuery()

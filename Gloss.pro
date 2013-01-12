@@ -50,7 +50,10 @@ SOURCES += main.cpp\
     morphologicalanalysis.cpp \
     interlinearlinelabel.cpp \
     replacedialog.cpp \
-    searchreplaceform.cpp
+    searchreplaceform.cpp \
+    singlephraseeditdialog.cpp \
+    searchqueryview.cpp \
+    phrasedisplaywidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -91,7 +94,10 @@ HEADERS  += mainwindow.h \
     morphologicalanalysis.h \
     interlinearlinelabel.h \
     replacedialog.h \
-    searchreplaceform.h
+    searchreplaceform.h \
+    singlephraseeditdialog.h \
+    searchqueryview.h \
+    phrasedisplaywidget.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -108,7 +114,8 @@ FORMS    += mainwindow.ui \
     genericlexicalentryform.ui \
     createlexicalentrydialog.ui \
     replacedialog.ui \
-    searchreplaceform.ui
+    searchreplaceform.ui \
+    singlephraseeditdialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip
