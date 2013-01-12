@@ -23,6 +23,12 @@ void ImmutableLabel::setApprovalStatus(GlossItem::ApprovalStatus status)
     updateStyle();
 }
 
+void ImmutableLabel::setTextBit(const TextBit & bit)
+{
+    mTextBit = bit;
+    setText( bit.text() );
+}
+
 void ImmutableLabel::updateStyle()
 {
     QString color;

@@ -47,6 +47,7 @@ void WordDisplayWidget::setupLayout()
 
     mTextFormEdits.clear();
     mGlossEdits.clear();
+    mImmutableLines.clear();
     mAnalysisWidgets.clear();
 
     QLabel *immutableLabel;
@@ -121,6 +122,8 @@ ImmutableLabel* WordDisplayWidget::addImmutableLine( const InterlinearItemType &
     immutableLabel->setAlignment( mGlossLines.first().writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
     immutableLabel->setCandidateNumber(mGlossItem->candidateNumber());
     immutableLabel->setApprovalStatus(mGlossItem->approvalStatus());
+
+    mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
@@ -390,6 +393,7 @@ void WordDisplayWidget::fillData()
                 mGlossEdits[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
                 break;
             case InterlinearItemType::Immutable:
+                mImmutableLines[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->textForm( mGlossLines.at(i).writingSystem() ) );
             case InterlinearItemType::Analysis:
                 // TODO how does one fill the data here? what does this function even do?
                 break;

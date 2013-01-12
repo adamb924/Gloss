@@ -54,6 +54,8 @@ void GlossItem::resetBaselineText( const TextBit & baselineBit )
     guessInterpretation();
 
     setCandidateNumberFromDatabase();
+
+    emit fieldsChanged();
 }
 
 void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)

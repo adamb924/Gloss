@@ -62,6 +62,7 @@ private:
     QList<InterlinearItemType> mGlossLines;
     QHash<WritingSystem, LingEdit*> mTextFormEdits;
     QHash<WritingSystem, LingEdit*> mGlossEdits;
+    QHash<WritingSystem, ImmutableLabel*> mImmutableLines;
     QHash<WritingSystem, AnalysisWidget*> mAnalysisWidgets;
 
     void mouseDoubleClickEvent ( QMouseEvent * event );
