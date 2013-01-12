@@ -19,6 +19,7 @@ class GenericTextInputDialog : public QDialog
 public:
     GenericTextInputDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     GenericTextInputDialog(const WritingSystem & writingSystem, QWidget *parent = 0);
+    GenericTextInputDialog(const TextBit & bit, QWidget *parent = 0);
     ~GenericTextInputDialog();
 
     QString text() const;

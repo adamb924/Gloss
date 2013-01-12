@@ -41,6 +41,21 @@ GlossItem::~GlossItem()
 {
 }
 
+void GlossItem::resetBaselineText( const TextBit & baselineBit )
+{
+    mBaselineWritingSystem = baselineBit.writingSystem();
+
+    mTextForms.clear();
+    mGlosses.clear();
+
+    mTextForms.insert(mBaselineWritingSystem, baselineBit );
+    mId = -1;
+
+    guessInterpretation();
+
+    setCandidateNumberFromDatabase();
+}
+
 void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 {
     if( mId != id )

@@ -101,6 +101,8 @@ private slots:
 
     void displayDatabaseReport();
 
+    void editBaselineText();
+
 };
 
 #endif // WORDDISPLAYWIDGET_H

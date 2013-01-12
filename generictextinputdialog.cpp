@@ -29,6 +29,20 @@ GenericTextInputDialog::GenericTextInputDialog(const WritingSystem & writingSyst
     ui->textEdit->setWritingSystem( mWritingSystem );
 }
 
+GenericTextInputDialog::GenericTextInputDialog(const TextBit & bit, QWidget *parent) :
+        QDialog(parent),
+        ui(new Ui::GenericTextInputDialog)
+{
+    ui->setupUi(this);
+    ui->writingSystemCombo->setVisible(false);
+
+    mWritingSystem = bit.writingSystem();
+
+    ui->textEdit->setWritingSystem( mWritingSystem );
+
+    ui->textEdit->setText( bit.text() );
+}
+
 GenericTextInputDialog::~GenericTextInputDialog()
 {
     delete ui;

@@ -142,6 +142,8 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
 
+    menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
+
     // Approved button
     QAction *approved = new QAction(tr("Approved"),&menu);
     approved->setCheckable(true);
@@ -520,4 +522,12 @@ void WordDisplayWidget::displayDatabaseReport()
     }
 
     QMessageBox::information(this, tr("Report"), reportString );
+}
+
+void WordDisplayWidget::editBaselineText()
+{
+    GenericTextInputDialog dialog( mGlossItem->baselineText() , this );
+    dialog.setWindowTitle(tr("Edit baseline text (%1)").arg(mGlossItem->baselineText().writingSystem().name()));
+    if( dialog.exec() == QDialog::Accepted )
+        mGlossItem->resetBaselineText( dialog.textBit() );
 }
