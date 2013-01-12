@@ -436,7 +436,7 @@ void MainWindow::searchGlossItems()
     {
         // Do the search of the texts
         QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        createSearchResultDock(query);
+        createSearchResultDock(query, tr("Glosses matching '%1'").arg(dialog.text()) );
     }
 }
 
@@ -449,7 +449,7 @@ void MainWindow::searchForInterpretationById()
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
                                 "return string( $x/item[@type='segnum']/text() )").arg(id);
-        createSearchResultDock(query);
+        createSearchResultDock(query, tr("Interpretation ID: %1").arg(id));
     }
 }
 
@@ -462,7 +462,7 @@ void MainWindow::searchForTextFormById()
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
                                 "return string( $x/item[@type='segnum']/text() )").arg(id);
-        createSearchResultDock(query);
+        createSearchResultDock(query, tr("Text Form ID: %1").arg(id));
     }
 }
 
@@ -475,7 +475,7 @@ void MainWindow::searchForGlossById()
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
                                 "return string( $x/item[@type='segnum']/text() )").arg(id);
-        createSearchResultDock(query);
+        createSearchResultDock(query, tr("Gloss ID: %1").arg(id));
     }
 }
 
@@ -488,11 +488,11 @@ void MainWindow::substringSearchGlossItems()
     {
         // Do the search of the texts
         QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        createSearchResultDock(query);
+        createSearchResultDock(query, tr("Gloss containing '%1'").arg(dialog.text()));
     }
 }
 
-void MainWindow::createSearchResultDock(const QString & query)
+void MainWindow::createSearchResultDock(const QString & query, const QString & reminder)
 {
     // Pop up a dockable window showing the results
     SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
@@ -506,9 +506,15 @@ void MainWindow::createSearchResultDock(const QString & query)
     connect( tree, SIGNAL(requestPlaySound(QString,int)), this, SLOT(playSoundForLine(QString,int)) );
     connect( tree, SIGNAL(requestEditLine(QString,int)), this, SLOT(editLine(QString,int)) );
 
+    QWidget *intermediateWidget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget( new QLabel(reminder) );
+    layout->addWidget(tree);
+    intermediateWidget->setLayout(layout);
+
     QDockWidget *dock = new QDockWidget(tr("Search Results"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    dock->setWidget(tree);
+    dock->setWidget(intermediateWidget);
     addDockWidget(Qt::RightDockWidgetArea, dock);
 }
 
@@ -562,7 +568,7 @@ void MainWindow::editLine( const QString & textName , int lineNumber )
 //    widget->show();
 
     QDialog dialog(this);
-    dialog.setWindowTitle( tr("%1 - Line %2").arg(text->name()).arg(index+1) );
+    dialog.setWindowTitle( tr("%1 - Line %2").arg(text->name()).arg(lineNumber+1) );
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(widget);
     dialog.setLayout(layout);
@@ -575,7 +581,7 @@ void MainWindow::rawXQuery()
     XQueryInputDialog dialog(this);
     dialog.setWindowTitle(tr("Perform a raw XQuery on all texts"));
     if( dialog.exec() == QDialog::Accepted )
-        createSearchResultDock(dialog.query());
+        createSearchResultDock(dialog.query(), tr("Raw XQuery"));
 }
 
 void MainWindow::removeUnusedGlossItems()

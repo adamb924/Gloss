@@ -41,7 +41,7 @@ private:
 
     WritingSystem selectWritingSystem(const QString & message, bool *ok);
 
-    void createSearchResultDock(const QString & query);
+    void createSearchResultDock(const QString & query, const QString & reminder);
 
 private slots:
     void newProject();
