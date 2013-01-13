@@ -13,6 +13,7 @@
 #include "databaseadapter.h"
 #include "phrase.h"
 #include "interlinearlinelabel.h"
+#include "generictextinputdialog.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent) :
         QScrollArea(parent)
@@ -46,6 +47,7 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
     InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), this);
     connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
+    connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));
     flowLayout->addWidget(lineNumber);
 }
 
@@ -130,6 +132,17 @@ void InterlinearDisplayWidget::playSound(int lineNumber)
     // TODO implement this
 }
 
+void InterlinearDisplayWidget::editLine(int lineNumber)
+{
+    // Launch a dialog requesting input
+    GenericTextInputDialog dialog( TextBit( mText->baselineTextForLine(lineNumber) , mText->baselineWritingSystem() ) , this);
+    dialog.setWindowTitle(tr("Edit baseline text - Line %1").arg(lineNumber+1));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mText->setBaselineTextForLine(lineNumber, dialog.text() );
+        setLayoutFromText();
+    }
+}
 
 void InterlinearDisplayWidget::updateTextFormConcordance(LingEdit * edit, qlonglong newId)
 {

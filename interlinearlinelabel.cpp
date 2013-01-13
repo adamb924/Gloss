@@ -18,6 +18,7 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addAction(tr("Approve all"), this, SLOT(emitApproveAll()) );
     menu.addAction(tr("Play sound"), this, SLOT(emitPlaySound()) );
+    menu.addAction(tr("Edit baseline text"), this, SLOT(emitEditLine()) );
 
     menu.exec(event->globalPos());
 }
@@ -30,4 +31,9 @@ void InterlinearLineLabel::emitApproveAll()
 void InterlinearLineLabel::emitPlaySound()
 {
     emit playSound(mLineNumber);
+}
+
+void InterlinearLineLabel::emitEditLine()
+{
+    emit editLine(mLineNumber);
 }

@@ -76,6 +76,9 @@ public:
     QString audioFilePath() const;
     void setAudioFilePath(const QString & path);
 
+    void setBaselineTextForLine( int i, const QString & text );
+    QString baselineTextForLine( int i );
+
 private:
     QString mName, mComment;
     QString mBaselineText;

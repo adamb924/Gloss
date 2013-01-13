@@ -72,7 +72,6 @@ void GlossDisplayWidget::baselineTextUpdated(const QString & baselineText)
 
 void GlossDisplayWidget::setLayoutFromText()
 {
-    //    clearData();
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mText->phrases()->count(), 0);
     progress.setWindowModality(Qt::WindowModal);
 

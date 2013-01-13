@@ -12,6 +12,7 @@ public:
 signals:
     void playSound(int lineNumber);
     void approveAll(int lineNumber);
+    void editLine(int lineNumber);
 
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
@@ -21,6 +22,7 @@ private:
 private slots:
     void emitApproveAll();
     void emitPlaySound();
+    void emitEditLine();
 
 };
 

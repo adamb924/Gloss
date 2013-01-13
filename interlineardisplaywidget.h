@@ -47,6 +47,7 @@ private slots:
 
     void approveAll(int lineNumber);
     void playSound(int lineNumber);
+    void editLine(int lineNumber);
 
 protected:
     Text *mText;

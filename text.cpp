@@ -628,3 +628,18 @@ void Text::setAudioFilePath(const QString & path)
 {
     mAudioFilePath = path;
 }
+
+void Text::setBaselineTextForLine( int i, const QString & text )
+{
+    if( i >= mPhrases.count() )
+        return;
+    // TODO maybe setLineOfGloss items should just be redone anyway
+    setLineOfGlossItems( mPhrases.at(i) , text );
+}
+
+QString Text::baselineTextForLine( int i )
+{
+    if( i >= mPhrases.count() )
+        return "";
+    return mPhrases.at(i)->equivalentBaselineLineText();
+}
