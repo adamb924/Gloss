@@ -92,6 +92,9 @@ private slots:
 
     void searchAndReplace();
 
+    void findApprovedLines();
+    void findUnapprovedLines();
+
 };
 
 #endif // MAINWINDOW_H

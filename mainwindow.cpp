@@ -75,6 +75,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionCounts_of_text_forms, SIGNAL(triggered()), this, SLOT(countTextForms()));
     connect(ui->actionSearch_and_replace, SIGNAL(triggered()), this, SLOT(searchAndReplace()));
 
+    connect(ui->actionUnapproved_lines, SIGNAL(triggered()), this, SLOT(findUnapprovedLines()));
+    connect(ui->actionApproved_lines, SIGNAL(triggered()), this, SLOT(findApprovedLines()));
+
     setProjectActionsEnabled(false);
 
     addTableMenuItems();
@@ -806,4 +809,20 @@ void MainWindow::searchAndReplace()
         mProject->applyXslTransformationToTexts( QDir::current().absoluteFilePath("search-replace.xsl"), parameters );
         QMessageBox::information(this, tr("Gloss"), tr("The search-and-replace operation has been completed.") );
     }
+}
+
+void MainWindow::findApprovedLines()
+{
+    QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; "
+                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[count(words/word/@abg:approval-status='false')=0] "
+                            "return string( $x/item[@type='segnum']/text() )");
+    createSearchResultDock(query, tr("Approved lines") );
+}
+
+void MainWindow::findUnapprovedLines()
+{
+    QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; "
+                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
+                            "return string( $x/item[@type='segnum']/text() )");
+    createSearchResultDock(query, tr("Unapproved lines") );
 }

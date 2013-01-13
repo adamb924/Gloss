@@ -88,6 +88,9 @@
     <addaction name="actionInterpreation_by_id"/>
     <addaction name="actionText_form_by_id"/>
     <addaction name="actionGloss_by_id"/>
+    <addaction name="separator"/>
+    <addaction name="actionUnapproved_lines"/>
+    <addaction name="actionApproved_lines"/>
    </widget>
    <widget class="QMenu" name="menuReports">
     <property name="title">
@@ -284,6 +287,16 @@
   <action name="actionMerge_EAF">
    <property name="text">
     <string>Merge EAF...</string>
+   </property>
+  </action>
+  <action name="actionUnapproved_lines">
+   <property name="text">
+    <string>Unapproved lines</string>
+   </property>
+  </action>
+  <action name="actionApproved_lines">
+   <property name="text">
+    <string>Approved lines</string>
    </property>
   </action>
  </widget>
