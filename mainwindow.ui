@@ -61,6 +61,8 @@
     <addaction name="actionBulk_merge_EAF"/>
     <addaction name="separator"/>
     <addaction name="actionSearch_and_replace"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose_and_save_open_texts"/>
    </widget>
    <widget class="QMenu" name="menuGuts">
     <property name="title">
@@ -297,6 +299,11 @@
   <action name="actionApproved_lines">
    <property name="text">
     <string>Approved lines</string>
+   </property>
+  </action>
+  <action name="actionClose_and_save_open_texts">
+   <property name="text">
+    <string>Close and save open texts</string>
    </property>
   </action>
  </widget>

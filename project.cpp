@@ -386,6 +386,17 @@ void Project::saveOpenTexts()
     }
 }
 
+void Project::closeOpenTexts()
+{
+    QHashIterator<QString,Text*> iter(mTexts);
+    while(iter.hasNext())
+    {
+        iter.next();
+        closeText( iter.value() );
+    }
+    mTexts.clear();
+}
+
 QString Project::doDatabaseCleanup()
 {
     int nRemovedInterpretations = removeUnusedInterpretations();

@@ -95,6 +95,8 @@ private slots:
     void findApprovedLines();
     void findUnapprovedLines();
 
+    void closeOpenTexts();
+
 };
 
 #endif // MAINWINDOW_H

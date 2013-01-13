@@ -37,6 +37,7 @@ public:
 
     bool save();
     void saveOpenTexts();
+    void closeOpenTexts();
 
     void closeText(Text *text);
 

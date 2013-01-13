@@ -78,6 +78,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionUnapproved_lines, SIGNAL(triggered()), this, SLOT(findUnapprovedLines()));
     connect(ui->actionApproved_lines, SIGNAL(triggered()), this, SLOT(findApprovedLines()));
 
+    connect(ui->actionClose_and_save_open_texts, SIGNAL(triggered()), this, SLOT(closeOpenTexts()));
+
     setProjectActionsEnabled(false);
 
     addTableMenuItems();
@@ -825,4 +827,10 @@ void MainWindow::findUnapprovedLines()
                             "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
                             "return string( $x/item[@type='segnum']/text() )");
     createSearchResultDock(query, tr("Unapproved lines") );
+}
+
+void MainWindow::closeOpenTexts()
+{
+    mProject->saveOpenTexts();
+    mProject->closeOpenTexts();
 }
