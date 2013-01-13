@@ -563,15 +563,13 @@ void MainWindow::editLine( const QString & textName , int lineNumber )
 
     lineNumber--; // make it 0-indexed instead
 
-//    SinglePhraseEditDialog dialog( lineNumber, text->phrases()->at(lineNumber), text, mProject->dbAdapter(), this );
-//    dialog.exec();
     QList<int> lines;
     lines << lineNumber;
     GlossDisplayWidget *widget = new GlossDisplayWidget(  text, mProject, lines, this );
-//    widget->show();
 
     QDialog dialog(this);
     dialog.setWindowTitle( tr("%1 - Line %2").arg(text->name()).arg(lineNumber+1) );
+    dialog.resize( 835, 240 );
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(widget);
     dialog.setLayout(layout);

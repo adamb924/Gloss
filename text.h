@@ -45,9 +45,6 @@ public:
     WritingSystem baselineWritingSystem() const;
     void setBaselineWritingSystem(const WritingSystem & ws);
 
-//    WritingSystem analysisWritingSystem() const;
-//    void setAnalysisWritingSystem(const WritingSystem & ws);
-
     QString baselineText() const;
     void setBaselineText(const QString & text);
 
