@@ -228,9 +228,9 @@ Text* Project::textFromFlexText(const QString & filePath)
     Text *text = new Text(filePath,this);
     if( text->isValid() )
     {
-        // TODO: think about the best way to do this. It means that every text is serialized as soon as it is opened...
-        // Probably something more subtle is called for.
-        text->saveText();
+        // save the file if it doesn't exist in the temp directory
+        if( !QFile::exists( filepathFromName(text->name()) ) )
+            text->saveText();
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
         return text;
