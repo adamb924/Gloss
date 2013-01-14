@@ -61,6 +61,7 @@ private:
     virtual void clearWidgets(QLayout * layout) = 0;
 
     virtual void setLayoutFromText() = 0;
+    virtual void setLayoutFromText(QList<int> lines) = 0;
 
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
     virtual void addWordWidgets( int i , QLayout * flowLayout ) = 0;

@@ -141,7 +141,9 @@ void InterlinearDisplayWidget::editLine(int lineNumber)
     {
         mText->setBaselineTextForLine(lineNumber, dialog.text() );
         // TODO it crashes on this call:
-//        setLayoutFromText();
+        QList<int> lines;
+        lines << lineNumber;
+        setLayoutFromText(lines);
     }
 }
 

@@ -40,6 +40,7 @@ private:
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
 
     void setLayoutFromText();
+    void setLayoutFromText(QList<int> lines);
 
     //! \brief A concordance of analysis widgets, indexed by TextForm id
     QMultiHash<qlonglong,WordDisplayWidget*> mAnalysisWidgetConcordance;

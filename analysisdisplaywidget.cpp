@@ -56,6 +56,34 @@ void AnalysisDisplayWidget::setLayoutFromText()
     progress.setValue(mText->phrases()->count());
 }
 
+void AnalysisDisplayWidget::setLayoutFromText(QList<int> lines)
+{
+    QListIterator<int> iter(lines);
+    while(iter.hasNext())
+    {
+        int i = iter.next();
+
+        QLayout *flowLayout;
+
+        if( i >= mLineLayouts.count() ) // there is no layout here
+        {
+            flowLayout = addLine();
+            addPhrasalGlossLines(i);
+        }
+        else
+        {
+            flowLayout = mLineLayouts.at(i);
+            clearWidgets( flowLayout );
+        }
+
+        addLineLabel(i, flowLayout);
+        if( flowLayout->count() == 1 ) // it's either new or has been cleared for a refresh
+            addWordWidgets(i, flowLayout);
+
+        mText->phrases()->at(i)->setGuiRefreshRequest(false);
+    }
+}
+
 void AnalysisDisplayWidget::clearWidgets(QLayout * layout)
 {
     if( layout->count() == 0 )

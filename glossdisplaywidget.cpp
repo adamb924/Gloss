@@ -182,9 +182,14 @@ void GlossDisplayWidget::clearWidgets(QLayout * layout)
     QLayoutItem * item;
     while( ( item = layout->takeAt(0) ) != 0 )
     {
-        mWordDisplayWidgets.remove(item->widget());
-        mWdwByInterpretationId.remove( mWdwByInterpretationId.key(qobject_cast<WordDisplayWidget*>(item->widget())) );
-        delete item->widget();
+        WordDisplayWidget *wdw = qobject_cast<WordDisplayWidget*>(item->widget());
+        if( wdw != 0 )
+        {
+            mWordDisplayWidgets.remove(wdw);
+            mWdwByInterpretationId.remove( mWdwByInterpretationId.key(wdw) );
+            // I'm not sure why it crashes when I delete the InterlinearLineLabel, but since those objects are parented to the widget anyway, they should eventually be deleted just the same.
+            delete item->widget();
+        }
         delete item;
     }
 }
