@@ -733,7 +733,7 @@ void MainWindow::bulkMergeEaf()
                     failures++;
                     failureNames << textName;
                 }
-                mProject->closeText(text);
+                mProject->saveAndCloseText(text);
             }
             else
             {

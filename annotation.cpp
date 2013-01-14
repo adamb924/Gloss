@@ -2,12 +2,12 @@
 
 Annotation::Annotation()
 {
-    mIsNull = true;
+    mStartTime = -1;
+    mEndTime = -1;
 }
 
-Annotation::Annotation(qint64 startTime, qint64 endTime)
+Annotation::Annotation(qlonglong startTime, qlonglong endTime)
 {
-    mIsNull = false;
     mStartTime = startTime;
     mEndTime = endTime;
 }
@@ -24,5 +24,10 @@ qlonglong Annotation::end() const
 
 bool Annotation::isNull() const
 {
-    return mIsNull;
+    return mStartTime == -1 || mEndTime == -1;
+}
+
+bool Annotation::isValid() const
+{
+    return mStartTime != -1 && mEndTime != -1;
 }

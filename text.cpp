@@ -279,6 +279,14 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             {
                 inPhrase = true;
                 mPhrases.append( new Phrase );
+
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )
+                {
+                    qlonglong start = attr.value("http://www.adambaker.org/gloss.php","annotation-start").toString().toLongLong();
+                    qlonglong end = attr.value("http://www.adambaker.org/gloss.php","annotation-end").toString().toLongLong();
+                    mPhrases.last()->setAnnotation( Annotation(start, end) );
+                }
             }
             else if ( name == "item" )
             {
@@ -316,6 +324,12 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                         lineNumber = text.toInt();
                     }
                 }
+            }
+            else if(name == "interlinear-text")
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","audio-file") )
+                    mAudioFilePath = attr.value("http://www.adambaker.org/gloss.php","audio-file").toString();
             }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )

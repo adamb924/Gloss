@@ -8,17 +8,16 @@ class Annotation
 {
 public:
     Annotation();
-    Annotation(qint64 startTime, qint64 endTime);
+    Annotation(qlonglong startTime, qlonglong endTime);
 
     qlonglong start() const;
     qlonglong end() const;
 
     bool isNull() const;
+    bool isValid() const;
 
 private:
-    qint64 mStartTime, mEndTime;
-    bool mFlag;
-    bool mIsNull;
+    qlonglong mStartTime, mEndTime;
 };
 
 #endif // ANNOTATION_H
