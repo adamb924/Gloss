@@ -674,7 +674,7 @@ void MainWindow::mergeEaf()
         mProject->openText(dialog.text());
         Text *text = mProject->texts()->value(dialog.text());
         Text::MergeEafResult result = text->mergeEaf( dialog.filename() );
-        mProject->closeText(text);
+        mProject->saveAndCloseText(text);
         switch(result)
         {
         case Text::Success:

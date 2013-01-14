@@ -39,6 +39,7 @@ public:
     void saveOpenTexts();
     void closeOpenTexts();
 
+    void saveAndCloseText(Text *text);
     void closeText(Text *text);
 
     void deleteText(QString textName);

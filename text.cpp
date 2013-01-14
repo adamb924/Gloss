@@ -396,15 +396,13 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
 
     stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mDbAdapter->metaLanguage().flexString() );
 
+    if( !mAudioFilePath.isEmpty() )
+        stream->writeAttribute("http://www.adambaker.org/gloss.php","audio-file", mAudioFilePath );
+
     if( !mName.isEmpty() )
         serializeItem( "title" , mDbAdapter->metaLanguage() , mName , stream );
     if( !mComment.isEmpty() )
         serializeItem( "comment" , mDbAdapter->metaLanguage() , mComment , stream );
-
-    if( !mAudioFilePath.isEmpty() )
-        stream->writeAttribute("http://www.adambaker.org/gloss.php","audio-file", mAudioFilePath );
-    else
-        qDebug() << mAudioFilePath;
 
     stream->writeStartElement("paragraphs");
 
@@ -424,13 +422,14 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         stream->writeStartElement("paragraph");
         stream->writeStartElement("phrases");
         stream->writeStartElement("phrase");
-        serializeItem("segnum", mDbAdapter->metaLanguage(), QString("%1").arg(count) , stream );
 
         if( !phrase->annotation()->isNull() )
         {
             stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-start", QString("%1").arg(phrase->annotation()->start()) );
             stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-end", QString("%1").arg(phrase->annotation()->end()) );
         }
+
+        serializeItem("segnum", mDbAdapter->metaLanguage(), QString("%1").arg(count) , stream );
 
         stream->writeStartElement("words");
         for(int i=0; i<phrase->count(); i++ )
@@ -666,8 +665,6 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     if( result.count() != mPhrases.count() )
         return MergeEafWrongNumberOfAnnotations;
 
-    qDebug() << result.count();
-
     for(int i=0; i<result.count(); i++)
     {
         QStringList tokens = result.at(i).split(",");
@@ -675,15 +672,12 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
             continue;
         qlonglong start = tokens.at(0).toLongLong();
         qlonglong end = tokens.at(1).toLongLong();
-        qDebug() << start << end;
         mPhrases.at(i)->setAnnotation(Annotation(start, end));
     }
 
     // read the audio path
     query.setQuery( "string(/ANNOTATION_DOCUMENT/HEADER/MEDIA_DESCRIPTOR/@MEDIA_URL)" );
     query.evaluateTo(&mAudioFilePath);
-
-    qDebug() << mAudioFilePath;
 
     return MergeEafSuccess;
 }

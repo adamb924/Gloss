@@ -228,6 +228,8 @@ Text* Project::textFromFlexText(const QString & filePath)
     Text *text = new Text(filePath,this);
     if( text->isValid() )
     {
+        // TODO: think about the best way to do this. It means that every text is serialized as soon as it is opened...
+        // Probably something more subtle is called for.
         text->saveText();
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
@@ -352,6 +354,13 @@ QStringList Project::textNames() const
     }
     texts.sort();
     return texts;
+}
+
+void Project::saveAndCloseText(Text *text)
+{
+    text->saveText();
+    mTexts.remove( text->name() );
+    delete text;
 }
 
 void Project::closeText(Text *text)
