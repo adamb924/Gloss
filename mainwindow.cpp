@@ -523,7 +523,7 @@ void MainWindow::createSearchResultDock(const QString & query, const QString & r
     connect( tree, SIGNAL(requestEditLine(QString,int)), this, SLOT(editLine(QString,int)) );
 
     QWidget *intermediateWidget = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout(intermediateWidget);
     layout->addWidget( new QLabel(reminder) );
     layout->addWidget(tree);
     intermediateWidget->setLayout(layout);
