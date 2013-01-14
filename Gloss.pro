@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql xml xmlpatterns
+QT       += core gui sql xml xmlpatterns multimedia
 
 TARGET = Gloss
 TEMPLATE = app
@@ -55,7 +55,8 @@ SOURCES += main.cpp\
     searchqueryview.cpp \
     phrasedisplaywidget.cpp \
     mergeeafdialog.cpp \
-    annotation.cpp
+    annotation.cpp \
+    sound.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -101,7 +102,8 @@ HEADERS  += mainwindow.h \
     searchqueryview.h \
     phrasedisplaywidget.h \
     mergeeafdialog.h \
-    annotation.h
+    annotation.h \
+    sound.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

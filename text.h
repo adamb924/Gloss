@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QString>
 #include <QList>
+#include <QUrl>
 
 #include "textbit.h"
 #include "glossitem.h"
@@ -22,6 +23,7 @@ class QXmlStreamWriter;
 class QDir;
 class DatabaseAdapter;
 class QUrl;
+class Sound;
 
 class Text : public QObject
 {
@@ -85,16 +87,25 @@ public:
     bool isValid() const;
 
     QString audioFilePath() const;
-    void setAudioFilePath(const QString & path);
+    void setAudioFilePath(const QUrl & path);
 
     void setBaselineTextForLine( int i, const QString & text );
     QString baselineTextForLine( int i );
 
+
+    Sound* sound();
+    void setSound(const QUrl & filename);
+
+    //! \brief Plays the sound for the given 0-indexed line number, or returns an error.
+    bool playSoundForLine( int lineNumber );
+
+
 private:
+    Sound *mSound;
     QString mName, mComment;
     QString mBaselineText;
     bool mValid;
-    QString mAudioFilePath;
+    QUrl mAudioFileURL;
 
     Project *mProject;
     DatabaseAdapter *mDbAdapter;

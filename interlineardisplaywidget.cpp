@@ -44,7 +44,7 @@ void InterlinearDisplayWidget::clearData()
 
 void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 {
-    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), this);
+    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), mText->phrases()->at(i)->annotation()->isValid(), this);
     connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
     connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));
@@ -129,7 +129,7 @@ void InterlinearDisplayWidget::approveAll(int lineNumber)
 
 void InterlinearDisplayWidget::playSound(int lineNumber)
 {
-    // TODO implement this
+    mText->playSoundForLine(lineNumber);
 }
 
 void InterlinearDisplayWidget::editLine(int lineNumber)
@@ -140,7 +140,8 @@ void InterlinearDisplayWidget::editLine(int lineNumber)
     if( dialog.exec() == QDialog::Accepted )
     {
         mText->setBaselineTextForLine(lineNumber, dialog.text() );
-        setLayoutFromText();
+        // TODO it crashes on this call:
+//        setLayoutFromText();
     }
 }
 

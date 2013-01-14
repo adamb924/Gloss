@@ -556,7 +556,12 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber )
 
 void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
 {
-
+    mProject->openText(textName);
+    Text *text = mProject->texts()->value(textName, 0);
+    if( text == 0)
+        return;
+    lineNumber--;
+    text->playSoundForLine(lineNumber);
 }
 
 void MainWindow::editLine( const QString & textName , int lineNumber )

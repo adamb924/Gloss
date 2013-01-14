@@ -21,14 +21,17 @@
 #include "xsltproc.h"
 #include "morphologicalanalysis.h"
 #include "allomorph.h"
+#include "sound.h"
 
 Text::Text()
 {
+    mSound = 0;
     mValid = false;
 }
 
 Text::Text(const WritingSystem & ws, const QString & name, Project *project)
 {
+    mSound = 0;
     mName = name;
     mBaselineWritingSystem = ws;
     mProject = project;
@@ -38,6 +41,8 @@ Text::Text(const WritingSystem & ws, const QString & name, Project *project)
 
 Text::Text(const QString & filePath, Project *project)
 {
+    mSound = 0;
+
     mName = textNameFromPath(filePath);
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
@@ -48,6 +53,7 @@ Text::Text(const QString & filePath, Project *project)
 
 Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
 {
+    mSound = 0;
     mName = textNameFromPath(filePath);
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
@@ -61,6 +67,9 @@ Text::~Text()
 {
     qDeleteAll(mPhrases);
     mPhrases.clear();
+
+    if( mSound != 0 )
+        delete mSound;
 }
 
 QString Text::name() const
@@ -329,7 +338,9 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             {
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","audio-file") )
-                    mAudioFilePath = attr.value("http://www.adambaker.org/gloss.php","audio-file").toString();
+                {
+                    setSound( QUrl::fromEncoded( attr.value("http://www.adambaker.org/gloss.php","audio-file").toString().toUtf8() ) );
+                }
             }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
@@ -410,8 +421,8 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
 
     stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mDbAdapter->metaLanguage().flexString() );
 
-    if( !mAudioFilePath.isEmpty() )
-        stream->writeAttribute("http://www.adambaker.org/gloss.php","audio-file", mAudioFilePath );
+    if( !mAudioFileURL.isEmpty() )
+        stream->writeAttribute("http://www.adambaker.org/gloss.php","audio-file", mAudioFileURL.toString() );
 
     if( !mName.isEmpty() )
         serializeItem( "title" , mDbAdapter->metaLanguage() , mName , stream );
@@ -691,7 +702,13 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
 
     // read the audio path
     query.setQuery( "string(/ANNOTATION_DOCUMENT/HEADER/MEDIA_DESCRIPTOR/@MEDIA_URL)" );
-    query.evaluateTo(&mAudioFilePath);
+
+    QString audioPath;
+    query.evaluateTo(&audioPath);
+
+    QUrl theUrl = QUrl::fromEncoded(audioPath.trimmed().toUtf8());
+
+    setSound( theUrl );
 
     return MergeEafSuccess;
 }
@@ -704,12 +721,12 @@ QString Text::textNameFromPath(const QString & path) const
 
 QString Text::audioFilePath() const
 {
-    return mAudioFilePath;
+    return mAudioFileURL.toLocalFile();
 }
 
-void Text::setAudioFilePath(const QString & path)
+void Text::setAudioFilePath(const QUrl & path)
 {
-    mAudioFilePath = path;
+    mAudioFileURL = path;
 }
 
 void Text::setBaselineTextForLine( int i, const QString & text )
@@ -725,4 +742,36 @@ QString Text::baselineTextForLine( int i )
     if( i >= mPhrases.count() )
         return "";
     return mPhrases.at(i)->equivalentBaselineLineText();
+}
+
+Sound* Text::sound()
+{
+    return mSound;
+}
+
+void Text::setSound(const QUrl & filename)
+{
+    if( mSound != 0 )
+        delete mSound;
+
+    mAudioFileURL = filename;
+
+    if( !mAudioFileURL.isEmpty() )
+        mSound = new Sound(filename);
+}
+
+bool Text::playSoundForLine( int lineNumber )
+{
+    if( mSound == 0 )
+    {
+        QMessageBox::warning(0, tr("Error"), tr("This text has no associated sound file.") );
+        return false;
+    }
+    if( !mPhrases.at(lineNumber)->annotation()->isValid() )
+    {
+        QMessageBox::warning(0, tr("Error"), tr("This phrase does not have a valid annotation (%1, %2).").arg(mPhrases.at(lineNumber)->annotation()->start()).arg(mPhrases.at(lineNumber)->annotation()->end()) );
+        return false;
+    }
+
+    return mSound->playSegment( mPhrases.at(lineNumber)->annotation()->start() , mPhrases.at(lineNumber)->annotation()->end() );
 }

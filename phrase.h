@@ -14,6 +14,8 @@
 #include "textbit.h"
 #include "annotation.h"
 
+class Sound;
+
 class Phrase : public QObject, public QList<GlossItem*>
 {
     Q_OBJECT

@@ -31,7 +31,7 @@ PhraseDisplayWidget::PhraseDisplayWidget(int index, Phrase *phrase, Text * text,
 
 void PhraseDisplayWidget::addLineLabel()
 {
-    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(mIndex, QString("%1").arg(mIndex+1), this);
+    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(mIndex, QString("%1").arg(mIndex+1), mPhrase->annotation()->isValid(), this);
     connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll()));
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound()));
     mFlowLayout->addWidget(lineNumber);
