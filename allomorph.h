@@ -6,7 +6,7 @@
 class Allomorph
 {
 public:
-    enum Type { Stem,Prefix,Suffix,Infix,BoundStem,Proclitic,Enclitic,Simulfix,Suprafix };
+    enum Type { Stem,Prefix,Suffix,Infix,BoundStem,Proclitic,Enclitic,Simulfix,Suprafix,Null };
 
     Allomorph();
     Allomorph(qlonglong id, const TextBit & bit);
@@ -21,10 +21,10 @@ public:
 
     TextBit gloss(const WritingSystem & ws) const;
     void setGlosses(const TextBitHash & glosses);
+    QList<WritingSystem> glossLanguages() const;
 
     qlonglong id() const;
     void setId(qlonglong id);
-
 
     static QString getTypeString(Type t)
     {
@@ -48,8 +48,10 @@ public:
             return "Simulfix";
         case Suprafix:
             return "Suprafix";
+        case Null:
+        default:
+            return "Null";
         }
-        return "";
     }
 
 private:

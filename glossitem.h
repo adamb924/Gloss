@@ -37,6 +37,7 @@ public:
 
     ~GlossItem();
 
+    //! \brief Set the baseline text for the gloss item, guessing the proper interpretation
     void resetBaselineText( const TextBit & baselineBit );
 
     //! \brief Sets the id of this GlossItem (corresponding to the _id row of the Interpretations SQL table), and sets the data for the GlossItem accordingly. If \a takeFormsFromDatabase is true, the GlossItem is filled with values from the database.
@@ -81,12 +82,16 @@ public:
     //! \brief Returns the morphological analysis for the given writing system, which is created if none exists
     MorphologicalAnalysis* morphologicalAnalysis(const WritingSystem & ws);
 
+    //! \brief Returns a list of languages for which there are morphological analyses
+    QList<WritingSystem> morphologicalAnalysisLanguages() const;
+
     //! \brief Sets the morphological analysis for the given writing system
     void setMorphologicalAnalysis( const WritingSystem & ws, const MorphologicalAnalysis & analysis );
 
     //! \brief Sets the morphological analysis for the given writing system
     void setMorphologicalAnalysisFromDatabase( const WritingSystem & ws );
 
+    //! \brief Adds the given allomorph to the morphological analysis associated wit the specified writing system
     void addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem );
 
 

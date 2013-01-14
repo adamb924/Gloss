@@ -156,11 +156,23 @@ public:
     qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms );
     qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId );
 
-    //! \brief Adds the specified morphological analysis to the database. Any existing morphological analysis associated with the text form is deleted.
+    //! \brief Adds the specified morphological analysis to the database. Any existing morphological analysis associated with the text form is deleted. The
     void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs );
+
+    //! \brief Returns the morphological analysis associated with the given TextForm id. The analysis is empty if none is found in the database.
     MorphologicalAnalysis morphologicalAnalysisFromTextFormId( qlonglong textFormId );
-    Allomorph allomorphFromId( qlonglong id );
-    TextBitHash lexicalItemGlosses(qlonglong id) const;
+
+    //! \brief Return an Allomorph object with data from the allomorph id indicated
+    Allomorph allomorphFromId( qlonglong allomorphId );
+
+    //! \brief Return the glosses associated with the given lexical entry
+    TextBitHash lexicalItemGlosses(qlonglong lexicalEntryId) const;
+
+    //! \brief Return the lexical entry citation forms for the given allomorph
+    TextBitHash lexicalEntryCitationFormsForAllomorph(qlonglong id) const;
+
+    //! \brief Return the lexical entry glosses for the given allomorph
+    TextBitHash lexicalEntryGlossFormsForAllomorph(qlonglong id) const;
 
 private:
     QString mFilename;

@@ -273,3 +273,8 @@ void GlossItem::ensureValidIds()
             gIter.value().setId( mDbAdapter->glossId( gIter.value(), mId ) );
     }
 }
+
+QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
+{
+    return mMorphologicalAnalysis.keys();
+}

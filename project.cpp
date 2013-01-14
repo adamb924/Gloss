@@ -653,8 +653,6 @@ QStringList Project::getStringListFromXQuery(const QString & filepath, const QSt
 
 void Project::applyXslTransformationToTexts(const QString & xslFile, const QHash<QString,QString> & parameters)
 {
-qDebug() << xslFile;
-
     QStringList names = textNames();
     QStringListIterator iter(names);
     while(iter.hasNext())

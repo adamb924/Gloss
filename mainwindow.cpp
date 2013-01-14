@@ -673,7 +673,6 @@ void MainWindow::mergeEaf()
     {
         mProject->openText(dialog.text());
         Text *text = mProject->texts()->value(dialog.text());
-        qDebug() << dialog.filename();
         Text::MergeEafResult result = text->mergeEaf( dialog.filename() );
         mProject->closeText(text);
         switch(result)

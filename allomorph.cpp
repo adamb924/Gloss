@@ -4,11 +4,12 @@
 
 Allomorph::Allomorph()
 {
-
+    mType = Null;
 }
 
 Allomorph::Allomorph(qlonglong id, const TextBit & bit)
 {
+    mType = Null;
     mId = id;
     mTextBit = bit;
     setTypeFromString(bit.text());
@@ -16,8 +17,10 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit)
 
 Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses )
 {
+    mType = Null;
     mId = id;
     mTextBit = bit;
+    setTypeFromString(bit.text());
     mGlosses = glosses;
 }
 
@@ -95,4 +98,9 @@ TextBit Allomorph::gloss(const WritingSystem & ws) const
 void Allomorph::setGlosses(const TextBitHash & glosses)
 {
     mGlosses = glosses;
+}
+
+QList<WritingSystem> Allomorph::glossLanguages() const
+{
+    return mGlosses.keys();
 }
