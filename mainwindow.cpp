@@ -443,7 +443,10 @@ void MainWindow::searchGlossItems()
     if( dialog.exec() == QDialog::Accepted )
     {
         // Do the search of the texts
-        QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
         createSearchResultDock(query, tr("Glosses matching '%1'").arg(dialog.text()) );
     }
 }
@@ -456,6 +459,7 @@ void MainWindow::searchForInterpretationById()
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
+                                "order by number($x/item[@type='segnum']/text()) "
                                 "return string( $x/item[@type='segnum']/text() )").arg(id);
         createSearchResultDock(query, tr("Interpretation ID: %1").arg(id));
     }
@@ -469,6 +473,7 @@ void MainWindow::searchForTextFormById()
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
+                                "order by number($x/item[@type='segnum']/text()) "
                                 "return string( $x/item[@type='segnum']/text() )").arg(id);
         createSearchResultDock(query, tr("Text Form ID: %1").arg(id));
     }
@@ -482,6 +487,7 @@ void MainWindow::searchForGlossById()
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
+                                "order by number($x/item[@type='segnum']/text()) "
                                 "return string( $x/item[@type='segnum']/text() )").arg(id);
         createSearchResultDock(query, tr("Gloss ID: %1").arg(id));
     }
@@ -495,7 +501,10 @@ void MainWindow::substringSearchGlossItems()
     if( dialog.exec() == QDialog::Accepted )
     {
         // Do the search of the texts
-        QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
         createSearchResultDock(query, tr("Gloss containing '%1'").arg(dialog.text()));
     }
 }
@@ -505,9 +514,8 @@ void MainWindow::createSearchResultDock(const QString & query, const QString & r
     // Pop up a dockable window showing the results
     SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
     SearchQueryView *tree = new SearchQueryView(this);
-    tree->setSortingEnabled(true);
+    tree->setSortingEnabled(false);
     tree->setModel(model);
-    tree->sortByColumn(0, Qt::AscendingOrder);
     tree->setHeaderHidden(true);
 
     connect( tree, SIGNAL(requestOpenText(QString,int)), this, SLOT(focusTextPosition(QString,int)) );
@@ -819,16 +827,18 @@ void MainWindow::searchAndReplace()
 
 void MainWindow::findApprovedLines()
 {
-    QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; "
+    QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                             "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[count(words/word/@abg:approval-status='false')=0] "
+                            "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
     createSearchResultDock(query, tr("Approved lines") );
 }
 
 void MainWindow::findUnapprovedLines()
 {
-    QString query = QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; "
+    QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                             "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
+                            "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
     createSearchResultDock(query, tr("Unapproved lines") );
 }
