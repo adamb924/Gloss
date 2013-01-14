@@ -15,12 +15,13 @@
 #include "annotation.h"
 
 class Sound;
+class DatabaseAdapter;
 
 class Phrase : public QObject, public QList<GlossItem*>
 {
     Q_OBJECT
 public:
-    Phrase();
+    Phrase(DatabaseAdapter *dbAdapter);
     ~Phrase();
 
     //! \brief Returns a (read-only) iterator for the TextBitHash containing the phrase-level glosses. See gloss() for an alternate interface to this data structure.
@@ -41,11 +42,17 @@ public:
     void setAnnotation( const Annotation & annotation );
     Annotation* annotation();
 
+signals:
+    void phraseChanged();
+
 public slots:
     //! \brief Adds or updates the phrase-level gloss to \a bit. The gloss to be added or updated is indicated by the WritingSystem of \bit.
     void setPhrasalGloss( const TextBit & bit );
 
+    void splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
+
 private:
+    DatabaseAdapter *mDbAdapter;
     Annotation mAnnotation;
     TextBitHash mGlosses;
     bool mRequestGuiRefresh;

@@ -140,10 +140,7 @@ void InterlinearDisplayWidget::editLine(int lineNumber)
     if( dialog.exec() == QDialog::Accepted )
     {
         mText->setBaselineTextForLine(lineNumber, dialog.text() );
-        // TODO it crashes on this call:
-        QList<int> lines;
-        lines << lineNumber;
-        setLayoutFromText(lines);
+        setLayoutAsAppropriate();
     }
 }
 
@@ -159,4 +156,12 @@ void InterlinearDisplayWidget::updateGlossFormConcordance(LingEdit * edit, qlong
     qlonglong oldId = mGlossConcordance.key( edit );
     mGlossConcordance.remove(oldId, edit);
     mGlossConcordance.insert(newId, edit);
+}
+
+void InterlinearDisplayWidget::setLayoutAsAppropriate()
+{
+    if( mLines.isEmpty() )
+        setLayoutFromText();
+    else
+        setLayoutFromText(mLines);
 }

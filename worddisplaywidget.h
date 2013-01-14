@@ -73,8 +73,9 @@ signals:
     void textFormIdChanged(LingEdit * edit, qlonglong newId);
     void glossIdChanged(LingEdit * edit, qlonglong newId);
     void alternateInterpretationAvailableFor( int id );
-//    void analysisChanged(AnalysisWidget * analysisWidget, qlonglong textFormId);
     void morphologicalAnalysisChanged(qlonglong textFormId);
+
+    void splitWidgetInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
 
 public slots:
     void sendConcordanceUpdates();
@@ -103,6 +104,7 @@ private slots:
     void displayDatabaseReport();
 
     void editBaselineText();
+    void changeToTwoWords();
 
 };
 

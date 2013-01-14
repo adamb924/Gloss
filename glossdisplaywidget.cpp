@@ -16,7 +16,9 @@ GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QWidget *pa
 
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 
-    setLayoutFromText();
+    mLines.clear();
+
+    setLayoutAsAppropriate();
 }
 
 GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QList<int> lines, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
@@ -26,7 +28,7 @@ GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QList<int> 
 
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 
-    setLayoutFromText(lines);
+    setLayoutAsAppropriate();
 }
 
 void GlossDisplayWidget::updateGloss( const TextBit & bit )
@@ -79,6 +81,9 @@ void GlossDisplayWidget::setLayoutFromText()
     {
         progress.setValue(i);
 
+        // listen to refresh requests
+//        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
+
         QLayout *flowLayout;
 
         if( i >= mLineLayouts.count() ) // there is no layout here
@@ -112,6 +117,10 @@ void GlossDisplayWidget::setLayoutFromText(QList<int> lines)
     {
         int i = iter.next();
 
+        // TODO this crashes it
+        // listen to refresh requests
+//        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
+
         QLayout *flowLayout;
 
         if( i >= mLineLayouts.count() ) // there is no layout here
@@ -137,7 +146,7 @@ void GlossDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 {
     for(int j=0; j<mText->phrases()->at(i)->count(); j++)
     {
-        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
+        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j), mText->phrases()->at(i));
         connect( mText->phrases()->at(i)->at(j), SIGNAL(interpretationIdChanged(qlonglong)), wdw, SLOT(sendConcordanceUpdates()) );
         connect( wdw, SIGNAL(alternateInterpretationAvailableFor(int)), this, SLOT(otherInterpretationsAvailableFor(int)) );
         flowLayout->addWidget(wdw);
@@ -161,7 +170,7 @@ void GlossDisplayWidget::clearData()
     mTextFormConcordance.clear();
 }
 
-WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item)
+WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
     WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines , this, mProject->dbAdapter() );
     mWordDisplayWidgets << wdw;
@@ -171,6 +180,7 @@ WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item)
 
     connect( wdw, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), this, SLOT(updateGlossFormConcordance(LingEdit*,qlonglong)));
     connect( wdw, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), this, SLOT(updateTextFormConcordance(LingEdit*,qlonglong)));
+    connect( wdw, SIGNAL(splitWidgetInTwo(GlossItem*,TextBit,TextBit)), phrase, SLOT(splitGlossInTwo(GlossItem*,TextBit,TextBit)) );
 
     return wdw;
 }
@@ -193,4 +203,3 @@ void GlossDisplayWidget::clearWidgets(QLayout * layout)
         delete item;
     }
 }
-

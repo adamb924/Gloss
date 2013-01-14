@@ -11,6 +11,7 @@ class LingEdit;
 class WordDisplayWidget;
 class TextBit;
 class GlossItem;
+class Phrase;
 
 #include <QList>
 #include <QMultiHash>
@@ -49,9 +50,7 @@ private:
 
     void clearData();
 
-    QList<int> lines;
-
-    WordDisplayWidget* addWordDisplayWidget(GlossItem *item);
+    WordDisplayWidget* addWordDisplayWidget(GlossItem *item, Phrase *phrase);
 
     QMultiHash<qlonglong,WordDisplayWidget*> mWdwByInterpretationId; // change this to something generic?
 

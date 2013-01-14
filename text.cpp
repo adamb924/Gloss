@@ -160,7 +160,7 @@ void Text::setGlossItemsFromBaseline()
         for(int i=0; i<lines.count(); i++)
         {
             progress.setValue(i);
-            mPhrases.append( new Phrase );
+            mPhrases.append( new Phrase(mDbAdapter) );
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )
             {
@@ -287,7 +287,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             else if ( name == "phrase" )
             {
                 inPhrase = true;
-                mPhrases.append( new Phrase );
+                mPhrases.append( new Phrase(mDbAdapter) );
 
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )

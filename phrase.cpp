@@ -3,8 +3,9 @@
 
 #include <QtDebug>
 
-Phrase::Phrase()
+Phrase::Phrase(DatabaseAdapter *dbAdapter)
 {
+    mDbAdapter = dbAdapter;
     mRequestGuiRefresh = true;
 }
 
@@ -60,4 +61,20 @@ void Phrase::setAnnotation( const Annotation & annotation )
 Annotation* Phrase::annotation()
 {
     return & mAnnotation;
+}
+
+void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo )
+{
+    GlossItem *one = new GlossItem( wordOne, mDbAdapter );
+    GlossItem *two = new GlossItem( wordTwo, mDbAdapter );
+
+    int index = indexOf( glossItem );
+    if( index != -1 )
+    {
+        delete at(index);
+        replace(index, two);
+        insert( index , one );
+        mRequestGuiRefresh = true;
+        emit phraseChanged();
+    }
 }

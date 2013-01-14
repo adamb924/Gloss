@@ -154,6 +154,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     QMenu menu(this);
 
     menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
+    menu.addAction(tr("Change to two words"), this, SLOT(changeToTwoWords()));
 
     // Approved button
     QAction *approved = new QAction(tr("Approved"),&menu);
@@ -542,4 +543,16 @@ void WordDisplayWidget::editBaselineText()
     dialog.setWindowTitle(tr("Edit baseline text (%1)").arg(mGlossItem->baselineText().writingSystem().name()));
     if( dialog.exec() == QDialog::Accepted )
         mGlossItem->resetBaselineText( dialog.textBit() );
+}
+
+void WordDisplayWidget::changeToTwoWords()
+{
+    GenericTextInputDialog dialog( mGlossItem->baselineText() , this );
+    dialog.setWindowTitle(tr("Split the word with a space"));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        QStringList items = dialog.text().split(QRegExp("\\s"));
+        if( items.count() == 2 )
+            emit splitWidgetInTwo( mGlossItem, TextBit(items.at(0), mGlossItem->baselineWritingSystem()), TextBit(items.at(1), mGlossItem->baselineWritingSystem()) );
+    }
 }

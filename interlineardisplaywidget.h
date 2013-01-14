@@ -49,6 +49,9 @@ private slots:
     void playSound(int lineNumber);
     void editLine(int lineNumber);
 
+protected slots:
+    void setLayoutAsAppropriate();
+
 protected:
     Text *mText;
     Project *mProject;
@@ -59,6 +62,7 @@ private:
 
     //! \brief Removes and deletes all widgets from the given \a layout
     virtual void clearWidgets(QLayout * layout) = 0;
+
 
     virtual void setLayoutFromText() = 0;
     virtual void setLayoutFromText(QList<int> lines) = 0;
@@ -77,6 +81,8 @@ protected:
     QLayout* addLine();
 
     QVBoxLayout *mLayout;
+
+    QList<int> mLines;
 
     void clearData();
 
