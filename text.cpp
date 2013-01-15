@@ -363,12 +363,6 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject->dbAdapter()));
                 mPhrases.last()->last()->setApprovalStatus(approvalStatus);
 
-                // check the database for whether there are multiple interpretations for the baseline text
-                if( mDbAdapter->hasMultipleCandidateInterpretations( mPhrases.last()->last()->baselineText() ) )
-                    mPhrases.last()->last()->setCandidateNumber(GlossItem::MultipleOption);
-                else
-                    mPhrases.last()->last()->setCandidateNumber(GlossItem::SingleOption);
-
                 inWord = false;
                 hasValidId = false;
                 baselineText = "";
