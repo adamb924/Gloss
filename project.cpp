@@ -409,9 +409,18 @@ void Project::closeOpenTexts()
 
 QString Project::doDatabaseCleanup()
 {
+    QProgressDialog progress(tr("Cleaning up database..."), QString(), 0, 4, 0);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setValue( progress.value() + 1 );
+
     int nRemovedInterpretations = removeUnusedInterpretations();
+    progress.setValue( progress.value() + 1 );
+
     int nRemovedGlosses = removeUnusedGlosses();
+    progress.setValue( progress.value() + 1 );
+
     int nRemovedTextForms = removeUnusedTextForms();
+
     return tr("%1 unused interpretations removed, %2 unused glosses removed, %3 unused text forms removed").arg(nRemovedInterpretations).arg(nRemovedGlosses).arg(nRemovedTextForms);
 }
 

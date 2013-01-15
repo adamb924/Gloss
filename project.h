@@ -18,6 +18,7 @@ class InterlinearItemType;
 class TextBit;
 class DatabaseAdapter;
 class QUrl;
+class QProgressDialog;
 
 class Project : public QObject
 {
