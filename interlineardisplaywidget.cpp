@@ -165,4 +165,5 @@ void InterlinearDisplayWidget::setLayoutAsAppropriate()
         setLayoutFromText();
     else
         setLayoutFromText(mLines);
+    setEnabled(true);
 }

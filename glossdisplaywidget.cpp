@@ -14,8 +14,6 @@ GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QWidget *pa
     mPhrasalGlossLines = mProject->dbAdapter()->glossPhrasalGlossLines();
     mInterlinearDisplayLines = mProject->dbAdapter()->glossInterlinearLines();
 
-    connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
-
     mLines.clear();
 
     setLayoutAsAppropriate();
@@ -26,7 +24,7 @@ GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QList<int> 
     mPhrasalGlossLines = mProject->dbAdapter()->glossPhrasalGlossLines();
     mInterlinearDisplayLines = mProject->dbAdapter()->glossInterlinearLines();
 
-    connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
+    connect( text, SIGNAL(baselineTextChanged()), this, SLOT(baselineTextUpdated()));
 
     mLines = lines;
 
@@ -87,9 +85,6 @@ void GlossDisplayWidget::setLayoutFromText()
     for(int i=0; i< mText->phrases()->count(); i++)
     {
         progress.setValue(i);
-
-        // listen to refresh requests
-        //        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
 
         QLayout *flowLayout;
 

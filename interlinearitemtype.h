@@ -12,7 +12,8 @@
 class InterlinearItemType {
 public:
     enum LineType {
-        Immutable,
+        ImmutableText,
+        ImmutableGloss,
         Text,
         Gloss,
         Analysis,

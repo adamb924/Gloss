@@ -30,9 +30,9 @@ void SearchReplaceForm::setFromDatabase( const QString & databaseIndex )
 {
     qlonglong id = databaseIndex.toLongLong();
     TextBit bit;
-    if( mType.type() == InterlinearItemType::Text || mType.type() == InterlinearItemType::Immutable )
+    if( mType.type() == InterlinearItemType::Text || mType.type() == InterlinearItemType::ImmutableText )
         bit = mDbAdapter->textFormFromId( id );
-    else if ( mType.type() == InterlinearItemType::Gloss )
+    else if ( mType.type() == InterlinearItemType::Gloss || mType.type() == InterlinearItemType::ImmutableGloss)
         bit = mDbAdapter->glossFromId( id );
     ui->label->setText( bit.text() );
     if( mType.writingSystem() == bit.writingSystem() )

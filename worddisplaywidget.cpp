@@ -58,8 +58,12 @@ void WordDisplayWidget::setupLayout()
     {
         switch( mGlossLines.at(i).type() )
         {
-        case InterlinearItemType::Immutable:
-            immutableLabel = addImmutableLine( mGlossLines.at(i) , i == 0 );
+        case InterlinearItemType::ImmutableText:
+            immutableLabel = addImmutableTextFormLine( mGlossLines.at(i) , i == 0 );
+            mLayout->addWidget(immutableLabel);
+            break;
+        case InterlinearItemType::ImmutableGloss:
+            immutableLabel = addImmutableGlossLine( mGlossLines.at(i) , i == 0 );
             mLayout->addWidget(immutableLabel);
             break;
         case InterlinearItemType::Text:
@@ -118,13 +122,26 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
     return edit;
 }
 
-ImmutableLabel* WordDisplayWidget::addImmutableLine( const InterlinearItemType & glossLine, bool technicolor )
+ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearItemType & glossLine, bool technicolor )
 {
-    TextBit bit("",glossLine.writingSystem());
-    if( mGlossItem->textForms()->contains( glossLine.writingSystem() ))
-        bit = mGlossItem->textForm( glossLine.writingSystem() );
-    else if( mGlossItem->glosses()->contains( glossLine.writingSystem() ) )
-        bit = mGlossItem->gloss( glossLine.writingSystem() );
+    TextBit bit = mGlossItem->textForm( glossLine.writingSystem() );
+
+    ImmutableLabel *immutableLabel = new ImmutableLabel( bit, technicolor , this);
+    immutableLabel->setAlignment( mGlossLines.first().writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
+    immutableLabel->setCandidateNumber(mGlossItem->candidateNumber());
+    immutableLabel->setApprovalStatus(mGlossItem->approvalStatus());
+
+    mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
+
+    connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
+    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
+
+    return immutableLabel;
+}
+
+ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemType & glossLine, bool technicolor )
+{
+    TextBit bit = mGlossItem->gloss( glossLine.writingSystem() );
 
     ImmutableLabel *immutableLabel = new ImmutableLabel( bit, technicolor , this);
     immutableLabel->setAlignment( mGlossLines.first().writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
@@ -172,7 +189,8 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     {
         switch( mGlossLines.at(i).type() )
         {
-        case InterlinearItemType::Immutable:
+        case InterlinearItemType::ImmutableText:
+        case InterlinearItemType::ImmutableGloss:
             break;
         case InterlinearItemType::Text:
             addTextFormSubmenu( &menu , mGlossLines.at(i).writingSystem() );
@@ -401,8 +419,12 @@ void WordDisplayWidget::fillData()
             case InterlinearItemType::Gloss:
                 mGlossEdits[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
                 break;
-            case InterlinearItemType::Immutable:
+            case InterlinearItemType::ImmutableText:
                 mImmutableLines[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->textForm( mGlossLines.at(i).writingSystem() ) );
+                break;
+            case InterlinearItemType::ImmutableGloss:
+                mImmutableLines[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
+                break;
             case InterlinearItemType::Analysis:
                 // TODO how does one fill the data here? what does this function even do?
                 break;

@@ -37,21 +37,15 @@ void AnalysisDisplayWidget::setLayoutFromText()
             flowLayout = addLine();
             addPhrasalGlossLines(i);
         }
-        else if( mText->phrases()->at(i)->guiRefreshRequest() )
+        else
         {
             flowLayout = mLineLayouts.at(i);
             clearWidgets( flowLayout );
-        }
-        else
-        {
-            continue;
         }
 
         addLineLabel(i, flowLayout);
         if( flowLayout->count() == 1 ) // it's either new or has been cleared for a refresh
             addWordWidgets(i, flowLayout);
-
-        mText->phrases()->at(i)->setGuiRefreshRequest(false);
     }
     progress.setValue(mText->phrases()->count());
 }
@@ -110,6 +104,12 @@ void AnalysisDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 
 WordDisplayWidget* AnalysisDisplayWidget::addWordDisplayWidget(GlossItem *item)
 {
+    // disable the whole widget if there is no form for the first line
+    // TODO for some reason this is not working
+    if( item->textForm( mInterlinearDisplayLines.first().writingSystem() ).text().isEmpty() )
+        setEnabled(false);
+
+
     // TODO don't hardwire the text direction like this
     // make it read the alignment from the writing system of the first member of mInterlinearDisplayLines
     WordDisplayWidget *wdw = new WordDisplayWidget( item , Qt::AlignLeft, mInterlinearDisplayLines , this, mProject->dbAdapter() );

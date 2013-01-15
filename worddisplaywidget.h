@@ -53,7 +53,8 @@ private:
     void setupLayout();
     LingEdit* addGlossLine( const InterlinearItemType & glossLine );
     LingEdit* addTextFormLine( const InterlinearItemType & glossLine );
-    ImmutableLabel* addImmutableLine( const InterlinearItemType & glossLine, bool technicolor );
+    ImmutableLabel* addImmutableTextFormLine( const InterlinearItemType & glossLine, bool technicolor );
+    ImmutableLabel* addImmutableGlossLine( const InterlinearItemType & glossLine, bool technicolor );
     AnalysisWidget* addAnalysisWidget( const InterlinearItemType & glossLine );
 
     QVBoxLayout *mLayout;

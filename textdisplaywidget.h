@@ -32,7 +32,7 @@ public:
 private:
     Ui::TextDisplayWidget *ui;
     Project *mProject;
-    GlossDisplayWidget *mInterlinear;
+    GlossDisplayWidget *mGloss;
     AnalysisDisplayWidget *mAnalysis;
     Text *mText;
 

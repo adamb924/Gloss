@@ -125,7 +125,8 @@ private:
     bool readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 
 signals:
-    void baselineTextChanged(const QString & baseline);
+    void baselineTextChanged();
+    void glossItemsChanged();
     void idChanged(TextBit *b, qlonglong oldId);
 };
 

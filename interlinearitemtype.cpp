@@ -27,9 +27,21 @@ InterlinearItemType::InterlinearItemType(const QString & type, const WritingSyst
     {
         mType = InterlinearItemType::Analysis;
     }
+    else if( string == "analysis" )
+    {
+        mType = InterlinearItemType::Analysis;
+    }
+    else if( string == "immutable-text" )
+    {
+        mType = InterlinearItemType::ImmutableText;
+    }
+    else if( string == "immutable-gloss" )
+    {
+        mType = InterlinearItemType::ImmutableGloss;
+    }
     else
     {
-        mType = InterlinearItemType::Immutable;
+        mType = InterlinearItemType::Null;
     }
     mWritingSystem = ws;
 }

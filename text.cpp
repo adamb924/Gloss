@@ -124,7 +124,7 @@ void Text::setBaselineText(const QString & text)
     {
         mBaselineText = text;
         setGlossItemsFromBaseline();
-        emit baselineTextChanged(mBaselineText);
+        emit baselineTextChanged();
     }
 }
 
@@ -170,6 +170,7 @@ void Text::setGlossItemsFromBaseline()
         }
         progress.setValue(lines.count());
     }
+    emit glossItemsChanged();
 }
 
 void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
@@ -244,12 +245,15 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
     int lineNumber = -1;
     bool inWord = false;
     bool inPhrase = false;
+    bool inMorphemes = false;
     bool hasValidId = false;
     qlonglong id = -1;
     GlossItem::ApprovalStatus approvalStatus = GlossItem::Unapproved;
     QXmlStreamReader stream(file);
     TextBitHash textForms;
     TextBitHash glossForms;
+    MorphologicalAnalysis morphologicalAnalysis;
+    WritingSystem maWs;
     QString baselineText = "";
 
     while (!stream.atEnd())
@@ -263,6 +267,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 inWord = true;
                 textForms.clear();
                 glossForms.clear();
+                morphologicalAnalysis.clear();
 
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
@@ -309,7 +314,11 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     if( text.isEmpty() )
                         continue;
 
-                    if( inWord )
+                    if( inMorphemes )
+                    {
+                        // TODO do something with this information, eventually
+                    }
+                    else if( inWord )
                     {
                         qlonglong itemId = attr.hasAttribute("http://www.adambaker.org/gloss.php","id") ? attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() : -1;
                         // there's no handling here for the case where itemId == -1
@@ -343,6 +352,21 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     setSound( QUrl::fromEncoded( attr.value("http://www.adambaker.org/gloss.php","audio-file").toString().toUtf8() ) );
                 }
             }
+            else if(name == "morphemes")
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","lang") )
+                {
+                    maWs = mDbAdapter->writingSystem( attr.value("http://www.adambaker.org/gloss.php","lang").toString() );
+                    inMorphemes = true;
+                }
+            }
+            else if(name == "morph")
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","id") )
+                    morphologicalAnalysis.append( mDbAdapter->allomorphFromId( attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() ) );
+            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
@@ -364,6 +388,9 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                 mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject->dbAdapter()));
                 mPhrases.last()->last()->setApprovalStatus(approvalStatus);
 
+                if( !morphologicalAnalysis.isEmpty() )
+                    mPhrases.last()->last()->setMorphologicalAnalysis( maWs, morphologicalAnalysis );
+
                 inWord = false;
                 hasValidId = false;
                 baselineText = "";
@@ -373,6 +400,10 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             else if(name == "phrase")
             {
                 inPhrase = false;
+            }
+            else if(name == "morphemes")
+            {
+                inMorphemes = false;
             }
         }
     }
@@ -497,6 +528,7 @@ bool Text::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *stream) co
 
 
     TextBitHashIterator textIter(*glossItem->textForms());
+
     while (textIter.hasNext())
     {
         textIter.next();
@@ -504,6 +536,7 @@ bool Text::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *stream) co
     }
 
     TextBitHashIterator glossIter(*glossItem->glosses());
+
     while (glossIter.hasNext())
     {
         glossIter.next();
@@ -552,7 +585,7 @@ bool Text::serializeAllomorph(const Allomorph & allomorph, QXmlStreamWriter *str
         serializeItem( "cf", citationIter.key(), citationIter.value().text(), stream, citationIter.value().id() );
     }
 
-    TextBitHash glossForms = mDbAdapter->lexicalEntryCitationFormsForAllomorph( allomorph.id() );
+    TextBitHash glossForms = mDbAdapter->lexicalEntryGlossFormsForAllomorph( allomorph.id() );
     TextBitHashIterator glossIter(glossForms);
     while( glossIter.hasNext() )
     {

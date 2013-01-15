@@ -841,19 +841,21 @@ Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId )
 
     q.prepare("select LexicalEntryId,Form,WritingSystem from Allomorph where _id=:_id;");
     q.bindValue(":_id", allomorphId);
-    if( q.exec() && q.next() )
+    if( q.exec() )
     {
-        qlonglong lexicalEntryId = q.value(0).toLongLong();
-        TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
-        TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
-        return Allomorph(allomorphId, bit, glosses );
+        if( q.next() )
+        {
+            qlonglong lexicalEntryId = q.value(0).toLongLong();
+            TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
+            TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
+            return Allomorph(allomorphId, bit, glosses );
+        }
     }
     else
     {
         qWarning() << "DatabaseAdapter::allomorphFromId" << q.lastError().text() << q.executedQuery();
-        return Allomorph();
     }
-
+    return Allomorph();
 }
 
 WritingSystem DatabaseAdapter::metaLanguage() const

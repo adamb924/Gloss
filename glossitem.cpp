@@ -263,6 +263,7 @@ void GlossItem::loadStringsFromDatabase()
         tfIter.next();
 
         TextBit fromDatabase = mDbAdapter->textFormFromId( tfIter.value().id() );
+
         if( fromDatabase.isNull() )
             tfIter.value().setId( mDbAdapter->newTextForm( mId, tfIter.value() ) );
         else

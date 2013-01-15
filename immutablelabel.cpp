@@ -2,6 +2,8 @@
 
 #include "textbit.h"
 
+#include <QtDebug>
+
 ImmutableLabel::ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *parent) :
         QLabel(parent)
 {
