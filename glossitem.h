@@ -21,6 +21,7 @@
 class TextBit;
 class Project;
 class DatabaseAdapter;
+class Concordance;
 
 class GlossItem : public QObject
 {
@@ -30,10 +31,10 @@ public:
     enum ApprovalStatus { Approved, Unapproved };
 
     //! \brief Construct a GlossItem that is empty except for the baseline TextBit.
-    GlossItem(const TextBit & baselineBit, DatabaseAdapter *dbAdapter, QObject *parent = 0);
+    GlossItem(const TextBit & baselineBit, Project *project, QObject *parent = 0);
 
     //! \brief Construct a GlossItem with the given WritingSystem, and gloss and text forms.
-    GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent = 0);
+    GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent = 0);
 
     ~GlossItem();
 
@@ -131,6 +132,7 @@ private:
     TextBitHash mGlosses;
 
     DatabaseAdapter *mDbAdapter;
+    Concordance *mConcordance;
 
     CandidateNumber mCandidateNumber;
     ApprovalStatus mApprovalStatus;

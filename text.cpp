@@ -160,7 +160,7 @@ void Text::setGlossItemsFromBaseline()
         for(int i=0; i<lines.count(); i++)
         {
             progress.setValue(i);
-            mPhrases.append( new Phrase(mDbAdapter) );
+            mPhrases.append( new Phrase(mProject) );
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )
             {
@@ -180,7 +180,7 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
 
     QStringList words = line.split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
     for(int i=0; i<words.count(); i++)
-        phrase->append(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject->dbAdapter()));
+        phrase->append(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
 
     phrase->setGuiRefreshRequest(true);
 }
@@ -292,7 +292,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
             else if ( name == "phrase" )
             {
                 inPhrase = true;
-                mPhrases.append( new Phrase(mDbAdapter) );
+                mPhrases.append( new Phrase(mProject) );
 
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )
@@ -385,7 +385,7 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
                     }
                 }
 
-                mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject->dbAdapter()));
+                mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject ));
                 mPhrases.last()->last()->setApprovalStatus(approvalStatus);
 
                 if( !morphologicalAnalysis.isEmpty() )

@@ -1,33 +1,37 @@
 #include "glossitem.h"
+
 #include "textbit.h"
 #include "project.h"
 #include "databaseadapter.h"
+#include "textbit.h"
+#include "concordance.h"
 
 #include <QtDebug>
 #include <QHash>
-#include "textbit.h"
 
-GlossItem::GlossItem(const TextBit & baselineBit, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *parent) : QObject(parent)
 {
     mBaselineWritingSystem = baselineBit.writingSystem();
     mTextForms.insert(mBaselineWritingSystem, baselineBit );
     mId = -1;
 
-    mDbAdapter = dbAdapter;
+    mDbAdapter = project->dbAdapter();
+    mConcordance = project->concordance();
 
     guessInterpretation();
 
     setCandidateNumberFromDatabase();
 }
 
-GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, DatabaseAdapter *dbAdapter, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
 {
     mBaselineWritingSystem = ws;
 
     mTextForms = textForms;
     mGlosses = glossForms;
 
-    mDbAdapter = dbAdapter;
+    mDbAdapter = project->dbAdapter();
+    mConcordance = project->concordance();
 
     if( mId == -1 )
         guessInterpretation();

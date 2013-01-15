@@ -13,6 +13,7 @@
 
 #include "writingsystem.h"
 #include "text.h"
+#include "concordance.h"
 
 class InterlinearItemType;
 class TextBit;
@@ -76,12 +77,16 @@ public:
     void applyXslTransformationToTexts(const QString & xslFile, const QHash<QString,QString> & parameters);
     bool applyXslTransformationToText(const QString & name, const QString & xslFile, const QHash<QString,QString> & parameters);
 
+    Concordance* concordance();
+
 public slots:
 
 private:
     DatabaseAdapter *mDbAdapter;
     QString mDatabaseFilename;
     QString mDatabasePath;
+
+    Concordance mConcordance;
 
     QString mProjectPath;
 

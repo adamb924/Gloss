@@ -16,12 +16,13 @@
 
 class Sound;
 class DatabaseAdapter;
+class Project;
 
 class Phrase : public QObject, public QList<GlossItem*>
 {
     Q_OBJECT
 public:
-    Phrase(DatabaseAdapter *dbAdapter);
+    Phrase(Project *project);
     ~Phrase();
 
     //! \brief Returns a (read-only) iterator for the TextBitHash containing the phrase-level glosses. See gloss() for an alternate interface to this data structure.
@@ -54,6 +55,7 @@ public slots:
 private:
     Q_DISABLE_COPY(Phrase)
 
+    Project *mProject;
     DatabaseAdapter *mDbAdapter;
     Annotation mAnnotation;
     TextBitHash mGlosses;

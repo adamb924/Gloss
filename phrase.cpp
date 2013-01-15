@@ -1,11 +1,13 @@
 #include "phrase.h"
 #include "glossitem.h"
+#include "project.h"
 
 #include <QtDebug>
 
-Phrase::Phrase(DatabaseAdapter *dbAdapter)
+Phrase::Phrase(Project *project)
 {
-    mDbAdapter = dbAdapter;
+    mProject = project;
+    mDbAdapter = mProject->dbAdapter();
     mRequestGuiRefresh = true;
 }
 
@@ -65,8 +67,8 @@ Annotation* Phrase::annotation()
 
 void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo )
 {
-    GlossItem *one = new GlossItem( wordOne, mDbAdapter );
-    GlossItem *two = new GlossItem( wordTwo, mDbAdapter );
+    GlossItem *one = new GlossItem( wordOne, mProject );
+    GlossItem *two = new GlossItem( wordTwo, mProject );
 
     int index = indexOf( glossItem );
     if( index != -1 )

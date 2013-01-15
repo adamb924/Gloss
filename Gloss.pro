@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     phrasedisplaywidget.cpp \
     mergeeafdialog.cpp \
     annotation.cpp \
-    sound.cpp
+    sound.cpp \
+    concordance.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -103,7 +104,8 @@ HEADERS  += mainwindow.h \
     phrasedisplaywidget.h \
     mergeeafdialog.h \
     annotation.h \
-    sound.h
+    sound.h \
+    concordance.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

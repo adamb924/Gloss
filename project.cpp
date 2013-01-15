@@ -715,3 +715,8 @@ bool Project::applyXslTransformationToText(const QString & name, const QString &
 
     return true;
 }
+
+Concordance* Project::concordance()
+{
+    return &mConcordance;
+}
