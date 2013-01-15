@@ -28,6 +28,10 @@ class Sound;
 class Text : public QObject
 {
     Q_OBJECT
+
+    friend class FlexTextReader;
+    friend class FlexTextWriter;
+
 public:
     enum MergeTranslationResult { Success, MergeStuckOldFileDeleted, MergeStuckOldFileStillThere, XslTranslationError };
     enum MergeEafResult { MergeEafSuccess, MergeEafFailure, MergeEafWrongNumberOfAnnotations };

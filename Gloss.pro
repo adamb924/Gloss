@@ -57,7 +57,9 @@ SOURCES += main.cpp\
     mergeeafdialog.cpp \
     annotation.cpp \
     sound.cpp \
-    concordance.cpp
+    concordance.cpp \
+    flextextwriter.cpp \
+    flextextreader.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -105,7 +107,9 @@ HEADERS  += mainwindow.h \
     mergeeafdialog.h \
     annotation.h \
     sound.h \
-    concordance.h
+    concordance.h \
+    flextextwriter.h \
+    flextextreader.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
