@@ -13,6 +13,7 @@
 #include <QDomDocument>
 #include <QXmlQuery>
 #include <QDesktopServices>
+#include <QProgressDialog>
 
 #include "messagehandler.h"
 #include "xsltproc.h"
@@ -490,15 +491,22 @@ void Project::setTextXmlFromDatabase()
 {
     QStringList names = textNames();
     QStringListIterator iter(names);
+
+    QProgressDialog progress(tr("Setting FlexText text..."), tr("Cancel"), 0, names.count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+    int i=0;
     while(iter.hasNext())
     {
         QString textName = iter.next();
+
+        progress.setValue(i++);
+        progress.setLabelText( tr("Setting FlexText text... %1").arg(textName) );
         if( openText(textName) )
-        {
-            mTexts[textName]->saveText();
-            closeText(mTexts[textName]);
-        }
+            saveAndCloseText( mTexts[textName] );
+        if( progress.wasCanceled() )
+            break;
     }
+    progress.setValue(names.count());
 }
 
 bool Project::countItemsInTexts(const QString & filename, const QString & typeString)
