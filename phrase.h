@@ -52,6 +52,8 @@ public slots:
     void splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
 
 private:
+    Q_DISABLE_COPY(Phrase)
+
     DatabaseAdapter *mDbAdapter;
     Annotation mAnnotation;
     TextBitHash mGlosses;

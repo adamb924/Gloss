@@ -34,6 +34,7 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project,
 
 InterlinearDisplayWidget::~InterlinearDisplayWidget()
 {
+
 }
 
 void InterlinearDisplayWidget::clearData()

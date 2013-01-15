@@ -1,23 +1,47 @@
 #include "singlephraseeditdialog.h"
 #include "ui_singlephraseeditdialog.h"
 
-#include "phrasedisplaywidget.h"
-#include "phrase.h"
-#include "databaseadapter.h"
+#include "glossdisplaywidget.h"
 #include "text.h"
 
-SinglePhraseEditDialog::SinglePhraseEditDialog(int index, Phrase *phrase, Text * text, DatabaseAdapter *dbAdapter,  QWidget *parent) :
+SinglePhraseEditDialog::SinglePhraseEditDialog(int lineNumber, Project *project, Text * text, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SinglePhraseEditDialog)
 {
-    ui->setupUi(this);
-    ui->scrollArea->setBackgroundRole(QPalette::Light);
-    ui->scrollArea->setWidget( new PhraseDisplayWidget(index, phrase, text, 0, dbAdapter) );
+    mLineNumber = lineNumber;
+    mProject = project;
+    mText = text;
 
-    setWindowTitle( tr("%1 - Line %2").arg(text->name()).arg(index+1) );
+    mGlossDisplayWidget = 0;
+    ui->setupUi(this);
+
+    setWindowTitle( tr("%1 - Line %2").arg(text->name()).arg(lineNumber+1) );
+
+    refreshLayout();
 }
 
 SinglePhraseEditDialog::~SinglePhraseEditDialog()
 {
     delete ui;
+}
+
+void SinglePhraseEditDialog::refreshLayout()
+{
+//    while( ui->layout->count() > 0 )
+//    {
+//        QLayoutItem * item = ui->layout->takeAt(0);
+//        delete item->widget();
+//        delete item;
+//    }
+//    if( mGlossDisplayWidget != 0 )
+//        delete mGlossDisplayWidget;
+
+    QList<int> lines;
+    lines << mLineNumber;
+    mGlossDisplayWidget = new GlossDisplayWidget( mText, mProject, lines, this );
+
+//    connect( mText->phrases()->at(mLineNumber), SIGNAL(phraseChanged()), this, SLOT(refreshLayout()) );
+    connect( mText->phrases()->at(mLineNumber), SIGNAL(phraseChanged()), this, SLOT(accept()) );
+
+    ui->layout->addWidget( mGlossDisplayWidget );
 }

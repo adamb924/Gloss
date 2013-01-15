@@ -28,7 +28,14 @@ GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QList<int> 
 
     connect( text, SIGNAL(baselineTextChanged(QString)), this, SLOT(baselineTextUpdated(QString)));
 
+    mLines = lines;
+
     setLayoutAsAppropriate();
+}
+
+GlossDisplayWidget::~GlossDisplayWidget()
+{
+
 }
 
 void GlossDisplayWidget::updateGloss( const TextBit & bit )
@@ -82,7 +89,7 @@ void GlossDisplayWidget::setLayoutFromText()
         progress.setValue(i);
 
         // listen to refresh requests
-//        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
+        //        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
 
         QLayout *flowLayout;
 
@@ -116,10 +123,6 @@ void GlossDisplayWidget::setLayoutFromText(QList<int> lines)
     while(iter.hasNext())
     {
         int i = iter.next();
-
-        // TODO this crashes it
-        // listen to refresh requests
-//        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
 
         QLayout *flowLayout;
 
@@ -187,11 +190,9 @@ WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item, Phr
 
 void GlossDisplayWidget::clearWidgets(QLayout * layout)
 {
-    if( layout->count() == 0 )
-        return;
-    QLayoutItem * item;
-    while( ( item = layout->takeAt(0) ) != 0 )
+    while( layout->count() > 0 )
     {
+        QLayoutItem * item = layout->takeAt(0);
         WordDisplayWidget *wdw = qobject_cast<WordDisplayWidget*>(item->widget());
         if( wdw != 0 )
         {

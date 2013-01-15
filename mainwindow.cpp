@@ -583,15 +583,13 @@ void MainWindow::editLine( const QString & textName , int lineNumber )
 
     QList<int> lines;
     lines << lineNumber;
-    GlossDisplayWidget *widget = new GlossDisplayWidget(  text, mProject, lines, this );
 
-    QDialog dialog(this);
-    dialog.setWindowTitle( tr("%1 - Line %2").arg(text->name()).arg(lineNumber+1) );
-    dialog.resize( 835, 240 );
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(widget);
-    dialog.setLayout(layout);
-    dialog.exec();
+    SinglePhraseEditDialog *dialog;
+    do
+    {
+        dialog = new SinglePhraseEditDialog(lineNumber, mProject, text, this);
+    }
+    while( dialog->exec() == QDialog::Accepted );
 }
 
 void MainWindow::rawXQuery()

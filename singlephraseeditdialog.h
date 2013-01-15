@@ -7,20 +7,29 @@ namespace Ui {
     class SinglePhraseEditDialog;
 }
 
-class Phrase;
+class Project;
 class DatabaseAdapter;
 class Text;
+class GlossDisplayWidget;
 
 class SinglePhraseEditDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    SinglePhraseEditDialog( int index, Phrase *phrase, Text * text, DatabaseAdapter *dbAdapter,  QWidget *parent = 0);
+    SinglePhraseEditDialog( int lineNumber, Project *project, Text * text, QWidget *parent = 0);
     ~SinglePhraseEditDialog();
+
+private slots:
+    void refreshLayout();
 
 private:
     Ui::SinglePhraseEditDialog *ui;
+
+    int mLineNumber;
+    Project *mProject;
+    Text *mText;
+    GlossDisplayWidget *mGlossDisplayWidget;
 };
 
 #endif // SINGLEPHRASEEDITDIALOG_H

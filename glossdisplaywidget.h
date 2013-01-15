@@ -22,6 +22,7 @@ class GlossDisplayWidget : public InterlinearDisplayWidget
 public:
     GlossDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
     GlossDisplayWidget(Text *text, Project *project, QList<int> lines, QWidget *parent = 0);
+    ~GlossDisplayWidget();
 
 public slots:
 
