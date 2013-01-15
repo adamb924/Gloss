@@ -8,6 +8,7 @@ ImmutableLabel::ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *p
     setText(bit.text());
     mTextBit = bit;
     mTechnicolor = technicolor;
+    setToolTip(mTextBit.writingSystem().name());
     updateStyle();
 }
 
@@ -26,6 +27,7 @@ void ImmutableLabel::setApprovalStatus(GlossItem::ApprovalStatus status)
 void ImmutableLabel::setTextBit(const TextBit & bit)
 {
     mTextBit = bit;
+    setToolTip(mTextBit.writingSystem().name());
     setText( bit.text() );
 }
 
