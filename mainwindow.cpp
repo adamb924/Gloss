@@ -609,8 +609,8 @@ void MainWindow::removeUnusedGlossItems()
 
 void MainWindow::sqlQueryDialog()
 {
-    DatabaseQueryDialog dialog(mProject->dbAdapter()->dbFilename());
-    dialog.exec();
+    DatabaseQueryDialog *dialog = new DatabaseQueryDialog(mProject->dbAdapter()->dbFilename(), this);
+    dialog->show();
 }
 
 void MainWindow::bulkMergeTranslations()
