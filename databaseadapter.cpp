@@ -355,7 +355,7 @@ void DatabaseAdapter::updateInterpretationGloss( const TextBit & bit )
         qWarning() << "DatabaseAdapter::updateInterpretationGloss" << q.lastError().text() << q.executedQuery();
 }
 
-TextBitHash DatabaseAdapter::getInterpretationGlosses(qlonglong id) const
+TextBitHash DatabaseAdapter::guessInterpretationGlosses(qlonglong id) const
 {
     TextBitHash glosses;
     QSqlQuery q(QSqlDatabase::database(mFilename));
@@ -367,7 +367,7 @@ TextBitHash DatabaseAdapter::getInterpretationGlosses(qlonglong id) const
     return glosses;
 }
 
-TextBitHash DatabaseAdapter::getInterpretationTextForms(qlonglong id) const
+TextBitHash DatabaseAdapter::guessInterpretationTextForms(qlonglong id) const
 {
     TextBitHash textForms;
     QSqlQuery q(QSqlDatabase::database(mFilename));

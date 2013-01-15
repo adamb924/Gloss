@@ -72,12 +72,12 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
         {
             mTextForms.clear();
             mGlosses.clear();
-            mTextForms = mDbAdapter->getInterpretationTextForms(mId);
-            mGlosses = mDbAdapter->getInterpretationGlosses(mId);
+            mTextForms = mDbAdapter->guessInterpretationTextForms(mId);
+            mGlosses = mDbAdapter->guessInterpretationGlosses(mId);
         }
         else
         {
-            ensureValidIds();
+            loadStringsFromDatabase();
         }
 
         emit interpretationIdChanged(mId);
@@ -255,22 +255,30 @@ void GlossItem::addAllomorphToAnalysis( const Allomorph & allomorph, const Writi
     mMorphologicalAnalysis[writingSystem].append( allomorph );
 }
 
-void GlossItem::ensureValidIds()
+void GlossItem::loadStringsFromDatabase()
 {
     TextBitMutableHashIterator tfIter( mTextForms );
     while(tfIter.hasNext())
     {
         tfIter.next();
-        if( tfIter.value().id() == -1 )
-            tfIter.value().setId( mDbAdapter->textFormId( tfIter.value(), mId ) );
+
+        TextBit fromDatabase = mDbAdapter->textFormFromId( tfIter.value().id() );
+        if( fromDatabase.isNull() )
+            tfIter.value().setId( mDbAdapter->newTextForm( mId, tfIter.value() ) );
+        else
+            tfIter.value().setText( fromDatabase.text() );
     }
 
     TextBitMutableHashIterator gIter( mGlosses );
     while(gIter.hasNext())
     {
         gIter.next();
-        if( gIter.value().id() == -1 )
-            gIter.value().setId( mDbAdapter->glossId( gIter.value(), mId ) );
+
+        TextBit fromDatabase = mDbAdapter->glossFromId( gIter.value().id() );
+        if( fromDatabase.isNull() )
+            gIter.value().setId( mDbAdapter->newGloss( mId, gIter.value() ) );
+        else
+            gIter.value().setText( fromDatabase.text() );
     }
 }
 

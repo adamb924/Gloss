@@ -83,16 +83,16 @@ public:
     //! \brief Creates a gloss for the given interpretation and content in the \a bit. Or, if the a gloss with the same form, writing system, and id already exists, the _id of that gloss is returned and no new gloss is created. Returns the _id of the gloss.
     qlonglong newGloss(qlonglong interpretationId, const TextBit & bit);
 
-    //! \brief Returns a list of glosses for the given Interpretation _id (\a id)
-    TextBitHash getInterpretationGlosses(qlonglong id) const;
+    //! \brief Returns a list of glosses for the given Interpretation _id (\a id), with one gloss per WritingSystem in the database, if one is available. This is not guaranteed to be a helpful return!
+    TextBitHash guessInterpretationGlosses(qlonglong id) const;
 
-    //! \brief Returns a list of text forms for the given Interpretation _id (\a id)
-    TextBitHash getInterpretationTextForms(qlonglong id) const;
+    //! \brief Returns a list of text forms for the given Interpretation _id (\a id), with one gloss per WritingSystem in the database, if one is available. This is not guaranteed to be a helpful return!
+    TextBitHash guessInterpretationTextForms(qlonglong id) const;
 
-    //! \brief Returns a TextBit with the data from the \a row of Glosses
+    //! \brief Returns a TextBit with the data from the \a row of Glosses, or an empty TextBit if none exists
     TextBit glossFromId(qlonglong id) const;
 
-    //! \brief Returns a TextBit with the data from the \a row of TextForms
+    //! \brief Returns a TextBit with the data from the \a row of TextForms, or an empty TextBit if none exists
     TextBit textFormFromId(qlonglong id) const;
 
     qlonglong textFormId(const TextBit & bit, qlonglong interpretationId);
