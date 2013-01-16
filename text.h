@@ -11,6 +11,7 @@
 #include <QString>
 #include <QList>
 #include <QUrl>
+#include <QFileInfo>
 
 #include "textbit.h"
 #include "glossitem.h"
@@ -35,12 +36,13 @@ class Text : public QObject
 public:
     enum MergeTranslationResult { Success, MergeStuckOldFileDeleted, MergeStuckOldFileStillThere, XslTranslationError };
     enum MergeEafResult { MergeEafSuccess, MergeEafFailure, MergeEafWrongNumberOfAnnotations };
+    enum FlexTextReadResult { FlexTextReadSuccess, FlexTextReadBaselineNotFound, FlexTextReadXmlReadError, FlexTextReadNoAttempt };
 
     Text();
-    ~Text();
     Text(const WritingSystem & ws, const QString & name, Project *project);
     Text(const QString & filePath, Project *project);
     Text(const QString & filePath, const WritingSystem &, Project *project);
+    ~Text();
 
     QString name() const;
     void setName(const QString & name);
@@ -62,7 +64,11 @@ public:
 
     Text::MergeEafResult mergeEaf(const QString & filename );
 
-    QString textNameFromPath(const QString & path) const;
+    static QString textNameFromPath(const QString & path)
+    {
+        QFileInfo info(path);
+        return info.baseName();
+    }
 
     //! \brief Serialize the text to an XML file
     bool serialize(const QString & filename) const;
@@ -103,8 +109,11 @@ public:
     //! \brief Plays the sound for the given 0-indexed line number, or returns an error.
     bool playSoundForLine( int lineNumber );
 
+    FlexTextReadResult readResult() const;
 
 private:
+    FlexTextReadResult mReadResult;
+
     Sound *mSound;
     QString mName, mComment;
     QString mBaselineText;
@@ -126,7 +135,7 @@ private:
     void setLineOfGlossItems(Phrase *phrase , const QString & line );
 
     //! \brief Sets the text from the given file. Returns false if this fails.
-    bool readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
+    Text::FlexTextReadResult readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 
 signals:
     void baselineTextChanged();

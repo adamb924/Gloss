@@ -28,6 +28,8 @@ public:
     Project();
     ~Project();
 
+    enum OpenResult { Success, FileNotFound, XmlReadError };
+
     bool create(QString filename);
     bool readFromFile(QString filename);
 
@@ -59,7 +61,7 @@ public:
 
     QHash<QString,Text*>* texts();
 
-    bool openText(const QString & name);
+    OpenResult openText(const QString & name);
 
     QString filepathFromName(const QString & name) const;
 

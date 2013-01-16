@@ -310,13 +310,10 @@ void MainWindow::importFlexText()
     {
         if( QFile::exists(dialog.filename()) )
         {
-            Text *text = mProject->textFromFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+            mProject->textFromFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+            Text *text = mProject->texts()->value( Text::textNameFromPath(dialog.filename()) );
             if(text != 0)
                 openText(text->name());
-        }
-        else
-        {
-            QMessageBox::critical(this,tr("Error reading file"),tr("The file %1 could not be opened.").arg(dialog.filename()));
         }
     }
 }
@@ -367,24 +364,27 @@ void MainWindow::openText()
 
 TextDisplayWidget* MainWindow::openText(const QString & textName)
 {
-    if( ! mProject->openText(textName) )
+    Text *text;
+    TextDisplayWidget *subWindow = 0;
+    switch( mProject->openText(textName) )
     {
-        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened.").arg(textName));
-        return 0;
+    case Project::Success:
+        text = mProject->texts()->value(textName, 0);
+        if( text != 0 )
+        {
+            subWindow = new TextDisplayWidget(text, mProject, this);
+            ui->mdiArea->addSubWindow(subWindow);
+            subWindow->show();
+        }
+        break;
+    case Project::FileNotFound:
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. The filename %2 could not be found.").arg(textName).arg(mProject->filepathFromName(textName)));
+        break;
+    case Project::XmlReadError:
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. There was a problem reading the XML.").arg(textName));
+        break;
     }
-    Text *text = mProject->texts()->value(textName, 0);
-    if( text == 0 )
-    {
-        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened.").arg(textName));
-        return 0;
-    }
-    else
-    {
-        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
-        ui->mdiArea->addSubWindow(subWindow);
-        subWindow->show();
-        return subWindow;
-    }
+    return subWindow;
 }
 
 void MainWindow::writingSystems()

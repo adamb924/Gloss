@@ -26,6 +26,7 @@
 Text::Text()
 {
     mSound = 0;
+    mReadResult = FlexTextReadNoAttempt;
     mValid = false;
 }
 
@@ -36,6 +37,7 @@ Text::Text(const WritingSystem & ws, const QString & name, Project *project)
     mBaselineWritingSystem = ws;
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
+    mReadResult = FlexTextReadNoAttempt;
     mValid = true;
 }
 
@@ -48,7 +50,9 @@ Text::Text(const QString & filePath, Project *project)
     mDbAdapter = mProject->dbAdapter();
 
     QFile file(filePath);
-    mValid = readTextFromFlexText(&file,true);
+    mReadResult = readTextFromFlexText(&file,true);
+    if( mReadResult != Text::FlexTextReadSuccess )
+        mValid = false;
 }
 
 Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
@@ -60,7 +64,9 @@ Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
     mBaselineWritingSystem = ws;
 
     QFile file(filePath);
-    mValid = readTextFromFlexText(&file,false);
+    mReadResult = readTextFromFlexText(&file,false);
+    if( mReadResult != Text::FlexTextReadSuccess )
+        mValid = false;
 }
 
 Text::~Text()
@@ -227,12 +233,12 @@ bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
     }
 }
 
-bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
+Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 {
     if( baselineInfoFromFile)
     {
         if( !setBaselineWritingSystemFromFile(file->fileName()) )
-            return false;
+            return Text::FlexTextReadBaselineNotFound;
     }
 
     file->open(QFile::ReadOnly);
@@ -412,10 +418,10 @@ bool Text::readTextFromFlexText(QFile *file, bool baselineInfoFromFile)
 
     if (stream.hasError()) {
         qWarning() << "Text::readTextFromFlexText error with xml reading";
-        return false;
+        return Text::FlexTextReadXmlReadError;
     }
     setBaselineFromGlossItems();
-    return true;
+    return Text::FlexTextReadSuccess;
 }
 
 bool Text::serialize(const QString & filename) const
@@ -457,7 +463,7 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
 
     stream->writeStartElement("paragraphs");
 
-    QProgressDialog progress(tr("Saving text %1...").arg(mName), "Cancel", 0, mPhrases.count(), 0);
+    QProgressDialog progress(tr("Saving text %1...").arg(mName), QString(), 0, mPhrases.count(), 0);
     progress.setWindowModality(Qt::WindowModal);
 
     int count = 0;
@@ -466,8 +472,6 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         count++;
 
         progress.setValue(count);
-        if(progress.wasCanceled())
-            return false;
 
         // this rather profligate nesting seems to be a feature of flextext files
         stream->writeStartElement("paragraph");
@@ -741,12 +745,6 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     return MergeEafSuccess;
 }
 
-QString Text::textNameFromPath(const QString & path) const
-{
-    QFileInfo info(path);
-    return info.baseName();
-}
-
 QString Text::audioFilePath() const
 {
     return mAudioFileURL.toLocalFile();
@@ -802,4 +800,9 @@ bool Text::playSoundForLine( int lineNumber )
     }
 
     return mSound->playSegment( mPhrases.at(lineNumber)->annotation()->start() , mPhrases.at(lineNumber)->annotation()->end() );
+}
+
+Text::FlexTextReadResult Text::readResult() const
+{
+    return mReadResult;
 }

@@ -238,6 +238,22 @@ Text* Project::textFromFlexText(const QString & filePath)
     }
     else
     {
+        switch( text->readResult() )
+        {
+        case Text::FlexTextReadSuccess:
+            QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened, but no error was reported.").arg(text->name()));
+            break;
+        case Text::FlexTextReadBaselineNotFound:
+            QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because the baseline text could not be read.").arg(text->name()));
+            break;
+        case Text::FlexTextReadXmlReadError:
+            QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because of a low-level XML reading error. ").arg(text->name()));
+            break;
+        case Text::FlexTextReadNoAttempt:
+            QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because no attempt was made to open it. (Figure that one out!)").arg(text->name()));
+            break;
+        }
+
         delete text;
         return 0;
     }
@@ -324,23 +340,21 @@ QHash<QString,Text*>* Project::texts()
     return &mTexts;
 }
 
-bool Project::openText(const QString & name)
+Project::OpenResult Project::openText(const QString & name)
 {
     // if the text is already available
     if( mTexts.contains(name) )
-        return true;
+        return Project::Success;
 
-    QDir tempDir = getTempDir();
-    QString filename = QString("%1.flextext").arg(name);
-    QString filePath = tempDir.absoluteFilePath( filename );
+    QString filePath = filepathFromName(name);
     if( QFile::exists( filePath ) )
     {
         textFromFlexText( filePath );
-        return true;
+        return Project::Success;
     }
     else
     {
-        return false;
+        return Project::FileNotFound;
     }
 }
 
@@ -510,7 +524,7 @@ void Project::setTextXmlFromDatabase()
 
         progress.setValue(i++);
         progress.setLabelText( tr("Setting FlexText text... %1").arg(textName) );
-        if( openText(textName) )
+        if( openText(textName) == Project::Success )
             saveAndCloseText( mTexts[textName] );
         if( progress.wasCanceled() )
             break;
