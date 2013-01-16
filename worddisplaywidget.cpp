@@ -172,6 +172,10 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu.addAction(tr("Change to two words"), this, SLOT(changeToTwoWords()));
+    menu.addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
+    menu.addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
+
+    menu.addSeparator();
 
     // Approved button
     QAction *approved = new QAction(tr("Approved"),&menu);
@@ -577,4 +581,14 @@ void WordDisplayWidget::changeToTwoWords()
         if( items.count() == 2 )
             emit splitWidgetInTwo( mGlossItem, TextBit(items.at(0), mGlossItem->baselineWritingSystem()), TextBit(items.at(1), mGlossItem->baselineWritingSystem()) );
     }
+}
+
+void WordDisplayWidget::mergeWithNext()
+{
+    emit mergeGlossItemWithNext( mGlossItem );
+}
+
+void WordDisplayWidget::mergeWithPrevious()
+{
+    emit mergeGlossItemWithPrevious( mGlossItem );
 }

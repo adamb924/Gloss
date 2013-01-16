@@ -51,6 +51,8 @@ public slots:
     void setPhrasalGloss( const TextBit & bit );
 
     void splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
+    void mergeGlossItemWithNext( GlossItem *glossItem );
+    void mergeGlossItemWithPrevious( GlossItem *glossItem );
 
 private:
     Q_DISABLE_COPY(Phrase)

@@ -77,6 +77,8 @@ signals:
     void morphologicalAnalysisChanged(qlonglong textFormId);
 
     void splitWidgetInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
+    void mergeGlossItemWithNext( GlossItem *glossItem );
+    void mergeGlossItemWithPrevious( GlossItem *glossItem );
 
 public slots:
     void sendConcordanceUpdates();
@@ -106,6 +108,8 @@ private slots:
 
     void editBaselineText();
     void changeToTwoWords();
+    void mergeWithNext();
+    void mergeWithPrevious();
 
 };
 

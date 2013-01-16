@@ -80,3 +80,29 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
         emit phraseChanged();
     }
 }
+
+void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
+{
+    int index = indexOf( glossItem );
+    if( index == -1 || index >= count() -1 )
+        return;
+    TextBit newBit = TextBit( at(index)->baselineText().text() + at(index+1)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
+    GlossItem *newGlossItem = new GlossItem( newBit, mProject );
+    replace( index, newGlossItem );
+    delete takeAt( index+1 );
+    mRequestGuiRefresh = true;
+    emit phraseChanged();
+}
+
+void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
+{
+    int index = indexOf( glossItem );
+    if( index <= 0 || index >= count() )
+        return;
+    TextBit newBit = TextBit( at(index-1)->baselineText().text() + at(index)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
+    GlossItem *newGlossItem = new GlossItem( newBit, mProject );
+    replace( index, newGlossItem );
+    delete takeAt( index-1 );
+    mRequestGuiRefresh = true;
+    emit phraseChanged();
+}
