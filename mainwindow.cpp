@@ -521,6 +521,7 @@ void MainWindow::createSearchResultDock(const QString & query, const QString & r
     connect( tree, SIGNAL(requestOpenText(QString,int)), this, SLOT(focusTextPosition(QString,int)) );
     connect( tree, SIGNAL(requestPlaySound(QString,int)), this, SLOT(playSoundForLine(QString,int)) );
     connect( tree, SIGNAL(requestEditLine(QString,int)), this, SLOT(editLine(QString,int)) );
+    connect( tree, SIGNAL(requestEditLineWithContext(QString,int)), this, SLOT(editLineWithContext(QString,int)) );
 
     QWidget *intermediateWidget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(intermediateWidget);
@@ -587,7 +588,31 @@ void MainWindow::editLine( const QString & textName , int lineNumber )
     SinglePhraseEditDialog *dialog;
     do
     {
-        dialog = new SinglePhraseEditDialog(lineNumber, mProject, text, this);
+        dialog = new SinglePhraseEditDialog(lines, mProject, text, this);
+    }
+    while( dialog->exec() == QDialog::Accepted );
+}
+
+void MainWindow::editLineWithContext( const QString & textName , int lineNumber )
+{
+    mProject->openText(textName);
+    Text *text = mProject->texts()->value(textName, 0);
+    if( text == 0)
+        return;
+
+    lineNumber--; // make it 0-indexed instead
+
+    QList<int> lines;
+    if( lineNumber > 0 )
+        lines << lineNumber-1;
+    lines << lineNumber;
+    if( lineNumber < text->phrases()->count()-1 )
+        lines << lineNumber+1;
+
+    SinglePhraseEditDialog *dialog;
+    do
+    {
+        dialog = new SinglePhraseEditDialog(lines, mProject, text, this);
     }
     while( dialog->exec() == QDialog::Accepted );
 }

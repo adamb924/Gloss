@@ -13,6 +13,7 @@ signals:
     void requestOpenText( const QString & textName , int lineNumber );
     void requestPlaySound( const QString & textName , int lineNumber );
     void requestEditLine( const QString & textName , int lineNumber );
+    void requestEditLineWithContext( const QString & textName , int lineNumber );
 
 public slots:
     void contextMenu( const QPoint & pos );
@@ -24,6 +25,7 @@ private slots:
     void openText();
     void playSound();
     void editLine();
+    void editLineWithContext();
 };
 
 #endif // SEARCHQUERYVIEW_H

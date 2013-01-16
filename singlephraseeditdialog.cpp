@@ -4,18 +4,34 @@
 #include "glossdisplaywidget.h"
 #include "text.h"
 
-SinglePhraseEditDialog::SinglePhraseEditDialog(int lineNumber, Project *project, Text * text, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::SinglePhraseEditDialog)
+#include <QList>
+
+SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *project, Text * text, QWidget *parent) :
+        QDialog(parent),
+        ui(new Ui::SinglePhraseEditDialog)
 {
-    mLineNumber = lineNumber;
+    mLines = lines;
     mProject = project;
     mText = text;
 
     mGlossDisplayWidget = 0;
     ui->setupUi(this);
 
-    setWindowTitle( tr("%1 - Line %2").arg(text->name()).arg(lineNumber+1) );
+    QString label;
+    if( mLines.count() > 1 )
+    {
+        QString lineString;
+        for(int i=0; i<mLines.count(); i++)
+        {
+            lineString.append(QString("%1").arg(i+1));
+            if( i != mLines.count() - 1 )
+                lineString.append(", ");
+        }
+    }
+    else
+    {
+        setWindowTitle( tr("%1 - Line %2").arg(text->name()).arg(mLines.first()+0) );
+    }
 
     refreshLayout();
 }
@@ -27,21 +43,19 @@ SinglePhraseEditDialog::~SinglePhraseEditDialog()
 
 void SinglePhraseEditDialog::refreshLayout()
 {
-//    while( ui->layout->count() > 0 )
-//    {
-//        QLayoutItem * item = ui->layout->takeAt(0);
-//        delete item->widget();
-//        delete item;
-//    }
-//    if( mGlossDisplayWidget != 0 )
-//        delete mGlossDisplayWidget;
+    //    while( ui->layout->count() > 0 )
+    //    {
+    //        QLayoutItem * item = ui->layout->takeAt(0);
+    //        delete item->widget();
+    //        delete item;
+    //    }
+    //    if( mGlossDisplayWidget != 0 )
+    //        delete mGlossDisplayWidget;
 
-    QList<int> lines;
-    lines << mLineNumber;
-    mGlossDisplayWidget = new GlossDisplayWidget( mText, mProject, lines, this );
+    mGlossDisplayWidget = new GlossDisplayWidget( mText, mProject, mLines, this );
 
-//    connect( mText->phrases()->at(mLineNumber), SIGNAL(phraseChanged()), this, SLOT(refreshLayout()) );
-    connect( mText->phrases()->at(mLineNumber), SIGNAL(phraseChanged()), this, SLOT(accept()) );
+    for(int i=0; i<mLines.count(); i++)
+        connect( mText->phrases()->at(mLines.at(i)), SIGNAL(phraseChanged()), this, SLOT(accept()) );
 
     ui->layout->addWidget( mGlossDisplayWidget );
 }

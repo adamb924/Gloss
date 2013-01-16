@@ -7,6 +7,8 @@ namespace Ui {
     class SinglePhraseEditDialog;
 }
 
+#include <QList>
+
 class Project;
 class DatabaseAdapter;
 class Text;
@@ -17,7 +19,7 @@ class SinglePhraseEditDialog : public QDialog
     Q_OBJECT
 
 public:
-    SinglePhraseEditDialog( int lineNumber, Project *project, Text * text, QWidget *parent = 0);
+    SinglePhraseEditDialog( QList<int> lines, Project *project, Text * text, QWidget *parent = 0);
     ~SinglePhraseEditDialog();
 
 private slots:
@@ -26,7 +28,7 @@ private slots:
 private:
     Ui::SinglePhraseEditDialog *ui;
 
-    int mLineNumber;
+    QList<int> mLines;
     Project *mProject;
     Text *mText;
     GlossDisplayWidget *mGlossDisplayWidget;

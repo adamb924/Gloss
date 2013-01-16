@@ -77,6 +77,7 @@ private slots:
     void focusTextPosition( const QString & textName , int lineNumber );
     void playSoundForLine( const QString & textName , int lineNumber );
     void editLine( const QString & textName , int lineNumber );
+    void editLineWithContext( const QString & textName , int lineNumber );
     void rawXQuery();
     void removeUnusedGlossItems();
     void sqlQueryDialog();
