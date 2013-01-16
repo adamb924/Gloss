@@ -29,8 +29,8 @@ public slots:
     void updateGloss( const TextBit & bit );
     void updateText( const TextBit & bit );
 
-    void removeGlossFromConcordance( LingEdit * edit );
-    void removeTextFormFromConcordance( LingEdit * edit );
+    void removeGlossFromConcordance( QObject * edit );
+    void removeTextFormFromConcordance( QObject * edit );
 
     void otherInterpretationsAvailableFor(int id);
 

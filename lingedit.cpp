@@ -21,11 +21,6 @@ LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
 
-LingEdit::~LingEdit()
-{
-    emit beingDestroyed(this);
-}
-
 void LingEdit::setTextBit( const TextBit & bit )
 {
     if( mTextBit != bit )

@@ -97,7 +97,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     if( mInterlinearDisplayWidget != 0)
     {
         connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
-        connect(edit, SIGNAL(beingDestroyed(LingEdit*)), mInterlinearDisplayWidget, SLOT(removeGlossFromConcordance(LingEdit*)));
+        connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeGlossFromConcordance(QObject*)));
     }
 
     return edit;
@@ -116,7 +116,7 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
     if( mInterlinearDisplayWidget != 0 )
     {
         connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
-        connect(edit, SIGNAL(beingDestroyed(LingEdit*)), mInterlinearDisplayWidget, SLOT(removeTextFormFromConcordance(LingEdit*)));
+        connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeTextFormFromConcordance(QObject*)));
     }
 
     return edit;

@@ -50,16 +50,18 @@ void GlossDisplayWidget::updateText( const TextBit & bit )
         edit->setTextBit( bit );
 }
 
-void GlossDisplayWidget::removeGlossFromConcordance( LingEdit * edit )
+void GlossDisplayWidget::removeGlossFromConcordance( QObject * edit )
 {
-    qlonglong id = mGlossConcordance.key( edit );
-    mGlossConcordance.remove( id , edit );
+    LingEdit *lingEdit = qobject_cast<LingEdit*>(edit);
+    qlonglong id = mGlossConcordance.key( lingEdit );
+    mGlossConcordance.remove( id , lingEdit );
 }
 
-void GlossDisplayWidget::removeTextFormFromConcordance( LingEdit * edit )
+void GlossDisplayWidget::removeTextFormFromConcordance( QObject * edit )
 {
-    qlonglong id = mTextFormConcordance.key( edit );
-    mTextFormConcordance.remove( id , edit );
+    LingEdit *lingEdit = qobject_cast<LingEdit*>(edit);
+    qlonglong id = mTextFormConcordance.key( lingEdit );
+    mTextFormConcordance.remove( id , lingEdit );
 }
 
 void GlossDisplayWidget::otherInterpretationsAvailableFor(int id)
