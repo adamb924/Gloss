@@ -41,12 +41,12 @@ void MergeTranslationDialog::checkParity()
     if( info.baseName() == ui->textCombo->currentText() )
     {
         ui->matchingLabel->setText(tr("The filename and text name match."));
-        ui->matchingLabel->setStyleSheet( "color: green;" );
+        ui->matchingLabel->setStyleSheet( "QLabel { color: green; }" );
     }
     else
     {
         ui->matchingLabel->setText(tr("The filename and text name do not match. (This is not necessarily wrong.)"));
-        ui->matchingLabel->setStyleSheet( "color: red;");
+        ui->matchingLabel->setStyleSheet( "QLabel { color: red; }");
     }
 }
 

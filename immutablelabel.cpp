@@ -49,5 +49,5 @@ void ImmutableLabel::updateStyle()
     {
         color = "#ffffff";
     }
-    setStyleSheet(QString("font-family: %1; font-size: %2pt; background-color: %3;").arg(mTextBit.writingSystem().fontFamily()).arg(mTextBit.writingSystem().fontSize()).arg(color));
+    setStyleSheet(QString("QLabel { font-family: %1; font-size: %2pt; background-color: %3; }").arg(mTextBit.writingSystem().fontFamily()).arg(mTextBit.writingSystem().fontSize()).arg(color));
 }
