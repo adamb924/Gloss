@@ -291,3 +291,8 @@ QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
     return mMorphologicalAnalysis.keys();
 }
+
+Concordance* GlossItem::concordance()
+{
+    return mConcordance;
+}

@@ -95,6 +95,7 @@ public:
     //! \brief Adds the given allomorph to the morphological analysis associated wit the specified writing system
     void addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem );
 
+    Concordance* concordance();
 
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes

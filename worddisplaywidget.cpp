@@ -92,13 +92,16 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     mGlossEdits.insert(glossLine.writingSystem(), edit);
 
     connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
-    connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
 
+    connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
     if( mInterlinearDisplayWidget != 0)
     {
         connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
         connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeGlossFromConcordance(QObject*)));
     }
+
+    // concordance replacement
+    connect(edit, SIGNAL(destroyed(QObject*)), mGlossItem->concordance(), SLOT(removeGlossFromConcordance(QObject*)));
 
     return edit;
 }
