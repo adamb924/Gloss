@@ -87,6 +87,7 @@
     <addaction name="actionSearch_gloss_items"/>
     <addaction name="actionSubstring_search_gloss_items"/>
     <addaction name="actionRaw_XQuery"/>
+    <addaction name="separator"/>
     <addaction name="actionInterpreation_by_id"/>
     <addaction name="actionText_form_by_id"/>
     <addaction name="actionGloss_by_id"/>
