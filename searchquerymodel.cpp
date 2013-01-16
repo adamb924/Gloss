@@ -14,7 +14,11 @@ SearchQueryModel::SearchQueryModel( const QString & queryString, const QSet<QStr
     mQuery = queryString;
 
     QStandardItem *parentItem = invisibleRootItem();
-    QSetIterator<QString> iter(*textPaths);
+
+    QStringList paths( QList<QString>::fromSet(*textPaths) );
+    paths.sort();
+
+    QStringListIterator iter(paths);
     while(iter.hasNext())
     {
         QString filename = iter.next();
