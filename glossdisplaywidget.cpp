@@ -24,8 +24,6 @@ GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QList<int> 
     mPhrasalGlossLines = mProject->dbAdapter()->glossPhrasalGlossLines();
     mInterlinearDisplayLines = mProject->dbAdapter()->glossInterlinearLines();
 
-    connect( text, SIGNAL(baselineTextChanged()), this, SLOT(baselineTextUpdated()));
-
     mLines = lines;
 
     setLayoutAsAppropriate();
