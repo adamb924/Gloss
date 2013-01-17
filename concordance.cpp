@@ -8,18 +8,18 @@ Concordance::Concordance(QObject *parent) :
 {
 }
 
-void Concordance::updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newId)
+void Concordance::updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newTextFormId)
 {
     qlonglong oldId = mTextFormLingEdits.key( edit );
     mTextFormLingEdits.remove(oldId, edit);
-    mTextFormLingEdits.insert(newId, edit);
+    mTextFormLingEdits.insert(newTextFormId, edit);
 }
 
-void Concordance::updateGlossLingEditConcordance(LingEdit * edit, qlonglong newId)
+void Concordance::updateGlossLingEditConcordance(LingEdit * edit, qlonglong newGlossId)
 {
     qlonglong oldId = mGlossLingEdits.key( edit );
     mGlossLingEdits.remove(oldId, edit);
-    mGlossLingEdits.insert(newId, edit);
+    mGlossLingEdits.insert(newGlossId, edit);
 }
 
 void Concordance::removeGlossFromLingEditConcordance( QObject * edit )
@@ -58,18 +58,18 @@ void Concordance::updateTextForm( const TextBit & bit )
         label->setTextBit( bit );
 }
 
-void Concordance::updateTextForImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newId)
+void Concordance::updateTextForImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newTextFormId )
 {
     qlonglong oldId = mTextFormImmutableLabels.key( edit );
     mTextFormImmutableLabels.remove(oldId, edit);
-    mTextFormImmutableLabels.insert(newId, edit);
+    mTextFormImmutableLabels.insert(newTextFormId , edit);
 }
 
-void Concordance::updateGlossImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newId)
+void Concordance::updateGlossImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newGlossId )
 {
     qlonglong oldId = mGlossImmutableLabels.key( edit );
     mGlossImmutableLabels.remove(oldId, edit);
-    mGlossImmutableLabels.insert(newId, edit);
+    mGlossImmutableLabels.insert(newGlossId , edit);
 }
 
 void Concordance::removeGlossFromImmutableLabelConcordance( QObject * edit )
@@ -86,11 +86,11 @@ void Concordance::removeTextFormFromImmutableLabelConcordance( QObject * edit )
     mTextFormImmutableLabels.remove( id , label );
 }
 
-void Concordance::updateGlossItemConcordance(GlossItem * item, qlonglong newId)
+void Concordance::updateGlossItemConcordance(GlossItem * item, qlonglong newGlossItemId)
 {
     qlonglong oldId = mGlossItems.key( item );
     mGlossItems.remove(oldId, item);
-    mGlossItems.insert(newId, item);
+    mGlossItems.insert(newGlossItemId, item);
 }
 
 void Concordance::removeGlossItemFromConcordance( GlossItem * item )
@@ -99,7 +99,7 @@ void Concordance::removeGlossItemFromConcordance( GlossItem * item )
     mGlossItems.remove( id , item );
 }
 
-void Concordance::otherInterpretationsAvailableForGlossItem( qlonglong id )
+void Concordance::otherInterpretationsAvailableForGlossItem( qlonglong glossItemId )
 {
     QList<GlossItem*> itemList = mGlossItems.values( id );
     foreach(GlossItem *item, itemList)

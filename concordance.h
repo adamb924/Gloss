@@ -9,6 +9,7 @@ class ImmutableLabel;
 class LingEdit;
 class TextBit;
 class GlossItem;
+class AnalysisWidget;
 
 class Concordance : public QObject
 {
@@ -20,10 +21,10 @@ signals:
 
 public slots:
     //! Insert \a edit into the text form LingEdit concordance, indexed by \a newId. If \a edit was previouly indexed by another id, that is removed.
-    void updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newId);
+    void updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newTextFormId);
 
     //! Insert \a edit into the gloss LingEdit concordance, indexed by \a newId. If \a edit was previouly indexed by another id, that is removed.
-    void updateGlossLingEditConcordance(LingEdit * edit, qlonglong newId);
+    void updateGlossLingEditConcordance(LingEdit * edit, qlonglong newGlossId);
 
     //! Removes \a edit from the gloss LingEdit concordance.
     void removeGlossFromLingEditConcordance( QObject * edit );
@@ -32,10 +33,10 @@ public slots:
     void removeTextFormFromLingEditConcordance( QObject * edit );
 
     //! Insert \a edit into the text form LingEdit concordance, indexed by \a newId. If \a edit was previouly indexed by another id, that is removed.
-    void updateTextForImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newId);
+    void updateTextForImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newTextFormId);
 
     //! Insert \a edit into the gloss LingEdit concordance, indexed by \a newId. If \a edit was previouly indexed by another id, that is removed.
-    void updateGlossImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newId);
+    void updateGlossImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newGlossId);
 
     //! Removes \a edit from the gloss LingEdit concordance.
     void removeGlossFromImmutableLabelConcordance( QObject * edit );
@@ -50,13 +51,13 @@ public slots:
     void updateTextForm( const TextBit & bit );
 
     //! Insert \a item into the GlossItem concordance, indexed by \a newId. If \a item was previouly indexed by another id, that is removed.
-    void updateGlossItemConcordance(GlossItem * item, qlonglong newId);
+    void updateGlossItemConcordance(GlossItem * item, qlonglong newGlossItemId);
 
     //! Removes \a item from the GlossItem concordance.
     void removeGlossItemFromConcordance( GlossItem * item );
 
     //! Alert all GlossItems in the concordance that an alternate interpretation is available
-    void otherInterpretationsAvailableForGlossItem( qlonglong id );
+    void otherInterpretationsAvailableForGlossItem( qlonglong glossItemId );
 
 private:
     //! \brief GlossItem objects, indexed by interpretation id
@@ -72,6 +73,9 @@ private:
     QMultiHash<qlonglong,ImmutableLabel*> mTextFormImmutableLabels;
 
     //! \brief ImmutableLabel objects for glosses, indexed by text form id
+    QMultiHash<qlonglong,ImmutableLabel*> mGlossImmutableLabels;
+
+    //! \brief AnalysisWidget objects for text forms, indexed by text form id
     QMultiHash<qlonglong,ImmutableLabel*> mGlossImmutableLabels;
 };
 
