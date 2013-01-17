@@ -2,6 +2,7 @@
 
 #include "lingedit.h"
 #include "immutablelabel.h"
+#include "morphologicalanalysis.h"
 
 Concordance::Concordance(QObject *parent) :
     QObject(parent)
@@ -88,20 +89,37 @@ void Concordance::removeTextFormFromImmutableLabelConcordance( QObject * edit )
 
 void Concordance::updateGlossItemConcordance(GlossItem * item, qlonglong newGlossItemId)
 {
-    qlonglong oldId = mGlossItems.key( item );
-    mGlossItems.remove(oldId, item);
-    mGlossItems.insert(newGlossItemId, item);
+    qlonglong oldId = mGlossItemsById.key( item );
+    mGlossItemsById.remove(oldId, item);
+    mGlossItemsById.insert(newGlossItemId, item);
 }
 
 void Concordance::removeGlossItemFromConcordance( GlossItem * item )
 {
-    qlonglong id = mGlossItems.key( item );
-    mGlossItems.remove( id , item );
+    qlonglong id = mGlossItemsById.key( item );
+    mGlossItemsById.remove( id , item );
+
+    id = mGlossItemsByTextFormId.key( item );
+    mGlossItemsByTextFormId.remove( id, item );
 }
 
 void Concordance::otherInterpretationsAvailableForGlossItem( qlonglong glossItemId )
 {
-    QList<GlossItem*> itemList = mGlossItems.values( id );
+    QList<GlossItem*> itemList = mGlossItemsById.values( glossItemId );
     foreach(GlossItem *item, itemList)
         item->setCandidateNumber( GlossItem::MultipleOption );
+}
+
+void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong textFormId)
+{
+    qlonglong oldId = mGlossItemsByTextFormId.key( item );
+    mGlossItemsByTextFormId.remove(oldId, item);
+    mGlossItemsByTextFormId.insert(textFormId, item);
+}
+
+void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis, qlonglong textFormId )
+{
+    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
+    foreach(GlossItem *item, itemList)
+        item->setMorphologicalAnalysis( analysis.writingSystem(), analysis );
 }
