@@ -22,7 +22,6 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
 
     setCandidateNumberFromDatabase();
 
-    mConcordance->updateGlossItemConcordance( this, mId );
     mConcordance->updateGlossItemTextFormConcordance( this, baselineText().id() );
 }
 
@@ -43,7 +42,6 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
 
     setCandidateNumberFromDatabase();
 
-    mConcordance->updateGlossItemConcordance( this, mId );
     mConcordance->updateGlossItemTextFormConcordance( this, baselineText().id() );
 }
 

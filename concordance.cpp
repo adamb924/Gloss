@@ -89,20 +89,10 @@ void Concordance::removeTextFormFromImmutableLabelConcordance( QObject * edit )
     mTextFormImmutableLabels.remove( id , label );
 }
 
-void Concordance::updateGlossItemConcordance(GlossItem * item, qlonglong newGlossItemId)
-{
-    qlonglong oldId = mGlossItemsById.key( item );
-    mGlossItemsById.remove(oldId, item);
-    mGlossItemsById.insert(newGlossItemId, item);
-}
-
 void Concordance::removeGlossItemFromConcordance( QObject * item )
 {
     GlossItem *glossItem = qobject_cast<GlossItem*>(item);
-    qlonglong id = mGlossItemsById.key( glossItem );
-    mGlossItemsById.remove( id , glossItem );
-
-    id = mGlossItemsByTextFormId.key( glossItem );
+    qlonglong id = mGlossItemsByTextFormId.key( glossItem );
     mGlossItemsByTextFormId.remove( id, glossItem );
 }
 
@@ -110,9 +100,7 @@ void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::Candida
 {
     QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
     foreach(GlossItem *item, itemList)
-    {
         item->setCandidateNumber( mCandidateNumber );
-    }
 }
 
 void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong textFormId)

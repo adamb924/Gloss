@@ -52,9 +52,6 @@ public slots:
     //! Updates all widgets displaying the text form indicated by \a bit (and its id())
     void updateTextForm( const TextBit & bit );
 
-    //! Insert \a item into the GlossItem concordance, indexed by \a newGlossItemId. If \a item was previouly indexed by another id, that is removed.
-    void updateGlossItemConcordance(GlossItem * item, qlonglong newGlossItemId);
-
     //! Removes \a item from the GlossItem concordance and the GlossItem by TextForm id concordance.
     void removeGlossItemFromConcordance( QObject * item );
 
@@ -68,9 +65,6 @@ public slots:
     void updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis, qlonglong textFormId );
 
 private:
-    //! \brief GlossItem objects, indexed by interpretation id
-    QMultiHash<qlonglong,GlossItem*> mGlossItemsById;
-
     //! \brief GlossItem objects, indexed by text form id
     QMultiHash<qlonglong,GlossItem*> mGlossItemsByTextFormId;
 
