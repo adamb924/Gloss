@@ -23,7 +23,7 @@ void LingTextEdit::setWritingSystem(const WritingSystem & ws)
 {
     mWritingSystem = ws;
 //    setLayoutDirection(mWritingSystem.layoutDirection());
-    setStyleSheet(QString("QLineEdit { font-family: %1; font-size: %2pt; }").arg(mWritingSystem.fontFamily()).arg(mWritingSystem.fontSize()));
+    setStyleSheet(QString("QPlainTextEdit { font-family: %1; font-size: %2pt; }").arg(mWritingSystem.fontFamily()).arg(mWritingSystem.fontSize()));
 }
 
 void LingTextEdit::focusInEvent ( QFocusEvent * e )
