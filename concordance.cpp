@@ -4,6 +4,8 @@
 #include "immutablelabel.h"
 #include "morphologicalanalysis.h"
 
+#include <QtDebug>
+
 Concordance::Concordance(QObject *parent) :
     QObject(parent)
 {

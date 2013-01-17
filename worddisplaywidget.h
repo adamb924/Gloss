@@ -24,6 +24,7 @@ class TextBit;
 class InterlinearDisplayWidget;
 class ImmutableLabel;
 class AnalysisWidget;
+class Concordance;
 
 class WordDisplayWidget : public QWidget
 {
@@ -41,6 +42,7 @@ public:
 
 private:
     GlossItem *mGlossItem;
+    Concordance *mConcordance;
     Qt::Alignment mAlignment;
 
     InterlinearDisplayWidget *mInterlinearDisplayWidget;

@@ -110,6 +110,12 @@ signals:
     //! \brief Emitted whenever the text form or glosses have changed (in order to signal the need of a GUI refresh)
     void fieldsChanged();
 
+    //! \brief Emitted whenever a text form changes
+    void textFormChanged(const TextBit & textForm);
+
+    //! \brief Emitted whenever a gloss changes
+    void glossChanged(const TextBit & gloss);
+
 public slots:
     //! \brief Toggles the approval status of the GlossItem
     void toggleApproval();

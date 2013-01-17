@@ -96,6 +96,7 @@ void GlossItem::setGloss(const TextBit & gloss)
         mDbAdapter->updateInterpretationGloss(gloss);
         mGlosses.insert( gloss.writingSystem(), gloss );
         emit fieldsChanged();
+        emit glossChanged(gloss);
     }
 }
 
@@ -107,6 +108,7 @@ void GlossItem::setTextForm(const TextBit & textForm)
         mDbAdapter->updateInterpretationTextForm(textForm);
         mTextForms.insert( ws , textForm );
         emit fieldsChanged();
+        emit textFormChanged(textForm);
     }
 }
 

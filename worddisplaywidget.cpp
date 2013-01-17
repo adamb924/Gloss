@@ -18,6 +18,7 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 {
     mDbAdapter = dbAdapter;
     mGlossItem = item;
+    mConcordance = mGlossItem->concordance();
     mAlignment = alignment;
     mInterlinearDisplayWidget = ildw;
 
@@ -86,7 +87,8 @@ void WordDisplayWidget::setupLayout()
 
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
 {
-    LingEdit *edit = new LingEdit( mGlossItem->gloss( glossLine.writingSystem() ) , this);
+    TextBit gloss = mGlossItem->gloss( glossLine.writingSystem() );
+    LingEdit *edit = new LingEdit( gloss , this);
     edit->matchTextAlignmentTo( glossLine.writingSystem().layoutDirection() );
 
     mGlossEdits.insert(glossLine.writingSystem(), edit);
@@ -96,19 +98,25 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
     if( mInterlinearDisplayWidget != 0)
     {
-        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
+//        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
         connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeGlossFromConcordance(QObject*)));
     }
 
     // concordance replacement
 //    connect(edit, SIGNAL(destroyed(QObject*)), mGlossItem->concordance(), SLOT(removeGlossFromConcordance(QObject*)));
 
+    mConcordance->updateGlossLingEditConcordance( edit, gloss.id() );
+//    connect( mGlossItem, SIGNAL(glossChanged(TextBit)), edit, SLOT(updateMatchingTextBit(TextBit)) );
+    connect( mGlossItem, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)) );
+    connect(edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromLingEditConcordance(QObject*)));
+
     return edit;
 }
 
 LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossLine )
 {
-    LingEdit *edit = new LingEdit(  mGlossItem->textForm( glossLine.writingSystem() ) , this);
+    TextBit textForm = mGlossItem->textForm( glossLine.writingSystem() );
+    LingEdit *edit = new LingEdit(  textForm , this);
     edit->matchTextAlignmentTo( mGlossLines.first().writingSystem().layoutDirection() );
 
     mTextFormEdits.insert(glossLine.writingSystem(), edit);
@@ -118,9 +126,15 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
 
     if( mInterlinearDisplayWidget != 0 )
     {
-        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
+//        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
         connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeTextFormFromConcordance(QObject*)));
     }
+
+    // concordance replacement
+    mConcordance->updateTextFormLingEditConcordance( edit, textForm.id() );
+//    connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), edit, SLOT(updateMatchingTextBit(TextBit)) );
+    connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)));
+    connect( edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromLingEditConcordance(QObject*)));
 
     return edit;
 }

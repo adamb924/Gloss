@@ -78,3 +78,9 @@ TextBit LingEdit::textBit() const
 {
     return TextBit( text(), mTextBit.writingSystem(), mTextBit.id() );
 }
+
+void LingEdit::updateMatchingTextBit( const TextBit & bit )
+{
+    if( bit.id() == mTextBit.id() && bit.writingSystem() == mTextBit.writingSystem() )
+        setTextBit( bit );
+}

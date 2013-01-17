@@ -4,6 +4,8 @@
 TextBit::TextBit()
 {
     mId = -1;
+    mWritingSystem = WritingSystem();
+    mText = "";
 }
 
 TextBit::TextBit(const QString & text, const WritingSystem & ws, qlonglong id )
@@ -30,12 +32,18 @@ TextBit& TextBit::operator=(const TextBit & other)
 
 bool TextBit::operator==(const TextBit & other) const
 {
-    return mText == other.mText && mWritingSystem == other.mWritingSystem && mId == other.mId;
+    if(other.isNull())
+        return isNull();
+    else
+        return mText == other.mText && mWritingSystem == other.mWritingSystem && mId == other.mId;
 }
 
 bool TextBit::operator!=(const TextBit & other) const
 {
-    return mText != other.mText || mWritingSystem != other.mWritingSystem || mId != other.mId;
+    if(other.isNull())
+        return !isNull();
+    else
+        return mText != other.mText || mWritingSystem != other.mWritingSystem || mId != other.mId;
 }
 
 void TextBit::setText(const QString & text)
@@ -68,7 +76,7 @@ qlonglong TextBit::id() const
     return mId;
 }
 
-bool TextBit::isNull()
+bool TextBit::isNull() const
 {
     return mId == -1;
 }

@@ -39,6 +39,10 @@ public slots:
     void setId(LingEdit * edit, qlonglong id);
     void setTextBit( const TextBit & bit );
     void setWritingSystem( const WritingSystem & ws );
+
+    //! \brief Sets the text of the editor to the text in \a bit, if the current id and writing system match those in \bit.
+    void updateMatchingTextBit( const TextBit & bit );
+
 };
 
 #endif // LINGEDIT_H
