@@ -8,9 +8,10 @@ class WordDisplayWidget;
 class ImmutableLabel;
 class LingEdit;
 class TextBit;
-class GlossItem;
 class AnalysisWidget;
 class MorphologicalAnalysis;
+
+#include "glossitem.h"
 
 class Concordance : public QObject
 {
@@ -55,10 +56,10 @@ public slots:
     void updateGlossItemConcordance(GlossItem * item, qlonglong newGlossItemId);
 
     //! Removes \a item from the GlossItem concordance and the GlossItem by TextForm id concordance.
-    void removeGlossItemFromConcordance( GlossItem * item );
+    void removeGlossItemFromConcordance( QObject * item );
 
     //! Alert all GlossItems in the concordance that an alternate interpretation is available
-    void otherInterpretationsAvailableForGlossItem( qlonglong glossItemId );
+    void updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId );
 
     //! Insert \a item into the GlossItem by TextForm id concordance, indexed by \a textFormId. If \a item was previouly indexed by another id, that is removed.
     void updateGlossItemTextFormConcordance( GlossItem * item, qlonglong textFormId );

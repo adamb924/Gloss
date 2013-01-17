@@ -96,20 +96,23 @@ void Concordance::updateGlossItemConcordance(GlossItem * item, qlonglong newGlos
     mGlossItemsById.insert(newGlossItemId, item);
 }
 
-void Concordance::removeGlossItemFromConcordance( GlossItem * item )
+void Concordance::removeGlossItemFromConcordance( QObject * item )
 {
-    qlonglong id = mGlossItemsById.key( item );
-    mGlossItemsById.remove( id , item );
+    GlossItem *glossItem = qobject_cast<GlossItem*>(item);
+    qlonglong id = mGlossItemsById.key( glossItem );
+    mGlossItemsById.remove( id , glossItem );
 
-    id = mGlossItemsByTextFormId.key( item );
-    mGlossItemsByTextFormId.remove( id, item );
+    id = mGlossItemsByTextFormId.key( glossItem );
+    mGlossItemsByTextFormId.remove( id, glossItem );
 }
 
-void Concordance::otherInterpretationsAvailableForGlossItem( qlonglong glossItemId )
+void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId )
 {
-    QList<GlossItem*> itemList = mGlossItemsById.values( glossItemId );
+    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
     foreach(GlossItem *item, itemList)
-        item->setCandidateNumber( GlossItem::MultipleOption );
+    {
+        item->setCandidateNumber( mCandidateNumber );
+    }
 }
 
 void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong textFormId)

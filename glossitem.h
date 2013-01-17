@@ -101,6 +101,9 @@ signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
     void candidateNumberChanged(GlossItem::CandidateNumber status);
 
+    //! \brief Emitted when the candidate status of the GlossItem changes
+    void candidateNumberChanged( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId );
+
     //! \brief Emitted when the approval status of the GlossItem changes
     void approvalStatusChanged(GlossItem::ApprovalStatus status);
 

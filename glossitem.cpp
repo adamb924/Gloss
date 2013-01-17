@@ -21,6 +21,11 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
     guessInterpretation();
 
     setCandidateNumberFromDatabase();
+
+    mConcordance->updateGlossItemConcordance( this, mId );
+    mConcordance->updateGlossItemTextFormConcordance( this, baselineText().id() );
+    connect( this, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)));
+    connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)));
 }
 
 GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
@@ -39,6 +44,11 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
         setInterpretation(id, false); // false because we have text forms and glosses from the arguments of the constructor
 
     setCandidateNumberFromDatabase();
+
+    mConcordance->updateGlossItemConcordance( this, mId );
+    mConcordance->updateGlossItemTextFormConcordance( this, baselineText().id() );
+    connect( this, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)));
+    connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)));
 }
 
 GlossItem::~GlossItem()
@@ -138,6 +148,7 @@ void GlossItem::setCandidateNumber(CandidateNumber status)
     {
         mCandidateNumber = status;
         emit candidateNumberChanged(mCandidateNumber);
+        emit candidateNumberChanged( mCandidateNumber, baselineText().id() );
     }
 }
 
