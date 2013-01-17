@@ -53,7 +53,6 @@ SOURCES += main.cpp\
     searchreplaceform.cpp \
     singlephraseeditdialog.cpp \
     searchqueryview.cpp \
-    phrasedisplaywidget.cpp \
     mergeeafdialog.cpp \
     annotation.cpp \
     sound.cpp \
@@ -103,7 +102,6 @@ HEADERS  += mainwindow.h \
     searchreplaceform.h \
     singlephraseeditdialog.h \
     searchqueryview.h \
-    phrasedisplaywidget.h \
     mergeeafdialog.h \
     annotation.h \
     sound.h \
