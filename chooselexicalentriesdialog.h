@@ -22,6 +22,7 @@ class ChooseLexicalEntriesDialog : public QDialog
 {
     Q_OBJECT
 public:
+    //! \brief \a parseString must have the id of the textForm with which the morphological analysis is associated
     ChooseLexicalEntriesDialog(const TextBit & parseString, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
 signals:

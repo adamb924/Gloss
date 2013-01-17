@@ -68,10 +68,11 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 
 void AnalysisWidget::enterAnalysis()
 {
-    CreateAnalysisDialog dialog( mGlossItem->textForm( mWritingSystem ) );
+    TextBit textForm = mGlossItem->textForm( mWritingSystem );
+    CreateAnalysisDialog dialog( textForm );
     if( dialog.exec() == QDialog::Accepted )
     {
-        ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), mWritingSystem), mGlossItem,  mDbAdapter , this);
+        ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), textForm.writingSystem(), textForm.id() ), mGlossItem,  mDbAdapter , this);
         if( leDialog.exec() == QDialog::Accepted )
         {
             createInitializedLayout();
@@ -94,7 +95,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
             Allomorph allomorph = Allomorph( allomorphId, textForm, dialog.glosses() );
             mGlossItem->addAllomorphToAnalysis( allomorph, mWritingSystem );
             MorphologicalAnalysis analysis;
-            analysis << allomorph;
+            analysis.addAllomorph( allomorph );
             mDbAdapter->setMorphologicalAnalysis( textForm.id(), analysis );
             createInitializedLayout();
             emit morphologicalAnalysisChanged( mGlossItem->textForm(mWritingSystem).id() );

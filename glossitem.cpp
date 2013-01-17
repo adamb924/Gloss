@@ -241,7 +241,9 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
 
 MorphologicalAnalysis* GlossItem::morphologicalAnalysis(const WritingSystem & ws)
 {
-    return &mMorphologicalAnalysis[ ws ];
+    if( !mMorphologicalAnalysis.contains(ws) )
+        mMorphologicalAnalysis.insert( ws, MorphologicalAnalysis( mTextForms.value(ws) ) );
+    return &mMorphologicalAnalysis[ws];
 }
 
 void GlossItem::setMorphologicalAnalysis( const WritingSystem & ws, const MorphologicalAnalysis & analysis )
@@ -256,7 +258,7 @@ void GlossItem::setMorphologicalAnalysisFromDatabase( const WritingSystem & ws )
 
 void GlossItem::addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem )
 {
-    mMorphologicalAnalysis[writingSystem].append( allomorph );
+    mMorphologicalAnalysis[writingSystem].addAllomorph(allomorph);
 }
 
 void GlossItem::loadStringsFromDatabase()

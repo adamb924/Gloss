@@ -101,7 +101,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     }
 
     // concordance replacement
-    connect(edit, SIGNAL(destroyed(QObject*)), mGlossItem->concordance(), SLOT(removeGlossFromConcordance(QObject*)));
+//    connect(edit, SIGNAL(destroyed(QObject*)), mGlossItem->concordance(), SLOT(removeGlossFromConcordance(QObject*)));
 
     return edit;
 }

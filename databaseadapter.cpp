@@ -797,7 +797,7 @@ qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexical
     }
 }
 
-void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs )
+void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis )
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("delete from Allomorph where _id in (select TextFormId from MorphologicalAnalysisMembers where TextFormId=:TextFormId);");
@@ -809,11 +809,15 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
     q.exec();
 
     q.prepare("insert into MorphologicalAnalysisMembers (TextFormId,AllomorphId,AllomorphOrder) values (:TextFormId,:AllomorphId,:AllomorphOrder);");
-    for(int i=0; i<allomorphs.count(); i++)
+
+    AllomorphIterator iter = morphologicalAnalysis.allomorphIterator();
+    int position = 0;
+    while( iter.hasNext() )
     {
         q.bindValue(":TextFormId", textFormId );
-        q.bindValue(":AllomorphId", allomorphs.at(i).id() );
-        q.bindValue(":AllomorphOrder", i );
+        q.bindValue(":AllomorphId", iter.next().id() );
+        q.bindValue(":AllomorphOrder", position );
+        position++;
         if( !q.exec() )
             qWarning() << "DatabaseAdapter::setMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
     }
@@ -821,7 +825,8 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
 
 MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId )
 {
-    MorphologicalAnalysis analysis;
+    TextBit textForm = textFormFromId(textFormId);
+    MorphologicalAnalysis analysis( textForm );
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select Allomorphid from MorphologicalAnalysisMembers where TextFormId=:TextFormId order by AllomorphOrder;");
@@ -830,7 +835,7 @@ MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlon
     while(q.next())
     {
         qlonglong allomorphId = q.value(0).toLongLong();
-        analysis << allomorphFromId( allomorphId );
+        analysis.addAllomorph( allomorphFromId( allomorphId ) );
     }
     return analysis;
 }

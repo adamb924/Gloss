@@ -157,7 +157,7 @@ public:
     qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId );
 
     //! \brief Adds the specified morphological analysis to the database. Any existing morphological analysis associated with the text form is deleted. The
-    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & allomorphs );
+    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis );
 
     //! \brief Returns the morphological analysis associated with the given TextForm id. The analysis is empty if none is found in the database.
     MorphologicalAnalysis morphologicalAnalysisFromTextFormId( qlonglong textFormId );

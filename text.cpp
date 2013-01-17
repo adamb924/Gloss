@@ -258,7 +258,7 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
     QXmlStreamReader stream(file);
     TextBitHash textForms;
     TextBitHash glossForms;
-    MorphologicalAnalysis morphologicalAnalysis;
+    MorphologicalAnalysis *morphologicalAnalysis = 0;
     WritingSystem maWs;
     QString baselineText = "";
 
@@ -273,7 +273,11 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 inWord = true;
                 textForms.clear();
                 glossForms.clear();
-                morphologicalAnalysis.clear();
+                if( morphologicalAnalysis != 0 )
+                {
+                    delete morphologicalAnalysis;
+                    morphologicalAnalysis = 0;
+                }
 
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
@@ -331,9 +335,13 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                         // that is handled in GlossItem::loadStringsFromDatabase()
                         if( type == "txt" )
                         {
-                            textForms.insert( lang, TextBit( text , lang, itemId) );
+                            TextBit textForm( text , lang, itemId);
+                            textForms.insert( lang, textForm );
                             if( lang.flexString() == mBaselineWritingSystem.flexString() )
+                            {
                                 baselineText = text;
+                                morphologicalAnalysis = new MorphologicalAnalysis(textForm);
+                            }
                         }
                         else if( type == "gls" )
                         {
@@ -369,9 +377,12 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
             }
             else if(name == "morph")
             {
-                QXmlStreamAttributes attr = stream.attributes();
-                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","id") )
-                    morphologicalAnalysis.append( mDbAdapter->allomorphFromId( attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() ) );
+                if( morphologicalAnalysis != 0 )
+                {
+                    QXmlStreamAttributes attr = stream.attributes();
+                    if( attr.hasAttribute("http://www.adambaker.org/gloss.php","id") )
+                        morphologicalAnalysis->addAllomorph( mDbAdapter->allomorphFromId( attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() ) );
+                }
             }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
@@ -394,8 +405,8 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject ));
                 mPhrases.last()->last()->setApprovalStatus(approvalStatus);
 
-                if( !morphologicalAnalysis.isEmpty() )
-                    mPhrases.last()->last()->setMorphologicalAnalysis( maWs, morphologicalAnalysis );
+                if( !morphologicalAnalysis->isEmpty() )
+                    mPhrases.last()->last()->setMorphologicalAnalysis( maWs, *morphologicalAnalysis );
 
                 inWord = false;
                 hasValidId = false;
@@ -565,8 +576,9 @@ bool Text::serializeMorphemes(GlossItem *glossItem, QXmlStreamWriter *stream) co
             stream->writeStartElement("morphemes");
             stream->writeAttribute("http://www.adambaker.org/gloss.php", "lang", ws.flexString() );
 
-            foreach( Allomorph allomorph, *analysis )
-                serializeAllomorph(allomorph, stream);
+            AllomorphIterator iter = analysis->allomorphIterator();
+            while(iter.hasNext())
+                serializeAllomorph( iter.next() , stream );
             stream->writeEndElement(); // morphemes
         }
     }
