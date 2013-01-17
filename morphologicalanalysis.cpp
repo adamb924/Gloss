@@ -34,6 +34,11 @@ MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnaly
     return *this;
 }
 
+bool MorphologicalAnalysis::operator!=(const MorphologicalAnalysis & other) const
+{
+    return mTextFormId != other.mTextFormId || mAllomorphs != other.mAllomorphs;
+}
+
 QString MorphologicalAnalysis::baselineSummary() const
 {
     QString summary;
@@ -80,6 +85,11 @@ Allomorph* MorphologicalAnalysis::operator[](int i)
 int MorphologicalAnalysis::allomorphCount() const
 {
     return mAllomorphs.count();
+}
+
+qlonglong MorphologicalAnalysis::textFormId() const
+{
+    return mTextFormId;
 }
 
 WritingSystem MorphologicalAnalysis::writingSystem() const

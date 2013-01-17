@@ -35,8 +35,6 @@ signals:
 
 public slots:
     void scrollToLine(int line);
-    void updateTextFormConcordance(LingEdit * edit, qlonglong newId);
-    void updateGlossFormConcordance(LingEdit * edit, qlonglong newId);
 
 protected:
     void scrollContentsBy ( int dx, int dy );
@@ -63,7 +61,6 @@ private:
     //! \brief Removes and deletes all widgets from the given \a layout
     virtual void clearWidgets(QLayout * layout) = 0;
 
-
     virtual void setLayoutFromText() = 0;
     virtual void setLayoutFromText(QList<int> lines) = 0;
 
@@ -72,9 +69,6 @@ private:
 
 protected:
     QList<QLayout*> mLineLayouts;
-
-    QMultiHash<qlonglong,LingEdit*> mTextFormConcordance;
-    QMultiHash<qlonglong,LingEdit*> mGlossConcordance;
 
     QSet<QWidget*> mWordDisplayWidgets; // change to generic name
 

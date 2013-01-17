@@ -108,7 +108,7 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
         TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
         LingEdit *edit = addPhrasalGlossLine( bit );
         edit->matchTextAlignmentTo( mText->baselineWritingSystem().layoutDirection() );
-        connect( edit, SIGNAL(stringChanged(TextBit)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
+        connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
     }
 }
 
@@ -143,20 +143,6 @@ void InterlinearDisplayWidget::editLine(int lineNumber)
         mText->setBaselineTextForLine(lineNumber, dialog.text() );
         setLayoutAsAppropriate();
     }
-}
-
-void InterlinearDisplayWidget::updateTextFormConcordance(LingEdit * edit, qlonglong newId)
-{
-    qlonglong oldId = mTextFormConcordance.key( edit );
-    mTextFormConcordance.remove(oldId, edit);
-    mTextFormConcordance.insert(newId, edit);
-}
-
-void InterlinearDisplayWidget::updateGlossFormConcordance(LingEdit * edit, qlonglong newId)
-{
-    qlonglong oldId = mGlossConcordance.key( edit );
-    mGlossConcordance.remove(oldId, edit);
-    mGlossConcordance.insert(newId, edit);
 }
 
 void InterlinearDisplayWidget::setLayoutAsAppropriate()

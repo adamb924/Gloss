@@ -34,44 +34,6 @@ GlossDisplayWidget::~GlossDisplayWidget()
 
 }
 
-void GlossDisplayWidget::updateGloss( const TextBit & bit )
-{
-    LingEdit* edit;
-    QList<LingEdit*> editList = mGlossConcordance.values(bit.id());
-    foreach(edit, editList)
-        edit->setTextBit(bit);
-}
-
-void GlossDisplayWidget::updateText( const TextBit & bit )
-{
-    LingEdit* edit;
-    QList<LingEdit*> editList = mTextFormConcordance.values(bit.id());
-    foreach(edit, editList)
-        edit->setTextBit( bit );
-}
-
-void GlossDisplayWidget::removeGlossFromConcordance( QObject * edit )
-{
-    LingEdit *lingEdit = qobject_cast<LingEdit*>(edit);
-    qlonglong id = mGlossConcordance.key( lingEdit );
-    mGlossConcordance.remove( id , lingEdit );
-}
-
-void GlossDisplayWidget::removeTextFormFromConcordance( QObject * edit )
-{
-    LingEdit *lingEdit = qobject_cast<LingEdit*>(edit);
-    qlonglong id = mTextFormConcordance.key( lingEdit );
-    mTextFormConcordance.remove( id , lingEdit );
-}
-
-void GlossDisplayWidget::otherInterpretationsAvailableFor(int id)
-{
-    QList<WordDisplayWidget*> list = mWdwByInterpretationId.values(id);
-    QListIterator<WordDisplayWidget*> iterator(list);
-    while(iterator.hasNext())
-        iterator.next()->glossItem()->setCandidateNumber(GlossItem::MultipleOption);
-}
-
 void GlossDisplayWidget::baselineTextUpdated(const QString & baselineText)
 {
     setLayoutFromText();
@@ -145,8 +107,6 @@ void GlossDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
     for(int j=0; j<mText->phrases()->at(i)->count(); j++)
     {
         WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j), mText->phrases()->at(i));
-        connect( mText->phrases()->at(i)->at(j), SIGNAL(interpretationIdChanged(qlonglong)), wdw, SLOT(sendConcordanceUpdates()) );
-        connect( wdw, SIGNAL(alternateInterpretationAvailableFor(int)), this, SLOT(otherInterpretationsAvailableFor(int)) );
         flowLayout->addWidget(wdw);
     }
 }
@@ -158,26 +118,15 @@ void GlossDisplayWidget::clearData()
     qDeleteAll(mWordDisplayWidgets);
     mWordDisplayWidgets.clear();
 
-    // do not call qDeleteAll again because they've just been deleted. this is a convenience container.
-    mWdwByInterpretationId.clear();
-
     qDeleteAll(mPhrasalGlossEdits);
     mPhrasalGlossEdits.clear();
-
-    mGlossConcordance.clear();
-    mTextFormConcordance.clear();
 }
 
 WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines , this, mProject->dbAdapter() );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines, mProject->dbAdapter() );
     mWordDisplayWidgets << wdw;
-    mWdwByInterpretationId.insert( item->id() , wdw );
-    mTextFormConcordance.unite( wdw->textFormEdits() );
-    mGlossConcordance.unite( wdw->glossEdits() );
 
-    connect( wdw, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), this, SLOT(updateGlossFormConcordance(LingEdit*,qlonglong)));
-    connect( wdw, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), this, SLOT(updateTextFormConcordance(LingEdit*,qlonglong)));
     connect( wdw, SIGNAL(splitWidgetInTwo(GlossItem*,TextBit,TextBit)), phrase, SLOT(splitGlossInTwo(GlossItem*,TextBit,TextBit)) );
     connect( wdw, SIGNAL(mergeGlossItemWithNext(GlossItem*)), phrase, SLOT(mergeGlossItemWithNext(GlossItem*)));
     connect( wdw, SIGNAL(mergeGlossItemWithPrevious(GlossItem*)), phrase, SLOT(mergeGlossItemWithPrevious(GlossItem*)));
@@ -194,7 +143,6 @@ void GlossDisplayWidget::clearWidgets(QLayout * layout)
         if( wdw != 0 )
         {
             mWordDisplayWidgets.remove(wdw);
-            mWdwByInterpretationId.remove( mWdwByInterpretationId.key(wdw) );
             // I'm not sure why it crashes when I delete the InterlinearLineLabel, but since those objects are parented to the widget anyway, they should eventually be deleted just the same.
             delete item->widget();
         }

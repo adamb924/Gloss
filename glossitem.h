@@ -87,7 +87,7 @@ public:
     QList<WritingSystem> morphologicalAnalysisLanguages() const;
 
     //! \brief Sets the morphological analysis for the given writing system
-    void setMorphologicalAnalysis( const WritingSystem & ws, const MorphologicalAnalysis & analysis );
+    void setMorphologicalAnalysis( const MorphologicalAnalysis & analysis );
 
     //! \brief Sets the morphological analysis for the given writing system
     void setMorphologicalAnalysisFromDatabase( const WritingSystem & ws );
@@ -118,6 +118,9 @@ signals:
 
     //! \brief Emitted whenever a gloss changes
     void glossChanged(const TextBit & gloss);
+
+    //! \brief Emitted when the morphological analysis for \a textFormId changes
+    void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
 
 public slots:
     //! \brief Toggles the approval status of the GlossItem

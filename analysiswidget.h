@@ -12,6 +12,7 @@
 class GlossItem;
 class DatabaseAdapter;
 class QVBoxLayout;
+class MorphologicalAnalysis;
 
 #include "writingsystem.h"
 
@@ -22,10 +23,10 @@ public:
     AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
 signals:
-    void morphologicalAnalysisChanged(qlonglong textFormId);
+    void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
 
 public slots:
-    void createInitializedLayout();
+    void createInitializedLayout(const MorphologicalAnalysis & analysis);
 
 private:
     GlossItem *mGlossItem;

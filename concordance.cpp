@@ -25,6 +25,17 @@ void Concordance::updateGlossLingEditConcordance(LingEdit * edit, qlonglong newG
     mGlossLingEdits.insert(newGlossId, edit);
 }
 
+
+void Concordance::updateTextFormLingEditConcordance(const TextBit & bit, LingEdit * edit)
+{
+    updateTextFormLingEditConcordance( edit, bit.id() );
+}
+
+void Concordance::updateGlossLingEditConcordance( const TextBit & bit, LingEdit * edit)
+{
+    updateGlossLingEditConcordance( edit, bit.id() );
+}
+
 void Concordance::removeGlossFromLingEditConcordance( QObject * edit )
 {
     LingEdit *lingEdit = qobject_cast<LingEdit*>(edit);
@@ -105,14 +116,12 @@ void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::Candida
 
 void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong textFormId)
 {
-    qlonglong oldId = mGlossItemsByTextFormId.key( item );
-    mGlossItemsByTextFormId.remove(oldId, item);
     mGlossItemsByTextFormId.insert(textFormId, item);
 }
 
-void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis, qlonglong textFormId )
+void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
 {
-    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
+    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
     foreach(GlossItem *item, itemList)
-        item->setMorphologicalAnalysis( analysis.writingSystem(), analysis );
+        item->setMorphologicalAnalysis( analysis );
 }

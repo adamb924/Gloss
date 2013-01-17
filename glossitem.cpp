@@ -22,7 +22,12 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
 
     setCandidateNumberFromDatabase();
 
-    mConcordance->updateGlossItemTextFormConcordance( this, baselineText().id() );
+    TextBitHashIterator iter(mTextForms);
+    while(iter.hasNext())
+    {
+        iter.next();
+        mConcordance->updateGlossItemTextFormConcordance( this, iter.value().id() );
+    }
 }
 
 GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
@@ -42,7 +47,12 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
 
     setCandidateNumberFromDatabase();
 
-    mConcordance->updateGlossItemTextFormConcordance( this, baselineText().id() );
+    TextBitHashIterator iter(mTextForms);
+    while(iter.hasNext())
+    {
+        iter.next();
+        mConcordance->updateGlossItemTextFormConcordance( this, iter.value().id() );
+    }
 }
 
 GlossItem::~GlossItem()
@@ -80,8 +90,21 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
         {
             mTextForms.clear();
             mGlosses.clear();
-            mTextForms = mDbAdapter->guessInterpretationTextForms(mId);
-            mGlosses = mDbAdapter->guessInterpretationGlosses(mId);
+
+            // doing it in this roundabout way makes sure that the proper signals are emitted
+            TextBitHashIterator tfIter(mDbAdapter->guessInterpretationTextForms(mId));
+            while(tfIter.hasNext())
+            {
+                tfIter.next();
+                setTextForm( tfIter.value() );
+            }
+
+            TextBitHashIterator tfGlosses = mDbAdapter->guessInterpretationGlosses(mId);
+            while(tfGlosses.hasNext())
+            {
+                tfGlosses.next();
+                setGloss( tfGlosses.value() );
+            }
         }
         else
         {
@@ -91,6 +114,7 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
         emit interpretationIdChanged(mId);
         emit fieldsChanged();
     }
+    // TODO possibly update the concordance at this point
 }
 
 void GlossItem::setGloss(const TextBit & gloss)
@@ -249,50 +273,67 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
 MorphologicalAnalysis* GlossItem::morphologicalAnalysis(const WritingSystem & ws)
 {
     if( !mMorphologicalAnalysis.contains(ws) )
+    {
         mMorphologicalAnalysis.insert( ws, MorphologicalAnalysis( mTextForms.value(ws) ) );
+    }
     return &mMorphologicalAnalysis[ws];
 }
 
-void GlossItem::setMorphologicalAnalysis( const WritingSystem & ws, const MorphologicalAnalysis & analysis )
+void GlossItem::setMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
 {
-    mMorphologicalAnalysis.insert(ws, analysis);
+    qDebug() << "GlossItem::setMorphologicalAnalysis" << analysis.allomorphCount();
+    if( analysis.allomorphCount() > 0 &&  mMorphologicalAnalysis.value( analysis.writingSystem() ) != analysis )
+    {
+        qDebug() << "in if";
+        mMorphologicalAnalysis.insert( analysis.writingSystem() , analysis);
+        emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value( analysis.writingSystem() ) );
+    }
 }
 
 void GlossItem::setMorphologicalAnalysisFromDatabase( const WritingSystem & ws )
 {
     mMorphologicalAnalysis.insert(ws, mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
+    emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value(ws) );
 }
 
 void GlossItem::addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem )
 {
     mMorphologicalAnalysis[writingSystem].addAllomorph(allomorph);
+    emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value(writingSystem) );
 }
 
 void GlossItem::loadStringsFromDatabase()
 {
-    TextBitMutableHashIterator tfIter( mTextForms );
+    TextBitHashIterator tfIter( mTextForms );
     while(tfIter.hasNext())
     {
         tfIter.next();
 
+        TextBit fromTextForms = tfIter.value();
         TextBit fromDatabase = mDbAdapter->textFormFromId( tfIter.value().id() );
 
         if( fromDatabase.isNull() )
-            tfIter.value().setId( mDbAdapter->newTextForm( mId, tfIter.value() ) );
+            fromTextForms.setId( mDbAdapter->newTextForm( mId, tfIter.value() ) );
         else
-            tfIter.value().setText( fromDatabase.text() );
+            fromTextForms.setText( fromDatabase.text() );
+
+        setTextForm( fromTextForms );
     }
 
-    TextBitMutableHashIterator gIter( mGlosses );
+    TextBitHashIterator gIter( mGlosses );
     while(gIter.hasNext())
     {
         gIter.next();
 
+        TextBit fromGlosses = gIter.value();
         TextBit fromDatabase = mDbAdapter->glossFromId( gIter.value().id() );
+
         if( fromDatabase.isNull() )
-            gIter.value().setId( mDbAdapter->newGloss( mId, gIter.value() ) );
+            fromGlosses.setId( mDbAdapter->newGloss( mId, gIter.value() ) );
         else
-            gIter.value().setText( fromDatabase.text() );
+            fromGlosses.setText( fromDatabase.text() );
+
+        setGloss( fromGlosses );
     }
 }
 

@@ -24,6 +24,11 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
     mGlosses = glosses;
 }
 
+bool Allomorph::operator==(const Allomorph & other) const
+{
+    return mType == other.mType && mTextBit == other.mTextBit && mId == other.mId && mGlosses == other.mGlosses;
+}
+
 void Allomorph::setTypeFromString(const QString & string)
 {
     QRegExp rePrefix("^[^-].*-$");

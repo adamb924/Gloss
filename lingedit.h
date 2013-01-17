@@ -32,7 +32,7 @@ private:
     void focusInEvent ( QFocusEvent * e );
 
 signals:
-    void stringChanged( const TextBit & );
+    void stringChanged( const TextBit & , LingEdit *);
 
 public slots:
     void textChanged();

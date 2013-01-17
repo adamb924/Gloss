@@ -406,7 +406,7 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 mPhrases.last()->last()->setApprovalStatus(approvalStatus);
 
                 if( !morphologicalAnalysis->isEmpty() )
-                    mPhrases.last()->last()->setMorphologicalAnalysis( maWs, *morphologicalAnalysis );
+                    mPhrases.last()->last()->setMorphologicalAnalysis( *morphologicalAnalysis );
 
                 inWord = false;
                 hasValidId = false;

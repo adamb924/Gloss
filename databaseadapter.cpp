@@ -779,6 +779,11 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
     return id;
 }
 
+void DatabaseAdapter::removeAllomorphs( qlonglong textFormId )
+{
+
+}
+
 qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexicalEntryId )
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));

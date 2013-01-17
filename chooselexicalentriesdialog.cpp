@@ -25,6 +25,11 @@ ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseStri
     setWindowTitle(tr("Choose lexical entries"));
 }
 
+MorphologicalAnalysis ChooseLexicalEntriesDialog::morphologicalAnalysis() const
+{
+    return mAnalysis;
+}
+
 void ChooseLexicalEntriesDialog::commitChangesToDatabase()
 {
     for(int i=0; i<mAnalysis.allomorphCount(); i++)
@@ -34,7 +39,7 @@ void ChooseLexicalEntriesDialog::commitChangesToDatabase()
         mAnalysis[i]->setGlosses( mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ) );
     }
     mDbAdapter->setMorphologicalAnalysis( mGlossItem->textForm( mParseString.writingSystem() ).id() , mAnalysis );
-    mGlossItem->setMorphologicalAnalysis( mParseString.writingSystem(), mAnalysis );
+    mGlossItem->setMorphologicalAnalysis( mAnalysis );
 }
 
 void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()

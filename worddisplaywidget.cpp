@@ -14,13 +14,12 @@
 #include <QtDebug>
 #include <QActionGroup>
 
-WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter)
+WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter)
 {
     mDbAdapter = dbAdapter;
     mGlossItem = item;
     mConcordance = mGlossItem->concordance();
     mAlignment = alignment;
-    mInterlinearDisplayWidget = ildw;
 
     mGlossLines = lines;
 
@@ -41,6 +40,7 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)));
     connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)));
     connect( mGlossItem, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)));
+    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)));
 
     fillData();
 }
@@ -101,18 +101,13 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 
     mGlossEdits.insert(glossLine.writingSystem(), edit);
 
-    connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
+    // update the gloss item
+    connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setGloss(TextBit)) );
 
-    connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
-//    if( mInterlinearDisplayWidget != 0)
-//    {
-////        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
-//        connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeGlossFromConcordance(QObject*)));
-//    }
-
-    // concordance replacement
+    // update the concordance
     mConcordance->updateGlossLingEditConcordance( edit, gloss.id() );
     connect(edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromLingEditConcordance(QObject*)));
+    connect(edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mConcordance, SLOT(updateGlossLingEditConcordance(TextBit,LingEdit*)));
 
     return edit;
 }
@@ -125,18 +120,13 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
 
     mTextFormEdits.insert(glossLine.writingSystem(), edit);
 
-//    connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
-    connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setTextForm(TextBit)) );
+    // update the gloss item
+    connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setTextForm(TextBit)) );
 
-//    if( mInterlinearDisplayWidget != 0 )
-//    {
-////        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
-//        connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeTextFormFromConcordance(QObject*)));
-//    }
-
-    // concordance replacement
+    // update the concordance
     mConcordance->updateTextFormLingEditConcordance( edit, textForm.id() );
     connect( edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromLingEditConcordance(QObject*)));
+    connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mConcordance, SLOT(updateTextFormLingEditConcordance(TextBit,LingEdit*)));
 
     return edit;
 }
@@ -186,7 +176,8 @@ AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType 
     AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mDbAdapter, this);
     mAnalysisWidgets.insert( glossLine.writingSystem(), analysisWidget );
 
-    connect( analysisWidget, SIGNAL(morphologicalAnalysisChanged(qlonglong)), this, SIGNAL(morphologicalAnalysisChanged(qlonglong)) );
+    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), analysisWidget, SLOT(createInitializedLayout(MorphologicalAnalysis)));
+    connect( analysisWidget, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)) );
 
     return analysisWidget;
 }
@@ -359,7 +350,6 @@ void WordDisplayWidget::addGlossSubmenu(QMenu *menu, const WritingSystem & writi
 
 void WordDisplayWidget::newInterpretation()
 {
-    emit alternateInterpretationAvailableFor(mGlossItem->id());
     qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
     mGlossItem->setInterpretation(id, true); // true since there are no forms in the database, and so the fields need to be cleared
     fillData();
@@ -399,7 +389,6 @@ void WordDisplayWidget::newGloss(const WritingSystem & ws)
         qlonglong id = mDbAdapter->newGloss( mGlossItem->id() , newGloss );
         newGloss.setId(id);
         mGlossItem->setGloss( newGloss );
-        emit glossIdChanged( mGlossEdits.value(ws) , id );
         fillData();
     }
 }
@@ -414,7 +403,6 @@ void WordDisplayWidget::newTextForm(const WritingSystem & ws)
         qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , newGloss );
         newGloss.setId(id);
         mGlossItem->setTextForm( newGloss );
-        emit textFormIdChanged( mTextFormEdits.value(ws) , id );
         fillData();
     }
 }
@@ -478,14 +466,12 @@ void WordDisplayWidget::selectDifferentGloss(QAction *action)
 {
     TextBit bit = mDbAdapter->glossFromId( action->data().toLongLong() );
     mGlossItem->setGloss( bit );
-    emit glossIdChanged( mGlossEdits.value( bit.writingSystem() ) , bit.id() );
 }
 
 void WordDisplayWidget::selectDifferentTextForm(QAction *action)
 {
     TextBit bit = mDbAdapter->textFormFromId(action->data().toLongLong());
     mGlossItem->setTextForm( bit );
-    emit textFormIdChanged( mTextFormEdits.value(bit.writingSystem()), bit.id());
 }
 
 QHash<qlonglong, LingEdit*> WordDisplayWidget::textFormEdits() const
@@ -512,33 +498,6 @@ QHash<qlonglong, LingEdit*> WordDisplayWidget::glossEdits() const
     return hash;
 }
 
-void WordDisplayWidget::sendConcordanceUpdates()
-{
-    QHashIterator<WritingSystem, LingEdit*> iter(mTextFormEdits);
-    while(iter.hasNext())
-    {
-        iter.next();
-        WritingSystem ws = iter.key();
-        emit textFormIdChanged( iter.value() , mGlossItem->textForm( ws ).id() );
-    }
-
-    iter = QHashIterator<WritingSystem, LingEdit*>(mGlossEdits);
-    while(iter.hasNext())
-    {
-        iter.next();
-        emit glossIdChanged( iter.value() , mGlossItem->gloss( iter.key() ).id() );
-    }
-
-    //    QHashIterator<WritingSystem, AnalysisWidget*> iter2(mAnalysisWidgets);
-    //    while(iter2.hasNext())
-    //    {
-    //        iter2.next();
-    //        // TODO connect this signal to something
-    //        emit analysisChanged( iter2.value() , mGlossItem->morphologicalAnalysis( iter2.key() )->id() );
-    //    }
-
-}
-
 void WordDisplayWidget::otherInterpretation()
 {
     InterpretationSearchDialog dialog( mDbAdapter, this );
@@ -558,11 +517,11 @@ GlossItem* WordDisplayWidget::glossItem()
 
 void WordDisplayWidget::refreshMorphologicalAnalysis(const WritingSystem & ws)
 {
-    if( mAnalysisWidgets.contains(ws) )
-    {
-        mGlossItem->setMorphologicalAnalysisFromDatabase( ws );
-        mAnalysisWidgets[ws]->createInitializedLayout();
-    }
+//    if( mAnalysisWidgets.contains(ws) )
+//    {
+//        mGlossItem->setMorphologicalAnalysisFromDatabase( ws );
+//        mAnalysisWidgets[ws]->createInitializedLayout();
+//    }
 }
 
 void WordDisplayWidget::displayDatabaseReport()

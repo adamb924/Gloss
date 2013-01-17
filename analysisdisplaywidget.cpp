@@ -96,8 +96,6 @@ void AnalysisDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
     for(int j=0; j<mText->phrases()->at(i)->count(); j++)
     {
         WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
-//        connect( mText->phrases()->at(i)->at(j), SIGNAL(interpretationIdChanged(qlonglong)), wdw, SLOT(sendConcordanceUpdates()) );
-//        connect( wdw, SIGNAL(alternateInterpretationAvailableFor(int)), this, SLOT(otherInterpretationsAvailableFor(int)) );
         flowLayout->addWidget(wdw);
     }
 }
@@ -112,7 +110,7 @@ WordDisplayWidget* AnalysisDisplayWidget::addWordDisplayWidget(GlossItem *item)
 
     // TODO don't hardwire the text direction like this
     // make it read the alignment from the writing system of the first member of mInterlinearDisplayLines
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , Qt::AlignLeft, mInterlinearDisplayLines , this, mProject->dbAdapter() );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , Qt::AlignLeft, mInterlinearDisplayLines , mProject->dbAdapter() );
     mWordDisplayWidgets << wdw;
 
     for(int i=0; i<mInterlinearDisplayLines.count(); i++)
@@ -120,9 +118,6 @@ WordDisplayWidget* AnalysisDisplayWidget::addWordDisplayWidget(GlossItem *item)
             mAnalysisWidgetConcordance.insert( item->textForm(mInterlinearDisplayLines.at(i).writingSystem()).id(), wdw );
 
     connect( wdw, SIGNAL(morphologicalAnalysisChanged(qlonglong)), this, SLOT(updateAnalysis(qlonglong)) );
-
-//    connect( wdw, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), this, SLOT(updateGlossFormConcordance(LingEdit*,qlonglong)));
-//    connect( wdw, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), this, SLOT(updateTextFormConcordance(LingEdit*,qlonglong)));
 
     return wdw;
 }

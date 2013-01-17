@@ -28,6 +28,12 @@ public slots:
     //! Insert \a edit into the gloss LingEdit concordance, indexed by \a newGlossId. If \a edit was previouly indexed by another id, that is removed.
     void updateGlossLingEditConcordance(LingEdit * edit, qlonglong newGlossId);
 
+    //! Overloaded function for connecting to the LingEdit::stringChanged signal
+    void updateTextFormLingEditConcordance(const TextBit & bit, LingEdit * edit);
+
+    //! Overloaded function for connecting to the LingEdit::stringChanged signal
+    void updateGlossLingEditConcordance( const TextBit & bit, LingEdit * edit);
+
     //! Removes \a edit from the gloss LingEdit concordance.
     void removeGlossFromLingEditConcordance( QObject * edit );
 
@@ -62,7 +68,7 @@ public slots:
     void updateGlossItemTextFormConcordance( GlossItem * item, qlonglong textFormId );
 
     //! Updates gloss items with \a textFormId so that they contain \a analysis
-    void updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis, qlonglong textFormId );
+    void updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis );
 
 private:
     //! \brief GlossItem objects, indexed by text form id

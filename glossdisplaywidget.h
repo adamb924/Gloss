@@ -24,20 +24,8 @@ public:
     GlossDisplayWidget(Text *text, Project *project, QList<int> lines, QWidget *parent = 0);
     ~GlossDisplayWidget();
 
-public slots:
-
-    void updateGloss( const TextBit & bit );
-    void updateText( const TextBit & bit );
-
-    void removeGlossFromConcordance( QObject * edit );
-    void removeTextFormFromConcordance( QObject * edit );
-
-    void otherInterpretationsAvailableFor(int id);
-
 private slots:
     void baselineTextUpdated(const QString & baselineText);
-
-
 
 private:
     void setLayoutFromText();
@@ -52,9 +40,6 @@ private:
     void clearData();
 
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item, Phrase *phrase);
-
-    QMultiHash<qlonglong,WordDisplayWidget*> mWdwByInterpretationId; // change this to something generic?
-
 };
 
 #endif // GLOSSDISPLAYWIDGET_H

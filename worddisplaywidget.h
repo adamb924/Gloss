@@ -21,7 +21,6 @@ class QVBoxLayout;
 class QLabel;
 class WritingSystem;
 class TextBit;
-class InterlinearDisplayWidget;
 class ImmutableLabel;
 class AnalysisWidget;
 class Concordance;
@@ -31,7 +30,7 @@ class WordDisplayWidget : public QWidget
     Q_OBJECT
 
 public:
-    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, InterlinearDisplayWidget *ildw, DatabaseAdapter *dbAdapter);
+    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter);
     ~WordDisplayWidget();
 
     QHash<qlonglong, LingEdit*> textFormEdits() const;
@@ -44,8 +43,6 @@ private:
     GlossItem *mGlossItem;
     Concordance *mConcordance;
     Qt::Alignment mAlignment;
-
-    InterlinearDisplayWidget *mInterlinearDisplayWidget;
 
     void contextMenuEvent ( QContextMenuEvent * event );
     void addInterpretationSubmenu(QMenu *menu );
@@ -73,21 +70,14 @@ private:
     DatabaseAdapter *mDbAdapter;
 
 signals:
-    void textFormIdChanged(LingEdit * edit, qlonglong newId);
-    void glossIdChanged(LingEdit * edit, qlonglong newId);
-    void alternateInterpretationAvailableFor( int id );
     void morphologicalAnalysisChanged(qlonglong textFormId);
 
     void splitWidgetInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
 
-public slots:
-    void sendConcordanceUpdates();
-
 private slots:
     void newInterpretation();
-
 
     void newGloss(QAction *action);
     void newTextForm(QAction *action);

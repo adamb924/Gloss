@@ -27,7 +27,7 @@ void LingEdit::setTextBit( const TextBit & bit )
     {
         mTextBit = bit;
         setText( bit.text() );
-        emit stringChanged(mTextBit);
+        emit stringChanged(mTextBit, this);
     }
 }
 
@@ -44,7 +44,7 @@ void LingEdit::textChanged()
     if( mTextBit.text() != text() )
     {
         mTextBit.setText(text());
-        emit stringChanged( mTextBit );
+        emit stringChanged( mTextBit, this );
     }
 }
 

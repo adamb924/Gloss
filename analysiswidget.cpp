@@ -26,7 +26,7 @@ void AnalysisWidget::setupLayout()
     if( mGlossItem->morphologicalAnalysis(mWritingSystem)->isEmpty() )
         createUninitializedLayout();
     else
-        createInitializedLayout();
+        createInitializedLayout( *mGlossItem->morphologicalAnalysis(mWritingSystem) );
 }
 
 void AnalysisWidget::createUninitializedLayout()
@@ -47,15 +47,15 @@ void AnalysisWidget::createUninitializedLayout()
     connect(createMle, SIGNAL(clicked()), this, SLOT(createMonomorphemicLexicalEntry()));
 }
 
-void AnalysisWidget::createInitializedLayout()
+void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analysis)
 {
     clearWidgetsFromLayout();
 
-    mLayout->addWidget( new ImmutableLabel( TextBit( mGlossItem->morphologicalAnalysis(mWritingSystem)->baselineSummary() , mWritingSystem ) , false, this ) );
+    mLayout->addWidget( new ImmutableLabel( TextBit( analysis.baselineSummary() , mWritingSystem ) , false, this ) );
 
     QList<WritingSystem> glossLines = mDbAdapter->lexicalEntryGlosses();
     for(int i=0; i<glossLines.count(); i++)
-        mLayout->addWidget( new ImmutableLabel( TextBit( mGlossItem->morphologicalAnalysis(mWritingSystem)->glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
+        mLayout->addWidget( new ImmutableLabel( TextBit( analysis.glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
 }
 
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -75,8 +75,8 @@ void AnalysisWidget::enterAnalysis()
         ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), textForm.writingSystem(), textForm.id() ), mGlossItem,  mDbAdapter , this);
         if( leDialog.exec() == QDialog::Accepted )
         {
-            createInitializedLayout();
-            emit morphologicalAnalysisChanged( mGlossItem->textForm(mWritingSystem).id() );
+            createInitializedLayout( leDialog.morphologicalAnalysis() );
+            emit morphologicalAnalysisChanged( leDialog.morphologicalAnalysis() );
         }
     }
 }
@@ -91,14 +91,14 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         if( lexicalEntryId != -1 )
         {
             qlonglong allomorphId = mDbAdapter->addAllomorph( textForm , lexicalEntryId );
+            Allomorph allomorph = mDbAdapter->allomorphFromId(allomorphId);
 
-            Allomorph allomorph = Allomorph( allomorphId, textForm, dialog.glosses() );
-            mGlossItem->addAllomorphToAnalysis( allomorph, mWritingSystem );
-            MorphologicalAnalysis analysis;
+            MorphologicalAnalysis analysis( mGlossItem->textForm(mWritingSystem) );
             analysis.addAllomorph( allomorph );
             mDbAdapter->setMorphologicalAnalysis( textForm.id(), analysis );
-            createInitializedLayout();
-            emit morphologicalAnalysisChanged( mGlossItem->textForm(mWritingSystem).id() );
+
+            createInitializedLayout( analysis );
+            emit morphologicalAnalysisChanged( analysis );
         }
     }
 }

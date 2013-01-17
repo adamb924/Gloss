@@ -16,20 +16,20 @@ public:
     MorphologicalAnalysis(const MorphologicalAnalysis & other);
 
     MorphologicalAnalysis& operator=(const MorphologicalAnalysis & other);
+    bool operator!=(const MorphologicalAnalysis & other) const;
 
     QString baselineSummary() const;
     QString glossSummary(const WritingSystem & ws) const;
 
+    qlonglong textFormId() const;
     WritingSystem writingSystem() const;
 
+
+    // handling allomorphs
     AllomorphIterator allomorphIterator() const;
-
     void addAllomorph(const Allomorph & allomorph);
-
     bool isEmpty() const;
-
     int allomorphCount() const;
-
     Allomorph* allomorph(int i);
     Allomorph* operator[](int i);
 

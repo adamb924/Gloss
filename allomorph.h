@@ -12,6 +12,8 @@ public:
     Allomorph(qlonglong id, const TextBit & bit);
     Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses );
 
+    bool operator==(const Allomorph & other) const;
+
     Type type() const;
     QString typeString() const;
 
