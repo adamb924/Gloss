@@ -32,7 +32,15 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
 
+    // Why would these be here?
+    // because I can't put them in the GlossItem constructor, so this is the next best thing (after some kind of secondary initialization method)
+    // http://www.qtcentre.org/threads/9479-connect-in-constructor
+    // http://www.parashift.com/c++-faq-lite/link-errs-static-data-mems.html
     connect( mGlossItem, SIGNAL(fieldsChanged()), this, SLOT(fillData()) );
+    connect( mGlossItem, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)));
+    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)));
+    connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)));
+    connect( mGlossItem, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)));
 
     fillData();
 }
@@ -96,18 +104,14 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     connect(this, SIGNAL(glossIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
 
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setGloss(TextBit)) );
-    if( mInterlinearDisplayWidget != 0)
-    {
-//        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
-        connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeGlossFromConcordance(QObject*)));
-    }
+//    if( mInterlinearDisplayWidget != 0)
+//    {
+////        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateGloss(TextBit)));
+//        connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeGlossFromConcordance(QObject*)));
+//    }
 
     // concordance replacement
-//    connect(edit, SIGNAL(destroyed(QObject*)), mGlossItem->concordance(), SLOT(removeGlossFromConcordance(QObject*)));
-
     mConcordance->updateGlossLingEditConcordance( edit, gloss.id() );
-//    connect( mGlossItem, SIGNAL(glossChanged(TextBit)), edit, SLOT(updateMatchingTextBit(TextBit)) );
-    connect( mGlossItem, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)) );
     connect(edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromLingEditConcordance(QObject*)));
 
     return edit;
@@ -121,19 +125,17 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
 
     mTextFormEdits.insert(glossLine.writingSystem(), edit);
 
-    connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
+//    connect(this, SIGNAL(textFormIdChanged(LingEdit*,qlonglong)), edit, SLOT(setId(LingEdit*,qlonglong)));
     connect(edit,SIGNAL(stringChanged(TextBit)), mGlossItem, SLOT(setTextForm(TextBit)) );
 
-    if( mInterlinearDisplayWidget != 0 )
-    {
-//        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
-        connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeTextFormFromConcordance(QObject*)));
-    }
+//    if( mInterlinearDisplayWidget != 0 )
+//    {
+////        connect(edit, SIGNAL(stringChanged(TextBit)), mInterlinearDisplayWidget, SLOT(updateText(TextBit)));
+//        connect(edit, SIGNAL(destroyed(QObject*)), mInterlinearDisplayWidget, SLOT(removeTextFormFromConcordance(QObject*)));
+//    }
 
     // concordance replacement
     mConcordance->updateTextFormLingEditConcordance( edit, textForm.id() );
-//    connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), edit, SLOT(updateMatchingTextBit(TextBit)) );
-    connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)));
     connect( edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromLingEditConcordance(QObject*)));
 
     return edit;
@@ -153,6 +155,9 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
 
+    mConcordance->updateTextForImmutableLabelConcordance( immutableLabel, bit.id() );
+    connect( immutableLabel, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromImmutableLabelConcordance(QObject*)));
+
     return immutableLabel;
 }
 
@@ -169,6 +174,9 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
+
+    mConcordance->updateGlossImmutableLabelConcordance( immutableLabel, bit.id() );
+    connect( immutableLabel, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromImmutableLabelConcordance(QObject*)));
 
     return immutableLabel;
 }

@@ -24,8 +24,6 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
 
     mConcordance->updateGlossItemConcordance( this, mId );
     mConcordance->updateGlossItemTextFormConcordance( this, baselineText().id() );
-    connect( this, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)));
-    connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)));
 }
 
 GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
@@ -47,8 +45,6 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
 
     mConcordance->updateGlossItemConcordance( this, mId );
     mConcordance->updateGlossItemTextFormConcordance( this, baselineText().id() );
-    connect( this, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)));
-    connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)));
 }
 
 GlossItem::~GlossItem()
