@@ -58,6 +58,9 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists LexicalEntryCitationForm ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
+    if( !q.exec("create table if not exists LexicalEntryGrammaticalTags ( _id integer primary key autoincrement, LexicalEntryId integer, Tag text );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
     if( !q.exec("create table if not exists MorphologicalAnalysisMembers ( _id integer primary key autoincrement, TextFormId integer, AllomorphId integer, AllomorphOrder integer );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
@@ -752,13 +755,13 @@ QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextB
     return candidates;
 }
 
-qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms ) const
+qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);
     db.transaction();
 
     QSqlQuery q(db);
-    qlonglong id;
+    qlonglong lexicalEntryId;
 
     try
     {
@@ -767,14 +770,14 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
 
         if(!q.exec())
             throw -1;
-        id = q.lastInsertId().toLongLong();
+        lexicalEntryId = q.lastInsertId().toLongLong();
 
         QListIterator<TextBit> iter(glosses);
         while (iter.hasNext())
         {
             TextBit bit = iter.next();
             q.prepare("insert into LexicalEntryGloss (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
-            q.bindValue(":LexicalEntryId",id);
+            q.bindValue(":LexicalEntryId",lexicalEntryId);
             q.bindValue(":WritingSystem",bit.writingSystem().id());
             q.bindValue(":Form",bit.text());
             if( ! q.exec() )
@@ -786,13 +789,23 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
         {
             TextBit bit = iter.next();
             q.prepare("insert into LexicalEntryCitationForm (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
-            q.bindValue(":LexicalEntryId",id);
+            q.bindValue(":LexicalEntryId",lexicalEntryId);
             q.bindValue(":WritingSystem",bit.writingSystem().id());
             q.bindValue(":Form",bit.text());
             if( ! q.exec() )
                 throw -1;
         }
 
+        QStringListIterator tagIter(grammaticalTags);
+        while( tagIter.hasNext() )
+        {
+            q.prepare("insert into LexicalEntryGrammaticalTags (LexicalEntryId,Tag) values (:LexicalEntryId,:Tag);");
+            q.bindValue(":LexicalEntryId",lexicalEntryId);
+            q.bindValue(":Tag",tagIter.next());
+
+            if( ! q.exec() )
+                throw -1;
+        }
     }
     catch(int e)
     {
@@ -801,7 +814,7 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
         return -1;
     }
     db.commit();
-    return id;
+    return lexicalEntryId;
 }
 
 qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexicalEntryId ) const

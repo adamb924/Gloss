@@ -24,6 +24,7 @@ public:
 
     qlonglong id() const;
     TextBitHash glosses() const;
+    QStringList grammaticalTags() const;
 
 private:
     Ui::CreateLexicalEntryDialog *ui;

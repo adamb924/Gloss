@@ -74,6 +74,8 @@ void CreateLexicalEntryDialog::fillData()
                 edit->setText( mTextBit.text() );
         }
     }
+
+    // TODO read the grammatical tags from the database
 }
 
 void CreateLexicalEntryDialog::createLexicalEntry()
@@ -87,7 +89,7 @@ void CreateLexicalEntryDialog::createLexicalEntry()
     for(int i=0; i<mCitationFormEdits.count(); i++)
         citationForms << mCitationFormEdits.at(i)->textBit();
 
-    mId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), glosses, citationForms );
+    mId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), glosses, citationForms, grammaticalTags() );
 }
 
 TextBitHash CreateLexicalEntryDialog::glosses() const
@@ -96,4 +98,9 @@ TextBitHash CreateLexicalEntryDialog::glosses() const
     for(int i=0; i<mGlossEdits.count(); i++)
         glosses.insert( mGlossEdits.at(i)->textBit().writingSystem(),  mGlossEdits.at(i)->textBit() );
     return glosses;
+}
+
+QStringList CreateLexicalEntryDialog::grammaticalTags() const
+{
+    return ui->grammaticalInformation->text().split(QRegExp("\\s+"), QString::SkipEmptyParts);
 }
