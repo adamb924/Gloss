@@ -16,6 +16,7 @@
 #include "replacedialog.h"
 #include "singlephraseeditdialog.h"
 #include "glossdisplaywidget.h"
+#include "choosetextlinedialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -79,6 +80,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionApproved_lines, SIGNAL(triggered()), this, SLOT(findApprovedLines()));
 
     connect(ui->actionClose_and_save_open_texts, SIGNAL(triggered()), this, SLOT(closeOpenTexts()));
+
+    connect(ui->actionOpen_text_line, SIGNAL(triggered()), this, SLOT(openTextLine()) );
 
     setProjectActionsEnabled(false);
 
@@ -870,4 +873,11 @@ void MainWindow::closeOpenTexts()
 {
     mProject->saveOpenTexts();
     mProject->closeOpenTexts();
+}
+
+void MainWindow::openTextLine()
+{
+    ChooseTextLineDialog dialog(mProject->textNames(), this);
+    if( dialog.exec() == QDialog::Accepted )
+        editLine( dialog.textName() , dialog.lineNumber() );
 }

@@ -97,6 +97,7 @@ private slots:
     void findUnapprovedLines();
 
     void closeOpenTexts();
+    void openTextLine();
 
 };
 

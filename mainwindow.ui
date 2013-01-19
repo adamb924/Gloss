@@ -49,6 +49,7 @@
      <string>Texts</string>
     </property>
     <addaction name="actionOpen_text"/>
+    <addaction name="actionOpen_text_line"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
@@ -305,6 +306,11 @@
   <action name="actionClose_and_save_open_texts">
    <property name="text">
     <string>Close and save open texts</string>
+   </property>
+  </action>
+  <action name="actionOpen_text_line">
+   <property name="text">
+    <string>Open text line...</string>
    </property>
   </action>
  </widget>

@@ -58,7 +58,8 @@ SOURCES += main.cpp\
     sound.cpp \
     concordance.cpp \
     flextextwriter.cpp \
-    flextextreader.cpp
+    flextextreader.cpp \
+    choosetextlinedialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -107,7 +108,8 @@ HEADERS  += mainwindow.h \
     sound.h \
     concordance.h \
     flextextwriter.h \
-    flextextreader.h
+    flextextreader.h \
+    choosetextlinedialog.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -126,7 +128,8 @@ FORMS    += mainwindow.ui \
     replacedialog.ui \
     searchreplaceform.ui \
     singlephraseeditdialog.ui \
-    mergeeafdialog.ui
+    mergeeafdialog.ui \
+    choosetextlinedialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip
