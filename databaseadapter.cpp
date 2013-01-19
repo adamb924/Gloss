@@ -716,13 +716,38 @@ QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextB
     QHash<qlonglong,QString> candidates;
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select LexicalEntryId from Allomorph where WritingSystem=:WritingSystem and Form=:Form;");
+    q.prepare("select LexicalEntryId,_id from Allomorph where WritingSystem=:WritingSystem and Form=:Form;");
     q.bindValue(":WritingSystem", bit.writingSystem().id());
     q.bindValue(":Form", bit.text());
     if( q.exec() )
     {
         while( q.next() )
-            candidates.insert( q.value(0).toLongLong() , tr("Better summary than %1").arg(q.value(0).toLongLong())  );
+        {
+            qlonglong lexicalEntryId = q.value(0).toLongLong();
+            qlonglong allomorphId = q.value(1).toLongLong();
+
+            QString summary;
+            TextBitHashIterator iter( lexicalEntryCitationFormsForAllomorph( allomorphId ) );
+            while(iter.hasNext())
+            {
+                iter.next();
+                summary.append( iter.value().text() );
+                if( iter.hasNext() )
+                    summary.append(",");
+            }
+            summary.append(" ");
+
+            iter = TextBitHashIterator( lexicalEntryGlossFormsForAllomorph( allomorphId ) );
+            while(iter.hasNext())
+            {
+                iter.next();
+                summary.append( iter.value().text() );
+                if( iter.hasNext() )
+                    summary.append(",");
+            }
+
+            candidates.insert( lexicalEntryId , summary );
+        }
     }
     return candidates;
 }
