@@ -85,7 +85,7 @@ void AnalysisDisplayWidget::clearWidgets(QLayout * layout)
     QLayoutItem * item;
     while( ( item = layout->takeAt(0) ) != 0 )
     {
-        mWordDisplayWidgets.remove(item->widget());
+//        mWordDisplayWidgets.remove(item->widget());
         delete item->widget();
         delete item;
     }
@@ -96,6 +96,8 @@ void AnalysisDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
     for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
     {
         WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j));
+        mWordDisplayWidgets.insert(i, wdw);
+
         flowLayout->addWidget(wdw);
     }
 }
@@ -111,7 +113,6 @@ WordDisplayWidget* AnalysisDisplayWidget::addWordDisplayWidget(GlossItem *item)
     // TODO don't hardwire the text direction like this
     // make it read the alignment from the writing system of the first member of mInterlinearDisplayLines
     WordDisplayWidget *wdw = new WordDisplayWidget( item , Qt::AlignLeft, mInterlinearDisplayLines , mProject->dbAdapter() );
-    mWordDisplayWidgets << wdw;
 
     for(int i=0; i<mInterlinearDisplayLines.count(); i++)
         if( mInterlinearDisplayLines.at(i).type() == InterlinearItemType::Analysis )

@@ -24,9 +24,6 @@ public:
     GlossDisplayWidget(Text *text, Project *project, QList<int> lines, QWidget *parent = 0);
     ~GlossDisplayWidget();
 
-private slots:
-    void baselineTextUpdated(const QString & baselineText);
-
 private:
     void setLayoutFromText();
     void setLayoutFromText(QList<int> lines);

@@ -34,11 +34,6 @@ GlossDisplayWidget::~GlossDisplayWidget()
 
 }
 
-void GlossDisplayWidget::baselineTextUpdated(const QString & baselineText)
-{
-    setLayoutFromText();
-}
-
 void GlossDisplayWidget::setLayoutFromText()
 {
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mText->phrases()->count(), 0);
@@ -58,7 +53,8 @@ void GlossDisplayWidget::setLayoutFromText()
         else if( mText->phrases()->at(i)->guiRefreshRequest() )
         {
             flowLayout = mLineLayouts.at(i);
-            clearWidgets( flowLayout );
+//            clearWidgets( flowLayout );
+            clearWidgetsFromLine(i);
         }
         else
         {
@@ -70,6 +66,8 @@ void GlossDisplayWidget::setLayoutFromText()
             addWordWidgets(i, flowLayout);
 
         mText->phrases()->at(i)->setGuiRefreshRequest(false);
+
+        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
     }
     progress.setValue(mText->phrases()->count());
 }
@@ -91,7 +89,8 @@ void GlossDisplayWidget::setLayoutFromText(QList<int> lines)
         else
         {
             flowLayout = mLineLayouts.at(i);
-            clearWidgets( flowLayout );
+//            clearWidgets( flowLayout );
+            clearWidgetsFromLine(i);
         }
 
         addLineLabel(i, flowLayout);
@@ -107,6 +106,7 @@ void GlossDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
     for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
     {
         WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
+        mWordDisplayWidgets.insert(i, wdw);
         flowLayout->addWidget(wdw);
     }
 }
@@ -125,7 +125,6 @@ void GlossDisplayWidget::clearData()
 WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
     WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines, mProject->dbAdapter() );
-    mWordDisplayWidgets << wdw;
 
     connect( wdw, SIGNAL(splitWidgetInTwo(GlossItem*,TextBit,TextBit)), phrase, SLOT(splitGlossInTwo(GlossItem*,TextBit,TextBit)) );
     connect( wdw, SIGNAL(mergeGlossItemWithNext(GlossItem*)), phrase, SLOT(mergeGlossItemWithNext(GlossItem*)));
@@ -142,7 +141,7 @@ void GlossDisplayWidget::clearWidgets(QLayout * layout)
         WordDisplayWidget *wdw = qobject_cast<WordDisplayWidget*>(item->widget());
         if( wdw != 0 )
         {
-            mWordDisplayWidgets.remove(wdw);
+//            mWordDisplayWidgets.remove(wdw);
             // I'm not sure why it crashes when I delete the InterlinearLineLabel, but since those objects are parented to the widget anyway, they should eventually be deleted just the same.
             delete item->widget();
         }

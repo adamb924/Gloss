@@ -153,3 +153,14 @@ void InterlinearDisplayWidget::setLayoutAsAppropriate()
         setLayoutFromText(mLines);
     setEnabled(true);
 }
+
+void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
+{
+    QListIterator<QWidget*> iter =  QListIterator<QWidget*>( mWordDisplayWidgets.values(lineNumber) );
+    while(iter.hasNext())
+    {
+        QWidget *widget = iter.next();
+        delete widget;
+        mWordDisplayWidgets.remove( lineNumber, widget );
+    }
+}

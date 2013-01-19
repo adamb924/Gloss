@@ -76,7 +76,7 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
         mGlossItems.replace(index, two);
         mGlossItems.insert( index , one );
         mRequestGuiRefresh = true;
-        emit phraseChanged();
+//        emit phraseChanged();
     }
 }
 
@@ -90,7 +90,7 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
     mGlossItems.replace( index, newGlossItem );
     delete mGlossItems.takeAt( index+1 );
     mRequestGuiRefresh = true;
-    emit phraseChanged();
+//    emit phraseChanged();
 }
 
 void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
@@ -103,7 +103,7 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     mGlossItems.replace( index, newGlossItem );
     delete mGlossItems.takeAt( index-1 );
     mRequestGuiRefresh = true;
-    emit phraseChanged();
+//    emit phraseChanged();
 }
 
 int Phrase::glossItemCount() const

@@ -28,6 +28,7 @@ public:
     InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
+
 signals:
     //! \brief Emitted whenever the top line number of the widget is changed. \a line is 0-indexed.
     // TODO emit this at some point
@@ -38,6 +39,7 @@ public slots:
 
 protected:
     void scrollContentsBy ( int dx, int dy );
+    void clearWidgetsFromLine(int lineNumber);
 
 private slots:
 
@@ -70,7 +72,7 @@ private:
 protected:
     QList<QLayout*> mLineLayouts;
 
-    QSet<QWidget*> mWordDisplayWidgets; // change to generic name
+    QMultiHash<int, QWidget*> mWordDisplayWidgets;
 
     QLayout* addLine();
 
