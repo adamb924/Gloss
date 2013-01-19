@@ -46,9 +46,6 @@ private:
     QMultiHash<qlonglong,WordDisplayWidget*> mAnalysisWidgetConcordance;
 
     DatabaseAdapter *mDbAdapter;
-
-public slots:
-    void updateAnalysis(qlonglong textFormId);
 };
 
 #endif // ANALYSISINTERLINEARDISPLAYWIDGET_H

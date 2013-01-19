@@ -5,6 +5,8 @@
 Allomorph::Allomorph()
 {
     mType = Null;
+    mId = -1;
+    mTextBit = TextBit();
 }
 
 Allomorph::Allomorph(qlonglong id, const TextBit & bit)
@@ -22,6 +24,23 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
     mTextBit = bit;
     setTypeFromString(bit.text());
     mGlosses = glosses;
+}
+
+Allomorph::Allomorph(const Allomorph & other)
+{
+    mType = other.mType;
+    mId = other.mId;
+    mTextBit = other.mTextBit;
+    mGlosses = other.mGlosses;
+}
+
+Allomorph& Allomorph::operator=(const Allomorph & other)
+{
+    mType = other.mType;
+    mId = other.mId;
+    mTextBit = other.mTextBit;
+    mGlosses = other.mGlosses;
+    return *this;
 }
 
 bool Allomorph::operator==(const Allomorph & other) const

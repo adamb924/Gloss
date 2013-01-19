@@ -22,6 +22,7 @@ public:
     QString glossSummary(const WritingSystem & ws) const;
 
     qlonglong textFormId() const;
+    void setTextFormId(qlonglong textFormId);
     WritingSystem writingSystem() const;
 
 

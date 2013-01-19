@@ -20,7 +20,7 @@ class AnalysisWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    AnalysisWidget(const GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
 signals:
     void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
@@ -29,13 +29,13 @@ public slots:
     void createInitializedLayout(const MorphologicalAnalysis & analysis);
 
 private:
-    GlossItem *mGlossItem;
+    const GlossItem *mGlossItem;
 
     void setupLayout();
 
     WritingSystem mWritingSystem;
 
-    DatabaseAdapter *mDbAdapter;
+    const DatabaseAdapter *mDbAdapter;
 
     QVBoxLayout *mLayout;
 

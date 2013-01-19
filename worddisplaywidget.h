@@ -70,8 +70,6 @@ private:
     DatabaseAdapter *mDbAdapter;
 
 signals:
-    void morphologicalAnalysisChanged(qlonglong textFormId);
-
     void splitWidgetInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );

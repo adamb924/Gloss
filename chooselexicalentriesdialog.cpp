@@ -9,7 +9,7 @@
 #include <QtGui>
 #include <QtDebug>
 
-ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent) :
+ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
     QDialog(parent)
 {
     mDbAdapter = dbAdapter;
@@ -38,8 +38,6 @@ void ChooseLexicalEntriesDialog::commitChangesToDatabase()
         mAnalysis[i]->setId(allomorphId);
         mAnalysis[i]->setGlosses( mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ) );
     }
-    mDbAdapter->setMorphologicalAnalysis( mGlossItem->textForm( mParseString.writingSystem() ).id() , mAnalysis );
-    mGlossItem->setMorphologicalAnalysis( mAnalysis );
 }
 
 void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()

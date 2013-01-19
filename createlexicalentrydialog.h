@@ -19,7 +19,7 @@ class CreateLexicalEntryDialog : public QDialog
     Q_OBJECT
 
 public:
-    CreateLexicalEntryDialog(const TextBit & bit, bool isMonomorphemic, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    CreateLexicalEntryDialog(const TextBit & bit, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     ~CreateLexicalEntryDialog();
 
     qlonglong id() const;
@@ -27,9 +27,9 @@ public:
 
 private:
     Ui::CreateLexicalEntryDialog *ui;
-    DatabaseAdapter *mDbAdapter;
+    const DatabaseAdapter *mDbAdapter;
     TextBit mTextBit;
-    GlossItem *mGlossItem;
+    const GlossItem *mGlossItem;
     bool mIsMonomorphemic;
 
     qlonglong mId;

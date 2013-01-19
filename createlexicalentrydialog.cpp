@@ -10,7 +10,7 @@
 #include "glossitem.h"
 #include "textbit.h"
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & bit, bool isMonomorphemic, GlossItem *glossItem, DatabaseAdapter *dbAdapter, QWidget *parent) :
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & bit, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog)
 {

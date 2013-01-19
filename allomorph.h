@@ -11,6 +11,8 @@ public:
     Allomorph();
     Allomorph(qlonglong id, const TextBit & bit);
     Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses );
+    Allomorph(const Allomorph & other);
+    Allomorph& operator=(const Allomorph & other);
 
     bool operator==(const Allomorph & other) const;
 

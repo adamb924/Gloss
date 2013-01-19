@@ -150,12 +150,12 @@ TextBit GlossItem::baselineText() const
     return mTextForms.value(mBaselineWritingSystem);
 }
 
-TextBitHash* GlossItem::textForms()
+const TextBitHash* GlossItem::textForms() const
 {
     return &mTextForms;
 }
 
-TextBitHash* GlossItem::glosses()
+const TextBitHash* GlossItem::glosses() const
 {
     return &mGlosses;
 }
@@ -270,21 +270,15 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
     return mGlosses.value(ws);
 }
 
-MorphologicalAnalysis* GlossItem::morphologicalAnalysis(const WritingSystem & ws)
+MorphologicalAnalysis GlossItem::morphologicalAnalysis(const WritingSystem & ws) const
 {
-    if( !mMorphologicalAnalysis.contains(ws) )
-    {
-        mMorphologicalAnalysis.insert( ws, MorphologicalAnalysis( mTextForms.value(ws) ) );
-    }
-    return &mMorphologicalAnalysis[ws];
+    return mMorphologicalAnalysis.value(ws, MorphologicalAnalysis(mTextForms.value(ws)) );
 }
 
 void GlossItem::setMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
 {
-    qDebug() << "GlossItem::setMorphologicalAnalysis" << analysis.allomorphCount();
-    if( analysis.allomorphCount() > 0 &&  mMorphologicalAnalysis.value( analysis.writingSystem() ) != analysis )
+    if( mMorphologicalAnalysis.value( analysis.writingSystem() ) != analysis )
     {
-        qDebug() << "in if";
         mMorphologicalAnalysis.insert( analysis.writingSystem() , analysis);
         emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value( analysis.writingSystem() ) );
     }

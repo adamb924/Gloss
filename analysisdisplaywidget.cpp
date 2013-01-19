@@ -117,15 +117,5 @@ WordDisplayWidget* AnalysisDisplayWidget::addWordDisplayWidget(GlossItem *item)
         if( mInterlinearDisplayLines.at(i).type() == InterlinearItemType::Analysis )
             mAnalysisWidgetConcordance.insert( item->textForm(mInterlinearDisplayLines.at(i).writingSystem()).id(), wdw );
 
-    connect( wdw, SIGNAL(morphologicalAnalysisChanged(qlonglong)), this, SLOT(updateAnalysis(qlonglong)) );
-
     return wdw;
-}
-
-void AnalysisDisplayWidget::updateAnalysis(qlonglong textFormId)
-{
-    WritingSystem ws = mDbAdapter->textFormFromId( textFormId ).writingSystem();
-    QList<WordDisplayWidget*> widgetList = mAnalysisWidgetConcordance.values(textFormId);
-    foreach(WordDisplayWidget *widget, widgetList)
-        widget->refreshMorphologicalAnalysis( ws );
 }

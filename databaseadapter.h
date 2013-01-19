@@ -151,20 +151,19 @@ public:
     QList<WritingSystem> lexicalEntryCitationForms() const;
     QList<WritingSystem> lexicalEntryGlosses() const;
 
-    QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit );
+    QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit ) const;
 
-    qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms );
-    qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId );
-    void removeAllomorphs( qlonglong textFormId );
+    qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms ) const;
+    qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId ) const;
 
     //! \brief Adds the specified morphological analysis to the database. Any existing morphological analysis associated with the text form is deleted. The
-    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis );
+    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis ) const;
 
     //! \brief Returns the morphological analysis associated with the given TextForm id. The analysis is empty if none is found in the database.
-    MorphologicalAnalysis morphologicalAnalysisFromTextFormId( qlonglong textFormId );
+    MorphologicalAnalysis morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const;
 
     //! \brief Return an Allomorph object with data from the allomorph id indicated
-    Allomorph allomorphFromId( qlonglong allomorphId );
+    Allomorph allomorphFromId( qlonglong allomorphId ) const;
 
     //! \brief Return the glosses associated with the given lexical entry
     TextBitHash lexicalItemGlosses(qlonglong lexicalEntryId) const;

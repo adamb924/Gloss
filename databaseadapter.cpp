@@ -711,7 +711,7 @@ QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(con
     return items;
 }
 
-QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit )
+QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit ) const
 {
     QHash<qlonglong,QString> candidates;
 
@@ -727,7 +727,7 @@ QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextB
     return candidates;
 }
 
-qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms )
+qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms ) const
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);
     db.transaction();
@@ -779,12 +779,7 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
     return id;
 }
 
-void DatabaseAdapter::removeAllomorphs( qlonglong textFormId )
-{
-
-}
-
-qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexicalEntryId )
+qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexicalEntryId ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("insert into Allomorph (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
@@ -802,7 +797,7 @@ qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexical
     }
 }
 
-void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis )
+void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("delete from Allomorph where _id in (select TextFormId from MorphologicalAnalysisMembers where TextFormId=:TextFormId);");
@@ -828,7 +823,7 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
     }
 }
 
-MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId )
+MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const
 {
     TextBit textForm = textFormFromId(textFormId);
     MorphologicalAnalysis analysis( textForm );
@@ -845,7 +840,7 @@ MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlon
     return analysis;
 }
 
-Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId )
+Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
 

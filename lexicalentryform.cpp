@@ -5,7 +5,7 @@
 #include "genericlexicalentryform.h"
 #include "createlexicalentrydialog.h"
 
-LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, GlossItem *glossItem, DatabaseAdapter *dbAdapter,  QWidget *parent) :
+LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter,  QWidget *parent) :
         QWidget(parent),
         ui(new Ui::LexicalEntryForm)
 {

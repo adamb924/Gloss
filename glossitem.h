@@ -51,10 +51,10 @@ public:
     TextBit baselineText() const;
 
     //! \brief Returns a pointer to a TextBitHash with the text forms. See textForm() for an alternate interface to this data structure.
-    TextBitHash* textForms();
+    const TextBitHash* textForms() const;
 
     //! \brief Returns a pointer to a TextBitHash with the glosses. See gloss() for an alternate interface to this data structure.
-    TextBitHash* glosses();
+    const TextBitHash* glosses() const;
 
     //! \brief Returns the text form for the given writing system. If one is not available in the has, one is returned from the database. If there is none in the database, a new one is created.
     TextBit textForm(const WritingSystem & ws);
@@ -80,8 +80,8 @@ public:
     //! \brief Returns the WritingSystem of the GlossItem's baseline text
     WritingSystem baselineWritingSystem() const;
 
-    //! \brief Returns the morphological analysis for the given writing system, which is created if none exists
-    MorphologicalAnalysis* morphologicalAnalysis(const WritingSystem & ws);
+    //! \brief Returns the morphological analysis for the given writing system, or an empty one
+    MorphologicalAnalysis morphologicalAnalysis(const WritingSystem & ws) const;
 
     //! \brief Returns a list of languages for which there are morphological analyses
     QList<WritingSystem> morphologicalAnalysisLanguages() const;

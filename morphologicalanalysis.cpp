@@ -2,6 +2,7 @@
 #include "allomorph.h"
 
 #include <QStringList>
+#include <QDebug>
 
 MorphologicalAnalysis::MorphologicalAnalysis()
 {
@@ -23,6 +24,7 @@ MorphologicalAnalysis::MorphologicalAnalysis(qlonglong textFormId, const Writing
 
 MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other)
 {
+    mWritingSystem = other.mWritingSystem;
     mTextFormId = other.mTextFormId;
     mAllomorphs = other.mAllomorphs;
 }
@@ -90,6 +92,11 @@ int MorphologicalAnalysis::allomorphCount() const
 qlonglong MorphologicalAnalysis::textFormId() const
 {
     return mTextFormId;
+}
+
+void MorphologicalAnalysis::setTextFormId(qlonglong textFormId)
+{
+    mTextFormId = textFormId;
 }
 
 WritingSystem MorphologicalAnalysis::writingSystem() const

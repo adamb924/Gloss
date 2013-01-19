@@ -570,13 +570,14 @@ bool Text::serializeMorphemes(GlossItem *glossItem, QXmlStreamWriter *stream) co
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
     foreach( WritingSystem ws, analysisLanguages )
     {
-        MorphologicalAnalysis *analysis = glossItem->morphologicalAnalysis( ws );
-        if( ! analysis->isEmpty() )
+        // TODO optimize this to use the methods for accessing the morphological analysis instead
+        const MorphologicalAnalysis analysis = glossItem->morphologicalAnalysis( ws );
+        if( ! analysis.isEmpty() )
         {
             stream->writeStartElement("morphemes");
             stream->writeAttribute("http://www.adambaker.org/gloss.php", "lang", ws.flexString() );
 
-            AllomorphIterator iter = analysis->allomorphIterator();
+            AllomorphIterator iter = analysis.allomorphIterator();
             while(iter.hasNext())
                 serializeAllomorph( iter.next() , stream );
             stream->writeEndElement(); // morphemes

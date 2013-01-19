@@ -25,7 +25,7 @@ class LexicalEntryForm : public QWidget
     Q_OBJECT
 
 public:
-    LexicalEntryForm(const Allomorph & allomorph, GlossItem *glossItem, DatabaseAdapter *dbAdapter,  QWidget *parent = 0);
+    LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter,  QWidget *parent = 0);
     ~LexicalEntryForm();
 
     qlonglong id() const;
@@ -34,8 +34,8 @@ public:
 private:
     Ui::LexicalEntryForm *ui;
     Allomorph mAllomorph;
-    DatabaseAdapter *mDbAdapter;
-    GlossItem *mGlossItem;
+    const DatabaseAdapter *mDbAdapter;
+    const GlossItem *mGlossItem;
 
     void fillData();
 

@@ -9,7 +9,7 @@
 #include "databaseadapter.h"
 #include "immutablelabel.h"
 
-AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, DatabaseAdapter *dbAdapter, QWidget *parent) :
+AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent) :
     QWidget(parent)
 {
     mGlossItem = glossItem;
@@ -23,10 +23,10 @@ void AnalysisWidget::setupLayout()
     mLayout = new QVBoxLayout;
     setLayout(mLayout);
 
-    if( mGlossItem->morphologicalAnalysis(mWritingSystem)->isEmpty() )
+    if( mGlossItem->morphologicalAnalysis(mWritingSystem).isEmpty() )
         createUninitializedLayout();
     else
-        createInitializedLayout( *mGlossItem->morphologicalAnalysis(mWritingSystem) );
+        createInitializedLayout( mGlossItem->morphologicalAnalysis(mWritingSystem) );
 }
 
 void AnalysisWidget::createUninitializedLayout()
@@ -68,7 +68,7 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 
 void AnalysisWidget::enterAnalysis()
 {
-    TextBit textForm = mGlossItem->textForm( mWritingSystem );
+    TextBit textForm = mGlossItem->textForms()->value(mWritingSystem);
     CreateAnalysisDialog dialog( textForm );
     if( dialog.exec() == QDialog::Accepted )
     {
@@ -83,7 +83,7 @@ void AnalysisWidget::enterAnalysis()
 
 void AnalysisWidget::createMonomorphemicLexicalEntry()
 {
-    TextBit textForm = mGlossItem->textForm(mWritingSystem);
+    TextBit textForm = mGlossItem->textForms()->value(mWritingSystem);
     CreateLexicalEntryDialog dialog( textForm, true, mGlossItem, mDbAdapter, this);
     if( dialog.exec() == QDialog::Accepted )
     {
@@ -93,7 +93,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
             qlonglong allomorphId = mDbAdapter->addAllomorph( textForm , lexicalEntryId );
             Allomorph allomorph = mDbAdapter->allomorphFromId(allomorphId);
 
-            MorphologicalAnalysis analysis( mGlossItem->textForm(mWritingSystem) );
+            MorphologicalAnalysis analysis( mGlossItem->textForms()->value(mWritingSystem) );
             analysis.addAllomorph( allomorph );
             mDbAdapter->setMorphologicalAnalysis( textForm.id(), analysis );
 
