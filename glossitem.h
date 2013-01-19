@@ -143,7 +143,7 @@ private:
 
     void updateGlossItemConcordance();
 
-    QHash<WritingSystem,MorphologicalAnalysis> mMorphologicalAnalysis;
+    QHash<WritingSystem,MorphologicalAnalysis> mMorphologicalAnalyses;
 
     TextBitHash mTextForms;
     TextBitHash mGlosses;

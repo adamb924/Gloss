@@ -174,6 +174,9 @@ public:
     //! \brief Return the lexical entry glosses for the given allomorph
     TextBitHash lexicalEntryGlossFormsForAllomorph(qlonglong id) const;
 
+    QStringList grammaticalTagsForAllomorph(qlonglong allomorphId) const;
+
+
 private:
     QString mFilename;
 

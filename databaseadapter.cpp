@@ -820,6 +820,13 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
 qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexicalEntryId ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    // delete a conflicting allomorph
+    q.prepare("delete from Allomorph where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem;");
+    q.bindValue(":LexicalEntryId",lexicalEntryId);
+    q.bindValue(":WritingSystem",bit.writingSystem().id());
+    q.exec();
+
     q.prepare("insert into Allomorph (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
     q.bindValue(":LexicalEntryId",lexicalEntryId);
     q.bindValue(":WritingSystem",bit.writingSystem().id());
@@ -988,4 +995,17 @@ TextBitHash DatabaseAdapter::lexicalEntryGlossFormsForAllomorph(qlonglong allomo
         forms.insert( ws, TextBit( q.value(2).toString(), ws, q.value(0).toLongLong() ) );
     }
     return forms;
+}
+
+QStringList DatabaseAdapter::grammaticalTagsForAllomorph(qlonglong allomorphId) const
+{
+    QStringList tags;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select Tag from LexicalEntryGrammaticalTags where LexicalEntryId in (select LexicalEntryId from Allomorph where _id=:_id);");
+    q.bindValue(":_id",allomorphId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::grammaticalTagsForAllomorph" << q.lastError().text() << q.executedQuery() << allomorphId;
+    while( q.next() )
+        tags << q.value(0).toString();
+    return tags;
 }

@@ -610,6 +610,13 @@ bool Text::serializeAllomorph(const Allomorph & allomorph, QXmlStreamWriter *str
         serializeItem( "gls", glossIter.key(), glossIter.value().text(), stream, glossIter.value().id() );
     }
 
+    QStringListIterator tagIter( mDbAdapter->grammaticalTagsForAllomorph( allomorph.id() ) );
+    while( tagIter.hasNext() )
+    {
+        stream->writeEmptyElement("http://www.adambaker.org/gloss.php", "grammatical-tag");
+        stream->writeAttribute("http://www.adambaker.org/gloss.php", "name", tagIter.next() );
+    }
+
     stream->writeEndElement(); // morph
 
     return true;

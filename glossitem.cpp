@@ -20,8 +20,6 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
 
     guessInterpretation();
 
-    loadMorphologicalAnalysesFromDatabase();
-
     setCandidateNumberFromDatabase();
 
     updateGlossItemConcordance();
@@ -41,8 +39,6 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
         guessInterpretation();
     else
         setInterpretation(id, false); // false because we have text forms and glosses from the arguments of the constructor
-
-    loadMorphologicalAnalysesFromDatabase();
 
     setCandidateNumberFromDatabase();
 
@@ -105,6 +101,8 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
             loadStringsFromDatabase();
         }
 
+        loadMorphologicalAnalysesFromDatabase();
+
         emit interpretationIdChanged(mId);
         emit fieldsChanged();
     }
@@ -130,11 +128,14 @@ void GlossItem::setTextForm(const TextBit & textForm)
         mDbAdapter->updateInterpretationTextForm(textForm);
         mTextForms.insert( ws , textForm );
 
-        mMorphologicalAnalysis.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() ) );
+        mConcordance->updateGlossItemTextFormConcordance( this, textForm.id() );
+
+        MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() );
+        mMorphologicalAnalyses.insert( ws , newMa );
 
         emit fieldsChanged();
         emit textFormChanged(textForm);
-        emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value(ws) );
+        emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( ws ) );
     }
 }
 
@@ -215,6 +216,7 @@ void GlossItem::guessInterpretation()
         setInterpretation( candidates.at(0), true );  // true because the user hadn't had a chance to specify
     }
     setApprovalStatus(GlossItem::Unapproved);
+    loadMorphologicalAnalysesFromDatabase();
 }
 
 void GlossItem::toggleApproval()
@@ -270,28 +272,28 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
 
 MorphologicalAnalysis GlossItem::morphologicalAnalysis(const WritingSystem & ws) const
 {
-    return mMorphologicalAnalysis.value(ws, MorphologicalAnalysis(mTextForms.value(ws)) );
+    return mMorphologicalAnalyses.value(ws, MorphologicalAnalysis(mTextForms.value(ws)) );
 }
 
 void GlossItem::setMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
 {
-    if( mMorphologicalAnalysis.value( analysis.writingSystem() ) != analysis )
+    if( !mMorphologicalAnalyses.contains(analysis.writingSystem()) || ( mMorphologicalAnalyses.contains(analysis.writingSystem()) && mMorphologicalAnalyses.value( analysis.writingSystem() ) != analysis ) )
     {
-        mMorphologicalAnalysis.insert( analysis.writingSystem() , analysis);
-        emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value( analysis.writingSystem() ) );
+        mMorphologicalAnalyses.insert( analysis.writingSystem() , analysis);
+        emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis.writingSystem() ) );
     }
 }
 
 void GlossItem::setMorphologicalAnalysisFromDatabase( const WritingSystem & ws )
 {
-    mMorphologicalAnalysis.insert(ws, mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
-    emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value(ws) );
+    mMorphologicalAnalyses.insert(ws, mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
+    emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value(ws) );
 }
 
 void GlossItem::addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem )
 {
-    mMorphologicalAnalysis[writingSystem].addAllomorph(allomorph);
-    emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value(writingSystem) );
+    mMorphologicalAnalyses[writingSystem].addAllomorph(allomorph);
+    emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value(writingSystem) );
 }
 
 void GlossItem::loadStringsFromDatabase()
@@ -331,17 +333,18 @@ void GlossItem::loadStringsFromDatabase()
 
 void GlossItem::loadMorphologicalAnalysesFromDatabase()
 {
+    mMorphologicalAnalyses.clear();
     TextBitHashIterator tfIter( mTextForms );
     while(tfIter.hasNext())
     {
         tfIter.next();
-        mMorphologicalAnalysis.insert( tfIter.key() , mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() ) );
+        mMorphologicalAnalyses.insert( tfIter.key() , mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() ) );
     }
 }
 
 QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
-    return mMorphologicalAnalysis.keys();
+    return mMorphologicalAnalyses.keys();
 }
 
 Concordance* GlossItem::concordance()

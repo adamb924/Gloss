@@ -7,7 +7,7 @@
 #include <QtDebug>
 
 Concordance::Concordance(QObject *parent) :
-    QObject(parent)
+        QObject(parent)
 {
 }
 
@@ -103,8 +103,10 @@ void Concordance::removeTextFormFromImmutableLabelConcordance( QObject * edit )
 void Concordance::removeGlossItemFromConcordance( QObject * item )
 {
     GlossItem *glossItem = qobject_cast<GlossItem*>(item);
-    qlonglong id = mGlossItemsByTextFormId.key( glossItem );
-    mGlossItemsByTextFormId.remove( id, glossItem );
+
+    QListIterator<qlonglong> keys( mGlossItemsByTextFormId.keys( glossItem ) );
+    while(keys.hasNext())
+        mGlossItemsByTextFormId.remove( keys.next(), glossItem );
 }
 
 void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId )
@@ -116,10 +118,11 @@ void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::Candida
 
 void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong textFormId)
 {
-    mGlossItemsByTextFormId.insert(textFormId, item);
+    if( !mGlossItemsByTextFormId.contains(textFormId, item) )
+        mGlossItemsByTextFormId.insert(textFormId, item);
 }
 
-void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
+void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis)
 {
     QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
     foreach(GlossItem *item, itemList)
