@@ -31,6 +31,7 @@ MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other
 
 MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnalysis & other)
 {
+    mWritingSystem = other.mWritingSystem;
     mTextFormId = other.mTextFormId;
     mAllomorphs = other.mAllomorphs;
     return *this;
@@ -53,9 +54,7 @@ QString MorphologicalAnalysis::glossSummary(const WritingSystem & ws) const
 {
     QStringList summary;
     for(int i=0; i<mAllomorphs.count(); i++)
-    {
         summary << mAllomorphs.at(i).gloss(ws).text();
-    }
     return summary.join("-");
 }
 
