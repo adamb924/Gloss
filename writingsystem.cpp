@@ -83,12 +83,12 @@ QString WritingSystem::summaryString() const
 
 bool WritingSystem::operator==(const WritingSystem & other) const
 {
-    return mFlexString == other.flexString();
+    return mId == other.mId;
 }
 
 bool WritingSystem::operator!=(const WritingSystem & other) const
 {
-    return mFlexString != other.flexString();
+    return mFlexString != other.mFlexString;
 }
 
 bool WritingSystem::operator==(const QString & flexString) const
