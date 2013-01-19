@@ -20,14 +20,11 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
 
     guessInterpretation();
 
+    loadMorphologicalAnalysesFromDatabase();
+
     setCandidateNumberFromDatabase();
 
-    TextBitHashIterator iter(mTextForms);
-    while(iter.hasNext())
-    {
-        iter.next();
-        mConcordance->updateGlossItemTextFormConcordance( this, iter.value().id() );
-    }
+    updateGlossItemConcordance();
 }
 
 GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
@@ -45,14 +42,11 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
     else
         setInterpretation(id, false); // false because we have text forms and glosses from the arguments of the constructor
 
+    loadMorphologicalAnalysesFromDatabase();
+
     setCandidateNumberFromDatabase();
 
-    TextBitHashIterator iter(mTextForms);
-    while(iter.hasNext())
-    {
-        iter.next();
-        mConcordance->updateGlossItemTextFormConcordance( this, iter.value().id() );
-    }
+    updateGlossItemConcordance();
 }
 
 GlossItem::~GlossItem()
@@ -135,8 +129,12 @@ void GlossItem::setTextForm(const TextBit & textForm)
     {
         mDbAdapter->updateInterpretationTextForm(textForm);
         mTextForms.insert( ws , textForm );
+
+        mMorphologicalAnalysis.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() ) );
+
         emit fieldsChanged();
         emit textFormChanged(textForm);
+        emit morphologicalAnalysisChanged( mMorphologicalAnalysis.value(ws) );
     }
 }
 
@@ -331,6 +329,16 @@ void GlossItem::loadStringsFromDatabase()
     }
 }
 
+void GlossItem::loadMorphologicalAnalysesFromDatabase()
+{
+    TextBitHashIterator tfIter( mTextForms );
+    while(tfIter.hasNext())
+    {
+        tfIter.next();
+        mMorphologicalAnalysis.insert( tfIter.key() , mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() ) );
+    }
+}
+
 QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
     return mMorphologicalAnalysis.keys();
@@ -339,4 +347,14 @@ QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 Concordance* GlossItem::concordance()
 {
     return mConcordance;
+}
+
+void GlossItem::updateGlossItemConcordance()
+{
+    TextBitHashIterator iter(mTextForms);
+    while(iter.hasNext())
+    {
+        iter.next();
+        mConcordance->updateGlossItemTextFormConcordance( this, iter.value().id() );
+    }
 }

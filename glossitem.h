@@ -139,6 +139,10 @@ private:
     //! \brief Resets the strings for the text forms and gloss forms from the database. If an id doesn't exist in the database, then a new text form or gloss is created.
     void loadStringsFromDatabase();
 
+    void loadMorphologicalAnalysesFromDatabase();
+
+    void updateGlossItemConcordance();
+
     QHash<WritingSystem,MorphologicalAnalysis> mMorphologicalAnalysis;
 
     TextBitHash mTextForms;
