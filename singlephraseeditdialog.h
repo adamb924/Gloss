@@ -28,6 +28,8 @@ private slots:
 private:
     Ui::SinglePhraseEditDialog *ui;
 
+    void setTitle();
+
     QList<int> mLines;
     Project *mProject;
     Text *mText;
