@@ -28,6 +28,11 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
     menu.exec(event->globalPos());
 }
 
+void InterlinearLineLabel::mouseDoubleClickEvent ( QMouseEvent * event )
+{
+    emitPlaySound();
+}
+
 void InterlinearLineLabel::emitApproveAll()
 {
     emit approveAll(mLineNumber);

@@ -16,6 +16,7 @@ signals:
 
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
+    void mouseDoubleClickEvent ( QMouseEvent * event );
 
     int mLineNumber;
     bool mSoundAvailable;
