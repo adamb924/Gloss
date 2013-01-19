@@ -54,13 +54,13 @@ void SinglePhraseEditDialog::refreshLayout()
     //        delete item->widget();
     //        delete item;
     //    }
-    //    if( mGlossDisplayWidget != 0 )
-    //        delete mGlossDisplayWidget;
+//        if( mGlossDisplayWidget != 0 )
+//            delete mGlossDisplayWidget;
 
     mGlossDisplayWidget = new GlossDisplayWidget( mText, mProject, mLines, this );
 
-    for(int i=0; i<mLines.count(); i++)
-        connect( mText->phrases()->at(mLines.at(i)), SIGNAL(phraseChanged()), this, SLOT(accept()) );
+//    for(int i=0; i<mLines.count(); i++)
+//        connect( mText->phrases()->at(mLines.at(i)), SIGNAL(phraseChanged()), this, SLOT(accept()) );
 
     ui->layout->addWidget( mGlossDisplayWidget );
 }

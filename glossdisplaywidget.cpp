@@ -104,9 +104,9 @@ void GlossDisplayWidget::setLayoutFromText(QList<int> lines)
 
 void GlossDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 {
-    for(int j=0; j<mText->phrases()->at(i)->count(); j++)
+    for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
     {
-        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j), mText->phrases()->at(i));
+        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
         flowLayout->addWidget(wdw);
     }
 }

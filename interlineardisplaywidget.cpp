@@ -124,8 +124,8 @@ void InterlinearDisplayWidget::approveAll(int lineNumber)
 {
     if( lineNumber >= mText->phrases()->count() )
         return;
-    for(int i=0; i < mText->phrases()->at(lineNumber)->count(); i++)
-        mText->phrases()->at(lineNumber)->at(i)->setApprovalStatus(GlossItem::Approved);
+    for(int i=0; i < mText->phrases()->at(lineNumber)->glossItemCount(); i++)
+        mText->phrases()->at(lineNumber)->glossItemAt(i)->setApprovalStatus(GlossItem::Approved);
 }
 
 void InterlinearDisplayWidget::playSound(int lineNumber)

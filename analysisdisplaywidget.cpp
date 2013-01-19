@@ -93,9 +93,9 @@ void AnalysisDisplayWidget::clearWidgets(QLayout * layout)
 
 void AnalysisDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 {
-    for(int j=0; j<mText->phrases()->at(i)->count(); j++)
+    for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
     {
-        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->at(j));
+        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j));
         flowLayout->addWidget(wdw);
     }
 }

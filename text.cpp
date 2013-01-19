@@ -181,12 +181,11 @@ void Text::setGlossItemsFromBaseline()
 
 void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
 {
-    qDeleteAll(*phrase);
-    phrase->clear();
+    phrase->clearGlossItems();
 
     QStringList words = line.split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
     for(int i=0; i<words.count(); i++)
-        phrase->append(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
+        phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
 
     phrase->setGuiRefreshRequest(true);
 }
@@ -197,9 +196,9 @@ void Text::setBaselineFromGlossItems()
     for(int i=0; i<mPhrases.count(); i++)
     {
         QString line;
-        for(int j=0; j<mPhrases.at(i)->count(); j++)
+        for(int j=0; j<mPhrases.at(i)->glossItemCount(); j++)
         {
-            line += mPhrases.at(i)->at(j)->baselineText().text() + " ";
+            line += mPhrases.at(i)->glossItemAt(j)->baselineText().text() + " ";
         }
         mBaselineText += line.trimmed() + "\n";
     }
@@ -402,11 +401,11 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                     }
                 }
 
-                mPhrases.last()->append(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject ));
-                mPhrases.last()->last()->setApprovalStatus(approvalStatus);
+                mPhrases.last()->appendGlossItem(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject ));
+                mPhrases.last()->lastGlossItem()->setApprovalStatus(approvalStatus);
 
                 if( !morphologicalAnalysis->isEmpty() )
-                    mPhrases.last()->last()->setMorphologicalAnalysis( *morphologicalAnalysis );
+                    mPhrases.last()->lastGlossItem()->setMorphologicalAnalysis( *morphologicalAnalysis );
 
                 inWord = false;
                 hasValidId = false;
@@ -498,9 +497,9 @@ bool Text::serializeInterlinearText(QXmlStreamWriter *stream) const
         serializeItem("segnum", mDbAdapter->metaLanguage(), QString("%1").arg(count) , stream );
 
         stream->writeStartElement("words");
-        for(int i=0; i<phrase->count(); i++ )
+        for(int i=0; i<phrase->glossItemCount(); i++ )
         {
-            GlossItem *glossItem = phrase->at(i);
+            GlossItem *glossItem = phrase->glossItemAt(i);
 
             serializeGlossItem(glossItem, stream);
         }

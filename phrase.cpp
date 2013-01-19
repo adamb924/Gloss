@@ -13,8 +13,7 @@ Phrase::Phrase(Project *project)
 
 Phrase::~Phrase()
 {
-    // delete the gloss items
-    qDeleteAll(*this);
+    qDeleteAll(mGlossItems);
 }
 
 TextBitHashIterator Phrase::glosses()
@@ -37,9 +36,9 @@ void Phrase::setPhrasalGloss( const TextBit & bit )
 QString Phrase::equivalentBaselineLineText() const
 {
     QString text;
-    for(int i=0; i<count(); i++)
+    for(int i=0; i<glossItemCount(); i++)
     {
-        text.append( at(i)->baselineText().text() );
+        text.append( glossItemAt(i)->baselineText().text() );
         text.append(" ");
     }
     return text.trimmed();
@@ -70,12 +69,12 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
     GlossItem *one = new GlossItem( wordOne, mProject );
     GlossItem *two = new GlossItem( wordTwo, mProject );
 
-    int index = indexOf( glossItem );
+    int index = mGlossItems.indexOf( glossItem );
     if( index != -1 )
     {
-        delete at(index);
-        replace(index, two);
-        insert( index , one );
+        delete mGlossItems.at(index);
+        mGlossItems.replace(index, two);
+        mGlossItems.insert( index , one );
         mRequestGuiRefresh = true;
         emit phraseChanged();
     }
@@ -83,26 +82,57 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
 
 void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
 {
-    int index = indexOf( glossItem );
-    if( index == -1 || index >= count() -1 )
+    int index = mGlossItems.indexOf( glossItem );
+    if( index == -1 || index >= glossItemCount() -1 )
         return;
-    TextBit newBit = TextBit( at(index)->baselineText().text() + at(index+1)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
+    TextBit newBit = TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
     GlossItem *newGlossItem = new GlossItem( newBit, mProject );
-    replace( index, newGlossItem );
-    delete takeAt( index+1 );
+    mGlossItems.replace( index, newGlossItem );
+    delete mGlossItems.takeAt( index+1 );
     mRequestGuiRefresh = true;
     emit phraseChanged();
 }
 
 void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
 {
-    int index = indexOf( glossItem );
-    if( index <= 0 || index >= count() )
+    int index = mGlossItems.indexOf( glossItem );
+    if( index <= 0 || index >= glossItemCount() )
         return;
-    TextBit newBit = TextBit( at(index-1)->baselineText().text() + at(index)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
+    TextBit newBit = TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
     GlossItem *newGlossItem = new GlossItem( newBit, mProject );
-    replace( index, newGlossItem );
-    delete takeAt( index-1 );
+    mGlossItems.replace( index, newGlossItem );
+    delete mGlossItems.takeAt( index-1 );
     mRequestGuiRefresh = true;
     emit phraseChanged();
+}
+
+int Phrase::glossItemCount() const
+{
+    return mGlossItems.count();
+}
+
+const GlossItem* Phrase::glossItemAt(int index) const
+{
+    return mGlossItems.at(index);
+}
+
+GlossItem* Phrase::glossItemAt(int index)
+{
+    return mGlossItems[index];
+}
+
+void Phrase::clearGlossItems()
+{
+    qDeleteAll(mGlossItems);
+    mGlossItems.clear();
+}
+
+void Phrase::appendGlossItem(GlossItem * item)
+{
+    mGlossItems << item;
+}
+
+GlossItem* Phrase::lastGlossItem()
+{
+    return mGlossItems.last();
 }

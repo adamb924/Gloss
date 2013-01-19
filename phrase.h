@@ -18,7 +18,7 @@ class Sound;
 class DatabaseAdapter;
 class Project;
 
-class Phrase : public QObject, public QList<GlossItem*>
+class Phrase : public QObject
 {
     Q_OBJECT
 public:
@@ -43,6 +43,13 @@ public:
     void setAnnotation( const Annotation & annotation );
     Annotation* annotation();
 
+    int glossItemCount() const;
+    const GlossItem* glossItemAt(int index) const;
+    GlossItem* glossItemAt(int index);
+    void clearGlossItems();
+    void appendGlossItem(GlossItem * item);
+    GlossItem* lastGlossItem();
+
 signals:
     void phraseChanged();
 
@@ -55,8 +62,7 @@ public slots:
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
 
 private:
-    Q_DISABLE_COPY(Phrase)
-
+    QList<GlossItem*> mGlossItems;
     Project *mProject;
     DatabaseAdapter *mDbAdapter;
     Annotation mAnnotation;
