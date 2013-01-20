@@ -450,7 +450,7 @@ void MainWindow::searchGlossItems()
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        createSearchResultDock(query, tr("Glosses matching '%1'").arg(dialog.text()) );
+        createSearchResultDock(query, tr("Containing exact string '%1'").arg(dialog.text()) );
     }
 }
 
@@ -517,7 +517,7 @@ void MainWindow::substringSearchGlossItems()
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        createSearchResultDock(query, tr("Gloss containing '%1'").arg(dialog.text()));
+        createSearchResultDock(query, tr("Items containing substring '%1'").arg(dialog.text()));
     }
 }
 
