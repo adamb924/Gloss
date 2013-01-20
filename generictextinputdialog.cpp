@@ -4,6 +4,8 @@
 #include "writingsystem.h"
 #include "databaseadapter.h"
 
+#include <QDebug>
+
 GenericTextInputDialog::GenericTextInputDialog(DatabaseAdapter *dbAdapter, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GenericTextInputDialog)
@@ -34,7 +36,7 @@ GenericTextInputDialog::GenericTextInputDialog(const TextBit & bit, QWidget *par
         ui(new Ui::GenericTextInputDialog)
 {
     ui->setupUi(this);
-    ui->writingSystemCombo->setVisible(false);
+    ui->writingSystemCombo->setVisible(true);
 
     mWritingSystem = bit.writingSystem();
 
@@ -57,6 +59,7 @@ void GenericTextInputDialog::fillWritingSystems()
 void GenericTextInputDialog::changeCurrentWritingSystem(int index)
 {
     ui->textEdit->setWritingSystem( mWritingSystems.at(index) );
+    mWritingSystem = mWritingSystems.at(index);
 }
 
 QString GenericTextInputDialog::text() const
