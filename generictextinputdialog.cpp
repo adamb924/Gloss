@@ -43,6 +43,8 @@ GenericTextInputDialog::GenericTextInputDialog(const TextBit & bit, QWidget *par
     ui->textEdit->setWritingSystem( mWritingSystem );
 
     ui->textEdit->setText( bit.text() );
+
+    fillWritingSystems();
 }
 
 GenericTextInputDialog::~GenericTextInputDialog()
