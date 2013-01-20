@@ -448,8 +448,10 @@ void MainWindow::searchGlossItems()
         // Do the search of the texts
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::item[@lang='%1' and text()='%2'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
-                                "return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
+                                "return   string-join( ($line-number, $count) , ',') ").arg(dialog.writingSystem().flexString()).arg(dialog.text());
         createSearchResultDock(query, tr("Containing exact string '%1'").arg(dialog.text()) );
     }
 }
@@ -458,8 +460,10 @@ void MainWindow::searchForInterpretationById(qlonglong id)
 {
     QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                             "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
+                            "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                            "let $count := string( count( $x/descendant::word[@abg:id='%1'] ) ) "
                             "order by number($x/item[@type='segnum']/text()) "
-                            "return string( $x/item[@type='segnum']/text() )").arg(id);
+                            "return   string-join( ($line-number, $count) , ',') ").arg(id);
     createSearchResultDock(query, tr("Interpretation ID: %1").arg(id));
 }
 
@@ -467,8 +471,10 @@ void MainWindow::searchForTextFormById(qlonglong id)
 {
     QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                             "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
+                            "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                            "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='txt'] ) ) "
                             "order by number($x/item[@type='segnum']/text()) "
-                            "return string( $x/item[@type='segnum']/text() )").arg(id);
+                            "return   string-join( ($line-number, $count) , ',') ").arg(id);
     createSearchResultDock(query, tr("Text Form ID: %1").arg(id));
 }
 
@@ -476,8 +482,10 @@ void MainWindow::searchForGlossById(qlonglong id)
 {
     QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                             "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
+                            "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                            "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='gls'] ) ) "
                             "order by number($x/item[@type='segnum']/text()) "
-                            "return string( $x/item[@type='segnum']/text() )").arg(id);
+                            "return   string-join( ($line-number, $count) , ',') " ).arg(id);
     createSearchResultDock(query, tr("Gloss ID: %1").arg(id));
 }
 
@@ -515,8 +523,10 @@ void MainWindow::substringSearchGlossItems()
         // Do the search of the texts
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                                 "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::word[@lang='%1' and contains( text(), '%2') ] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
-                                "return string( $x/item[@type='segnum']/text() )").arg(dialog.writingSystem().flexString()).arg(dialog.text());
+                                "return   string-join( ($line-number, $count) , ',') ").arg(dialog.writingSystem().flexString()).arg(dialog.text());
         createSearchResultDock(query, tr("Items containing substring '%1'").arg(dialog.text()));
     }
 }

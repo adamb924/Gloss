@@ -52,9 +52,27 @@ bool SearchQueryModel::query( QStandardItem *parentItem, const QString & filenam
 
         while (!item.isNull())
         {
-            QStandardItem *resultItem = new QStandardItem( tr("Line %1").arg(item.toAtomicValue().toString()) );
+            QString stringResult = item.toAtomicValue().toString();
+            QString displayString;
+            int lineNumber;
+            if( stringResult.contains(",") )
+            {
+                QStringList bits = stringResult.split(",");
+                if( bits.at(1).toInt() > 1 )
+                    displayString = tr("Line %1 (%2)").arg(bits.at(0)).arg(bits.at(1));
+                else
+                    displayString = tr("Line %1").arg(bits.at(0));
+                lineNumber = bits.at(0).toInt();
+            }
+            else
+            {
+                displayString = tr("Line %1").arg(stringResult);
+                lineNumber = stringResult.toInt();
+            }
+
+            QStandardItem *resultItem = new QStandardItem( displayString );
             resultItem->setEditable(false);
-            resultItem->setData( item.toAtomicValue().toInt(), Qt::UserRole );
+            resultItem->setData( lineNumber , Qt::UserRole );
             filenameItem->appendRow(resultItem);
             item = result.next();
         }
