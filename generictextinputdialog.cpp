@@ -55,7 +55,7 @@ GenericTextInputDialog::~GenericTextInputDialog()
 void GenericTextInputDialog::fillWritingSystems()
 {
     for(int i=0; i<mWritingSystems.count(); i++)
-        ui->writingSystemCombo->addItem( mWritingSystems.at(i).name(), i );
+        ui->writingSystemCombo->addItem( tr("%1 (%2)").arg(mWritingSystems.at(i).name()).arg(mWritingSystems.at(i).flexString()), i );
 }
 
 void GenericTextInputDialog::changeCurrentWritingSystem(int index)
