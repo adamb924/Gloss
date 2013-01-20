@@ -598,12 +598,9 @@ void MainWindow::editLine( const QString & textName , int lineNumber )
     QList<int> lines;
     lines << lineNumber;
 
-    SinglePhraseEditDialog *dialog;
-    do
-    {
-        dialog = new SinglePhraseEditDialog(lines, mProject, text, this);
-    }
-    while( dialog->exec() == QDialog::Accepted );
+    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, 0);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }
 
 void MainWindow::editLineWithContext( const QString & textName , int lineNumber )
@@ -622,12 +619,9 @@ void MainWindow::editLineWithContext( const QString & textName , int lineNumber 
     if( lineNumber < text->phrases()->count()-1 )
         lines << lineNumber+1;
 
-    SinglePhraseEditDialog *dialog;
-    do
-    {
-        dialog = new SinglePhraseEditDialog(lines, mProject, text, this);
-    }
-    while( dialog->exec() == QDialog::Accepted );
+    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, 0);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }
 
 void MainWindow::rawXQuery()
@@ -647,7 +641,8 @@ void MainWindow::removeUnusedGlossItems()
 
 void MainWindow::sqlQueryDialog()
 {
-    DatabaseQueryDialog *dialog = new DatabaseQueryDialog(mProject->dbAdapter()->dbFilename(), this);
+    DatabaseQueryDialog *dialog = new DatabaseQueryDialog(mProject->dbAdapter()->dbFilename(), 0);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
 }
 
