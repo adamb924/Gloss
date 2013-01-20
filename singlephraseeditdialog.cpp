@@ -14,12 +14,11 @@ SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *projec
     mProject = project;
     mText = text;
 
-    mGlossDisplayWidget = 0;
     ui->setupUi(this);
 
     setTitle();
 
-    refreshLayout();
+    ui->layout->addWidget( new GlossDisplayWidget( mText, mProject, mLines, this ) );
 }
 
 SinglePhraseEditDialog::~SinglePhraseEditDialog()
@@ -44,12 +43,4 @@ void SinglePhraseEditDialog::setTitle()
     {
         setWindowTitle( tr("%1 - Line %2").arg(mText->name()).arg(mLines.first()+1) );
     }
-}
-
-void SinglePhraseEditDialog::refreshLayout()
-{
-    mGlossDisplayWidget = new GlossDisplayWidget( mText, mProject, mLines, this );
-//    for(int i=0; i<mLines.count(); i++)
-//        connect( mText->phrases()->at(mLines.at(i)), SIGNAL(phraseChanged()), this, SLOT(accept()) );
-    ui->layout->addWidget( mGlossDisplayWidget );
 }
