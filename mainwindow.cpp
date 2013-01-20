@@ -529,6 +529,7 @@ void MainWindow::createSearchResultDock(const QString & query, const QString & r
     tree->setSortingEnabled(false);
     tree->setModel(model);
     tree->setHeaderHidden(true);
+    tree->expandAll();
 
     connect( tree, SIGNAL(requestOpenText(QString,int)), this, SLOT(focusTextPosition(QString,int)) );
     connect( tree, SIGNAL(requestPlaySound(QString,int)), this, SLOT(playSoundForLine(QString,int)) );
