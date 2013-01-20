@@ -9,6 +9,7 @@
 #include "immutablelabel.h"
 #include "analysiswidget.h"
 #include "generictextinputdialog.h"
+#include "mainwindow.h"
 
 #include <QtGui>
 #include <QtDebug>
@@ -41,6 +42,10 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)));
     connect( mGlossItem, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)));
     connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)));
+
+    connect( this, SIGNAL(requestInterpretationSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForInterpretationById(qlonglong) ));
+    connect( this, SIGNAL(requestTextFormSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForTextFormById(qlonglong) ));
+    connect( this, SIGNAL(requestGlossSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForGlossById(qlonglong) ));
 
     fillData();
 }
@@ -226,7 +231,9 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     }
 
     menu.addSeparator();
+
     menu.addAction(tr("Database report"), this, SLOT(displayDatabaseReport()) );
+    addSearchSubmenu(&menu);
 
     menu.exec(event->globalPos());
 }
@@ -344,6 +351,46 @@ void WordDisplayWidget::addGlossSubmenu(QMenu *menu, const WritingSystem & writi
     oneOffgroup2->addAction(action);
     connect( oneOffgroup2, SIGNAL(triggered(QAction*)), this, SLOT(copyGlossFromBaseline(QAction*)) );
     submenu->addAction(action);
+
+    menu->addMenu(submenu);
+}
+
+void WordDisplayWidget::addSearchSubmenu(QMenu *menu)
+{
+    QMenu *submenu = new QMenu(tr("Search for...") ,menu);
+    QAction *action;
+    QActionGroup *group;
+
+    action = new QAction( tr("Interpretation %1").arg( mGlossItem->id() ) , menu );
+    action->setData( mGlossItem->id() );
+    group = new QActionGroup(menu);
+    group->addAction(action);
+    submenu->addAction(action);
+    connect(group, SIGNAL(triggered(QAction*)), this, SLOT(interpretationSearch(QAction*)) );
+
+    TextBitHashIterator iter( *mGlossItem->textForms() );
+    while(iter.hasNext())
+    {
+        iter.next();
+        action = new QAction( tr("%1 (Text Form %2)").arg( iter.value().text() ).arg( iter.value().id() ) , menu );
+        action->setData( iter.value().id() );
+        group = new QActionGroup(menu);
+        group->addAction(action);
+        submenu->addAction(action);
+        connect(group, SIGNAL(triggered(QAction*)), this, SLOT(textFormSearch(QAction*)) );
+    }
+
+    iter = TextBitHashIterator( *mGlossItem->glosses() );
+    while(iter.hasNext())
+    {
+        iter.next();
+        action = new QAction( tr("%1 (Gloss %2)").arg( iter.value().text() ).arg( iter.value().id() ) , menu );
+        action->setData( iter.value().id() );
+        group = new QActionGroup(menu);
+        group->addAction(action);
+        submenu->addAction(action);
+        connect(group, SIGNAL(triggered(QAction*)), this, SLOT(glossSearch(QAction*)) );
+    }
 
     menu->addMenu(submenu);
 }
@@ -474,6 +521,21 @@ void WordDisplayWidget::selectDifferentTextForm(QAction *action)
     mGlossItem->setTextForm( bit );
 }
 
+void WordDisplayWidget::textFormSearch(QAction * action)
+{
+    emit requestTextFormSearch( action->data().toLongLong() );
+}
+
+void WordDisplayWidget::glossSearch(QAction * action)
+{
+    emit requestGlossSearch( action->data().toLongLong() );
+}
+
+void WordDisplayWidget::interpretationSearch(QAction * action)
+{
+    emit requestInterpretationSearch( action->data().toLongLong() );
+}
+
 QHash<qlonglong, LingEdit*> WordDisplayWidget::textFormEdits() const
 {
     QHash<qlonglong, LingEdit*> hash;
@@ -517,11 +579,11 @@ GlossItem* WordDisplayWidget::glossItem()
 
 void WordDisplayWidget::refreshMorphologicalAnalysis(const WritingSystem & ws)
 {
-//    if( mAnalysisWidgets.contains(ws) )
-//    {
-//        mGlossItem->setMorphologicalAnalysisFromDatabase( ws );
-//        mAnalysisWidgets[ws]->createInitializedLayout();
-//    }
+    //    if( mAnalysisWidgets.contains(ws) )
+    //    {
+    //        mGlossItem->setMorphologicalAnalysisFromDatabase( ws );
+    //        mAnalysisWidgets[ws]->createInitializedLayout();
+    //    }
 }
 
 void WordDisplayWidget::displayDatabaseReport()

@@ -97,6 +97,8 @@ public:
 
     Concordance* concordance();
 
+    Project* project();
+
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
     void candidateNumberChanged(GlossItem::CandidateNumber status);
@@ -148,6 +150,7 @@ private:
     TextBitHash mTextForms;
     TextBitHash mGlosses;
 
+    Project *mProject;
     DatabaseAdapter *mDbAdapter;
     Concordance *mConcordance;
 

@@ -48,6 +48,7 @@ private:
     void addInterpretationSubmenu(QMenu *menu );
     void addTextFormSubmenu(QMenu *menu, const WritingSystem & writingSystem );
     void addGlossSubmenu(QMenu *menu, const WritingSystem & writingSystem );
+    void addSearchSubmenu(QMenu *menu);
 
     void setupLayout();
     LingEdit* addGlossLine( const InterlinearItemType & glossLine );
@@ -74,7 +75,15 @@ signals:
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
 
+    void requestInterpretationSearch(qlonglong id);
+    void requestTextFormSearch(qlonglong id);
+    void requestGlossSearch(qlonglong id);
+
 private slots:
+    void textFormSearch(QAction * action);
+    void glossSearch(QAction * action);
+    void interpretationSearch(QAction * action);
+
     void newInterpretation();
 
     void newGloss(QAction *action);
@@ -100,7 +109,6 @@ private slots:
     void changeToTwoWords();
     void mergeWithNext();
     void mergeWithPrevious();
-
 };
 
 #endif // WORDDISPLAYWIDGET_H

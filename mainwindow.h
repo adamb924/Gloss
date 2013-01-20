@@ -43,6 +43,11 @@ private:
 
     void createSearchResultDock(const QString & query, const QString & reminder);
 
+public slots:
+    void searchForInterpretationById(qlonglong id);
+    void searchForTextFormById(qlonglong id);
+    void searchForGlossById(qlonglong id);
+
 private slots:
     void newProject();
     void openProject();
@@ -72,6 +77,7 @@ private slots:
     void searchForInterpretationById();
     void searchForTextFormById();
     void searchForGlossById();
+
 
     void searchResultSelected( const QModelIndex & index );
     void focusTextPosition( const QString & textName , int lineNumber );

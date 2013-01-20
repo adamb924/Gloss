@@ -15,8 +15,9 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
     mTextForms.insert(mBaselineWritingSystem, baselineBit );
     mId = -1;
 
-    mDbAdapter = project->dbAdapter();
-    mConcordance = project->concordance();
+    mProject = project;
+    mDbAdapter = mProject->dbAdapter();
+    mConcordance = mProject->concordance();
 
     guessInterpretation();
 
@@ -32,8 +33,9 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
     mTextForms = textForms;
     mGlosses = glossForms;
 
-    mDbAdapter = project->dbAdapter();
-    mConcordance = project->concordance();
+    mProject = project;
+    mDbAdapter = mProject->dbAdapter();
+    mConcordance = mProject->concordance();
 
     if( mId == -1 )
         guessInterpretation();
@@ -360,4 +362,9 @@ void GlossItem::updateGlossItemConcordance()
         iter.next();
         mConcordance->updateGlossItemTextFormConcordance( this, iter.value().id() );
     }
+}
+
+Project* GlossItem::project()
+{
+    return mProject;
 }

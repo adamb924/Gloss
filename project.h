@@ -20,12 +20,13 @@ class TextBit;
 class DatabaseAdapter;
 class QUrl;
 class QProgressDialog;
+class MainWindow;
 
 class Project : public QObject
 {
     Q_OBJECT
 public:
-    Project();
+    Project(const MainWindow * mainWindow);
     ~Project();
 
     enum OpenResult { Success, FileNotFound, XmlReadError };
@@ -80,6 +81,7 @@ public:
     bool applyXslTransformationToText(const QString & name, const QString & xslFile, const QHash<QString,QString> & parameters);
 
     Concordance* concordance();
+    const MainWindow* mainWindow() const;
 
 public slots:
 
@@ -87,6 +89,8 @@ private:
     DatabaseAdapter *mDbAdapter;
     QString mDatabaseFilename;
     QString mDatabasePath;
+
+    const MainWindow *mMainWindow;
 
     Concordance mConcordance;
 

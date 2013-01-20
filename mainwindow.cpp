@@ -120,7 +120,7 @@ void MainWindow::newProject()
     {
         if( mProject != 0 )
             delete mProject;
-        mProject = new Project();
+        mProject = new Project(this);
         mProject->create(filename);
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
@@ -136,7 +136,7 @@ void MainWindow::openProject()
     {
         if( mProject != 0 )
             delete mProject;
-        mProject = new Project();
+        mProject = new Project(this);
         if( mProject->readFromFile(filename) )
         {
             setWindowTitle( tr("Gloss - %1").arg(filename) );
@@ -454,18 +454,39 @@ void MainWindow::searchGlossItems()
     }
 }
 
+void MainWindow::searchForInterpretationById(qlonglong id)
+{
+    QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
+                            "order by number($x/item[@type='segnum']/text()) "
+                            "return string( $x/item[@type='segnum']/text() )").arg(id);
+    createSearchResultDock(query, tr("Interpretation ID: %1").arg(id));
+}
+
+void MainWindow::searchForTextFormById(qlonglong id)
+{
+    QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
+                            "order by number($x/item[@type='segnum']/text()) "
+                            "return string( $x/item[@type='segnum']/text() )").arg(id);
+    createSearchResultDock(query, tr("Text Form ID: %1").arg(id));
+}
+
+void MainWindow::searchForGlossById(qlonglong id)
+{
+    QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
+                            "order by number($x/item[@type='segnum']/text()) "
+                            "return string( $x/item[@type='segnum']/text() )").arg(id);
+    createSearchResultDock(query, tr("Gloss ID: %1").arg(id));
+}
+
 void MainWindow::searchForInterpretationById()
 {
     bool ok;
     int id = QInputDialog::getInt ( this, tr("Search by interpretation ID"), tr("Interpretation ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
-    {
-        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
-                                "order by number($x/item[@type='segnum']/text()) "
-                                "return string( $x/item[@type='segnum']/text() )").arg(id);
-        createSearchResultDock(query, tr("Interpretation ID: %1").arg(id));
-    }
+        searchForInterpretationById(id);
 }
 
 void MainWindow::searchForTextFormById()
@@ -473,13 +494,7 @@ void MainWindow::searchForTextFormById()
     bool ok;
     int id = QInputDialog::getInt ( this, tr("Search by text form ID"), tr("Text form ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
-    {
-        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
-                                "order by number($x/item[@type='segnum']/text()) "
-                                "return string( $x/item[@type='segnum']/text() )").arg(id);
-        createSearchResultDock(query, tr("Text Form ID: %1").arg(id));
-    }
+        searchForTextFormById(id);
 }
 
 void MainWindow::searchForGlossById()
@@ -487,13 +502,7 @@ void MainWindow::searchForGlossById()
     bool ok;
     int id = QInputDialog::getInt ( this, tr("Search by gloss ID"), tr("Gloss ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
-    {
-        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
-                                "order by number($x/item[@type='segnum']/text()) "
-                                "return string( $x/item[@type='segnum']/text() )").arg(id);
-        createSearchResultDock(query, tr("Gloss ID: %1").arg(id));
-    }
+        searchForGlossById(id);
 }
 
 void MainWindow::substringSearchGlossItems()

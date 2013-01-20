@@ -18,8 +18,9 @@
 #include "messagehandler.h"
 #include "xsltproc.h"
 
-Project::Project()
+Project::Project(const MainWindow * mainWindow)
 {
+    mMainWindow = mainWindow;
     mDatabaseFilename = "sqlite3-database.db";
     mDbAdapter = 0;
 }
@@ -733,4 +734,9 @@ bool Project::applyXslTransformationToText(const QString & name, const QString &
 Concordance* Project::concordance()
 {
     return &mConcordance;
+}
+
+const MainWindow* Project::mainWindow() const
+{
+    return mMainWindow;
 }
