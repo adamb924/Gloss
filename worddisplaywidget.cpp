@@ -101,13 +101,13 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 
     mGlossEdits.insert(glossLine.writingSystem(), edit);
 
-    // update the gloss item
-    connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setGloss(TextBit)) );
-
     // update the concordance
     mConcordance->updateGlossLingEditConcordance( edit, gloss.id() );
     connect(edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromLingEditConcordance(QObject*)));
     connect(edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mConcordance, SLOT(updateGlossLingEditConcordance(TextBit,LingEdit*)));
+
+    // update the gloss item
+    connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setGloss(TextBit)) );
 
     return edit;
 }
@@ -120,13 +120,13 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
 
     mTextFormEdits.insert(glossLine.writingSystem(), edit);
 
-    // update the gloss item
-    connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setTextForm(TextBit)) );
-
     // update the concordance
     mConcordance->updateTextFormLingEditConcordance( edit, textForm.id() );
     connect( edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromLingEditConcordance(QObject*)));
     connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mConcordance, SLOT(updateTextFormLingEditConcordance(TextBit,LingEdit*)));
+
+    // update the gloss item
+    connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setTextForm(TextBit)) );
 
     return edit;
 }
@@ -162,11 +162,11 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
 
     mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
 
-    connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
-    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
-
     mConcordance->updateGlossImmutableLabelConcordance( immutableLabel, bit.id() );
     connect( immutableLabel, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromImmutableLabelConcordance(QObject*)));
+
+    connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
+    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
 
     return immutableLabel;
 }
