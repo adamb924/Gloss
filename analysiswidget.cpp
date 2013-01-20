@@ -110,7 +110,7 @@ void AnalysisWidget::clearWidgetsFromLayout()
     QLayoutItem * item;
     while( ( item = mLayout->takeAt(0) ) != 0 )
     {
-        delete item->widget();
+        item->widget()->deleteLater();;
         delete item;
     }
 }

@@ -22,6 +22,22 @@ public:
 signals:
 
 public slots:
+
+    //! Removes \a edit from the gloss LingEdit concordance.
+    void removeGlossFromLingEditConcordance( QObject * edit );
+
+    //! Removes \a edit from the text form LingEdit concordance.
+    void removeTextFormFromLingEditConcordance( QObject * edit );
+
+    //! Removes \a edit from the gloss LingEdit concordance.
+    void removeGlossFromImmutableLabelConcordance( QObject * edit );
+
+    //! Removes \a edit from the text form LingEdit concordance.
+    void removeTextFormFromImmutableLabelConcordance( QObject * edit );
+
+    //! Removes \a item from the GlossItem concordance and the GlossItem by TextForm id concordance.
+    void removeGlossItemFromConcordance( QObject * item );
+
     //! Insert \a edit into the text form LingEdit concordance, indexed by \a newTextFormId. If \a edit was previouly indexed by another id, that is removed.
     void updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newTextFormId);
 
@@ -34,32 +50,17 @@ public slots:
     //! Overloaded function for connecting to the LingEdit::stringChanged signal
     void updateGlossLingEditConcordance( const TextBit & bit, LingEdit * edit);
 
-    //! Removes \a edit from the gloss LingEdit concordance.
-    void removeGlossFromLingEditConcordance( QObject * edit );
-
-    //! Removes \a edit from the text form LingEdit concordance.
-    void removeTextFormFromLingEditConcordance( QObject * edit );
-
     //! Insert \a edit into the text form LingEdit concordance, indexed by \a newTextFormId. If \a edit was previouly indexed by another id, that is removed.
     void updateTextForImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newTextFormId);
 
     //! Insert \a edit into the gloss LingEdit concordance, indexed by \a newGlossId. If \a edit was previouly indexed by another id, that is removed.
     void updateGlossImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newGlossId);
 
-    //! Removes \a edit from the gloss LingEdit concordance.
-    void removeGlossFromImmutableLabelConcordance( QObject * edit );
-
-    //! Removes \a edit from the text form LingEdit concordance.
-    void removeTextFormFromImmutableLabelConcordance( QObject * edit );
-
     //! Updates all widgets displaying the gloss indicated by \a bit (and its id())
     void updateGloss( const TextBit & bit );
 
     //! Updates all widgets displaying the text form indicated by \a bit (and its id())
     void updateTextForm( const TextBit & bit );
-
-    //! Removes \a item from the GlossItem concordance and the GlossItem by TextForm id concordance.
-    void removeGlossItemFromConcordance( QObject * item );
 
     //! Alert all GlossItems in the concordance that an alternate interpretation is available
     void updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId );

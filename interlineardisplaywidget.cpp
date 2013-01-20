@@ -49,7 +49,9 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
     connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
     connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));
+
     flowLayout->addWidget(lineNumber);
+    mLineLabels.insert(i, lineNumber);
 }
 
 QLayout* InterlinearDisplayWidget::addLine()
@@ -156,11 +158,28 @@ void InterlinearDisplayWidget::setLayoutAsAppropriate()
 
 void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
 {
+    if( lineNumber >= mLineLayouts.count() )
+    {
+        qWarning() << "Layout index out of bounds:" << lineNumber << mLineLayouts.count();
+        return;
+    }
+    QLayout *layout = mLineLayouts.at(lineNumber);
+
+    if( lineNumber >= mLineLabels.count() )
+    {
+        qWarning() << "Line label index out of bounds:" << lineNumber << mLineLabels.count();
+        return;
+    }
+    QWidget *lineLabel = mLineLabels.takeAt(lineNumber);
+    delete lineLabel;
+    layout->removeWidget(lineLabel);
+
     QListIterator<QWidget*> iter =  QListIterator<QWidget*>( mWordDisplayWidgets.values(lineNumber) );
     while(iter.hasNext())
     {
-        QWidget *widget = iter.next();
-        delete widget;
-        mWordDisplayWidgets.remove( lineNumber, widget );
+        QWidget *wdw = iter.next();
+        layout->removeWidget(wdw);
+        wdw->deleteLater();
+        mWordDisplayWidgets.remove( lineNumber, wdw );
     }
 }

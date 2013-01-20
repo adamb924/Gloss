@@ -19,6 +19,7 @@ public:
 
     explicit LingEdit(QWidget *parent = 0);
     LingEdit(const TextBit & bit, QWidget *parent = 0);
+    ~LingEdit();
 
     qlonglong id() const;
 

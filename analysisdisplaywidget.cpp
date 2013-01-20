@@ -86,7 +86,7 @@ void AnalysisDisplayWidget::clearWidgets(QLayout * layout)
     while( ( item = layout->takeAt(0) ) != 0 )
     {
 //        mWordDisplayWidgets.remove(item->widget());
-        delete item->widget();
+        item->widget()->deleteLater();;
         delete item;
     }
 }

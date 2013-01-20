@@ -48,19 +48,8 @@ void SinglePhraseEditDialog::setTitle()
 
 void SinglePhraseEditDialog::refreshLayout()
 {
-    //    while( ui->layout->count() > 0 )
-    //    {
-    //        QLayoutItem * item = ui->layout->takeAt(0);
-    //        delete item->widget();
-    //        delete item;
-    //    }
-//        if( mGlossDisplayWidget != 0 )
-//            delete mGlossDisplayWidget;
-
     mGlossDisplayWidget = new GlossDisplayWidget( mText, mProject, mLines, this );
-
 //    for(int i=0; i<mLines.count(); i++)
 //        connect( mText->phrases()->at(mLines.at(i)), SIGNAL(phraseChanged()), this, SLOT(accept()) );
-
     ui->layout->addWidget( mGlossDisplayWidget );
 }

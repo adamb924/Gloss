@@ -18,6 +18,7 @@ class Project;
 class FlowLayout;
 class LingEdit;
 class TextBit;
+class InterlinearLineLabel;
 
 #include "interlinearitemtype.h"
 
@@ -88,6 +89,7 @@ protected:
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
 
     QList<LingEdit*> mPhrasalGlossEdits;
+    QList<InterlinearLineLabel*> mLineLabels;
 
     //! \brief Add the phrasal gloss lines for phrase \a i
     void addPhrasalGlossLines( int i );

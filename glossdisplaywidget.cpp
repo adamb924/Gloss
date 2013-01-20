@@ -53,7 +53,6 @@ void GlossDisplayWidget::setLayoutFromText()
         else if( mText->phrases()->at(i)->guiRefreshRequest() )
         {
             flowLayout = mLineLayouts.at(i);
-//            clearWidgets( flowLayout );
             clearWidgetsFromLine(i);
         }
         else
@@ -61,9 +60,11 @@ void GlossDisplayWidget::setLayoutFromText()
             continue;
         }
 
-        addLineLabel(i, flowLayout);
-        if( flowLayout->count() == 1 ) // it's either new or has been cleared for a refresh
+        if( flowLayout->isEmpty() ) // it's either new or has been cleared for a refresh
+        {
+            addLineLabel(i, flowLayout);
             addWordWidgets(i, flowLayout);
+        }
 
         mText->phrases()->at(i)->setGuiRefreshRequest(false);
 
@@ -74,6 +75,7 @@ void GlossDisplayWidget::setLayoutFromText()
 
 void GlossDisplayWidget::setLayoutFromText(QList<int> lines)
 {
+    // TODO merge this with setLayoutFromText, as it should have been from the beginning
     QListIterator<int> iter(lines);
     while(iter.hasNext())
     {
@@ -89,15 +91,18 @@ void GlossDisplayWidget::setLayoutFromText(QList<int> lines)
         else
         {
             flowLayout = mLineLayouts.at(i);
-//            clearWidgets( flowLayout );
             clearWidgetsFromLine(i);
         }
 
-        addLineLabel(i, flowLayout);
-        if( flowLayout->count() == 1 ) // it's either new or has been cleared for a refresh
+        if( flowLayout->isEmpty() )
+        {
+            addLineLabel(i, flowLayout);
             addWordWidgets(i, flowLayout);
+        }
 
         mText->phrases()->at(i)->setGuiRefreshRequest(false);
+
+        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
     }
 }
 
@@ -143,7 +148,7 @@ void GlossDisplayWidget::clearWidgets(QLayout * layout)
         {
 //            mWordDisplayWidgets.remove(wdw);
             // I'm not sure why it crashes when I delete the InterlinearLineLabel, but since those objects are parented to the widget anyway, they should eventually be deleted just the same.
-            delete item->widget();
+            item->widget()->deleteLater();;
         }
         delete item;
     }

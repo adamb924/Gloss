@@ -14,6 +14,10 @@ ImmutableLabel::ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *p
     updateStyle();
 }
 
+ImmutableLabel::~ImmutableLabel()
+{
+}
+
 void ImmutableLabel::setCandidateNumber(GlossItem::CandidateNumber status)
 {
     mCandidateNumber = status;
