@@ -1,10 +1,11 @@
 #include "phrase.h"
 #include "glossitem.h"
 #include "project.h"
+#include "text.h"
 
 #include <QtDebug>
 
-Phrase::Phrase(Project *project)
+Phrase::Phrase(Text *text, Project *project)
 {
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
@@ -130,9 +131,15 @@ void Phrase::clearGlossItems()
 void Phrase::appendGlossItem(GlossItem * item)
 {
     mGlossItems << item;
+    connect( item, SIGNAL(baselineTextChanged(TextBit)), this, SIGNAL(phraseChanged()) );
 }
 
 GlossItem* Phrase::lastGlossItem()
 {
     return mGlossItems.last();
+}
+
+const QList<GlossItem*>* Phrase::glossItems() const
+{
+    return &mGlossItems;
 }

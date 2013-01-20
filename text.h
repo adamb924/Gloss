@@ -111,6 +111,9 @@ public:
 
     FlexTextReadResult readResult() const;
 
+public slots:
+    void setBaselineFromGlossItems();
+
 private:
     FlexTextReadResult mReadResult;
 
@@ -130,7 +133,6 @@ private:
     void clearGlossItems();
 
     void setGlossItemsFromBaseline();
-    void setBaselineFromGlossItems();
 
     void setLineOfGlossItems(Phrase *phrase , const QString & line );
 
@@ -138,7 +140,7 @@ private:
     Text::FlexTextReadResult readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 
 signals:
-    void baselineTextChanged();
+    void baselineTextChanged(const QString & baselineText);
     void glossItemsChanged();
     void idChanged(TextBit *b, qlonglong oldId);
 };

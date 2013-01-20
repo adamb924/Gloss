@@ -121,6 +121,8 @@ signals:
     //! \brief Emitted whenever a gloss changes
     void glossChanged(const TextBit & gloss);
 
+    void baselineTextChanged(const TextBit & textForm);
+
     //! \brief Emitted when the morphological analysis for \a textFormId changes
     void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
 

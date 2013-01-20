@@ -108,17 +108,7 @@ void Text::setBaselineWritingSystem(const WritingSystem & ws)
 {
     mBaselineWritingSystem = ws;
 }
-/*
-WritingSystem Text::analysisWritingSystem() const
-{
-    return mAnalysisWritingSystem;
-}
 
-void Text::setAnalysisWritingSystem(const WritingSystem & ws)
-{
-    mAnalysisWritingSystem = ws;
-}
-*/
 QString Text::baselineText() const
 {
     return mBaselineText;
@@ -130,7 +120,7 @@ void Text::setBaselineText(const QString & text)
     {
         mBaselineText = text;
         setGlossItemsFromBaseline();
-        emit baselineTextChanged();
+        emit baselineTextChanged(mBaselineText);
     }
 }
 
@@ -166,7 +156,9 @@ void Text::setGlossItemsFromBaseline()
         for(int i=0; i<lines.count(); i++)
         {
             progress.setValue(i);
-            mPhrases.append( new Phrase(mProject) );
+            mPhrases.append( new Phrase(this, mProject) );
+            connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
+
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )
             {
@@ -176,7 +168,7 @@ void Text::setGlossItemsFromBaseline()
         }
         progress.setValue(lines.count());
     }
-    emit glossItemsChanged();
+//    emit glossItemsChanged();
 }
 
 void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
@@ -188,21 +180,6 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
         phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
 
     phrase->setGuiRefreshRequest(true);
-}
-
-void Text::setBaselineFromGlossItems()
-{
-    mBaselineText = "";
-    for(int i=0; i<mPhrases.count(); i++)
-    {
-        QString line;
-        for(int j=0; j<mPhrases.at(i)->glossItemCount(); j++)
-        {
-            line += mPhrases.at(i)->glossItemAt(j)->baselineText().text() + " ";
-        }
-        mBaselineText += line.trimmed() + "\n";
-    }
-    mBaselineText = mBaselineText.trimmed();
 }
 
 bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
@@ -301,7 +278,8 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
             else if ( name == "phrase" )
             {
                 inPhrase = true;
-                mPhrases.append( new Phrase(mProject) );
+                mPhrases.append( new Phrase(this, mProject) );
+                connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
 
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )
@@ -824,4 +802,17 @@ bool Text::playSoundForLine( int lineNumber )
 Text::FlexTextReadResult Text::readResult() const
 {
     return mReadResult;
+}
+
+void Text::setBaselineFromGlossItems()
+{
+    QStringList phrases;
+    foreach(Phrase *phrase, mPhrases)
+    {
+        QStringList items;
+        foreach(GlossItem *item, *phrase->glossItems() )
+            items << item->baselineText().text();
+        phrases << items.join(" ");
+    }
+    setBaselineText( phrases.join("\n") );
 }

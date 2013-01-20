@@ -17,12 +17,13 @@
 class Sound;
 class DatabaseAdapter;
 class Project;
+class Text;
 
 class Phrase : public QObject
 {
     Q_OBJECT
 public:
-    Phrase(Project *project);
+    Phrase(Text *text, Project *project);
     ~Phrase();
 
     //! \brief Returns a (read-only) iterator for the TextBitHash containing the phrase-level glosses. See gloss() for an alternate interface to this data structure.
@@ -49,6 +50,7 @@ public:
     void clearGlossItems();
     void appendGlossItem(GlossItem * item);
     GlossItem* lastGlossItem();
+    const QList<GlossItem*>* glossItems() const;
 
 signals:
     void phraseChanged();

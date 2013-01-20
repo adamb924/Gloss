@@ -66,6 +66,7 @@ void GlossItem::resetBaselineText( const TextBit & baselineBit )
     setCandidateNumberFromDatabase();
 
     emit fieldsChanged();
+    emit baselineTextChanged(mTextForms.value(mBaselineWritingSystem));
 }
 
 void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)

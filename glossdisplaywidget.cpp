@@ -67,8 +67,6 @@ void GlossDisplayWidget::setLayoutFromText()
         }
 
         mText->phrases()->at(i)->setGuiRefreshRequest(false);
-
-        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
     }
     progress.setValue(mText->phrases()->count());
 }
@@ -101,8 +99,6 @@ void GlossDisplayWidget::setLayoutFromText(QList<int> lines)
         }
 
         mText->phrases()->at(i)->setGuiRefreshRequest(false);
-
-        connect( mText->phrases()->at(i), SIGNAL(phraseChanged()), this, SLOT(setLayoutAsAppropriate()));
     }
 }
 

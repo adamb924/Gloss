@@ -33,8 +33,8 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     mAnalysis = new AnalysisDisplayWidget(mText, mProject, this);
     ui->morphologyTab->layout()->addWidget(mAnalysis);
 
-
-    connect( text, SIGNAL(baselineTextChanged()), mGloss, SLOT(setLayoutAsAppropriate()));
+    connect( text, SIGNAL(baselineTextChanged(QString)), ui->baselineTextEdit, SLOT(setPlainText(QString)) );
+    connect( text, SIGNAL(baselineTextChanged(QString)), mGloss, SLOT(setLayoutAsAppropriate()));
     connect( text, SIGNAL(glossItemsChanged()), mAnalysis, SLOT(setLayoutAsAppropriate()));
 
     setWindowTitle(mText->name());
