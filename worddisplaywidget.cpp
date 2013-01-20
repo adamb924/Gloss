@@ -409,6 +409,11 @@ void WordDisplayWidget::copyGlossFromBaseline(QAction *action)
 
     TextBit bit = mGlossEdits[ws]->textBit();
     bit.setText( mGlossItem->textForm(mGlossItem->baselineWritingSystem()).text() );
+    if( bit.id() == -1 )
+    {
+        qlonglong id = mDbAdapter->newGloss( mGlossItem->id() , bit );
+        bit.setId( id );
+    }
 
     mDbAdapter->updateInterpretationGloss( bit );
     mGlossEdits[ws]->setTextBit( bit );
@@ -421,6 +426,11 @@ void WordDisplayWidget::copyTextFormFromBaseline(QAction *action)
 
     TextBit bit = mTextFormEdits[ws]->textBit();
     bit.setText( mGlossItem->textForm(mGlossItem->baselineWritingSystem()).text() );
+    if( bit.id() == -1 )
+    {
+        qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , bit );
+        bit.setId( id );
+    }
 
     mDbAdapter->updateInterpretationTextForm( bit );
     mTextFormEdits[ws]->setTextBit( bit );
