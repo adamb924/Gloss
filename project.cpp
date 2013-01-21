@@ -526,7 +526,10 @@ void Project::setTextXmlFromDatabase()
         progress.setValue(i++);
         progress.setLabelText( tr("Setting FlexText text... %1").arg(textName) );
         if( openText(textName) == Project::Success )
-            saveAndCloseText( mTexts[textName] );
+        {
+            mTexts[textName]->saveText(true);
+            closeText( mTexts[textName] );
+        }
         if( progress.wasCanceled() )
             break;
     }

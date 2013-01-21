@@ -7,6 +7,7 @@
 
 Phrase::Phrase(Text *text, Project *project)
 {
+    mText = text;
     mProject = project;
     mConcordance = mProject->concordance();
     mDbAdapter = mProject->dbAdapter();
@@ -68,8 +69,8 @@ Annotation* Phrase::annotation()
 
 void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo )
 {
-    GlossItem *one = new GlossItem( wordOne, mProject );
-    GlossItem *two = new GlossItem( wordTwo, mProject );
+    GlossItem *one = connectGlossItem( new GlossItem( wordOne, mProject ) );
+    GlossItem *two = connectGlossItem( new GlossItem( wordTwo, mProject ) );
 
     int index = mGlossItems.indexOf( glossItem );
     if( index != -1 )
@@ -91,7 +92,7 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
     if( index == -1 || index >= glossItemCount() -1 )
         return;
     TextBit newBit = TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
-    GlossItem *newGlossItem = new GlossItem( newBit, mProject );
+    GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
     mGlossItems.replace( index, newGlossItem );
 
     GlossItem* toRemove = mGlossItems.takeAt( index+1 );
@@ -111,7 +112,8 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     if( index <= 0 || index >= glossItemCount() )
         return;
     TextBit newBit = TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
-    GlossItem *newGlossItem = new GlossItem( newBit, mProject );
+    GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
+
     mGlossItems.replace( index, newGlossItem );
 
     GlossItem* toRemove = mGlossItems.takeAt( index-1 );
@@ -146,10 +148,16 @@ void Phrase::clearGlossItems()
     mGlossItems.clear();
 }
 
+GlossItem* Phrase::connectGlossItem(GlossItem * item)
+{
+    connect( item, SIGNAL(baselineTextChanged(TextBit)), this, SIGNAL(phraseChanged()) );
+    connect( item, SIGNAL(fieldsChanged()), mText, SLOT(markAsChanged()) );
+    return item;
+}
+
 void Phrase::appendGlossItem(GlossItem * item)
 {
-    mGlossItems << item;
-    connect( item, SIGNAL(baselineTextChanged(TextBit)), this, SIGNAL(phraseChanged()) );
+    mGlossItems << connectGlossItem(item);
 }
 
 GlossItem* Phrase::lastGlossItem()

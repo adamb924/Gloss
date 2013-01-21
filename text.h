@@ -58,7 +58,7 @@ public:
 
     QList<Phrase*>* phrases();
 
-    void saveText() const;
+    void saveText(bool saveAnyway = false);
 
     Text::MergeTranslationResult mergeTranslation(const QString & filename, const WritingSystem & ws );
 
@@ -113,9 +113,11 @@ public:
 
 public slots:
     void setBaselineFromGlossItems();
+    void markAsChanged();
 
 private:
     FlexTextReadResult mReadResult;
+    bool mChanged;
 
     Sound *mSound;
     QString mName, mComment;

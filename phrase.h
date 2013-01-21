@@ -48,6 +48,8 @@ public:
     const GlossItem* glossItemAt(int index) const;
     GlossItem* glossItemAt(int index);
     void clearGlossItems();
+
+    GlossItem* connectGlossItem(GlossItem * item);
     void appendGlossItem(GlossItem * item);
     GlossItem* lastGlossItem();
     const QList<GlossItem*>* glossItems() const;
@@ -65,6 +67,7 @@ public slots:
 
 private:
     QList<GlossItem*> mGlossItems;
+    Text *mText;
     Project *mProject;
     DatabaseAdapter *mDbAdapter;
     Concordance *mConcordance;

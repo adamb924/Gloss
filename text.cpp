@@ -28,6 +28,7 @@ Text::Text()
     mSound = 0;
     mReadResult = FlexTextReadNoAttempt;
     mValid = false;
+    mChanged = false;
 }
 
 Text::Text(const WritingSystem & ws, const QString & name, Project *project)
@@ -39,6 +40,7 @@ Text::Text(const WritingSystem & ws, const QString & name, Project *project)
     mDbAdapter = mProject->dbAdapter();
     mReadResult = FlexTextReadNoAttempt;
     mValid = true;
+    mChanged = false;
 }
 
 Text::Text(const QString & filePath, Project *project)
@@ -53,6 +55,7 @@ Text::Text(const QString & filePath, Project *project)
     mReadResult = readTextFromFlexText(&file,true);
     if( mReadResult != Text::FlexTextReadSuccess )
         mValid = false;
+    mChanged = false;
 }
 
 Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
@@ -67,6 +70,7 @@ Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
     mReadResult = readTextFromFlexText(&file,false);
     if( mReadResult != Text::FlexTextReadSuccess )
         mValid = false;
+    mChanged = false;
 }
 
 Text::~Text()
@@ -632,9 +636,13 @@ void Text::serializeItem(const QString & type, const WritingSystem & ws, const Q
     stream->writeEndElement();
 }
 
-void Text::saveText() const
+void Text::saveText(bool saveAnyway)
 {
-    serialize( mProject->filepathFromName(mName) );
+    if( mChanged || saveAnyway )
+    {
+        serialize( mProject->filepathFromName(mName) );
+        mChanged = false;
+    }
 }
 
 bool Text::isValid() const
@@ -815,4 +823,9 @@ void Text::setBaselineFromGlossItems()
         phrases << items.join(" ");
     }
     setBaselineText( phrases.join("\n") );
+}
+
+void Text::markAsChanged()
+{
+    mChanged = true;
 }
