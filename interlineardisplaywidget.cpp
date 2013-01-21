@@ -15,11 +15,13 @@
 #include "interlinearlinelabel.h"
 #include "generictextinputdialog.h"
 
-InterlinearDisplayWidget::InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent) :
+InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent) :
         QScrollArea(parent)
 {
     mText = text;
     mProject = project;
+    mInterlinearDisplayLines = interlinearDisplayLines;
+    mPhrasalGlossLines = phrasalGlossLines;
 
     mCurrentLine = -1;
 

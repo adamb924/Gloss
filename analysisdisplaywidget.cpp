@@ -9,7 +9,7 @@
 #include "databaseadapter.h"
 #include "analysiswidget.h"
 
-AnalysisDisplayWidget::AnalysisDisplayWidget(Text *text, Project *project, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
+AnalysisDisplayWidget::AnalysisDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent) : InterlinearDisplayWidget(interlinearDisplayLines, phrasalGlossLines, text, project, parent)
 {
     mPhrasalGlossLines = mProject->dbAdapter()->analysisPhrasalGlossLines();
     mInterlinearDisplayLines = mProject->dbAdapter()->analysisInterlinearLines();

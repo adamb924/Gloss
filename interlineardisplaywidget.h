@@ -26,7 +26,7 @@ class InterlinearDisplayWidget : public QScrollArea
 {
     Q_OBJECT
 public:
-    InterlinearDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
+    InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
 

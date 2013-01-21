@@ -33,7 +33,7 @@ private:
     Ui::TextDisplayWidget *ui;
     Project *mProject;
     GlossDisplayWidget *mGloss;
-    AnalysisDisplayWidget *mAnalysis;
+    GlossDisplayWidget *mAnalysis;
     Text *mText;
 
 protected:

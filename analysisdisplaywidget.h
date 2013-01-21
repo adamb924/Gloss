@@ -28,7 +28,7 @@ class AnalysisDisplayWidget : public InterlinearDisplayWidget
 {
     Q_OBJECT
 public:
-    AnalysisDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
+    AnalysisDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent = 0);
 
 private:
     //! \brief Removes and deletes all widgets from the given \a layout

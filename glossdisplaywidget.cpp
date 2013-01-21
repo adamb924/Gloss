@@ -9,21 +9,15 @@
 #include "worddisplaywidget.h"
 #include "databaseadapter.h"
 
-GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
+GlossDisplayWidget::GlossDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent) : InterlinearDisplayWidget(interlinearDisplayLines, phrasalGlossLines, text, project, parent)
 {
-    mPhrasalGlossLines = mProject->dbAdapter()->glossPhrasalGlossLines();
-    mInterlinearDisplayLines = mProject->dbAdapter()->glossInterlinearLines();
-
     mLines.clear();
 
     setLayoutAsAppropriate();
 }
 
-GlossDisplayWidget::GlossDisplayWidget(Text *text, Project *project, QList<int> lines, QWidget *parent) : InterlinearDisplayWidget(text, project, parent)
+GlossDisplayWidget::GlossDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QList<int> lines, QWidget *parent) : InterlinearDisplayWidget(interlinearDisplayLines, phrasalGlossLines, text, project, parent)
 {
-    mPhrasalGlossLines = mProject->dbAdapter()->glossPhrasalGlossLines();
-    mInterlinearDisplayLines = mProject->dbAdapter()->glossInterlinearLines();
-
     mLines = lines;
 
     setLayoutAsAppropriate();

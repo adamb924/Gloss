@@ -3,6 +3,8 @@
 
 #include "glossdisplaywidget.h"
 #include "text.h"
+#include "project.h"
+#include "databaseadapter.h"
 
 #include <QList>
 
@@ -18,7 +20,7 @@ SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *projec
 
     setTitle();
 
-    ui->layout->addWidget( new GlossDisplayWidget( mText, mProject, mLines, this ) );
+    ui->layout->addWidget( new GlossDisplayWidget( mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, mLines, this ) );
 }
 
 SinglePhraseEditDialog::~SinglePhraseEditDialog()
