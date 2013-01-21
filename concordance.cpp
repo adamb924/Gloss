@@ -123,7 +123,8 @@ void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong
 
 void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis)
 {
-    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
-    foreach(GlossItem *item, itemList)
-        item->setMorphologicalAnalysis( analysis );
+    // TODO Fix this. There must be a problem with the concordance.
+//    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
+//    foreach(GlossItem *item, itemList)
+//        item->setMorphologicalAnalysis( analysis );
 }
