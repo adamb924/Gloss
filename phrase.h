@@ -14,7 +14,6 @@
 #include "textbit.h"
 #include "annotation.h"
 
-class Sound;
 class DatabaseAdapter;
 class Project;
 class Text;
