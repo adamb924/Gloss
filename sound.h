@@ -11,6 +11,7 @@ public:
     enum ReadBehavior { AsNeeded, AllAtOnce, AfterFirstRequest };
 
     Sound( const QUrl & filename );
+    ~Sound();
 
     bool playSegment(qlonglong start, qlonglong end);
     void play(QByteArray * audioData);

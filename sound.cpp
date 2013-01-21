@@ -15,6 +15,11 @@ Sound::Sound( const QUrl & filename )
     mAudioOutput = new QAudioOutput(getAudioFormat());
 }
 
+Sound::~Sound()
+{
+    mAudioOutput->deleteLater();
+}
+
 bool Sound::isInvalid() const
 {
     return mSampleRate == -1 || mBitsPerSample == -1 || mNChannels == -1;
