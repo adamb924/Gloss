@@ -19,6 +19,9 @@ class FlowLayout;
 class LingEdit;
 class TextBit;
 class InterlinearLineLabel;
+class WordDisplayWidget;
+class GlossItem;
+class Phrase;
 
 #include "interlinearitemtype.h"
 
@@ -27,6 +30,7 @@ class InterlinearDisplayWidget : public QScrollArea
     Q_OBJECT
 public:
     InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent = 0);
+    InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QList<int> lines, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
 
@@ -61,14 +65,12 @@ protected:
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
-    //! \brief Removes and deletes all widgets from the given \a layout
-    virtual void clearWidgets(QLayout * layout) = 0;
-
-    virtual void setLayoutFromText() = 0;
-    virtual void setLayoutFromText(QList<int> lines) = 0;
+    void setLayoutFromText();
+    void setLayoutFromText(QList<int> lines);
 
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
-    virtual void addWordWidgets( int i , QLayout * flowLayout ) = 0;
+    void addWordWidgets( int i , QLayout * flowLayout );
+    WordDisplayWidget* addWordDisplayWidget(GlossItem *item, Phrase *phrase);
 
 protected:
     QList<QLayout*> mLineLayouts;

@@ -1,7 +1,7 @@
 #include "singlephraseeditdialog.h"
 #include "ui_singlephraseeditdialog.h"
 
-#include "glossdisplaywidget.h"
+#include "interlineardisplaywidget.h"
 #include "text.h"
 #include "project.h"
 #include "databaseadapter.h"
@@ -20,7 +20,7 @@ SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *projec
 
     setTitle();
 
-    ui->layout->addWidget( new GlossDisplayWidget( mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, mLines, this ) );
+    ui->layout->addWidget( new InterlinearDisplayWidget( mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, mLines, this ) );
 }
 
 SinglePhraseEditDialog::~SinglePhraseEditDialog()

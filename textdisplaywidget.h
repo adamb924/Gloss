@@ -12,8 +12,7 @@
 #include "project.h"
 #include "text.h"
 
-class AnalysisDisplayWidget;
-class GlossDisplayWidget;
+class InterlinearDisplayWidget;
 
 namespace Ui {
     class TextDisplayWidget;
@@ -32,8 +31,8 @@ public:
 private:
     Ui::TextDisplayWidget *ui;
     Project *mProject;
-    GlossDisplayWidget *mGloss;
-    GlossDisplayWidget *mAnalysis;
+    InterlinearDisplayWidget *mGloss;
+    InterlinearDisplayWidget *mAnalysis;
     Text *mText;
 
 protected:

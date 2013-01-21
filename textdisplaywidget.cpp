@@ -3,8 +3,7 @@
 
 #include "databaseadapter.h"
 #include "text.h"
-#include "glossdisplaywidget.h"
-#include "analysisdisplaywidget.h"
+#include "interlineardisplaywidget.h"
 
 #include <QCloseEvent>
 #include <QLabel>
@@ -24,13 +23,13 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->baselineTextEdit->setWritingSystem(text->baselineWritingSystem());
     ui->baselineTextEdit->setPlainText( text->baselineText() );
 
-    mGloss = new GlossDisplayWidget(mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this);
+    mGloss = new InterlinearDisplayWidget(mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this);
 
     connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), mGloss, SLOT(scrollToLine(int)) );
     connect( mGloss, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
     ui->glossTab->layout()->addWidget(mGloss);
 
-    mAnalysis = new GlossDisplayWidget(mProject->dbAdapter()->analysisInterlinearLines(), mProject->dbAdapter()->analysisPhrasalGlossLines(), mText, mProject, this);
+    mAnalysis = new InterlinearDisplayWidget(mProject->dbAdapter()->analysisInterlinearLines(), mProject->dbAdapter()->analysisPhrasalGlossLines(), mText, mProject, this);
     ui->morphologyTab->layout()->addWidget(mAnalysis);
 
     connect( text, SIGNAL(baselineTextChanged(QString)), ui->baselineTextEdit, SLOT(setPlainText(QString)) );

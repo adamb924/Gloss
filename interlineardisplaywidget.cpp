@@ -22,6 +22,7 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemTy
     mProject = project;
     mInterlinearDisplayLines = interlinearDisplayLines;
     mPhrasalGlossLines = phrasalGlossLines;
+    mLines.clear();
 
     mCurrentLine = -1;
 
@@ -32,6 +33,29 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemTy
     setWidgetResizable(true);
     setBackgroundRole(QPalette::Light);
     this->setWidget( theWidget );
+
+    setLayoutAsAppropriate();
+}
+
+InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QList<int> lines, QWidget *parent)
+{
+    mText = text;
+    mProject = project;
+    mInterlinearDisplayLines = interlinearDisplayLines;
+    mPhrasalGlossLines = phrasalGlossLines;
+    mLines = lines;
+
+    mCurrentLine = -1;
+
+    mLayout = new QVBoxLayout;
+    QWidget *theWidget = new QWidget(this);
+    theWidget->setLayout(mLayout);
+
+    setWidgetResizable(true);
+    setBackgroundRole(QPalette::Light);
+    this->setWidget( theWidget );
+
+    setLayoutAsAppropriate();
 }
 
 InterlinearDisplayWidget::~InterlinearDisplayWidget()
@@ -178,4 +202,93 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
         wdw->deleteLater();
         mWordDisplayWidgets.remove( lineNumber, wdw );
     }
+}
+
+void InterlinearDisplayWidget::setLayoutFromText()
+{
+    QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mText->phrases()->count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+
+    for(int i=0; i< mText->phrases()->count(); i++)
+    {
+        progress.setValue(i);
+
+        QLayout *flowLayout;
+
+        if( i >= mLineLayouts.count() ) // there is no layout here
+        {
+            flowLayout = addLine();
+            addPhrasalGlossLines(i);
+        }
+        else if( mText->phrases()->at(i)->guiRefreshRequest() )
+        {
+            flowLayout = mLineLayouts.at(i);
+            clearWidgetsFromLine(i);
+        }
+        else
+        {
+            continue;
+        }
+
+        if( flowLayout->isEmpty() ) // it's either new or has been cleared for a refresh
+        {
+            addLineLabel(i, flowLayout);
+            addWordWidgets(i, flowLayout);
+        }
+
+        mText->phrases()->at(i)->setGuiRefreshRequest(false);
+    }
+    progress.setValue(mText->phrases()->count());
+}
+
+void InterlinearDisplayWidget::setLayoutFromText(QList<int> lines)
+{
+    // TODO merge this with setLayoutFromText, as it should have been from the beginning
+    QListIterator<int> iter(lines);
+    while(iter.hasNext())
+    {
+        int i = iter.next();
+
+        QLayout *flowLayout;
+
+        if( i >= mLineLayouts.count() ) // there is no layout here
+        {
+            flowLayout = addLine();
+            addPhrasalGlossLines(i);
+        }
+        else
+        {
+            flowLayout = mLineLayouts.at(i);
+            clearWidgetsFromLine(i);
+        }
+
+        if( flowLayout->isEmpty() )
+        {
+            addLineLabel(i, flowLayout);
+            addWordWidgets(i, flowLayout);
+        }
+
+        mText->phrases()->at(i)->setGuiRefreshRequest(false);
+    }
+}
+
+void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
+{
+    for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
+    {
+        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
+        mWordDisplayWidgets.insert(i, wdw);
+        flowLayout->addWidget(wdw);
+    }
+}
+
+WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
+{
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines, mProject->dbAdapter(), this );
+
+    connect( wdw, SIGNAL(splitWidgetInTwo(GlossItem*,TextBit,TextBit)), phrase, SLOT(splitGlossInTwo(GlossItem*,TextBit,TextBit)) );
+    connect( wdw, SIGNAL(mergeGlossItemWithNext(GlossItem*)), phrase, SLOT(mergeGlossItemWithNext(GlossItem*)));
+    connect( wdw, SIGNAL(mergeGlossItemWithPrevious(GlossItem*)), phrase, SLOT(mergeGlossItemWithPrevious(GlossItem*)));
+
+    return wdw;
 }

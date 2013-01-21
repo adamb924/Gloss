@@ -15,7 +15,6 @@
 #include "databasequerydialog.h"
 #include "replacedialog.h"
 #include "singlephraseeditdialog.h"
-#include "glossdisplaywidget.h"
 #include "choosetextlinedialog.h"
 
 #include <QtGui>

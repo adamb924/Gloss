@@ -37,8 +37,6 @@ SOURCES += main.cpp\
     searchquerymodel.cpp \
     xqueryinputdialog.cpp \
     databasequerydialog.cpp \
-    analysisdisplaywidget.cpp \
-    glossdisplaywidget.cpp \
     immutablelabel.cpp \
     analysiswidget.cpp \
     createanalysisdialog.cpp \
@@ -87,8 +85,6 @@ HEADERS  += mainwindow.h \
     searchquerymodel.h \
     xqueryinputdialog.h \
     databasequerydialog.h \
-    analysisdisplaywidget.h \
-    glossdisplaywidget.h \
     immutablelabel.h \
     analysiswidget.h \
     createanalysisdialog.h \
