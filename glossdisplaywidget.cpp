@@ -112,17 +112,6 @@ void GlossDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
     }
 }
 
-void GlossDisplayWidget::clearData()
-{
-    InterlinearDisplayWidget::clearData();
-
-    qDeleteAll(mWordDisplayWidgets);
-    mWordDisplayWidgets.clear();
-
-    qDeleteAll(mPhrasalGlossEdits);
-    mPhrasalGlossEdits.clear();
-}
-
 WordDisplayWidget* GlossDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
     WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines, mProject->dbAdapter() );

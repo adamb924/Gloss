@@ -37,12 +37,6 @@ InterlinearDisplayWidget::~InterlinearDisplayWidget()
 
 }
 
-void InterlinearDisplayWidget::clearData()
-{
-    qDeleteAll(mLineLayouts);
-    mLineLayouts.clear();
-}
-
 void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 {
     InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), mText->phrases()->at(i)->annotation()->isValid(), this);

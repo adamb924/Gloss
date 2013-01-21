@@ -81,8 +81,6 @@ protected:
 
     QList<int> mLines;
 
-    void clearData();
-
     QList<InterlinearItemType> mInterlinearDisplayLines;
     QList<InterlinearItemType> mPhrasalGlossLines;
 

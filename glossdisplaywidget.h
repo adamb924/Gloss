@@ -34,8 +34,6 @@ private:
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
     void addWordWidgets( int i , QLayout * flowLayout );
 
-    void clearData();
-
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item, Phrase *phrase);
 };
 
