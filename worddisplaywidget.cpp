@@ -36,12 +36,12 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     // because I can't put them in the GlossItem constructor, so this is the next best thing (after some kind of secondary initialization method)
     // http://www.qtcentre.org/threads/9479-connect-in-constructor
     // http://www.parashift.com/c++-faq-lite/link-errs-static-data-mems.html
-    connect( mGlossItem, SIGNAL(fieldsChanged()), this, SLOT(fillData()) );
-    connect( mGlossItem, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)));
-    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)));
-    connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)));
-    connect( mGlossItem, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)));
-    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)));
+    connect( mGlossItem, SIGNAL(fieldsChanged()), this, SLOT(fillData()), Qt::UniqueConnection );
+    connect( mGlossItem, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)), Qt::UniqueConnection);
+    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)), Qt::UniqueConnection);
+    connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)), Qt::UniqueConnection);
+    connect( mGlossItem, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)), Qt::UniqueConnection);
+    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)), Qt::UniqueConnection);
 
     connect( this, SIGNAL(requestInterpretationSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForInterpretationById(qlonglong) ));
     connect( this, SIGNAL(requestTextFormSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForTextFormById(qlonglong) ));
@@ -102,7 +102,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 {
     TextBit gloss = mGlossItem->gloss( glossLine.writingSystem() );
     LingEdit *edit = new LingEdit( gloss , this);
-    edit->matchTextAlignmentTo( glossLine.writingSystem().layoutDirection() );
+    edit->matchTextAlignmentTo( mGlossLines.first().writingSystem().layoutDirection() );
 
     mGlossEdits.insert(glossLine.writingSystem(), edit);
 
