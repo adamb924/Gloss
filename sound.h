@@ -5,8 +5,9 @@
 #include <QByteArray>
 #include <QtMultimedia>
 
-class Sound
+class Sound : public QObject
 {
+    Q_OBJECT
 public:
     enum ReadBehavior { AsNeeded, AllAtOnce, AfterFirstRequest };
 
@@ -14,7 +15,6 @@ public:
     ~Sound();
 
     bool playSegment(qlonglong start, qlonglong end);
-    void play(QByteArray * audioData);
 
     QAudioFormat getAudioFormat();
 
@@ -32,11 +32,15 @@ public:
         return (mBitsPerSample/8) * sampleAtTime( time );
     }
 
+private slots:
+    void finishedPlaying(QAudio::State state);
+
 private:
     void readHeader();
 
     QUrl mFileURL;
     QByteArray mAudioData;
+    QBuffer *mBuffer;
     qint32 mSampleRate;
     qint16 mBitsPerSample;
     qint16 mNChannels;

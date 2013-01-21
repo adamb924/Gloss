@@ -11,13 +11,13 @@ Sound::Sound( const QUrl & filename )
     mBitsPerSample = -1;
     mNChannels = -1;
 
+    mAudioOutput = 0;
+
     readHeader();
-    mAudioOutput = new QAudioOutput(getAudioFormat());
 }
 
 Sound::~Sound()
 {
-    mAudioOutput->deleteLater();
 }
 
 bool Sound::isInvalid() const
@@ -66,22 +66,27 @@ bool Sound::playSegment(qlonglong start, qlonglong end)
         return false;
     }
 
-    if( mAudioOutput != 0 )
-        mAudioOutput->stop();
-
     start = bytePositionAtTime( (float)start/1000.0f );
     end = bytePositionAtTime( (float)end/1000.0f );
 
     qlonglong duration = end - start;
 
+    if( mAudioOutput != 0 )
+        mAudioOutput->stop();
+
     QFile audio_file(mFileURL.toLocalFile());
     if(audio_file.open(QIODevice::ReadOnly))
     {
         audio_file.seek(44 + start ); // skip wav header and move to start
-        QByteArray audioData = audio_file.read(duration);
+        mAudioData = audio_file.read(duration);
         audio_file.close();
 
-        play( &audioData );
+        mBuffer = new QBuffer( &mAudioData );
+        mBuffer->open(QIODevice::ReadOnly);
+
+        mAudioOutput = new QAudioOutput(getAudioFormat(), this);
+        mAudioOutput->start(mBuffer);
+        connect( mAudioOutput, SIGNAL(stateChanged(QAudio::State)), this, SLOT(finishedPlaying(QAudio::State)) );
 
         return true;
     }
@@ -90,19 +95,6 @@ bool Sound::playSegment(qlonglong start, qlonglong end)
         qWarning() << "File could not be opened" << mFileURL.toLocalFile();
         return false;
     }
-}
-
-void Sound::play(QByteArray * audioData)
-{
-    QBuffer audio_buffer( audioData );
-    audio_buffer.open(QIODevice::ReadOnly);
-
-    mAudioOutput->start(&audio_buffer);
-    QEventLoop loop;
-    QObject::connect(mAudioOutput, SIGNAL(stateChanged(QAudio::State)), &loop, SLOT(quit()));
-    do {
-        loop.exec();
-    } while(mAudioOutput->state() == QAudio::ActiveState);
 }
 
 QAudioFormat Sound::getAudioFormat()
@@ -115,4 +107,15 @@ QAudioFormat Sound::getAudioFormat()
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::UnSignedInt);
     return format;
+}
+
+void Sound::finishedPlaying(QAudio::State state)
+{
+    if(state == QAudio::IdleState)
+    {
+        mAudioOutput->stop();
+        delete mAudioOutput;
+        delete mBuffer;
+        mAudioOutput = 0;
+    }
 }
