@@ -624,7 +624,26 @@ void WordDisplayWidget::editBaselineText()
     GenericTextInputDialog dialog( mGlossItem->baselineText() , this );
     dialog.setWindowTitle(tr("Edit baseline text (%1)").arg(mGlossItem->baselineText().writingSystem().name()));
     if( dialog.exec() == QDialog::Accepted )
-        mGlossItem->resetBaselineText( dialog.textBit() );
+    {
+        QString text = dialog.text().trimmed();
+        int whitespaceCount = text.count(QRegExp("\\s+"));
+        if( whitespaceCount == 1 )
+        {
+            if( QMessageBox::Yes == QMessageBox::question(this, tr("Split the word?"), tr("You've entered a whitespace character, which is not allowed. Are you wanting to split this into two words?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes ))
+            {
+                QStringList items = text.split(QRegExp("\\s+"));
+                emit splitWidgetInTwo( mGlossItem, TextBit(items.at(0), mGlossItem->baselineWritingSystem()), TextBit(items.at(1), mGlossItem->baselineWritingSystem()) );
+            }
+        }
+        else if( whitespaceCount > 1 )
+        {
+            QMessageBox::information(this, tr("Oops"), tr("You've put some whitespace characters into this word, which is not allowed."));
+        }
+        else
+        {
+            mGlossItem->resetBaselineText( dialog.textBit() );
+        }
+    }
 }
 
 void WordDisplayWidget::changeToTwoWords()
@@ -633,9 +652,17 @@ void WordDisplayWidget::changeToTwoWords()
     dialog.setWindowTitle(tr("Split the word with a space"));
     if( dialog.exec() == QDialog::Accepted )
     {
-        QStringList items = dialog.text().split(QRegExp("\\s"));
-        if( items.count() == 2 )
+        QString text = dialog.text().trimmed();
+        int whitespaceCount = text.count(QRegExp("\\s+"));
+        if( whitespaceCount == 1 )
+        {
+            QStringList items = text.split(QRegExp("\\s+"));
             emit splitWidgetInTwo( mGlossItem, TextBit(items.at(0), mGlossItem->baselineWritingSystem()), TextBit(items.at(1), mGlossItem->baselineWritingSystem()) );
+        }
+        else
+        {
+            QMessageBox::information(this, tr("Oops"), tr("For this function to work you need to enter exactly one whitespace character (e.g., a space) to split the word in half."));
+        }
     }
 }
 
