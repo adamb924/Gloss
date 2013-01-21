@@ -17,6 +17,7 @@
 class DatabaseAdapter;
 class Project;
 class Text;
+class Concordance;
 
 class Phrase : public QObject
 {
@@ -66,6 +67,7 @@ private:
     QList<GlossItem*> mGlossItems;
     Project *mProject;
     DatabaseAdapter *mDbAdapter;
+    Concordance *mConcordance;
     Annotation mAnnotation;
     TextBitHash mGlosses;
     bool mRequestGuiRefresh;

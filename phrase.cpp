@@ -8,6 +8,7 @@
 Phrase::Phrase(Text *text, Project *project)
 {
     mProject = project;
+    mConcordance = mProject->concordance();
     mDbAdapter = mProject->dbAdapter();
     mRequestGuiRefresh = true;
 }
@@ -77,6 +78,9 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
         mGlossItems.replace(index, two);
         mGlossItems.insert( index , one );
         mRequestGuiRefresh = true;
+
+        mConcordance->removeGlossItemFromConcordance(glossItem);
+
         emit phraseChanged();
     }
 }
@@ -89,7 +93,14 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
     TextBit newBit = TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
     GlossItem *newGlossItem = new GlossItem( newBit, mProject );
     mGlossItems.replace( index, newGlossItem );
-    mGlossItems.takeAt( index+1 )->deleteLater();;
+
+    GlossItem* toRemove = mGlossItems.takeAt( index+1 );
+    toRemove->deleteLater();
+
+    // remove both old gloss items from the concordance
+    mConcordance->removeGlossItemFromConcordance( toRemove );
+    mConcordance->removeGlossItemFromConcordance( glossItem );
+
     mRequestGuiRefresh = true;
     emit phraseChanged();
 }
@@ -102,7 +113,14 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     TextBit newBit = TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
     GlossItem *newGlossItem = new GlossItem( newBit, mProject );
     mGlossItems.replace( index, newGlossItem );
-    mGlossItems.takeAt( index-1 )->deleteLater();;
+
+    GlossItem* toRemove = mGlossItems.takeAt( index-1 );
+    toRemove->deleteLater();
+
+    // remove both old gloss items from the concordance
+    mConcordance->removeGlossItemFromConcordance( toRemove );
+    mConcordance->removeGlossItemFromConcordance( glossItem );
+
     mRequestGuiRefresh = true;
     emit phraseChanged();
 }

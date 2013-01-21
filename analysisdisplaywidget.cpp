@@ -112,7 +112,7 @@ WordDisplayWidget* AnalysisDisplayWidget::addWordDisplayWidget(GlossItem *item)
 
     // TODO don't hardwire the text direction like this
     // make it read the alignment from the writing system of the first member of mInterlinearDisplayLines
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , Qt::AlignLeft, mInterlinearDisplayLines , mProject->dbAdapter() );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , Qt::AlignLeft, mInterlinearDisplayLines , mProject->dbAdapter(), this );
 
     for(int i=0; i<mInterlinearDisplayLines.count(); i++)
         if( mInterlinearDisplayLines.at(i).type() == InterlinearItemType::Analysis )

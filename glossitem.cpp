@@ -63,6 +63,8 @@ void GlossItem::resetBaselineText( const TextBit & baselineBit )
 
     guessInterpretation();
 
+    updateGlossItemConcordance();
+
     setCandidateNumberFromDatabase();
 
     emit fieldsChanged();
@@ -357,6 +359,7 @@ Concordance* GlossItem::concordance()
 
 void GlossItem::updateGlossItemConcordance()
 {
+    mConcordance->removeGlossItemFromConcordance(this);
     TextBitHashIterator iter(mTextForms);
     while(iter.hasNext())
     {

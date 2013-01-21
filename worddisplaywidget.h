@@ -30,7 +30,7 @@ class WordDisplayWidget : public QWidget
     Q_OBJECT
 
 public:
-    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter);
+    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     ~WordDisplayWidget();
 
     QHash<qlonglong, LingEdit*> textFormEdits() const;
