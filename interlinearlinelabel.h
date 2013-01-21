@@ -7,7 +7,7 @@ class InterlinearLineLabel : public QLabel
 {
     Q_OBJECT
 public:
-    InterlinearLineLabel(int lineNumber, const QString & label, bool soundAvailable, QWidget *parent = 0);
+    InterlinearLineLabel(int lineNumber, const QString & label, bool soundAvailable, const QString & soundSummary, QWidget *parent = 0);
 
 signals:
     void playSound(int lineNumber);

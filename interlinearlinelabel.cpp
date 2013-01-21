@@ -3,11 +3,14 @@
 #include <QMenu>
 #include <QContextMenuEvent>
 
-InterlinearLineLabel::InterlinearLineLabel(int lineNumber, const QString & label, bool soundAvailable, QWidget *parent) :
+InterlinearLineLabel::InterlinearLineLabel(int lineNumber, const QString & label, bool soundAvailable, const QString & soundSummary, QWidget *parent) :
     QLabel(label, parent)
 {
     mLineNumber = lineNumber;
     mSoundAvailable = soundAvailable;
+
+    if( !soundSummary.isEmpty() )
+        setToolTip(soundSummary);
 
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setMinimumSize(30, 30);

@@ -13,6 +13,8 @@ public:
     qlonglong start() const;
     qlonglong end() const;
 
+    QString summaryString() const;
+
     bool isNull() const;
     bool isValid() const;
 
