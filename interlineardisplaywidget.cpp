@@ -171,7 +171,7 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
         return;
     }
     QWidget *lineLabel = mLineLabels.takeAt(lineNumber);
-    delete lineLabel;
+    lineLabel->deleteLater();;
     layout->removeWidget(lineLabel);
 
     QListIterator<QWidget*> iter =  QListIterator<QWidget*>( mWordDisplayWidgets.values(lineNumber) );
