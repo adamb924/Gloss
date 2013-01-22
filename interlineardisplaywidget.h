@@ -55,7 +55,7 @@ private slots:
     void editLine(int lineNumber);
 
 protected slots:
-    void setLayoutAsAppropriate();
+    void setLayoutFromText();
 
 protected:
     Text *mText;
@@ -65,31 +65,27 @@ protected:
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
-    void setLayoutFromText();
-    void setLayoutFromText(QList<int> lines);
 
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
     void addWordWidgets( int i , QLayout * flowLayout );
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item, Phrase *phrase);
 
 protected:
-    QList<QLayout*> mLineLayouts;
+    QHash<int, QLayout*> mLineLayouts;
+    QHash<int, InterlinearLineLabel*> mLineLabels;
+    QList<int> mLines;
 
     QMultiHash<int, QWidget*> mWordDisplayWidgets;
 
-    QLayout* addLine();
+    QLayout* addLine(int lineNumber);
 
     QVBoxLayout *mLayout;
-
-    QList<int> mLines;
 
     QList<InterlinearItemType> mInterlinearDisplayLines;
     QList<InterlinearItemType> mPhrasalGlossLines;
 
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
 
-    QList<LingEdit*> mPhrasalGlossEdits;
-    QList<InterlinearLineLabel*> mLineLabels;
 
     //! \brief Add the phrasal gloss lines for phrase \a i
     void addPhrasalGlossLines( int i );

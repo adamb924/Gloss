@@ -22,7 +22,10 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemTy
     mProject = project;
     mInterlinearDisplayLines = interlinearDisplayLines;
     mPhrasalGlossLines = phrasalGlossLines;
+
     mLines.clear();
+    for(int i=0; i<mText->phrases()->count(); i++)
+        mLines << i;
 
     mCurrentLine = -1;
 
@@ -34,7 +37,7 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemTy
     setBackgroundRole(QPalette::Light);
     this->setWidget( theWidget );
 
-    setLayoutAsAppropriate();
+    setLayoutFromText();
 }
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QList<int> lines, QWidget *parent)
@@ -55,7 +58,7 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemTy
     setBackgroundRole(QPalette::Light);
     this->setWidget( theWidget );
 
-    setLayoutAsAppropriate();
+    setLayoutFromText();
 }
 
 InterlinearDisplayWidget::~InterlinearDisplayWidget()
@@ -74,10 +77,10 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
     mLineLabels.insert(i, lineNumber);
 }
 
-QLayout* InterlinearDisplayWidget::addLine()
+QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
 {
     FlowLayout *flowLayout = new FlowLayout( mInterlinearDisplayLines.first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
-    mLineLayouts << flowLayout;
+    mLineLayouts.insert(lineNumber, flowLayout);
     mLayout->addLayout(flowLayout);
     return flowLayout;
 }
@@ -96,19 +99,19 @@ void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
 void InterlinearDisplayWidget::scrollToLine(int line)
 {
-    if( line < mLineLayouts.count() )
+    if( mLineLayouts.value(line) != 0 )
     {
         bool after = line > mCurrentLine;
         mCurrentLine = line;
-        if( mLineLayouts.at(mCurrentLine)->count() > 1 )
+        if( mLineLayouts.value(mCurrentLine)->count() > 1 )
         {
             if( after )
             {
-                ensureWidgetVisible( mLineLayouts.at(mCurrentLine)->itemAt( mLineLayouts.at(mCurrentLine)->count() - 1 )->widget() , 0 , 300 );
+                ensureWidgetVisible( mLineLayouts.value(mCurrentLine)->itemAt( mLineLayouts.value(mCurrentLine)->count() - 1 )->widget() , 0 , 300 );
             }
             else
             {
-                ensureWidgetVisible( mLineLayouts.at(mCurrentLine)->itemAt(0)->widget() , 0 , 300 );
+                ensureWidgetVisible( mLineLayouts.value(mCurrentLine)->itemAt(0)->widget() , 0 , 300 );
             }
         }
     }
@@ -138,7 +141,6 @@ LingEdit* InterlinearDisplayWidget::addPhrasalGlossLine( const TextBit & gloss )
 {
     LingEdit *edit = new LingEdit( gloss , this);
     mLayout->addWidget(edit);
-    mPhrasalGlossEdits << edit;
     return edit;
 }
 
@@ -163,113 +165,72 @@ void InterlinearDisplayWidget::editLine(int lineNumber)
     if( dialog.exec() == QDialog::Accepted )
     {
         mText->setBaselineTextForLine(lineNumber, dialog.text() );
-        setLayoutAsAppropriate();
-    }
-}
-
-void InterlinearDisplayWidget::setLayoutAsAppropriate()
-{
-    if( mLines.isEmpty() )
         setLayoutFromText();
-    else
-        setLayoutFromText(mLines);
-    setEnabled(true);
+    }
 }
 
 void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
 {
-    if( lineNumber >= mLineLayouts.count() )
+    QLayout *layout = mLineLayouts.value(lineNumber);
+    if( layout != 0 )
     {
-        qWarning() << "Layout index out of bounds:" << lineNumber << mLineLayouts.count();
-        return;
-    }
-    QLayout *layout = mLineLayouts.at(lineNumber);
 
-    if( lineNumber >= mLineLabels.count() )
-    {
-        qWarning() << "Line label index out of bounds:" << lineNumber << mLineLabels.count();
-        return;
-    }
-    QWidget *lineLabel = mLineLabels.takeAt(lineNumber);
-    lineLabel->deleteLater();;
-    layout->removeWidget(lineLabel);
+        QWidget *lineLabel = mLineLabels.take(lineNumber);
+        if( lineLabel != 0 )
+        {
+            lineLabel->deleteLater();
+            layout->removeWidget(lineLabel);
+        }
 
-    QListIterator<QWidget*> iter =  QListIterator<QWidget*>( mWordDisplayWidgets.values(lineNumber) );
-    while(iter.hasNext())
-    {
-        QWidget *wdw = iter.next();
-        layout->removeWidget(wdw);
-        wdw->deleteLater();
-        mWordDisplayWidgets.remove( lineNumber, wdw );
+        QListIterator<QWidget*> iter =  QListIterator<QWidget*>( mWordDisplayWidgets.values(lineNumber) );
+        while(iter.hasNext())
+        {
+            QWidget *wdw = iter.next();
+            layout->removeWidget(wdw);
+            wdw->deleteLater();
+            mWordDisplayWidgets.remove( lineNumber, wdw );
+        }
     }
 }
 
 void InterlinearDisplayWidget::setLayoutFromText()
 {
-    QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mText->phrases()->count(), 0);
+    QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mLines.count(), 0);
     progress.setWindowModality(Qt::WindowModal);
 
-    for(int i=0; i< mText->phrases()->count(); i++)
+    QListIterator<int> iter(mLines);
+    while(iter.hasNext())
     {
-        progress.setValue(i);
+        progress.setValue( progress.value() + 1 );
+
+        int lineIndex = iter.next();
 
         QLayout *flowLayout;
 
-        if( i >= mLineLayouts.count() ) // there is no layout here
+        if( mLineLayouts.value(lineIndex) == 0 ) // there is no layout here
         {
-            flowLayout = addLine();
-            addPhrasalGlossLines(i);
+            flowLayout = addLine(lineIndex);
+            addPhrasalGlossLines(lineIndex);
         }
-        else if( mText->phrases()->at(i)->guiRefreshRequest() )
+        else if( mText->phrases()->at(lineIndex)->guiRefreshRequest() )
         {
-            flowLayout = mLineLayouts.at(i);
-            clearWidgetsFromLine(i);
+            flowLayout = mLineLayouts.value(lineIndex);
+            clearWidgetsFromLine(lineIndex);
         }
         else
         {
             continue;
         }
 
-        if( flowLayout->isEmpty() ) // it's either new or has been cleared for a refresh
-        {
-            addLineLabel(i, flowLayout);
-            addWordWidgets(i, flowLayout);
-        }
-
-        mText->phrases()->at(i)->setGuiRefreshRequest(false);
-    }
-    progress.setValue(mText->phrases()->count());
-}
-
-void InterlinearDisplayWidget::setLayoutFromText(QList<int> lines)
-{
-    // TODO merge this with setLayoutFromText, as it should have been from the beginning
-    QListIterator<int> iter(lines);
-    while(iter.hasNext())
-    {
-        int i = iter.next();
-
-        QLayout *flowLayout;
-
-        if( i >= mLineLayouts.count() ) // there is no layout here
-        {
-            flowLayout = addLine();
-            addPhrasalGlossLines(i);
-        }
-        else
-        {
-            flowLayout = mLineLayouts.at(i);
-            clearWidgetsFromLine(i);
-        }
-
         if( flowLayout->isEmpty() )
         {
-            addLineLabel(i, flowLayout);
-            addWordWidgets(i, flowLayout);
+            addLineLabel(lineIndex, flowLayout);
+            addWordWidgets(lineIndex, flowLayout);
         }
 
-        mText->phrases()->at(i)->setGuiRefreshRequest(false);
+        mText->phrases()->at(lineIndex)->setGuiRefreshRequest(false);
     }
+    progress.setValue(mLines.count());
 }
 
 void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )

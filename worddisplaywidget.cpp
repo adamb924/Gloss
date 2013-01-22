@@ -52,6 +52,7 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 
 WordDisplayWidget::~WordDisplayWidget()
 {
+    qDebug() << "~WordDisplayWidget()" << this;
 }
 
 void WordDisplayWidget::setupLayout()

@@ -24,7 +24,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->baselineTextEdit->setPlainText( text->baselineText() );
 
     mGloss = new InterlinearDisplayWidget(mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this);
-
+    connect( text, SIGNAL(baselineTextChanged(QString)), mGloss, SLOT(setLayoutFromText()));
     connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), mGloss, SLOT(scrollToLine(int)) );
     connect( mGloss, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
     ui->glossTab->layout()->addWidget(mGloss);
@@ -33,8 +33,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->morphologyTab->layout()->addWidget(mAnalysis);
 
     connect( text, SIGNAL(baselineTextChanged(QString)), ui->baselineTextEdit, SLOT(setPlainText(QString)) );
-    connect( text, SIGNAL(baselineTextChanged(QString)), mGloss, SLOT(setLayoutAsAppropriate()));
-    connect( text, SIGNAL(glossItemsChanged()), mAnalysis, SLOT(setLayoutAsAppropriate()));
+    connect( text, SIGNAL(glossItemsChanged()), mAnalysis, SLOT(setLayoutFromText()));
 
     setWindowTitle(mText->name());
 }
