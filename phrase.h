@@ -64,6 +64,7 @@ public slots:
     void splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
+    void removeGlossItem( QObject *glossItem );
 
 private:
     QList<GlossItem*> mGlossItems;

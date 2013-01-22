@@ -127,6 +127,19 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     emit phraseChanged();
 }
 
+void Phrase::removeGlossItem( QObject *glossItem )
+{
+    GlossItem* toRemove = (GlossItem*)glossItem;
+    int index = mGlossItems.indexOf( toRemove );
+    if( index >= 0 && index < glossItemCount() )
+    {
+        mGlossItems.removeAt(index);
+        mConcordance->removeGlossItemFromConcordance( toRemove );
+        mRequestGuiRefresh = true;
+        emit phraseChanged();
+    }
+}
+
 int Phrase::glossItemCount() const
 {
     return mGlossItems.count();
@@ -134,6 +147,7 @@ int Phrase::glossItemCount() const
 
 const GlossItem* Phrase::glossItemAt(int index) const
 {
+    mGlossItems.at(index);
     return mGlossItems.at(index);
 }
 
@@ -152,6 +166,7 @@ GlossItem* Phrase::connectGlossItem(GlossItem * item)
 {
     connect( item, SIGNAL(baselineTextChanged(TextBit)), this, SIGNAL(phraseChanged()) );
     connect( item, SIGNAL(fieldsChanged()), mText, SLOT(markAsChanged()) );
+    connect( item, SIGNAL(destroyed(QObject*)), this, SLOT(removeGlossItem(QObject*)) );
     return item;
 }
 

@@ -79,6 +79,8 @@ signals:
     void requestTextFormSearch(qlonglong id);
     void requestGlossSearch(qlonglong id);
 
+    void requestRemoveGlossItem( GlossItem *glossItem );
+
 private slots:
     void textFormSearch(QAction * action);
     void glossSearch(QAction * action);
@@ -93,6 +95,8 @@ private slots:
     void newTextForm(const WritingSystem & ws);
 
     void copyGlossFromBaseline(QAction *action);
+
+    void removeGlossItem();
 
     void fillData();
 
