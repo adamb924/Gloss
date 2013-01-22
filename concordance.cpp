@@ -110,7 +110,6 @@ void Concordance::updateGlossImmutableLabelConcordance(ImmutableLabel * edit, ql
 
 void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId )
 {
-    // TODO Somehow we got an incorrect pointer here... possibly to do with the fancy baseline editing things
     QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
     foreach(GlossItem *item, itemList)
         item->setCandidateNumber( mCandidateNumber );
@@ -124,7 +123,6 @@ void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong
 
 void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis)
 {
-    // TODO Fix this. There must be a problem with the concordance.
     QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
     foreach(GlossItem *item, itemList)
         item->setMorphologicalAnalysis( analysis );
