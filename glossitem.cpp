@@ -133,7 +133,7 @@ void GlossItem::setTextForm(const TextBit & textForm)
         mDbAdapter->updateInterpretationTextForm(textForm);
         mTextForms.insert( ws , textForm );
 
-        mConcordance->updateGlossItemTextFormConcordance( this, textForm.id() );
+        updateGlossItemConcordance();
 
         MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() );
         mMorphologicalAnalyses.insert( ws , newMa );
