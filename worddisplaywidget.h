@@ -93,7 +93,6 @@ private slots:
     void newTextForm(const WritingSystem & ws);
 
     void copyGlossFromBaseline(QAction *action);
-    void copyTextFormFromBaseline(QAction *action);
 
     void fillData();
 

@@ -299,14 +299,6 @@ void WordDisplayWidget::addTextFormSubmenu(QMenu *menu, const WritingSystem & wr
     connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(newTextForm(QAction*)) );
     submenu->addAction(action);
 
-    QActionGroup *oneOffgroup2 = new QActionGroup(menu);
-    action = new QAction(tr("Copy from baseline text..."),menu);
-    action->setData( writingSystem.id() );
-    oneOffgroup2->addAction(action);
-    connect( oneOffgroup2, SIGNAL(triggered(QAction*)), this, SLOT(copyTextFormFromBaseline(QAction*)) );
-    submenu->addAction(action);
-
-
     menu->addMenu(submenu);
 }
 
@@ -415,23 +407,6 @@ void WordDisplayWidget::copyGlossFromBaseline(QAction *action)
 
     mDbAdapter->updateInterpretationGloss( bit );
     mGlossEdits[ws]->setTextBit( bit );
-}
-
-void WordDisplayWidget::copyTextFormFromBaseline(QAction *action)
-{
-    qlonglong wsId = action->data().toLongLong();
-    WritingSystem ws = mDbAdapter->writingSystem(wsId);
-
-    TextBit bit = mTextFormEdits[ws]->textBit();
-    bit.setText( mGlossItem->textForm(mGlossItem->baselineWritingSystem()).text() );
-    if( bit.id() == -1 )
-    {
-        qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , bit );
-        bit.setId( id );
-    }
-
-    mDbAdapter->updateInterpretationTextForm( bit );
-    mTextFormEdits[ws]->setTextBit( bit );
 }
 
 void WordDisplayWidget::newGloss(const WritingSystem & ws)
