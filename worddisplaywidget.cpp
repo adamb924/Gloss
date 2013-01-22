@@ -5,7 +5,6 @@
 #include "interlinearitemtype.h"
 #include "databaseadapter.h"
 #include "interlineardisplaywidget.h"
-#include "interpretationsearchdialog.h"
 #include "immutablelabel.h"
 #include "analysiswidget.h"
 #include "generictextinputdialog.h"
@@ -264,7 +263,6 @@ void WordDisplayWidget::addInterpretationSubmenu(QMenu *menu )
     }
 
     submenu->addAction(tr("New interpretation..."),this,SLOT(newInterpretation()));
-    submenu->addAction(tr("Link to other interpretation..."),this,SLOT(otherInterpretation()));
 
     menu->addMenu(submenu);
 }
@@ -568,18 +566,6 @@ QHash<qlonglong, LingEdit*> WordDisplayWidget::glossEdits() const
         hash.insert( iter.value()->id() , iter.value() );
     }
     return hash;
-}
-
-void WordDisplayWidget::otherInterpretation()
-{
-    InterpretationSearchDialog dialog( mDbAdapter, this );
-    if( dialog.exec() == QDialog::Accepted )
-    {
-        qlonglong id = dialog.selectionId();
-        mDbAdapter->newTextForm( id , mGlossItem->baselineText() );
-        mGlossItem->setInterpretation(id, true); // true because the user hadn't had a chance to specify more particularly yet
-        fillData();
-    }
 }
 
 GlossItem* WordDisplayWidget::glossItem()

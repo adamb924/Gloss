@@ -97,8 +97,6 @@ private slots:
 
     void fillData();
 
-    void otherInterpretation();
-
     void selectDifferentCandidate(QAction *action);
     void selectDifferentGloss(QAction *action);
     void selectDifferentTextForm(QAction *action);
