@@ -582,12 +582,14 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber )
     }
     // at this point the window must not exist
     TextDisplayWidget* tdw = openText(textName);
-    if( tdw != 0 )
+    if( tdw != 0 && lineNumber != -1 )
         tdw->focusGlossLine(lineNumber);
 }
 
 void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
 {
+    if( lineNumber == -1 )
+        return;
     mProject->openText(textName);
     Text *text = mProject->texts()->value(textName, 0);
     if( text == 0)
@@ -598,6 +600,8 @@ void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
 
 void MainWindow::editLine( const QString & textName , int lineNumber )
 {
+    if( lineNumber == -1 )
+        return;
     mProject->openText(textName);
     Text *text = mProject->texts()->value(textName, 0);
     if( text == 0)
@@ -621,6 +625,8 @@ void MainWindow::editLine( const QString & textName , int lineNumber )
 
 void MainWindow::editLineWithContext( const QString & textName , int lineNumber )
 {
+    if( lineNumber == -1 )
+        return;
     mProject->openText(textName);
     Text *text = mProject->texts()->value(textName, 0);
     if( text == 0)

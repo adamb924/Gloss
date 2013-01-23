@@ -14,18 +14,25 @@ SearchQueryView::SearchQueryView(QWidget *parent) :
 
 void SearchQueryView::contextMenu( const QPoint & pos )
 {
-    QMenu menu(this);
-    menu.addAction(tr("Edit line"), this, SLOT(editLine()));
-    menu.addAction(tr("Edit line with context"), this, SLOT(editLineWithContext()));
-    menu.addAction(tr("Open text"), this, SLOT(openText()));
-    menu.addAction(tr("Play sound"), this, SLOT(playSound()));
-    menu.exec( mapToGlobal(pos) );
+    bool isNumeric;
+    indexAt(pos).data(Qt::UserRole).toInt(&isNumeric);
+    if( isNumeric )
+    {
+        QMenu menu(this);
+        menu.addAction(tr("Edit line"), this, SLOT(editLine()));
+        menu.addAction(tr("Edit line with context"), this, SLOT(editLineWithContext()));
+        menu.addAction(tr("Open text"), this, SLOT(openText()));
+        menu.addAction(tr("Play sound"), this, SLOT(playSound()));
+        menu.exec( mapToGlobal(pos) );
+    }
 }
 
 void SearchQueryView::getDetails( const QModelIndex & index, QString &textName, int &lineNumber ) const
 {
     lineNumber= index.data(Qt::UserRole).toInt();
     textName = index.parent().data(Qt::UserRole).toString();
+    if( textName.isEmpty() )
+        textName = index.data(Qt::UserRole).toString();
 }
 
 void SearchQueryView::openText()
