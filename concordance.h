@@ -73,7 +73,7 @@ public slots:
 
 private:
     //! \brief GlossItem objects, indexed by text form id
-    QMultiHash<qlonglong,GlossItem*> mGlossItemsByTextFormId;
+    QMultiHash<qlonglong,GlossItem*> mGlossItems;
 
     //! \brief LingEdit objects for text forms, indexed by text form id
     QMultiHash<qlonglong,LingEdit*> mTextFormLingEdits;

@@ -34,9 +34,10 @@ void Concordance::removeTextFormFromImmutableLabelConcordance( QObject * edit )
 
 void Concordance::removeGlossItemFromConcordance( QObject * item )
 {
-    QListIterator<qlonglong> keys( mGlossItemsByTextFormId.keys( (GlossItem*)item ) );
+    QListIterator<qlonglong> keys( mGlossItems.keys( (GlossItem*)item ) );
     while(keys.hasNext())
-        mGlossItemsByTextFormId.remove( keys.next(), (GlossItem*)item );
+        mGlossItems.remove( keys.next(), (GlossItem*)item );
+//    qDebug() << "Concordance::removeGlossItemFromConcordance() end count:" << mGlossItems.count() << mGlossItems;
 }
 
 void Concordance::removeGlossFromImmutableLabelConcordance( QObject * edit )
@@ -95,6 +96,7 @@ void Concordance::updateTextForm( const TextBit & bit )
 void Concordance::updateTextForImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newTextFormId )
 {
     // TODO fix this at some point
+    // TODO make a note of what is wrong with this!
     qlonglong oldId = mTextFormImmutableLabels.key( edit );
     mTextFormImmutableLabels.remove(oldId, edit);
     mTextFormImmutableLabels.insert(newTextFormId , edit);
@@ -103,6 +105,7 @@ void Concordance::updateTextForImmutableLabelConcordance(ImmutableLabel * edit, 
 void Concordance::updateGlossImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newGlossId )
 {
     // TODO fix this at some point
+    // TODO make a note of what is wrong with this!
     qlonglong oldId = mGlossImmutableLabels.key( edit );
     mGlossImmutableLabels.remove(oldId, edit);
     mGlossImmutableLabels.insert(newGlossId , edit);
@@ -110,21 +113,22 @@ void Concordance::updateGlossImmutableLabelConcordance(ImmutableLabel * edit, ql
 
 void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId )
 {
-//    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
-//    foreach(GlossItem *item, itemList)
-//        item->setCandidateNumber( mCandidateNumber );
+    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
+    foreach(GlossItem *item, itemList)
+        item->setCandidateNumber( mCandidateNumber );
 }
 
 void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong textFormId)
 {
-    mGlossItemsByTextFormId.remove( textFormId, item );
-    mGlossItemsByTextFormId.insert(textFormId, item);
+    mGlossItems.remove( textFormId, item );
+    mGlossItems.insert(textFormId, item);
+//    qDebug() << "Concordance::updateGlossItemTextFormConcordance count:" << mGlossItems.count() << mGlossItems;
 }
 
 void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis)
 {
     // TODO another concordance problem
-//    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
-//    foreach(GlossItem *item, itemList)
-//        item->setMorphologicalAnalysis( analysis );
+    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
+    foreach(GlossItem *item, itemList)
+        item->setMorphologicalAnalysis( analysis );
 }
