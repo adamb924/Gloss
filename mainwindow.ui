@@ -50,6 +50,7 @@
     </property>
     <addaction name="actionOpen_text"/>
     <addaction name="actionOpen_text_line"/>
+    <addaction name="actionOpen_text_line_with_context"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
@@ -311,6 +312,11 @@
   <action name="actionOpen_text_line">
    <property name="text">
     <string>Open text line...</string>
+   </property>
+  </action>
+  <action name="actionOpen_text_line_with_context">
+   <property name="text">
+    <string>Open text line with context...</string>
    </property>
   </action>
  </widget>

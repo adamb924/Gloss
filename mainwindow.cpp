@@ -81,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionClose_and_save_open_texts, SIGNAL(triggered()), this, SLOT(closeOpenTexts()));
 
     connect(ui->actionOpen_text_line, SIGNAL(triggered()), this, SLOT(openTextLine()) );
+    connect(ui->actionOpen_text_line_with_context, SIGNAL(triggered()), this, SLOT(openTextLineWithContext()));
 
     setProjectActionsEnabled(false);
 
@@ -894,4 +895,11 @@ void MainWindow::openTextLine()
     ChooseTextLineDialog dialog(mProject->textNames(), this);
     if( dialog.exec() == QDialog::Accepted )
         editLine( dialog.textName() , dialog.lineNumber() );
+}
+
+void MainWindow::openTextLineWithContext()
+{
+    ChooseTextLineDialog dialog(mProject->textNames(), this);
+    if( dialog.exec() == QDialog::Accepted )
+        editLineWithContext( dialog.textName() , dialog.lineNumber() );
 }

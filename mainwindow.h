@@ -104,6 +104,7 @@ private slots:
 
     void closeOpenTexts();
     void openTextLine();
+    void openTextLineWithContext();
 
 };
 
