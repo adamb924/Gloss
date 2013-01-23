@@ -23,9 +23,7 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemTy
     mInterlinearDisplayLines = interlinearDisplayLines;
     mPhrasalGlossLines = phrasalGlossLines;
 
-    mLines.clear();
-    for(int i=0; i<mText->phrases()->count(); i++)
-        mLines << i;
+    setLinesToDefault();
 
     mCurrentLine = -1;
 
@@ -195,6 +193,9 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
 
 void InterlinearDisplayWidget::setLayoutFromText()
 {
+    if( mLines.isEmpty() )
+        setLinesToDefault();
+
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mLines.count(), 0);
     progress.setWindowModality(Qt::WindowModal);
 
@@ -257,4 +258,11 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(requestRemoveGlossItem(GlossItem*)), phrase, SLOT(removeGlossItem(GlossItem*)));
 
     return wdw;
+}
+
+void InterlinearDisplayWidget::setLinesToDefault()
+{
+    mLines.clear();
+    for(int i=0; i<mText->phrases()->count(); i++)
+        mLines << i;
 }

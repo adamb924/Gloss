@@ -45,6 +45,7 @@ public slots:
 protected:
     void scrollContentsBy ( int dx, int dy );
     void clearWidgetsFromLine(int lineNumber);
+    void setLinesToDefault();
 
 private slots:
 
