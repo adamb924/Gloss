@@ -605,6 +605,12 @@ void MainWindow::editLine( const QString & textName , int lineNumber )
 
     lineNumber--; // make it 0-indexed instead
 
+    if( lineNumber >= text->phrases()->count() )
+    {
+        QMessageBox::warning(this, tr("Error"), tr("%1 only has %2 phrases.").arg(text->name()).arg(text->phrases()->count()));
+        return;
+    }
+
     QList<int> lines;
     lines << lineNumber;
 
@@ -621,6 +627,12 @@ void MainWindow::editLineWithContext( const QString & textName , int lineNumber 
         return;
 
     lineNumber--; // make it 0-indexed instead
+
+    if( lineNumber >= text->phrases()->count() )
+    {
+        QMessageBox::warning(this, tr("Error"), tr("%1 only has %2 phrases.").arg(text->name()).arg(text->phrases()->count()));
+        return;
+    }
 
     QList<int> lines;
     if( lineNumber > 0 )
