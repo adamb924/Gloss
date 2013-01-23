@@ -110,9 +110,9 @@ void Concordance::updateGlossImmutableLabelConcordance(ImmutableLabel * edit, ql
 
 void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId )
 {
-    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
-    foreach(GlossItem *item, itemList)
-        item->setCandidateNumber( mCandidateNumber );
+//    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
+//    foreach(GlossItem *item, itemList)
+//        item->setCandidateNumber( mCandidateNumber );
 }
 
 void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong textFormId)
@@ -123,7 +123,8 @@ void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong
 
 void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis)
 {
-    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
-    foreach(GlossItem *item, itemList)
-        item->setMorphologicalAnalysis( analysis );
+    // TODO another concordance problem
+//    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
+//    foreach(GlossItem *item, itemList)
+//        item->setMorphologicalAnalysis( analysis );
 }

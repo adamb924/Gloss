@@ -24,10 +24,14 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->baselineTextEdit->setPlainText( text->baselineText() );
 
     mGloss = new InterlinearDisplayWidget(mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this);
+    ui->glossTab->layout()->addWidget(mGloss);
+
+    // text update connections
     connect( text, SIGNAL(baselineTextChanged(QString)), mGloss, SLOT(setLayoutFromText()));
+
+    // line number connections
     connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), mGloss, SLOT(scrollToLine(int)) );
     connect( mGloss, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
-    ui->glossTab->layout()->addWidget(mGloss);
 
     mAnalysis = new InterlinearDisplayWidget(mProject->dbAdapter()->analysisInterlinearLines(), mProject->dbAdapter()->analysisPhrasalGlossLines(), mText, mProject, this);
     ui->morphologyTab->layout()->addWidget(mAnalysis);
@@ -46,7 +50,7 @@ TextDisplayWidget::~TextDisplayWidget()
 
 void TextDisplayWidget::tabChanged(int i)
 {
-    if( i == 1 || i == 2 ) // the gloss tab or the morphology tab
+    if( i != 0 )
         mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
 }
 

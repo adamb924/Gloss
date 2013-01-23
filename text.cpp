@@ -172,7 +172,7 @@ void Text::setGlossItemsFromBaseline()
         }
         progress.setValue(lines.count());
     }
-//    emit glossItemsChanged();
+    emit glossItemsChanged();
 }
 
 void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
@@ -184,6 +184,7 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
         phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
 
     phrase->setGuiRefreshRequest(true);
+    phrase->setAnalysisRefreshRequest(true);
 }
 
 bool Text::setBaselineWritingSystemFromFile(const QString & filePath )

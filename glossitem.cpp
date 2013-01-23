@@ -24,8 +24,6 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
     setCandidateNumberFromDatabase();
 
     updateGlossItemConcordance();
-
-    qDebug() << "GlossItem::GlossItem()" << this;
 }
 
 GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
@@ -47,13 +45,10 @@ GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, co
     setCandidateNumberFromDatabase();
 
     updateGlossItemConcordance();
-
-    qDebug() << "GlossItem::GlossItem()" << this;
 }
 
 GlossItem::~GlossItem()
 {
-    qDebug() << "GlossItem::~GlossItem()" << this;
 }
 
 void GlossItem::resetBaselineText( const TextBit & baselineBit )

@@ -3,6 +3,7 @@
 #include "project.h"
 #include "text.h"
 
+#include <QMessageBox>
 #include <QtDebug>
 
 Phrase::Phrase(Text *text, Project *project)
@@ -11,7 +12,8 @@ Phrase::Phrase(Text *text, Project *project)
     mProject = project;
     mConcordance = mProject->concordance();
     mDbAdapter = mProject->dbAdapter();
-    mRequestGuiRefresh = true;
+    mRequestGlossRefresh = true;
+    mRequestAnalysisRefresh = true;
 }
 
 Phrase::~Phrase()
@@ -49,12 +51,22 @@ QString Phrase::equivalentBaselineLineText() const
 
 bool Phrase::guiRefreshRequest() const
 {
-    return mRequestGuiRefresh;
+    return mRequestGlossRefresh;
+}
+
+bool Phrase::analysisRefreshRequest() const
+{
+    return mRequestAnalysisRefresh;
+}
+
+void Phrase::setAnalysisRefreshRequest(bool needed)
+{
+    mRequestAnalysisRefresh = needed;
 }
 
 void Phrase::setGuiRefreshRequest(bool needed)
 {
-    mRequestGuiRefresh = needed;
+    mRequestGlossRefresh = needed;
 }
 
 void Phrase::setAnnotation( const Annotation & annotation )
@@ -78,7 +90,7 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
         mGlossItems.at(index)->deleteLater();
         mGlossItems.replace(index, two);
         mGlossItems.insert( index , one );
-        mRequestGuiRefresh = true;
+        mRequestGlossRefresh = true;
 
         mConcordance->removeGlossItemFromConcordance(glossItem);
 
@@ -102,7 +114,7 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
     mConcordance->removeGlossItemFromConcordance( toRemove );
     mConcordance->removeGlossItemFromConcordance( glossItem );
 
-    mRequestGuiRefresh = true;
+    mRequestGlossRefresh = true;
     emit phraseChanged();
 }
 
@@ -123,19 +135,29 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     mConcordance->removeGlossItemFromConcordance( toRemove );
     mConcordance->removeGlossItemFromConcordance( glossItem );
 
-    mRequestGuiRefresh = true;
+    mRequestGlossRefresh = true;
     emit phraseChanged();
 }
 
-void Phrase::removeGlossItem( QObject *glossItem )
+void Phrase::removeGlossItem( GlossItem *glossItem )
 {
+    if( mGlossItems.count() == 1)
+    {
+        if( QMessageBox::Yes == QMessageBox::question(0, tr("Remove phrase?"), tr("This is the last gloss item on the line. Would you like to remove the entire phrase? (If you click no, nothing will happen.)"), QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) );
+        {
+            emit requestRemovePhrase(this);
+        }
+        return;
+    }
+
     GlossItem* toRemove = (GlossItem*)glossItem;
     int index = mGlossItems.indexOf( toRemove );
     if( index >= 0 && index < glossItemCount() )
     {
         mGlossItems.removeAt(index);
         mConcordance->removeGlossItemFromConcordance( toRemove );
-        mRequestGuiRefresh = true;
+        delete toRemove;
+        mRequestGlossRefresh = true;
         emit phraseChanged();
     }
 }
@@ -166,7 +188,6 @@ GlossItem* Phrase::connectGlossItem(GlossItem * item)
 {
     connect( item, SIGNAL(baselineTextChanged(TextBit)), this, SIGNAL(phraseChanged()) );
     connect( item, SIGNAL(fieldsChanged()), mText, SLOT(markAsChanged()) );
-    connect( item, SIGNAL(destroyed(QObject*)), this, SLOT(removeGlossItem(QObject*)) );
     return item;
 }
 

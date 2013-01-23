@@ -212,7 +212,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
             flowLayout = addLine(lineIndex);
             addPhrasalGlossLines(lineIndex);
         }
-        else if( mText->phrases()->at(lineIndex)->guiRefreshRequest() )
+        else if( mText->phrases()->at(lineIndex)->guiRefreshRequest() || mText->phrases()->at(lineIndex)->analysisRefreshRequest() )
         {
             flowLayout = mLineLayouts.value(lineIndex);
             clearWidgetsFromLine(lineIndex);
@@ -228,7 +228,11 @@ void InterlinearDisplayWidget::setLayoutFromText()
             addWordWidgets(lineIndex, flowLayout);
         }
 
-        mText->phrases()->at(lineIndex)->setGuiRefreshRequest(false);
+        // TODO this feels like a hack
+        if( mInterlinearDisplayLines.first().type() == InterlinearItemType::ImmutableText )
+            mText->phrases()->at(lineIndex)->setGuiRefreshRequest(false);
+        else
+            mText->phrases()->at(lineIndex)->setAnalysisRefreshRequest(false);
     }
     progress.setValue(mLines.count());
 }
@@ -250,6 +254,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(splitWidgetInTwo(GlossItem*,TextBit,TextBit)), phrase, SLOT(splitGlossInTwo(GlossItem*,TextBit,TextBit)) );
     connect( wdw, SIGNAL(mergeGlossItemWithNext(GlossItem*)), phrase, SLOT(mergeGlossItemWithNext(GlossItem*)));
     connect( wdw, SIGNAL(mergeGlossItemWithPrevious(GlossItem*)), phrase, SLOT(mergeGlossItemWithPrevious(GlossItem*)));
+    connect( wdw, SIGNAL(requestRemoveGlossItem(GlossItem*)), phrase, SLOT(removeGlossItem(GlossItem*)));
 
     return wdw;
 }

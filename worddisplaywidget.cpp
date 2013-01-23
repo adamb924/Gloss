@@ -47,13 +47,10 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     connect( this, SIGNAL(requestGlossSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForGlossById(qlonglong) ));
 
     fillData();
-
-    qDebug() << "WordDisplayWidget::WordDisplayWidget" << this;
 }
 
 WordDisplayWidget::~WordDisplayWidget()
 {
-    qDebug() << "WordDisplayWidget::~WordDisplayWidget()" << this;
 }
 
 void WordDisplayWidget::setupLayout()
@@ -644,6 +641,5 @@ void WordDisplayWidget::mergeWithPrevious()
 void WordDisplayWidget::removeGlossItem()
 {
     if( QMessageBox::Yes == QMessageBox::question(this, tr("Confirm deletion"), tr("Are you sure you want to remove this gloss item? This cannot be undone."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) )
-        mGlossItem->deleteLater();
-//        emit requestRemoveGlossItem(this);
+        emit requestRemoveGlossItem(mGlossItem);
 }

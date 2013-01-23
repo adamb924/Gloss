@@ -38,6 +38,10 @@ public:
     //! \brief Returns true if the Phrase thinks that the GUI should update itself.
     bool guiRefreshRequest() const;
 
+    bool analysisRefreshRequest() const;
+
+    void setAnalysisRefreshRequest(bool needed);
+
     //! \brief Set whether the Phrase should request a GUI update or not.
     void setGuiRefreshRequest(bool needed);
 
@@ -56,6 +60,7 @@ public:
 
 signals:
     void phraseChanged();
+    void requestRemovePhrase(Phrase * phrase);
 
 public slots:
     //! \brief Adds or updates the phrase-level gloss to \a bit. The gloss to be added or updated is indicated by the WritingSystem of \bit.
@@ -64,7 +69,7 @@ public slots:
     void splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
-    void removeGlossItem( QObject *glossItem );
+    void removeGlossItem( GlossItem *glossItem );
 
 private:
     QList<GlossItem*> mGlossItems;
@@ -74,7 +79,8 @@ private:
     Concordance *mConcordance;
     Annotation mAnnotation;
     TextBitHash mGlosses;
-    bool mRequestGuiRefresh;
+    bool mRequestGlossRefresh;
+    bool mRequestAnalysisRefresh;
 };
 
 #endif // PHRASE_H
