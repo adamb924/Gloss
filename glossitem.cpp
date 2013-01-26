@@ -285,6 +285,7 @@ void GlossItem::setMorphologicalAnalysis( const MorphologicalAnalysis & analysis
     if( !mMorphologicalAnalyses.contains(analysis.writingSystem()) || ( mMorphologicalAnalyses.contains(analysis.writingSystem()) && mMorphologicalAnalyses.value( analysis.writingSystem() ) != analysis ) )
     {
         mMorphologicalAnalyses.insert( analysis.writingSystem() , analysis);
+        emit fieldsChanged();
         emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis.writingSystem() ) );
     }
 }
