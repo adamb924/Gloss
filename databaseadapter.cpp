@@ -845,10 +845,6 @@ qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexical
 void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("delete from Allomorph where _id in (select TextFormId from MorphologicalAnalysisMembers where TextFormId=:TextFormId);");
-    q.bindValue(":TextFormId", textFormId );
-    q.exec();
-
     q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId;");
     q.bindValue(":TextFormId", textFormId );
     q.exec();
@@ -901,10 +897,7 @@ Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
             return Allomorph(allomorphId, bit, glosses );
         }
     }
-    else
-    {
-        qWarning() << "DatabaseAdapter::allomorphFromId" << q.lastError().text() << q.executedQuery();
-    }
+    qWarning() << "DatabaseAdapter::allomorphFromId"  << allomorphId << q.lastError().text() << q.executedQuery();
     return Allomorph();
 }
 
