@@ -821,12 +821,16 @@ qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexical
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
-    // delete a conflicting allomorph
-    q.prepare("delete from Allomorph where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem;");
+    // first check to see if this allomorph exists
+    q.prepare("select _id from Allomorph where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem and Form=:Form;");
     q.bindValue(":LexicalEntryId",lexicalEntryId);
     q.bindValue(":WritingSystem",bit.writingSystem().id());
+    q.bindValue(":Form",bit.text());
     q.exec();
+    if( q.next() )
+        return q.value(0).toLongLong();
 
+    // otherwise insert it
     q.prepare("insert into Allomorph (LexicalEntryId,WritingSystem,Form) values (:LexicalEntryId,:WritingSystem,:Form);");
     q.bindValue(":LexicalEntryId",lexicalEntryId);
     q.bindValue(":WritingSystem",bit.writingSystem().id());
