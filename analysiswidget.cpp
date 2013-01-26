@@ -40,7 +40,7 @@ void AnalysisWidget::createUninitializedLayout()
     mLayout->addWidget(analyze);
     connect(analyze, SIGNAL(clicked()), this, SLOT(enterAnalysis()));
 
-    QPushButton *createMle = new QPushButton(tr("Create MLE"), this);
+    QPushButton *createMle = new QPushButton(tr("Monomorphemic"), this);
     createMle->setToolTip(tr("Create monomorphemic lexical entry"));
     createMle->setFlat(true);
     createMle->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; }");
@@ -63,7 +63,7 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
     menu.addAction(tr("Analyze"), this, SLOT(enterAnalysis()));
-    menu.addAction(tr("Create MLE"), this, SLOT(createMonomorphemicLexicalEntry()));
+    menu.addAction(tr("Monomorphemic"), this, SLOT(createMonomorphemicLexicalEntry()));
     menu.exec(event->globalPos());
 }
 
