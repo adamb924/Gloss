@@ -24,6 +24,8 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & bit, bool isM
     ui->setupUi(this);
     fillData();
 
+    ui->grammaticalInformation->setWritingSystem( dbAdapter->metaLanguage() );
+
     connect(this, SIGNAL(accepted()), this, SLOT(createLexicalEntry()));
 
     setWindowTitle(tr("Create lexical entry"));

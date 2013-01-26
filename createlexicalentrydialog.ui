@@ -31,7 +31,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="grammaticalInformation"/>
+    <widget class="LingEdit" name="grammaticalInformation"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -73,6 +73,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LingEdit</class>
+   <extends>QLineEdit</extends>
+   <header>lingedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
