@@ -37,6 +37,7 @@ private:
     const DatabaseAdapter *mDbAdapter;
     const GlossItem *mGlossItem;
 
+    void fillTypes();
     void fillData();
 
 signals:
@@ -45,6 +46,7 @@ signals:
 private slots:
     void newLexicalEntry();
     void linkToOther();
+    void setType(int type);
 };
 
 #endif // LEXICALENTRYFORM_H

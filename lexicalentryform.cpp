@@ -15,11 +15,13 @@ LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem 
     mDbAdapter = dbAdapter;
     mGlossItem = glossItem;
 
+    fillTypes();
     fillData();
 
     connect(ui->candidatesCombo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(entryChanged()) );
     connect(ui->newForm, SIGNAL(clicked()), this, SLOT(newLexicalEntry()));
     connect(ui->linkToOther, SIGNAL(clicked()), this, SLOT(linkToOther()));
+    connect(ui->morphemeType, SIGNAL(currentIndexChanged(int)), this, SLOT(setType(int)));
 }
 
 LexicalEntryForm::~LexicalEntryForm()
@@ -30,7 +32,7 @@ LexicalEntryForm::~LexicalEntryForm()
 void LexicalEntryForm::fillData()
 {
     ui->formLabel->setText( mAllomorph.text() );
-    ui->morphemeTypeLabel->setText( mAllomorph.typeString() );
+    ui->morphemeType->setCurrentIndex( (int)mAllomorph.type() );
 
     ui->candidatesCombo->clear();
     QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mAllomorph.textBit());
@@ -42,6 +44,12 @@ void LexicalEntryForm::fillData()
         ui->candidatesCombo->addItem( iter.value(), iter.key() );
     }
     ui->candidatesCombo->setEnabled( ui->candidatesCombo->count() != 0 );
+}
+
+void LexicalEntryForm::fillTypes()
+{
+    for(int i=0; i<10; i++)
+        ui->morphemeType->addItem( Allomorph::getTypeString( (Allomorph::Type)i ) );
 }
 
 void LexicalEntryForm::newLexicalEntry()
@@ -84,4 +92,10 @@ qlonglong LexicalEntryForm::id() const
 TextBit LexicalEntryForm::textBit() const
 {
     return mAllomorph.textBit();
+}
+
+void LexicalEntryForm::setType(int type)
+{
+    mAllomorph.setType( (Allomorph::Type)type );
+    fillData();
 }

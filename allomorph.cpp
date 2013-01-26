@@ -84,40 +84,6 @@ void Allomorph::setTypeFromString(const QString & string)
 QString Allomorph::typeFormattedString() const
 {
     return mTextBit.text();
-//    switch(mType)
-//    {
-//    case Stem:
-//        return mTextBit.text();
-//        break;
-//    case Prefix:
-//        return "-" + mTextBit.text();
-//        break;
-//    case Suffix:
-//        return mTextBit.text() + "-";
-//        break;
-//    case Infix:
-//        return "-" + mTextBit.text() + "-";
-//        break;
-//    case BoundStem:
-//        return "*" + mTextBit.text();
-//        break;
-//    case Proclitic:
-//        return "=" + mTextBit.text();
-//        break;
-//    case Enclitic:
-//        return mTextBit.text() + "=";
-//        break;
-//    case Simulfix:
-//        return "=" + mTextBit.text() + "=";
-//        break;
-//    case Suprafix:
-//        return "~" + mTextBit.text() + "~";
-//        break;
-//    case Null:
-//        return mTextBit.text();
-//        break;
-//    }
-//    return mTextBit.text();
 }
 
 Allomorph::Type Allomorph::type() const
@@ -189,4 +155,10 @@ QString Allomorph::stripPunctuation( const QString & string ) const
     s.replace("*","");
     s.replace("-","");
     return s;
+}
+
+void Allomorph::setType( Type t )
+{
+    mTextBit.setText( getTypeFormatTextString( text(), t ) );
+    mType = t;
 }

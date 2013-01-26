@@ -35,6 +35,8 @@ public:
     qlonglong id() const;
     void setId(qlonglong id);
 
+    void setType( Type t );
+
     static QString getTypeString(Type t)
     {
         switch(t)
@@ -61,6 +63,44 @@ public:
         default:
             return "Null";
         }
+    }
+
+    static QString getTypeFormatTextString( const QString & text, Type t )
+    {
+        switch(t)
+        {
+        case Stem:
+            return text;
+            break;
+        case Prefix:
+            return "-" + text;
+            break;
+        case Suffix:
+            return text + "-";
+            break;
+        case Infix:
+            return "-" + text + "-";
+            break;
+        case BoundStem:
+            return "*" + text;
+            break;
+        case Proclitic:
+            return "=" + text;
+            break;
+        case Enclitic:
+            return text + "=";
+            break;
+        case Simulfix:
+            return "=" + text + "=";
+            break;
+        case Suprafix:
+            return "~" + text + "~";
+            break;
+        case Null:
+            return text;
+            break;
+        }
+        return text;
     }
 
 private:

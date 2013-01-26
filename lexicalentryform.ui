@@ -33,14 +33,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="morphemeTypeLabel">
-       <property name="text">
-        <string>Morpheme Type</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-       </property>
-      </widget>
+      <widget class="QComboBox" name="morphemeType"/>
      </item>
      <item>
       <widget class="QComboBox" name="candidatesCombo">
