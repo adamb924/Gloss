@@ -4,6 +4,7 @@
 #include "databaseadapter.h"
 #include "genericlexicalentryform.h"
 #include "createlexicalentrydialog.h"
+#include "lexicalentrysearchdialog.h"
 
 LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter,  QWidget *parent) :
         QWidget(parent),
@@ -18,6 +19,7 @@ LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem 
 
     connect(ui->candidatesCombo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(entryChanged()) );
     connect(ui->newForm, SIGNAL(clicked()), this, SLOT(newLexicalEntry()));
+    connect(ui->linkToOther, SIGNAL(clicked()), this, SLOT(linkToOther()));
 }
 
 LexicalEntryForm::~LexicalEntryForm()
@@ -50,6 +52,21 @@ void LexicalEntryForm::newLexicalEntry()
         if( dialog.id() != -1 )
         {
             mDbAdapter->addAllomorph( mAllomorph.textBit() , dialog.id() );
+            fillData();
+            emit entryChanged();
+        }
+    }
+}
+
+void LexicalEntryForm::linkToOther()
+{
+    LexicalEntrySearchDialog dialog(mDbAdapter, this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        qlonglong lexicalEntryId = dialog.lexicalEntryId();
+        if( lexicalEntryId != -1 )
+        {
+            mDbAdapter->addAllomorph( mAllomorph.textBit() , lexicalEntryId );
             fillData();
             emit entryChanged();
         }

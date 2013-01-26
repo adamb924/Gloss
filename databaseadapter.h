@@ -151,7 +151,14 @@ public:
     QList<WritingSystem> lexicalEntryCitationForms() const;
     QList<WritingSystem> lexicalEntryGlosses() const;
 
+    //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, which are possible lexical entries for the given form.
     QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit ) const;
+
+    //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, treating \a bit as a search function.
+    QHash<qlonglong,QString> searchLexicalEntries( const TextBit & bit ) const;
+
+    //! \brief Returns a one-line summary of the lexical entry
+    QString lexicalEntrySummary( qlonglong lexicalEntryId ) const;
 
     qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const;
     qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId ) const;

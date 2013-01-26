@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
+    <width>559</width>
     <height>43</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -50,6 +56,13 @@
       <widget class="QPushButton" name="newForm">
        <property name="text">
         <string>Create new...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="linkToOther">
+       <property name="text">
+        <string>Link to other...</string>
        </property>
       </widget>
      </item>

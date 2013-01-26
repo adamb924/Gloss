@@ -44,6 +44,7 @@ signals:
 
 private slots:
     void newLexicalEntry();
+    void linkToOther();
 };
 
 #endif // LEXICALENTRYFORM_H

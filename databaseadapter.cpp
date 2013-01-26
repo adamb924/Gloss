@@ -755,6 +755,62 @@ QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextB
     return candidates;
 }
 
+QHash<qlonglong,QString> DatabaseAdapter::searchLexicalEntries( const TextBit & bit ) const
+{
+    QHash<qlonglong,QString> candidates;
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( QString("select _id from LexicalEntry where _id in "
+              "( select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%%1%' union "
+                 " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' );").arg( bit.text() ).arg(bit.writingSystem().id()) );
+
+    if( q.exec() )
+    {
+        while( q.next() )
+        {
+            qlonglong lexicalEntryId = q.value(0).toLongLong();
+            candidates.insert( lexicalEntryId , lexicalEntrySummary(lexicalEntryId) );
+        }
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::searchLexicalEntries" << q.lastError().text() << q.executedQuery();
+    }
+    return candidates;
+}
+
+QString DatabaseAdapter::lexicalEntrySummary( qlonglong lexicalEntryId ) const
+{
+    QStringList items;
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select Form from LexicalEntryGloss where LexicalEntryId=:LexicalEntryId;");
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    if( q.exec() )
+    {
+        while( q.next() )
+            items << q.value(0).toString();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::lexicalEntrySummary" << q.lastError().text() << q.executedQuery() << lexicalEntryId;
+    }
+
+    q.prepare("select Form from LexicalEntryCitationForm where LexicalEntryId=:LexicalEntryId;");
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    if( q.exec() )
+    {
+        while( q.next() )
+            items << q.value(0).toString();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::LexicalEntryCitationForm" << q.lastError().text() << q.executedQuery() << lexicalEntryId;
+    }
+
+    return items.join(", ");
+}
+
 qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);
