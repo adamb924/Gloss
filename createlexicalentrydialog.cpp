@@ -59,9 +59,7 @@ void CreateLexicalEntryDialog::fillData()
         LingEdit *edit = new LingEdit( TextBit("", ws) );
         ui->citationFormLayout->addWidget(edit);
         mCitationFormEdits << edit;
-//        if( mAllomorph->isStem() && mGlossItem->textForms()->contains(ws) )
-//            edit->setText( mGlossItem->textForms()->value(ws).text() );
-//        else
+
         if ( ws == mAllomorph->writingSystem()  )
             edit->setText( mAllomorph->text() );
         else if ( mIsMonomorphemic )

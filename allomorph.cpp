@@ -16,7 +16,6 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit)
     mId = id;
     mTextBit = bit;
     setTypeFromString(mTextBit.text());
-    mTextBit.setText( stripPunctuation( mTextBit.text() ) );
 }
 
 Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses )
@@ -25,7 +24,6 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
     mId = id;
     mTextBit = bit;
     setTypeFromString(mTextBit.text());
-    mTextBit.setText( stripPunctuation( mTextBit.text() ) );
     mGlosses = glosses;
 }
 
