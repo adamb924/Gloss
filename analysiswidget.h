@@ -26,12 +26,11 @@ signals:
     void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
 
 public slots:
-    void createInitializedLayout(const MorphologicalAnalysis & analysis);
+    void setupLayout();
 
 private:
     const GlossItem *mGlossItem;
 
-    void setupLayout();
 
     WritingSystem mWritingSystem;
 
@@ -39,7 +38,9 @@ private:
 
     QVBoxLayout *mLayout;
 
+    void createInitializedLayout(const MorphologicalAnalysis & analysis);
     void createUninitializedLayout();
+
     void clearWidgetsFromLayout();
 
 protected:

@@ -15,14 +15,15 @@ AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem &
     mGlossItem = glossItem;
     mWritingSystem = analysisWs;
     mDbAdapter = dbAdapter;
+
+    mLayout = new QVBoxLayout;
+    setLayout(mLayout);
+
     setupLayout();
 }
 
 void AnalysisWidget::setupLayout()
 {
-    mLayout = new QVBoxLayout;
-    setLayout(mLayout);
-
     if( mGlossItem->morphologicalAnalysis(mWritingSystem).isEmpty() )
         createUninitializedLayout();
     else
