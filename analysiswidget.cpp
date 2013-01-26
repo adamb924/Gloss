@@ -10,7 +10,7 @@
 #include "immutablelabel.h"
 
 AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent) :
-    QWidget(parent)
+        QWidget(parent)
 {
     mGlossItem = glossItem;
     mWritingSystem = analysisWs;
@@ -85,25 +85,51 @@ void AnalysisWidget::enterAnalysis()
 
 void AnalysisWidget::createMonomorphemicLexicalEntry()
 {
+    qlonglong lexicalEntryId;
+
+    lexicalEntryId = selectCandidateLexicalEntry();
+
     TextBit textForm = mGlossItem->textForms()->value(mWritingSystem);
     Allomorph allomorph( -1, textForm );
-    CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mDbAdapter, this);
-    if( dialog.exec() == QDialog::Accepted )
+    if( lexicalEntryId == -1 )
     {
-        qlonglong lexicalEntryId = dialog.id();
-        if( lexicalEntryId != -1 )
-        {
-            qlonglong allomorphId = mDbAdapter->addAllomorph( textForm , lexicalEntryId );
-            allomorph = mDbAdapter->allomorphFromId(allomorphId);
-
-            MorphologicalAnalysis analysis( mGlossItem->textForms()->value(mWritingSystem) );
-            analysis.addAllomorph( allomorph );
-            mDbAdapter->setMorphologicalAnalysis( textForm.id(), analysis );
-
-            createInitializedLayout( analysis );
-            emit morphologicalAnalysisChanged( analysis );
-        }
+        CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mDbAdapter, this);
+        if( dialog.exec() == QDialog::Accepted )
+            lexicalEntryId = dialog.id();
     }
+
+    if( lexicalEntryId != -1 )
+    {
+        qlonglong allomorphId = mDbAdapter->addAllomorph( textForm , lexicalEntryId );
+        allomorph = mDbAdapter->allomorphFromId(allomorphId);
+
+        MorphologicalAnalysis analysis( mGlossItem->textForms()->value(mWritingSystem) );
+        analysis.addAllomorph( allomorph );
+        mDbAdapter->setMorphologicalAnalysis( textForm.id(), analysis );
+
+        createInitializedLayout( analysis );
+        emit morphologicalAnalysisChanged( analysis );
+    }
+}
+
+qlonglong AnalysisWidget::selectCandidateLexicalEntry()
+{
+    QStringList candidateItems;
+    QList<qlonglong> indices;
+    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mGlossItem->textForms()->value(mWritingSystem) );
+    QHashIterator<qlonglong,QString> iter(candidates);
+    while(iter.hasNext())
+    {
+        iter.next();
+        candidateItems << iter.value();
+        indices << iter.key();
+    }
+    bool ok;
+    QString choice = QInputDialog::getItem(this, tr("Select candidate"), tr("Select an existing lexical item, or cancel to create a new one."), candidateItems, 0, false, &ok );
+    if( ok )
+        return indices.at( candidateItems.indexOf( choice ) );
+    else
+        return -1;
 }
 
 void AnalysisWidget::clearWidgetsFromLayout()

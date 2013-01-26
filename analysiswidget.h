@@ -43,6 +43,8 @@ private:
 
     void clearWidgetsFromLayout();
 
+    qlonglong selectCandidateLexicalEntry();
+
 protected:
     void contextMenuEvent ( QContextMenuEvent * event );
 
