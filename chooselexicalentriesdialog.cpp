@@ -38,6 +38,7 @@ void ChooseLexicalEntriesDialog::commitChangesToDatabase()
         mAnalysis[i]->setId(allomorphId);
         mAnalysis[i]->setGlosses( mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ) );
     }
+    mDbAdapter->setMorphologicalAnalysis( mParseString.id() , mAnalysis );
 }
 
 void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
