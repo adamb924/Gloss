@@ -14,9 +14,9 @@
 
 #include "textbit.h"
 #include "interlinearitemtype.h"
+#include "allomorph.h"
 
 class WritingSystem;
-class Allomorph;
 class MorphologicalAnalysis;
 
 class DatabaseAdapter : public QObject
@@ -160,7 +160,7 @@ public:
     //! \brief Returns a one-line summary of the lexical entry
     QString lexicalEntrySummary( qlonglong lexicalEntryId ) const;
 
-    qlonglong addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const;
+    qlonglong addLexicalEntry( const QString & grammaticalInfo, Allomorph::Type type, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const;
     qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId ) const;
 
     //! \brief Adds the specified morphological analysis to the database. Any existing morphological analysis associated with the text form is deleted. The

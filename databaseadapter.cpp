@@ -811,7 +811,7 @@ QString DatabaseAdapter::lexicalEntrySummary( qlonglong lexicalEntryId ) const
     return items.join(", ");
 }
 
-qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const
+qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, Allomorph::Type type, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);
     db.transaction();
@@ -823,6 +823,7 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, con
     {
         q.prepare("insert into LexicalEntry (GrammaticalInformation) values (:GrammaticalInformation);");
         q.bindValue(":GrammaticalInformation",grammaticalInfo);
+        q.bindValue(":Type", Allomorph::getTypeString(type) );
 
         if(!q.exec())
             throw -1;

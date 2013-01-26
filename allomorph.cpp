@@ -1,6 +1,7 @@
 #include "allomorph.h"
 
 #include <QRegExp>
+#include <QtDebug>
 
 Allomorph::Allomorph()
 {
@@ -14,7 +15,8 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit)
     mType = Null;
     mId = id;
     mTextBit = bit;
-    setTypeFromString(bit.text());
+    setTypeFromString(mTextBit.text());
+    mTextBit.setText( stripPunctuation( mTextBit.text() ) );
 }
 
 Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses )
@@ -22,7 +24,8 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
     mType = Null;
     mId = id;
     mTextBit = bit;
-    setTypeFromString(bit.text());
+    setTypeFromString(mTextBit.text());
+    mTextBit.setText( stripPunctuation( mTextBit.text() ) );
     mGlosses = glosses;
 }
 
@@ -79,6 +82,46 @@ void Allomorph::setTypeFromString(const QString & string)
         mType = Allomorph::Stem;
 }
 
+
+QString Allomorph::typeFormattedString() const
+{
+    return mTextBit.text();
+//    switch(mType)
+//    {
+//    case Stem:
+//        return mTextBit.text();
+//        break;
+//    case Prefix:
+//        return "-" + mTextBit.text();
+//        break;
+//    case Suffix:
+//        return mTextBit.text() + "-";
+//        break;
+//    case Infix:
+//        return "-" + mTextBit.text() + "-";
+//        break;
+//    case BoundStem:
+//        return "*" + mTextBit.text();
+//        break;
+//    case Proclitic:
+//        return "=" + mTextBit.text();
+//        break;
+//    case Enclitic:
+//        return mTextBit.text() + "=";
+//        break;
+//    case Simulfix:
+//        return "=" + mTextBit.text() + "=";
+//        break;
+//    case Suprafix:
+//        return "~" + mTextBit.text() + "~";
+//        break;
+//    case Null:
+//        return mTextBit.text();
+//        break;
+//    }
+//    return mTextBit.text();
+}
+
 Allomorph::Type Allomorph::type() const
 {
     return mType;
@@ -91,7 +134,7 @@ QString Allomorph::typeString() const
 
 QString Allomorph::text() const
 {
-    return mTextBit.text();
+    return stripPunctuation(mTextBit.text());
 }
 
 TextBit Allomorph::textBit() const
@@ -132,4 +175,20 @@ QList<WritingSystem> Allomorph::glossLanguages() const
 bool Allomorph::isStem() const
 {
     return mType == Allomorph::Stem || mType == Allomorph::BoundStem;
+}
+
+bool Allomorph::isClitic() const
+{
+    return mType == Allomorph::Proclitic || mType == Allomorph::Enclitic;
+}
+
+QString Allomorph::stripPunctuation( const QString & string ) const
+{
+    QString s = string;
+    s.replace("=","");
+    s.replace("~","");
+    s.replace("=","");
+    s.replace("*","");
+    s.replace("-","");
+    return s;
 }

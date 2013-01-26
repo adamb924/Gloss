@@ -46,16 +46,34 @@ QString MorphologicalAnalysis::baselineSummary() const
 {
     QString summary;
     for(int i=0; i<mAllomorphs.count(); i++)
+    {
+        if( i > 0 )
+        {
+            if( mAllomorphs.at(i).isClitic() )
+                summary += "=";
+            else
+                summary += "-";
+        }
         summary += mAllomorphs.at(i).text();
+    }
     return summary;
 }
 
 QString MorphologicalAnalysis::glossSummary(const WritingSystem & ws) const
 {
-    QStringList summary;
+    QString summary;
     for(int i=0; i<mAllomorphs.count(); i++)
-        summary << mAllomorphs.at(i).gloss(ws).text();
-    return summary.join("-");
+    {
+        if( i > 0 )
+        {
+            if( mAllomorphs.at(i).isClitic() )
+                summary += "=";
+            else
+                summary += "-";
+        }
+        summary += mAllomorphs.at(i).gloss(ws).text();
+    }
+    return summary;
 }
 
 AllomorphIterator MorphologicalAnalysis::allomorphIterator() const

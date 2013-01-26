@@ -44,7 +44,7 @@ void LexicalEntrySearchDialog::fillWritingSystems()
 
 void LexicalEntrySearchDialog::fillCandidates( const QString & searchString )
 {
-    if( searchString.length() < 3 )
+    if( searchString.length() < 1 )
     {
         ui->listView->setEnabled(false);
         return;

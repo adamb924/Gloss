@@ -17,6 +17,7 @@ AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem &
     mDbAdapter = dbAdapter;
 
     mLayout = new QVBoxLayout;
+    mLayout->setSpacing(0);
     setLayout(mLayout);
 
     setupLayout();
@@ -34,7 +35,7 @@ void AnalysisWidget::createUninitializedLayout()
 {
     clearWidgetsFromLayout();
 
-    QPushButton *analyze = new QPushButton(tr("Analyze"), this);
+    QPushButton *analyze = new QPushButton(tr("Polymorphemic"), this);
     analyze->setFlat(true);
     analyze->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; }");
     mLayout->addWidget(analyze);
@@ -62,7 +63,7 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analy
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
-    menu.addAction(tr("Analyze"), this, SLOT(enterAnalysis()));
+    menu.addAction(tr("Polymorphemic"), this, SLOT(enterAnalysis()));
     menu.addAction(tr("Monomorphemic"), this, SLOT(createMonomorphemicLexicalEntry()));
     menu.exec(event->globalPos());
 }

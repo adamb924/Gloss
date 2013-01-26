@@ -82,7 +82,7 @@ void CreateLexicalEntryDialog::createLexicalEntry()
     for(int i=0; i<mCitationFormEdits.count(); i++)
         citationForms << mCitationFormEdits.at(i)->textBit();
 
-    mId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), glosses, citationForms, grammaticalTags() );
+    mId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), mAllomorph->type(), glosses, citationForms, grammaticalTags() );
 }
 
 TextBitHash CreateLexicalEntryDialog::glosses() const

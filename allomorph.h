@@ -20,10 +20,13 @@ public:
     QString typeString() const;
 
     QString text() const;
+    QString typeFormattedString() const;
+
     TextBit textBit() const;
     WritingSystem writingSystem() const;
 
     bool isStem() const;
+    bool isClitic() const;
 
     TextBit gloss(const WritingSystem & ws) const;
     void setGlosses(const TextBitHash & glosses);
@@ -62,6 +65,7 @@ public:
 
 private:
     void setTypeFromString( const QString & string );
+    QString stripPunctuation( const QString & string ) const;
 
     Type mType;
     TextBit mTextBit;
