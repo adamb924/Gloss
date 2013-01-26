@@ -552,7 +552,6 @@ bool Text::serializeMorphemes(GlossItem *glossItem, QXmlStreamWriter *stream) co
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
     foreach( WritingSystem ws, analysisLanguages )
     {
-        // TODO optimize this to use the methods for accessing the morphological analysis instead
         const MorphologicalAnalysis analysis = glossItem->morphologicalAnalysis( ws );
         if( ! analysis.isEmpty() )
         {
@@ -571,6 +570,7 @@ bool Text::serializeMorphemes(GlossItem *glossItem, QXmlStreamWriter *stream) co
 bool Text::serializeAllomorph(const Allomorph & allomorph, QXmlStreamWriter *stream) const
 {
     stream->writeStartElement("morph");
+
     stream->writeAttribute("type", allomorph.typeString());
     stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(allomorph.id()) );
 
