@@ -7,6 +7,7 @@
 class DatabaseAdapter;
 class GlossItem;
 class LingEdit;
+class Allomorph;
 
 #include "allomorph.h"
 
@@ -19,7 +20,7 @@ class CreateLexicalEntryDialog : public QDialog
     Q_OBJECT
 
 public:
-    CreateLexicalEntryDialog(const TextBit & bit, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     ~CreateLexicalEntryDialog();
 
     qlonglong id() const;
@@ -29,8 +30,8 @@ public:
 private:
     Ui::CreateLexicalEntryDialog *ui;
     const DatabaseAdapter *mDbAdapter;
-    TextBit mTextBit;
     const GlossItem *mGlossItem;
+    const Allomorph * mAllomorph;
     bool mIsMonomorphemic;
 
     qlonglong mId;

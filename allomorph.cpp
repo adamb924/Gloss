@@ -128,3 +128,8 @@ QList<WritingSystem> Allomorph::glossLanguages() const
 {
     return mGlosses.keys();
 }
+
+bool Allomorph::isStem() const
+{
+    return mType == Allomorph::Stem || mType == Allomorph::BoundStem;
+}

@@ -10,12 +10,12 @@
 #include "glossitem.h"
 #include "textbit.h"
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & bit, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog)
 {
     mDbAdapter = dbAdapter;
-    mTextBit = bit;
+    mAllomorph = allomorph;
     mGlossItem = glossItem;
     mIsMonomorphemic = isMonomorphemic;
 
@@ -49,32 +49,23 @@ void CreateLexicalEntryDialog::fillData()
         LingEdit *edit = new LingEdit( TextBit("", ws) );
         ui->glossLayout->addWidget(edit);
         mGlossEdits << edit;
-        if( mGlossItem->glosses()->contains(ws) )
+        if( mAllomorph->isStem() && mGlossItem->glosses()->contains(ws) )
             edit->setText( mGlossItem->glosses()->value(ws).text() );
     }
 
-    if( mIsMonomorphemic )
+    QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationForms();
+    foreach( WritingSystem ws , citationForms )
     {
-        QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationForms();
-        foreach( WritingSystem ws , citationForms )
-        {
-            LingEdit *edit = new LingEdit( TextBit("", ws) );
-            ui->citationFormLayout->addWidget(edit);
-            mCitationFormEdits << edit;
+        LingEdit *edit = new LingEdit( TextBit("", ws) );
+        ui->citationFormLayout->addWidget(edit);
+        mCitationFormEdits << edit;
+//        if( mAllomorph->isStem() && mGlossItem->textForms()->contains(ws) )
+//            edit->setText( mGlossItem->textForms()->value(ws).text() );
+//        else
+        if ( ws == mAllomorph->writingSystem()  )
+            edit->setText( mAllomorph->text() );
+        else if ( mIsMonomorphemic )
             edit->setText( mGlossItem->textForms()->value(ws).text() );
-        }
-    }
-    else
-    {
-        QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationForms();
-        foreach( WritingSystem ws , citationForms )
-        {
-            LingEdit *edit = new LingEdit( TextBit("", ws) );
-            ui->citationFormLayout->addWidget(edit);
-            mCitationFormEdits << edit;
-            if( ws == mTextBit.writingSystem() )
-                edit->setText( mTextBit.text() );
-        }
     }
 
     // TODO read the grammatical tags from the database

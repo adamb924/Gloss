@@ -23,6 +23,8 @@ public:
     TextBit textBit() const;
     WritingSystem writingSystem() const;
 
+    bool isStem() const;
+
     TextBit gloss(const WritingSystem & ws) const;
     void setGlosses(const TextBitHash & glosses);
     QList<WritingSystem> glossLanguages() const;

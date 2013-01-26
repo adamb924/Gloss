@@ -85,14 +85,15 @@ void AnalysisWidget::enterAnalysis()
 void AnalysisWidget::createMonomorphemicLexicalEntry()
 {
     TextBit textForm = mGlossItem->textForms()->value(mWritingSystem);
-    CreateLexicalEntryDialog dialog( textForm, true, mGlossItem, mDbAdapter, this);
+    Allomorph allomorph( -1, textForm );
+    CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mDbAdapter, this);
     if( dialog.exec() == QDialog::Accepted )
     {
         qlonglong lexicalEntryId = dialog.id();
         if( lexicalEntryId != -1 )
         {
             qlonglong allomorphId = mDbAdapter->addAllomorph( textForm , lexicalEntryId );
-            Allomorph allomorph = mDbAdapter->allomorphFromId(allomorphId);
+            allomorph = mDbAdapter->allomorphFromId(allomorphId);
 
             MorphologicalAnalysis analysis( mGlossItem->textForms()->value(mWritingSystem) );
             analysis.addAllomorph( allomorph );

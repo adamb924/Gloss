@@ -44,7 +44,7 @@ void LexicalEntryForm::fillData()
 
 void LexicalEntryForm::newLexicalEntry()
 {
-    CreateLexicalEntryDialog dialog(mAllomorph.textBit(), false, mGlossItem, mDbAdapter, this);
+    CreateLexicalEntryDialog dialog(&mAllomorph, false, mGlossItem, mDbAdapter, this);
     if( dialog.exec() == QDialog::Accepted )
     {
         if( dialog.id() != -1 )
