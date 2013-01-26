@@ -35,18 +35,18 @@ void AnalysisWidget::createUninitializedLayout()
 {
     clearWidgetsFromLayout();
 
-    QPushButton *analyze = new QPushButton(tr("Polymorphemic"), this);
-    analyze->setFlat(true);
-    analyze->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; }");
-    mLayout->addWidget(analyze);
-    connect(analyze, SIGNAL(clicked()), this, SLOT(enterAnalysis()));
-
     QPushButton *createMle = new QPushButton(tr("Monomorphemic"), this);
     createMle->setToolTip(tr("Create monomorphemic lexical entry"));
     createMle->setFlat(true);
-    createMle->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; }");
+    createMle->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; padding-bottom: 6px;  padding-top: 6px; }");
     mLayout->addWidget(createMle);
     connect(createMle, SIGNAL(clicked()), this, SLOT(createMonomorphemicLexicalEntry()));
+
+    QPushButton *analyze = new QPushButton(tr("Polymorphemic"), this);
+    analyze->setFlat(true);
+    analyze->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; padding-bottom: 6px; padding-top: 6px; }");
+    mLayout->addWidget(analyze);
+    connect(analyze, SIGNAL(clicked()), this, SLOT(enterAnalysis()));
 }
 
 void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analysis)
@@ -63,8 +63,8 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analy
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
-    menu.addAction(tr("Polymorphemic"), this, SLOT(enterAnalysis()));
     menu.addAction(tr("Monomorphemic"), this, SLOT(createMonomorphemicLexicalEntry()));
+    menu.addAction(tr("Polymorphemic"), this, SLOT(enterAnalysis()));
     menu.exec(event->globalPos());
 }
 
