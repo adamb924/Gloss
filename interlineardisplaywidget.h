@@ -41,6 +41,7 @@ signals:
 
 public slots:
     void scrollToLine(int line);
+    void requestLineRefresh( int line );
 
 protected:
     void scrollContentsBy ( int dx, int dy );
@@ -87,6 +88,7 @@ protected:
 
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
 
+    QSet<int> mLineRefreshRequests;
 
     //! \brief Add the phrasal gloss lines for phrase \a i
     void addPhrasalGlossLines( int i );

@@ -12,8 +12,6 @@ Phrase::Phrase(Text *text, Project *project)
     mProject = project;
     mConcordance = mProject->concordance();
     mDbAdapter = mProject->dbAdapter();
-    mRequestGlossRefresh = true;
-    mRequestAnalysisRefresh = true;
 }
 
 Phrase::~Phrase()
@@ -49,26 +47,6 @@ QString Phrase::equivalentBaselineLineText() const
     return text.trimmed();
 }
 
-bool Phrase::guiRefreshRequest() const
-{
-    return mRequestGlossRefresh;
-}
-
-bool Phrase::analysisRefreshRequest() const
-{
-    return mRequestAnalysisRefresh;
-}
-
-void Phrase::setAnalysisRefreshRequest(bool needed)
-{
-    mRequestAnalysisRefresh = needed;
-}
-
-void Phrase::setGuiRefreshRequest(bool needed)
-{
-    mRequestGlossRefresh = needed;
-}
-
 void Phrase::setAnnotation( const Annotation & annotation )
 {
     mAnnotation = annotation;
@@ -90,10 +68,10 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
         mGlossItems.at(index)->deleteLater();
         mGlossItems.replace(index, two);
         mGlossItems.insert( index , one );
-        mRequestGlossRefresh = true;
 
         mConcordance->removeGlossItemFromConcordance(glossItem);
 
+        emit requestGuiRefresh(this);
         emit phraseChanged();
     }
 }
@@ -114,7 +92,7 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
     mConcordance->removeGlossItemFromConcordance( toRemove );
     mConcordance->removeGlossItemFromConcordance( glossItem );
 
-    mRequestGlossRefresh = true;
+    emit requestGuiRefresh(this);
     emit phraseChanged();
 }
 
@@ -135,7 +113,7 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     mConcordance->removeGlossItemFromConcordance( toRemove );
     mConcordance->removeGlossItemFromConcordance( glossItem );
 
-    mRequestGlossRefresh = true;
+    emit requestGuiRefresh(this);
     emit phraseChanged();
 }
 
@@ -157,7 +135,8 @@ void Phrase::removeGlossItem( GlossItem *glossItem )
         mGlossItems.removeAt(index);
         mConcordance->removeGlossItemFromConcordance( toRemove );
         delete toRemove;
-        mRequestGlossRefresh = true;
+
+        emit requestGuiRefresh(this);
         emit phraseChanged();
     }
 }

@@ -39,6 +39,10 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     connect( text, SIGNAL(baselineTextChanged(QString)), ui->baselineTextEdit, SLOT(setPlainText(QString)) );
     connect( text, SIGNAL(glossItemsChanged()), mAnalysis, SLOT(setLayoutFromText()));
 
+    // line update connections
+    connect( text, SIGNAL(phraseRefreshNeeded(int)), mGloss, SLOT(requestLineRefresh(int)) );
+    connect( text, SIGNAL(phraseRefreshNeeded(int)), mAnalysis, SLOT(requestLineRefresh(int)));
+
     setWindowTitle(mText->name());
 }
 

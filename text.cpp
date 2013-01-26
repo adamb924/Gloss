@@ -160,8 +160,9 @@ void Text::setGlossItemsFromBaseline()
         for(int i=0; i<lines.count(); i++)
         {
             progress.setValue(i);
-            mPhrases.append( new Phrase(this, mProject) );
+            mPhrases.append( new Phrase( this, mProject) );
             connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
+            connect( mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), this, SLOT(requestGuiRefresh(Phrase*)));
 
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )
@@ -183,8 +184,7 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
     for(int i=0; i<words.count(); i++)
         phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
 
-    phrase->setGuiRefreshRequest(true);
-    phrase->setAnalysisRefreshRequest(true);
+    emit phraseRefreshNeeded( mPhrases.indexOf(phrase) );
 }
 
 bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
@@ -285,6 +285,7 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 inPhrase = true;
                 mPhrases.append( new Phrase(this, mProject) );
                 connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
+                connect( mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), this, SLOT(requestGuiRefresh(Phrase*)));
 
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )
@@ -829,4 +830,11 @@ void Text::setBaselineFromGlossItems()
 void Text::markAsChanged()
 {
     mChanged = true;
+}
+
+void Text::requestGuiRefresh( Phrase * phrase )
+{
+    int lineNumber = mPhrases.indexOf(phrase);
+    if( lineNumber != -1 )
+        emit phraseRefreshNeeded( lineNumber );
 }

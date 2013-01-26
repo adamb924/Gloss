@@ -35,16 +35,6 @@ public:
     //! \brief Returns a text string that is the
     QString equivalentBaselineLineText() const;
 
-    //! \brief Returns true if the Phrase thinks that the GUI should update itself.
-    bool guiRefreshRequest() const;
-
-    bool analysisRefreshRequest() const;
-
-    void setAnalysisRefreshRequest(bool needed);
-
-    //! \brief Set whether the Phrase should request a GUI update or not.
-    void setGuiRefreshRequest(bool needed);
-
     void setAnnotation( const Annotation & annotation );
     Annotation* annotation();
 
@@ -61,6 +51,7 @@ public:
 signals:
     void phraseChanged();
     void requestRemovePhrase(Phrase * phrase);
+    void requestGuiRefresh(Phrase * phrase);
 
 public slots:
     //! \brief Adds or updates the phrase-level gloss to \a bit. The gloss to be added or updated is indicated by the WritingSystem of \bit.
@@ -79,8 +70,6 @@ private:
     Concordance *mConcordance;
     Annotation mAnnotation;
     TextBitHash mGlosses;
-    bool mRequestGlossRefresh;
-    bool mRequestAnalysisRefresh;
 };
 
 #endif // PHRASE_H

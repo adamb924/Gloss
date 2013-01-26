@@ -141,10 +141,14 @@ private:
     //! \brief Sets the text from the given file. Returns false if this fails.
     Text::FlexTextReadResult readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 
+private slots:
+    void requestGuiRefresh( Phrase * phrase );
+
 signals:
     void baselineTextChanged(const QString & baselineText);
     void glossItemsChanged();
     void idChanged(TextBit *b, qlonglong oldId);
+    void phraseRefreshNeeded( int lineNumber );
 };
 
 #endif // TEXT_H

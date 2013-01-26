@@ -213,7 +213,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
             flowLayout = addLine(lineIndex);
             addPhrasalGlossLines(lineIndex);
         }
-        else if( mText->phrases()->at(lineIndex)->guiRefreshRequest() || mText->phrases()->at(lineIndex)->analysisRefreshRequest() )
+        else if( mLineRefreshRequests.contains( lineIndex ) )
         {
             flowLayout = mLineLayouts.value(lineIndex);
             clearWidgetsFromLine(lineIndex);
@@ -229,11 +229,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
             addWordWidgets(lineIndex, flowLayout);
         }
 
-        // TODO this feels like a hack
-        if( mInterlinearDisplayLines.first().type() == InterlinearItemType::ImmutableText )
-            mText->phrases()->at(lineIndex)->setGuiRefreshRequest(false);
-        else
-            mText->phrases()->at(lineIndex)->setAnalysisRefreshRequest(false);
+        mLineRefreshRequests.clear();
     }
     progress.setValue(mLines.count());
 }
@@ -265,4 +261,9 @@ void InterlinearDisplayWidget::setLinesToDefault()
     mLines.clear();
     for(int i=0; i<mText->phrases()->count(); i++)
         mLines << i;
+}
+
+void InterlinearDisplayWidget::requestLineRefresh( int line )
+{
+    mLineRefreshRequests.insert( line );
 }
