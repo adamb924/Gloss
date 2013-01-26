@@ -555,7 +555,7 @@ void MainWindow::createSearchResultDock(const QString & query, const QString & r
     QDockWidget *dock = new QDockWidget(tr("Search Results"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dock->setWidget(intermediateWidget);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
 }
 
 void MainWindow::searchResultSelected( const QModelIndex & index )
