@@ -8,6 +8,7 @@
 #include "createlexicalentrydialog.h"
 #include "databaseadapter.h"
 #include "immutablelabel.h"
+#include "lexicalentrysearchdialog.h"
 
 AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent) :
         QWidget(parent)
@@ -28,7 +29,7 @@ void AnalysisWidget::setupLayout()
     if( mGlossItem->morphologicalAnalysis(mWritingSystem).isEmpty() )
         createUninitializedLayout();
     else
-        createInitializedLayout( mGlossItem->morphologicalAnalysis(mWritingSystem) );
+        createInitializedLayout( textBit() );
 }
 
 void AnalysisWidget::createUninitializedLayout()
@@ -70,11 +71,10 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 
 void AnalysisWidget::enterAnalysis()
 {
-    TextBit textForm = mGlossItem->textForms()->value(mWritingSystem);
-    CreateAnalysisDialog dialog( textForm );
+    CreateAnalysisDialog dialog( textBit() );
     if( dialog.exec() == QDialog::Accepted )
     {
-        ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), textForm.writingSystem(), textForm.id() ), mGlossItem,  mDbAdapter , this);
+        ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), textBit().writingSystem(), textBit().id() ), mGlossItem,  mDbAdapter , this);
         if( leDialog.exec() == QDialog::Accepted )
         {
             createInitializedLayout( leDialog.morphologicalAnalysis() );
@@ -89,23 +89,23 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
 
     lexicalEntryId = selectCandidateLexicalEntry();
 
-    TextBit textForm = mGlossItem->textForms()->value(mWritingSystem);
-    Allomorph allomorph( -1, textForm );
+    Allomorph allomorph( -1, textBit() );
     if( lexicalEntryId == -1 )
     {
         CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mDbAdapter, this);
+        connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
         if( dialog.exec() == QDialog::Accepted )
             lexicalEntryId = dialog.id();
     }
 
     if( lexicalEntryId != -1 )
     {
-        qlonglong allomorphId = mDbAdapter->addAllomorph( textForm , lexicalEntryId );
+        qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
         allomorph = mDbAdapter->allomorphFromId(allomorphId);
 
-        MorphologicalAnalysis analysis( mGlossItem->textForms()->value(mWritingSystem) );
+        MorphologicalAnalysis analysis( textBit() );
         analysis.addAllomorph( allomorph );
-        mDbAdapter->setMorphologicalAnalysis( textForm.id(), analysis );
+        mDbAdapter->setMorphologicalAnalysis( textBit().id(), analysis );
 
         createInitializedLayout( analysis );
         emit morphologicalAnalysisChanged( analysis );
@@ -116,7 +116,7 @@ qlonglong AnalysisWidget::selectCandidateLexicalEntry()
 {
     QStringList candidateItems;
     QList<qlonglong> indices;
-    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mGlossItem->textForms()->value(mWritingSystem) );
+    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( textBit() );
 
     if(candidates.isEmpty())
         return -1;
@@ -145,5 +145,21 @@ void AnalysisWidget::clearWidgetsFromLayout()
     {
         item->widget()->deleteLater();;
         delete item;
+    }
+}
+
+void AnalysisWidget::linkToOther()
+{
+    LexicalEntrySearchDialog dialog(mDbAdapter, this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        qlonglong lexicalEntryId = dialog.lexicalEntryId();
+        if( lexicalEntryId != -1 )
+        {
+            qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
+            MorphologicalAnalysis monomorphemic( textBit() );
+            monomorphemic.addAllomorph( mDbAdapter->allomorphFromId(allomorphId) );
+            emit morphologicalAnalysisChanged( monomorphemic );
+        }
     }
 }

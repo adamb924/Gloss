@@ -28,6 +28,9 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, 
 
     connect(this, SIGNAL(accepted()), this, SLOT(createLexicalEntry()));
 
+    connect( ui->linkToOther, SIGNAL(clicked()), this, SLOT(reject()) );
+    connect( ui->linkToOther, SIGNAL(clicked()), this, SIGNAL(linkToOther()) );
+
     setWindowTitle(tr("Create lexical entry"));
 }
 

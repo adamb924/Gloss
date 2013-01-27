@@ -55,6 +55,7 @@ void LexicalEntryForm::fillTypes()
 void LexicalEntryForm::newLexicalEntry()
 {
     CreateLexicalEntryDialog dialog(&mAllomorph, false, mGlossItem, mDbAdapter, this);
+    connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
     if( dialog.exec() == QDialog::Accepted )
     {
         if( dialog.id() != -1 )

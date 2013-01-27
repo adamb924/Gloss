@@ -27,6 +27,9 @@ public:
     TextBitHash glosses() const;
     QStringList grammaticalTags() const;
 
+signals:
+    void linkToOther();
+
 private:
     Ui::CreateLexicalEntryDialog *ui;
     const DatabaseAdapter *mDbAdapter;

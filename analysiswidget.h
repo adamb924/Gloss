@@ -9,7 +9,9 @@
 
 #include <QWidget>
 
-class GlossItem;
+#include "textbit.h"
+#include "glossitem.h"
+
 class DatabaseAdapter;
 class QVBoxLayout;
 class MorphologicalAnalysis;
@@ -45,12 +47,15 @@ private:
 
     qlonglong selectCandidateLexicalEntry();
 
+    inline TextBit textBit() const { return mGlossItem->textForms()->value(mWritingSystem); }
+
 protected:
     void contextMenuEvent ( QContextMenuEvent * event );
 
 private slots:
     void enterAnalysis();
     void createMonomorphemicLexicalEntry();
+    void linkToOther();
 };
 
 #endif // ANALYSISWIDGET_H
