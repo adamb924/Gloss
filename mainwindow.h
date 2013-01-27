@@ -43,6 +43,8 @@ private:
 
     void createSearchResultDock(const QString & query, const QString & reminder);
 
+    QStringList textsWithOpenWindows();
+
 public slots:
     void searchForInterpretationById(qlonglong id);
     void searchForTextFormById(qlonglong id);

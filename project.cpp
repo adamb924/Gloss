@@ -411,13 +411,14 @@ void Project::saveOpenTexts()
     }
 }
 
-void Project::closeOpenTexts()
+void Project::closeOpenTexts( const QStringList & except )
 {
     QHashIterator<QString,Text*> iter(mTexts);
     while(iter.hasNext())
     {
         iter.next();
-        closeText( iter.value() );
+        if( ! except.contains( iter.value()->name() ) )
+            closeText( iter.value() );
     }
     mTexts.clear();
 }

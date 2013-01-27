@@ -42,7 +42,7 @@ public:
 
     bool save();
     void saveOpenTexts();
-    void closeOpenTexts();
+    void closeOpenTexts( const QStringList & except );
 
     void saveAndCloseText(Text *text);
     void closeText(Text *text);

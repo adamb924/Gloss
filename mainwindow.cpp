@@ -905,7 +905,7 @@ void MainWindow::findUnapprovedLines()
 void MainWindow::closeOpenTexts()
 {
     mProject->saveOpenTexts();
-    mProject->closeOpenTexts();
+    mProject->closeOpenTexts( textsWithOpenWindows() );
 }
 
 void MainWindow::openTextLine()
@@ -920,4 +920,12 @@ void MainWindow::openTextLineWithContext()
     ChooseTextLineDialog dialog(mProject->textNames(), this);
     if( dialog.exec() == QDialog::Accepted )
         editLineWithContext( dialog.textName() , dialog.lineNumber() );
+}
+
+QStringList MainWindow::textsWithOpenWindows()
+{
+    QStringList textNames;
+    foreach( QMdiSubWindow * window , ui->mdiArea->subWindowList() )
+        textNames << window->windowTitle();
+    return textNames;
 }
