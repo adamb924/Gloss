@@ -191,6 +191,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     QMenu menu(this);
 
     menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
+    menu.addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
     menu.addAction(tr("Change to two words"), this, SLOT(changeToTwoWords()));
     menu.addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
     menu.addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
@@ -605,6 +606,28 @@ void WordDisplayWidget::editBaselineText()
         {
             mGlossItem->resetBaselineText( dialog.textBit() );
         }
+    }
+}
+
+void WordDisplayWidget::editBaselineTextKeepAnnotations()
+{
+    TextBitHash textForms = *mGlossItem->textForms();
+    TextBitHash glosses = *mGlossItem->glosses();
+    editBaselineText();
+
+    TextBitHashIterator iter(textForms);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        if( iter.key() != mGlossItem->baselineWritingSystem() )
+            mGlossItem->setTextForm( iter.value() );
+    }
+
+    iter = TextBitHashIterator(glosses);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        mGlossItem->setGloss( iter.value() );
     }
 }
 

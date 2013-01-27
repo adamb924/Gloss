@@ -107,6 +107,7 @@ private slots:
     void displayDatabaseReport();
 
     void editBaselineText();
+    void editBaselineTextKeepAnnotations();
     void changeToTwoWords();
     void mergeWithNext();
     void mergeWithPrevious();
