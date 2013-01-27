@@ -823,7 +823,6 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, All
     {
         q.prepare("insert into LexicalEntry (GrammaticalInformation) values (:GrammaticalInformation);");
         q.bindValue(":GrammaticalInformation",grammaticalInfo);
-        q.bindValue(":Type", Allomorph::getTypeString(type) );
 
         if(!q.exec())
             throw -1;
