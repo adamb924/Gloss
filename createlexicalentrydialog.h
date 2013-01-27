@@ -23,7 +23,7 @@ public:
     CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     ~CreateLexicalEntryDialog();
 
-    qlonglong id() const;
+    qlonglong lexicalEntryId() const;
     TextBitHash glosses() const;
     QStringList grammaticalTags() const;
 

@@ -39,7 +39,7 @@ CreateLexicalEntryDialog::~CreateLexicalEntryDialog()
     delete ui;
 }
 
-qlonglong CreateLexicalEntryDialog::id() const
+qlonglong CreateLexicalEntryDialog::lexicalEntryId() const
 {
     return mId;
 }

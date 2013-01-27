@@ -38,7 +38,7 @@ private:
     const GlossItem *mGlossItem;
 
     void fillTypes();
-    void fillData();
+    void fillData(qlonglong currentLexicalEntryId = -1);
 
 signals:
     void entryChanged();

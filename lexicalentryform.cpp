@@ -2,7 +2,6 @@
 #include "ui_lexicalentryform.h"
 
 #include "databaseadapter.h"
-#include "genericlexicalentryform.h"
 #include "createlexicalentrydialog.h"
 #include "lexicalentrysearchdialog.h"
 
@@ -29,21 +28,27 @@ LexicalEntryForm::~LexicalEntryForm()
     delete ui;
 }
 
-void LexicalEntryForm::fillData()
+void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
 {
     ui->formLabel->setText( mAllomorph.text() );
     ui->morphemeType->setCurrentIndex( (int)mAllomorph.type() );
 
     ui->candidatesCombo->clear();
+
+    int currentIndex = 0;
+
     QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mAllomorph.textBit());
     QHashIterator<qlonglong,QString> iter(candidates);
 
     while(iter.hasNext())
     {
         iter.next();
+        if( currentLexicalEntryId == iter.key() )
+            currentIndex = ui->candidatesCombo->count();
         ui->candidatesCombo->addItem( iter.value(), iter.key() );
     }
     ui->candidatesCombo->setEnabled( ui->candidatesCombo->count() != 0 );
+    ui->candidatesCombo->setCurrentIndex(currentIndex);
 }
 
 void LexicalEntryForm::fillTypes()
@@ -58,10 +63,11 @@ void LexicalEntryForm::newLexicalEntry()
     connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
     if( dialog.exec() == QDialog::Accepted )
     {
-        if( dialog.id() != -1 )
+        qlonglong lexicalEntryId = dialog.lexicalEntryId();
+        if( lexicalEntryId != -1 )
         {
-            mDbAdapter->addAllomorph( mAllomorph.textBit() , dialog.id() );
-            fillData();
+            mDbAdapter->addAllomorph( mAllomorph.textBit() , lexicalEntryId );
+            fillData( lexicalEntryId );
             emit entryChanged();
         }
     }
@@ -76,7 +82,7 @@ void LexicalEntryForm::linkToOther()
         if( lexicalEntryId != -1 )
         {
             mDbAdapter->addAllomorph( mAllomorph.textBit() , lexicalEntryId );
-            fillData();
+            fillData(lexicalEntryId);
             emit entryChanged();
         }
     }
