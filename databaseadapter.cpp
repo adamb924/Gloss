@@ -1062,3 +1062,81 @@ QStringList DatabaseAdapter::grammaticalTagsForAllomorph(qlonglong allomorphId) 
         tags << q.value(0).toString();
     return tags;
 }
+
+bool DatabaseAdapter::textIndicesExist() const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    if( !q.exec("SELECT count(name) FROM sqlite_master WHERE type='table' AND (name='TextFormIndex' or name='GlossIndex' or name='InterpretationIndex' );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    return q.value(0).toInt() == 3;
+}
+
+void DatabaseAdapter::createTextIndices( const QStringList & filePaths ) const
+{
+    createTextFormIndex(filePaths);
+    createGlossIndex(filePaths);
+    createInterpretationIndex(filePaths);
+}
+
+void DatabaseAdapter::createTextFormIndex( const QStringList & filePaths ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    if( !q.exec("drop table if exists TextFormIndex;") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    if( !q.exec("create table if not exists TextFormIndex ( TextName text, LineNumber integer, Id integer );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+}
+
+void DatabaseAdapter::createGlossIndex( const QStringList & filePaths ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    if( !q.exec("drop table if exists GlossIndex;") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    if( !q.exec("create table if not exists GlossIndex ( TextName text, LineNumber integer, Id integer );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+}
+
+void DatabaseAdapter::createInterpretationIndex( const QStringList & filePaths ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    if( !q.exec("drop table if exists InterpretationIndex;") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    if( !q.exec("create table if not exists InterpretationIndex ( TextName text, LineNumber integer, Id integer );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+}
+
+QSqlQuery DatabaseAdapter::searchIndexForTextForm( qlonglong id ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select TextName,LineNumber from TextFormIndex where Id=:Id;" );
+    q.bindValue(":Id", id);
+    q.exec();
+    return q;
+}
+
+QSqlQuery DatabaseAdapter::searchIndexForGloss( qlonglong id ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select TextName,LineNumber from GlossIndex where Id=:Id;" );
+    q.bindValue(":Id", id);
+    q.exec();
+    return q;
+}
+
+QSqlQuery DatabaseAdapter::searchIndexForInterpretation( qlonglong id ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select TextName,LineNumber from InterpretationIndex where Id=:Id;" );
+    q.bindValue(":Id", id);
+    q.exec();
+    return q;
+}

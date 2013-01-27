@@ -83,6 +83,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen_text_line, SIGNAL(triggered()), this, SLOT(openTextLine()) );
     connect(ui->actionOpen_text_line_with_context, SIGNAL(triggered()), this, SLOT(openTextLineWithContext()));
 
+    ui->actionSearch_files_instead_of_index->setCheckable(true);
+    ui->actionSearch_files_instead_of_index->setChecked(false);
+
     setProjectActionsEnabled(false);
 
     addTableMenuItems();

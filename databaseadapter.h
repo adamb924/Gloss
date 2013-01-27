@@ -183,6 +183,14 @@ public:
 
     QStringList grammaticalTagsForAllomorph(qlonglong allomorphId) const;
 
+    bool textIndicesExist() const;
+    void createTextIndices( const QStringList & filePaths ) const;
+    void createTextFormIndex( const QStringList & filePaths ) const;
+    void createGlossIndex( const QStringList & filePaths ) const;
+    void createInterpretationIndex( const QStringList & filePaths ) const;
+    QSqlQuery searchIndexForTextForm( qlonglong id ) const;
+    QSqlQuery searchIndexForGloss( qlonglong id ) const;
+    QSqlQuery searchIndexForInterpretation( qlonglong id ) const;
 
 private:
     QString mFilename;

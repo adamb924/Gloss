@@ -58,7 +58,8 @@ SOURCES += main.cpp\
     flextextwriter.cpp \
     flextextreader.cpp \
     choosetextlinedialog.cpp \
-    lexicalentrysearchdialog.cpp
+    lexicalentrysearchdialog.cpp \
+    indexsearchmodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -107,7 +108,8 @@ HEADERS  += mainwindow.h \
     flextextwriter.h \
     flextextreader.h \
     choosetextlinedialog.h \
-    lexicalentrysearchdialog.h
+    lexicalentrysearchdialog.h \
+    indexsearchmodel.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

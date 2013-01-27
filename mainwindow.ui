@@ -93,6 +93,7 @@
     <addaction name="actionInterpreation_by_id"/>
     <addaction name="actionText_form_by_id"/>
     <addaction name="actionGloss_by_id"/>
+    <addaction name="actionSearch_files_instead_of_index"/>
     <addaction name="separator"/>
     <addaction name="actionUnapproved_lines"/>
     <addaction name="actionApproved_lines"/>
@@ -317,6 +318,21 @@
   <action name="actionOpen_text_line_with_context">
    <property name="text">
     <string>Open text line with context...</string>
+   </property>
+  </action>
+  <action name="actionSearch_FlexText_files">
+   <property name="text">
+    <string>Search FlexText files</string>
+   </property>
+  </action>
+  <action name="actionSearch_index">
+   <property name="text">
+    <string>Search index</string>
+   </property>
+  </action>
+  <action name="actionSearch_files_instead_of_index">
+   <property name="text">
+    <string>Search files instead of index</string>
    </property>
   </action>
  </widget>

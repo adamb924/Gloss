@@ -107,7 +107,6 @@ private slots:
     void closeOpenTexts();
     void openTextLine();
     void openTextLineWithContext();
-
 };
 
 #endif // MAINWINDOW_H
