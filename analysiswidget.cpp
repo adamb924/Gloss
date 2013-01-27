@@ -117,6 +117,10 @@ qlonglong AnalysisWidget::selectCandidateLexicalEntry()
     QStringList candidateItems;
     QList<qlonglong> indices;
     QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mGlossItem->textForms()->value(mWritingSystem) );
+
+    if(candidates.isEmpty())
+        return -1;
+
     QHashIterator<qlonglong,QString> iter(candidates);
     while(iter.hasNext())
     {
