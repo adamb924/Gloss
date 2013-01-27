@@ -42,7 +42,6 @@ SOURCES += main.cpp\
     createanalysisdialog.cpp \
     lexicalentryform.cpp \
     allomorph.cpp \
-    genericlexicalentryform.cpp \
     createlexicalentrydialog.cpp \
     chooselexicalentriesdialog.cpp \
     morphologicalanalysis.cpp \
@@ -92,7 +91,6 @@ HEADERS  += mainwindow.h \
     createanalysisdialog.h \
     lexicalentryform.h \
     allomorph.h \
-    genericlexicalentryform.h \
     createlexicalentrydialog.h \
     chooselexicalentriesdialog.h \
     morphologicalanalysis.h \
