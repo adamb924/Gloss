@@ -29,7 +29,7 @@ void AnalysisWidget::setupLayout()
     if( mGlossItem->morphologicalAnalysis(mWritingSystem).isEmpty() )
         createUninitializedLayout();
     else
-        createInitializedLayout( textBit() );
+        createInitializedLayout( mGlossItem->morphologicalAnalysis(mWritingSystem) );
 }
 
 void AnalysisWidget::createUninitializedLayout()
@@ -95,7 +95,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mDbAdapter, this);
         connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
         if( dialog.exec() == QDialog::Accepted )
-            lexicalEntryId = dialog.id();
+            lexicalEntryId = dialog.lexicalEntryId();
     }
 
     if( lexicalEntryId != -1 )
