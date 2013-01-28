@@ -70,6 +70,8 @@
     <property name="title">
      <string>Database</string>
     </property>
+    <addaction name="actionEdit_lexicon"/>
+    <addaction name="separator"/>
     <addaction name="actionRemove_unused_gloss_items"/>
     <addaction name="actionPerform_a_query"/>
     <addaction name="separator"/>
@@ -333,6 +335,11 @@
   <action name="actionSearch_files_instead_of_index">
    <property name="text">
     <string>Search files instead of index</string>
+   </property>
+  </action>
+  <action name="actionEdit_lexicon">
+   <property name="text">
+    <string>Edit lexicon</string>
    </property>
   </action>
  </widget>

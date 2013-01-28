@@ -360,6 +360,7 @@ Concordance* GlossItem::concordance()
 
 void GlossItem::updateGlossItemConcordance()
 {
+    // this is called five places
     mConcordance->removeGlossItemFromConcordance(this);
     TextBitHashIterator iter(mTextForms);
     while(iter.hasNext())

@@ -176,10 +176,19 @@ public:
     TextBitHash lexicalItemGlosses(qlonglong lexicalEntryId) const;
 
     //! \brief Return the lexical entry citation forms for the given allomorph
-    TextBitHash lexicalEntryCitationFormsForAllomorph(qlonglong id) const;
+    TextBitHash lexicalEntryCitationFormsForAllomorph(qlonglong allomorphId) const;
 
     //! \brief Return the lexical entry glosses for the given allomorph
-    TextBitHash lexicalEntryGlossFormsForAllomorph(qlonglong id) const;
+    TextBitHash lexicalEntryGlossFormsForAllomorph(qlonglong allomorphId) const;
+
+    //! \brief Return the lexical entry citation forms for the given lexical entry
+    TextBitHash lexicalEntryCitationFormsForId(qlonglong lexicalEntryId) const;
+
+    //! \brief Return the lexical entry glosses for the given lexical entry
+    TextBitHash lexicalEntryGlossFormsForId(qlonglong lexicalEntryId) const;
+
+    //! \brief Return a list of lexical entry forms
+    QList<qlonglong> lexicalEntryIds() const;
 
     QStringList grammaticalTagsForAllomorph(qlonglong allomorphId) const;
 

@@ -16,6 +16,7 @@
 #include "replacedialog.h"
 #include "singlephraseeditdialog.h"
 #include "choosetextlinedialog.h"
+#include "lexiconmodel.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -82,6 +83,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionOpen_text_line, SIGNAL(triggered()), this, SLOT(openTextLine()) );
     connect(ui->actionOpen_text_line_with_context, SIGNAL(triggered()), this, SLOT(openTextLineWithContext()));
+
+    connect(ui->actionEdit_lexicon, SIGNAL(triggered()), this, SLOT(editLexicon()) );
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -931,4 +934,14 @@ QStringList MainWindow::textsWithOpenWindows()
     foreach( QMdiSubWindow * window , ui->mdiArea->subWindowList() )
         textNames << window->windowTitle();
     return textNames;
+}
+
+void MainWindow::editLexicon()
+{
+    LexiconModel *model = new LexiconModel(mProject->dbAdapter());
+    model->setHeaderData(0, Qt::Horizontal, tr("Name"));
+
+    QTreeView *view = new QTreeView;
+    view->setModel(model);
+    view->show();
 }

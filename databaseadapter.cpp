@@ -1050,6 +1050,51 @@ TextBitHash DatabaseAdapter::lexicalEntryGlossFormsForAllomorph(qlonglong allomo
     return forms;
 }
 
+QList<qlonglong> DatabaseAdapter::lexicalEntryIds() const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from LexicalEntry;");
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::lexicalEntryIds" << q.lastError().text() << q.executedQuery();
+
+    QList<qlonglong> ids;
+    while( q.next() )
+        ids << q.value(0).toLongLong();
+    return ids;
+}
+
+TextBitHash DatabaseAdapter::lexicalEntryCitationFormsForId(qlonglong lexicalEntryId) const
+{
+    TextBitHash forms;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id,WritingSystem,Form from LexicalEntryCitationForm where LexicalEntryId=:LexicalEntryId;");
+    q.bindValue(":LexicalEntryId",lexicalEntryId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::lexicalEntryCitationFormsForId" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+    {
+        WritingSystem ws = writingSystem( q.value(1).toLongLong() );
+        forms.insert( ws, TextBit( q.value(2).toString(), ws, q.value(0).toLongLong() ) );
+    }
+    return forms;
+}
+
+TextBitHash DatabaseAdapter::lexicalEntryGlossFormsForId(qlonglong lexicalEntryId) const
+{
+    TextBitHash forms;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id,WritingSystem,Form from LexicalEntryGloss where LexicalEntryId=:LexicalEntryId;");
+    q.bindValue(":LexicalEntryId",lexicalEntryId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::lexicalEntryGlossFormsForId" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+    {
+        WritingSystem ws = writingSystem( q.value(1).toLongLong() );
+        forms.insert( ws, TextBit( q.value(2).toString(), ws, q.value(0).toLongLong() ) );
+    }
+    return forms;
+}
+
 QStringList DatabaseAdapter::grammaticalTagsForAllomorph(qlonglong allomorphId) const
 {
     QStringList tags;
