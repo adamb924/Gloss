@@ -240,8 +240,8 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
     QXmlStreamReader stream(file);
     TextBitHash textForms;
     TextBitHash glossForms;
+    QList<MorphologicalAnalysis*> morphologicalAnalyses;
     MorphologicalAnalysis *morphologicalAnalysis = 0;
-    WritingSystem maWs;
     QString baselineText = "";
 
     while (!stream.atEnd())
@@ -255,11 +255,6 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 inWord = true;
                 textForms.clear();
                 glossForms.clear();
-                if( morphologicalAnalysis != 0 )
-                {
-                    delete morphologicalAnalysis;
-                    morphologicalAnalysis = 0;
-                }
 
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
@@ -322,10 +317,7 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                             TextBit textForm( text , lang, itemId);
                             textForms.insert( lang, textForm );
                             if( lang.flexString() == mBaselineWritingSystem.flexString() )
-                            {
                                 baselineText = text;
-                                morphologicalAnalysis = new MorphologicalAnalysis(textForm);
-                            }
                         }
                         else if( type == "gls" )
                         {
@@ -355,7 +347,10 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","lang") )
                 {
-                    maWs = mDbAdapter->writingSystem( attr.value("http://www.adambaker.org/gloss.php","lang").toString() );
+                    WritingSystem ws = mDbAdapter->writingSystem( attr.value("http://www.adambaker.org/gloss.php","lang").toString() );
+                    TextBit corresponding = textForms.value( ws, TextBit() );
+                    if( corresponding.isValid() )
+                        morphologicalAnalysis = new MorphologicalAnalysis(corresponding);
                     inMorphemes = true;
                 }
             }
@@ -389,10 +384,11 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 mPhrases.last()->appendGlossItem(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject ));
                 mPhrases.last()->lastGlossItem()->setApprovalStatus(approvalStatus);
 
-                if( !morphologicalAnalysis->isEmpty() )
-                {
-                    mPhrases.last()->lastGlossItem()->setMorphologicalAnalysis( *morphologicalAnalysis );
-                }
+                QListIterator<MorphologicalAnalysis*> iter(morphologicalAnalyses);
+                while(iter.hasNext())
+                    mPhrases.last()->lastGlossItem()->setMorphologicalAnalysis( *iter.next() );
+                qDeleteAll( morphologicalAnalyses );
+                morphologicalAnalyses.clear();
 
                 inWord = false;
                 hasValidId = false;
@@ -406,6 +402,9 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
             }
             else if(name == "morphemes")
             {
+                if( !morphologicalAnalysis->isEmpty() )
+                    morphologicalAnalyses << morphologicalAnalysis;
+                morphologicalAnalysis = 0;
                 inMorphemes = false;
             }
         }

@@ -341,7 +341,8 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
     while(tfIter.hasNext())
     {
         tfIter.next();
-        mMorphologicalAnalyses.insert( tfIter.key() , mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() ) );
+        if( mDbAdapter->textFormHasMorphologicalAnalysis( tfIter.value().id() ) )
+            mMorphologicalAnalyses.insert( tfIter.key() , mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() ) );
     }
 }
 

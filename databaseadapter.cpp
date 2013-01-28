@@ -941,6 +941,19 @@ MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlon
     return analysis;
 }
 
+bool DatabaseAdapter::textFormHasMorphologicalAnalysis( qlonglong textFormId ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from MorphologicalAnalysisMembers where TextFormId=:TextFormId limit 1;");
+    q.bindValue(":TextFormId", textFormId);
+    if( ! q.exec() )
+    {
+        qWarning() << "DatabaseAdapter::textFormHasMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
+        return false;
+    }
+    return q.next();
+}
+
 Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));

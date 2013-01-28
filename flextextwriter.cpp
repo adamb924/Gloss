@@ -151,11 +151,9 @@ bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem, QXmlStreamWriter *
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
     foreach( WritingSystem ws, analysisLanguages )
     {
-        qDebug() << glossItem->id() << ws.flexString();
         const MorphologicalAnalysis analysis = glossItem->morphologicalAnalysis( ws );
         if( ! analysis.isEmpty() )
         {
-            qDebug() << "Not empty";
             stream->writeStartElement("morphemes");
             stream->writeAttribute("http://www.adambaker.org/gloss.php", "lang", ws.flexString() );
 

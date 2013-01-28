@@ -29,6 +29,7 @@ public:
     qlonglong id() const;
 
     bool isNull() const;
+    bool isValid() const;
 
 public slots:
     void setText(const QString & text);

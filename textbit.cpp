@@ -80,3 +80,8 @@ bool TextBit::isNull() const
 {
     return mId == -1;
 }
+
+bool TextBit::isValid() const
+{
+    return mId != -1;
+}

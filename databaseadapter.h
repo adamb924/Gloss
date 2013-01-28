@@ -169,6 +169,9 @@ public:
     //! \brief Returns the morphological analysis associated with the given TextForm id. The analysis is empty if none is found in the database.
     MorphologicalAnalysis morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const;
 
+    //! \brief Returns true if the specified text form has a morphological analysis, otherwise false
+    bool textFormHasMorphologicalAnalysis( qlonglong textFormId ) const;
+
     //! \brief Return an Allomorph object with data from the allomorph id indicated
     Allomorph allomorphFromId( qlonglong allomorphId ) const;
 
