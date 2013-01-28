@@ -49,6 +49,8 @@ class DatabaseAdapter;
 class TreeItem
 {
 public:
+    enum Type { Root, TextForm, Gloss, Allomorph };
+
     TreeItem(const DatabaseAdapter * dbAdapter,  TreeItem *parent = 0);
     ~TreeItem();
 
@@ -65,6 +67,7 @@ private:
     QList<TreeItem*> childItems;
     QList<QVariant> itemData;
     TreeItem *parentItem;
+    qlonglong mId;
     const DatabaseAdapter * mDbAdapter;
 };
 

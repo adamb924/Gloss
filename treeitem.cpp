@@ -76,7 +76,8 @@ int TreeItem::childCount() const
 
 int TreeItem::columnCount() const
 {
-    return itemData.count();
+//    return itemData.count();
+    return 1;
 }
 
 QVariant TreeItem::data(int column) const

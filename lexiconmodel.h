@@ -10,6 +10,8 @@ class TreeItem;
 
 class LexiconModel : public QAbstractItemModel
 {
+    Q_OBJECT
+
 public:
     LexiconModel( const DatabaseAdapter * dbAdapter );
     ~LexiconModel();
