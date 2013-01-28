@@ -13,7 +13,10 @@
 FlexTextWriter::FlexTextWriter(Text *text, bool verboseOutput)
 {
     mText = text;
-    mVerboseOutput = verboseOutput;
+//    mVerboseOutput = verboseOutput;
+
+    // TODO HACK this is just so that it will work properly for now
+    mVerboseOutput = true;
 }
 
 bool FlexTextWriter::writeFile( const QString & filename )
@@ -139,7 +142,8 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
         serializeItem("gls",glossIter.key(),glossIter.value().text(),stream, glossIter.value().id());
     }
 
-    serializeMorphemes( glossItem, stream );
+    if( mVerboseOutput )
+        serializeMorphemes( glossItem, stream );
 
     stream->writeEndElement(); // word
 
@@ -231,7 +235,11 @@ void FlexTextWriter::serializeItem(const QString & type, const WritingSystem & w
     if( id != -1 )
         stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(id) );
     stream->writeAttribute("type",type);
-    stream->writeAttribute("lang",ws.flexString());
-    stream->writeCharacters(text);
+
+    if( mVerboseOutput )
+    {
+        stream->writeAttribute("lang",ws.flexString());
+        stream->writeCharacters(text);
+    }
     stream->writeEndElement();
 }

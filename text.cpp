@@ -375,10 +375,6 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                         QMessageBox::information(0, tr("Parsing error"), tr("There is a word on line %1 that does not have an entry for the baseline writing system for this text, so the word has been removed. Make a note of the line number and see if your text is incomplete on that line.").arg(lineNumber) );
                         continue;
                     }
-                    else
-                    {
-                        QMessageBox::information(0, tr("Parsing error"), tr("There is a word on line %1 that does not have an entry for the baseline writing system for this text. Since the id was there, Gloss made a guess as to the proper baseline form, but this is not foolproof. Make a note of the line number and see if your text is incomplete on that line.").arg(lineNumber) );
-                    }
                 }
 
                 mPhrases.last()->appendGlossItem(new GlossItem( mBaselineWritingSystem, textForms, glossForms, id, mProject ));
