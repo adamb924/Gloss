@@ -135,8 +135,11 @@ void GlossItem::setTextForm(const TextBit & textForm)
 
         updateGlossItemConcordance();
 
-        MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() );
-        mMorphologicalAnalyses.insert( ws , newMa );
+        if( ws == mBaselineWritingSystem )
+        {
+            MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() );
+            mMorphologicalAnalyses.insert( ws , newMa );
+        }
 
         emit fieldsChanged();
         emit textFormChanged(textForm);
@@ -296,12 +299,6 @@ void GlossItem::setMorphologicalAnalysisFromDatabase( const WritingSystem & ws )
     emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value(ws) );
 }
 
-void GlossItem::addAllomorphToAnalysis( const Allomorph & allomorph, const WritingSystem & writingSystem )
-{
-    mMorphologicalAnalyses[writingSystem].addAllomorph(allomorph);
-    emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value(writingSystem) );
-}
-
 void GlossItem::loadStringsFromDatabase()
 {
     TextBitHashIterator tfIter( mTextForms );
@@ -350,7 +347,15 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
 
 QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
-    return mMorphologicalAnalyses.keys();
+    QList<WritingSystem> languages;
+    QHashIterator<WritingSystem,MorphologicalAnalysis> iter( mMorphologicalAnalyses );
+    while(iter.hasNext())
+    {
+        iter.next();
+        if( !iter.value().isEmpty() )
+            languages << iter.key();
+    }
+    return languages;
 }
 
 Concordance* GlossItem::concordance()

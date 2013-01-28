@@ -390,7 +390,9 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 mPhrases.last()->lastGlossItem()->setApprovalStatus(approvalStatus);
 
                 if( !morphologicalAnalysis->isEmpty() )
+                {
                     mPhrases.last()->lastGlossItem()->setMorphologicalAnalysis( *morphologicalAnalysis );
+                }
 
                 inWord = false;
                 hasValidId = false;
@@ -419,11 +421,11 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
     return Text::FlexTextReadSuccess;
 }
 
-void Text::saveText(bool saveAnyway)
+void Text::saveText(bool verboseOutput, bool saveAnyway)
 {
     if( mChanged || saveAnyway )
     {
-        FlexTextWriter writer( this, false );
+        FlexTextWriter writer( this, verboseOutput );
         writer.writeFile( mProject->filepathFromName(mName) );
         mChanged = false;
     }

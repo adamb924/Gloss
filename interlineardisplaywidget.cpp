@@ -85,7 +85,7 @@ QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
 
 void InterlinearDisplayWidget::saveText()
 {
-    mText->saveText();
+    mText->saveText(false);
 }
 
 void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )

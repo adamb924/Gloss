@@ -188,7 +188,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
     text->setBaselineText(content);
     if( text->isValid() )
     {
-        text->saveText();
+        text->saveText(false);
         if( openText )
             mTexts.insert(name, text);
         else
@@ -213,7 +213,7 @@ Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem &
     Text *text = new Text(filePath,ws,this);
     if(text->isValid())
     {
-        text->saveText();
+        text->saveText(false);
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
         return text;
@@ -232,7 +232,7 @@ Text* Project::textFromFlexText(const QString & filePath)
     {
         // save the file if it doesn't exist in the temp directory
         if( !QFile::exists( filepathFromName(text->name()) ) )
-            text->saveText();
+            text->saveText(false);
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
         return text;
@@ -374,7 +374,7 @@ QStringList Project::textNames() const
 
 void Project::saveAndCloseText(Text *text)
 {
-    text->saveText();
+    text->saveText(false);
     mTexts.remove( text->name() );
     delete text;
 }
@@ -407,7 +407,7 @@ void Project::saveOpenTexts()
     while(iter.hasNext())
     {
         iter.next();
-        iter.value()->saveText();
+        iter.value()->saveText(false);
     }
 }
 
@@ -528,7 +528,7 @@ void Project::setTextXmlFromDatabase()
         progress.setLabelText( tr("Setting FlexText text... %1").arg(textName) );
         if( openText(textName) == Project::Success )
         {
-            mTexts[textName]->saveText(true);
+            mTexts[textName]->saveText(true, true);
             closeText( mTexts[textName] );
         }
         if( progress.wasCanceled() )

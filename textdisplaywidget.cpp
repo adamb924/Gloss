@@ -60,7 +60,7 @@ void TextDisplayWidget::tabChanged(int i)
 
 void TextDisplayWidget::closeEvent(QCloseEvent *event)
 {
-    mText->saveText();
+    mText->saveText(false);
     event->accept();
 }
 

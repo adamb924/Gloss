@@ -58,7 +58,7 @@ public:
 
     QList<Phrase*>* phrases();
 
-    void saveText(bool saveAnyway = false);
+    void saveText(bool verboseOutput, bool saveAnyway = false);
 
     Text::MergeTranslationResult mergeTranslation(const QString & filename, const WritingSystem & ws );
 
