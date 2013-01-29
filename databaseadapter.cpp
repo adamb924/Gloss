@@ -1227,7 +1227,7 @@ void DatabaseAdapter::createGlossIndex( const QSet<QString> * filePaths ) const
 
 void DatabaseAdapter::createInterpretationIndex( const QSet<QString> * filePaths ) const
 {
-    QProgressDialog progress( QObject::tr("Creating gloss index..."), QString(), 0, filePaths->count(), 0);
+    QProgressDialog progress( QObject::tr("Creating interpretation index..."), QString(), 0, filePaths->count(), 0);
     progress.setWindowModality(Qt::WindowModal);
     int position = 0;
 
@@ -1268,7 +1268,7 @@ void DatabaseAdapter::createInterpretationIndex( const QSet<QString> * filePaths
 QSqlQuery DatabaseAdapter::searchIndexForTextForm( qlonglong id ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( "select TextName,LineNumber,count(Id) from TextFormIndex where Id=:Id group by LineNumber order by TextName asc,LineNumber asc;" );
+    q.prepare( "select TextName,LineNumber,count(Id) from TextFormIndex where Id=:Id group by TextName,LineNumber order by TextName asc,LineNumber asc;" );
     q.bindValue(":Id", id);
     q.exec();
     return q;
@@ -1277,7 +1277,7 @@ QSqlQuery DatabaseAdapter::searchIndexForTextForm( qlonglong id ) const
 QSqlQuery DatabaseAdapter::searchIndexForGloss( qlonglong id ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( "select TextName,LineNumber,count(Id) from GlossIndex where Id=:Id group by LineNumber order by TextName asc,LineNumber asc;" );
+    q.prepare( "select TextName,LineNumber,count(Id) from GlossIndex where Id=:Id group by TextName,LineNumber order by TextName asc,LineNumber asc;" );
     q.bindValue(":Id", id);
     q.exec();
     return q;
@@ -1286,7 +1286,7 @@ QSqlQuery DatabaseAdapter::searchIndexForGloss( qlonglong id ) const
 QSqlQuery DatabaseAdapter::searchIndexForInterpretation( qlonglong id ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( "select TextName,LineNumber,count(Id) from InterpretationIndex where Id=:Id group by LineNumber order by TextName asc,LineNumber asc;" );
+    q.prepare( "select TextName,LineNumber,count(Id) from InterpretationIndex where Id=:Id group by TextName,LineNumber order by TextName asc,LineNumber asc;" );
     q.bindValue(":Id", id);
     q.exec();
     return q;
