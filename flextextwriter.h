@@ -38,6 +38,9 @@ private:
     //! \brief Write an <item> to the text stream, with specified attributes and text content
     void serializeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream, qlonglong id = -1) const;
 
+    //! \brief Write an <item> to the text stream, with specified attributes and text content
+    void serializeItemNonVerbose(const QString & type, const WritingSystem & ws, QXmlStreamWriter *stream, qlonglong id = -1) const;
+
 };
 
 #endif // FLEXTEXTWRITER_H

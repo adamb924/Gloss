@@ -9,14 +9,12 @@
 #include <QFile>
 #include <QXmlStreamWriter>
 #include <QProgressDialog>
+#include <QtDebug>
 
 FlexTextWriter::FlexTextWriter(Text *text, bool verboseOutput)
 {
     mText = text;
-//    mVerboseOutput = verboseOutput;
-
-    // TODO HACK this is just so that it will work properly for now
-    mVerboseOutput = true;
+    mVerboseOutput = verboseOutput;
 }
 
 bool FlexTextWriter::writeFile( const QString & filename )
@@ -131,7 +129,10 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
     while (textIter.hasNext())
     {
         textIter.next();
-        serializeItem("txt",textIter.key(),textIter.value().text() ,stream , textIter.value().id() );
+        if( mVerboseOutput )
+            serializeItem("txt",textIter.key(),textIter.value().text() ,stream , textIter.value().id() );
+        else
+            serializeItemNonVerbose("txt", textIter.key(), stream , textIter.value().id() );
     }
 
     TextBitHashIterator glossIter(*glossItem->glosses());
@@ -139,7 +140,10 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
     while (glossIter.hasNext())
     {
         glossIter.next();
-        serializeItem("gls",glossIter.key(),glossIter.value().text(),stream, glossIter.value().id());
+        if( mVerboseOutput )
+            serializeItem("gls",glossIter.key(),glossIter.value().text(),stream, glossIter.value().id());
+        else
+            serializeItemNonVerbose("gls", glossIter.key(), stream , glossIter.value().id() );
     }
 
     if( mVerboseOutput )
@@ -235,11 +239,18 @@ void FlexTextWriter::serializeItem(const QString & type, const WritingSystem & w
     if( id != -1 )
         stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(id) );
     stream->writeAttribute("type",type);
-
-    if( mVerboseOutput )
-    {
-        stream->writeAttribute("lang",ws.flexString());
-        stream->writeCharacters(text);
-    }
+    stream->writeAttribute("lang",ws.flexString());
+    stream->writeCharacters(text);
     stream->writeEndElement();
 }
+
+void FlexTextWriter::serializeItemNonVerbose(const QString & type, const WritingSystem & ws, QXmlStreamWriter *stream, qlonglong id ) const
+{
+    stream->writeStartElement("item");
+    if( id != -1 )
+        stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(id) );
+    stream->writeAttribute("type",type);
+    stream->writeAttribute("lang",ws.flexString());
+    stream->writeEndElement();
+}
+

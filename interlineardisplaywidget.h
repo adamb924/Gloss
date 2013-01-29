@@ -49,8 +49,8 @@ protected:
     void setLinesToDefault();
 
 private slots:
-
     void saveText();
+    void saveTextVerbose();
 
     void approveAll(int lineNumber);
     void playSound(int lineNumber);

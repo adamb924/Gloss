@@ -294,14 +294,13 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
             else if ( name == "item" )
             {
                 QXmlStreamAttributes attr = stream.attributes();
-                if( attr.hasAttribute("type") && attr.hasAttribute("lang") )
+                if( attr.hasAttribute("type") )
                 {
                     QString type = attr.value("type").toString();
-                    WritingSystem lang = mProject->dbAdapter()->writingSystem( attr.value("lang").toString() );
+                    WritingSystem lang;
+                    if( attr.hasAttribute("lang") )
+                            lang = mProject->dbAdapter()->writingSystem( attr.value("lang").toString() );
                     QString text = stream.readElementText();
-
-                    if( text.isEmpty() )
-                        continue;
 
                     if( inMorphemes )
                     {

@@ -88,10 +88,16 @@ void InterlinearDisplayWidget::saveText()
     mText->saveText(false);
 }
 
+void InterlinearDisplayWidget::saveTextVerbose()
+{
+    mText->saveText(true);
+}
+
 void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
     menu.addAction(tr("Save this text"), this, SLOT(saveText()), QKeySequence("Ctrl+Shift+S"));
+    menu.addAction(tr("Save this text, verbose output"), this, SLOT(saveTextVerbose()) );
     menu.exec(event->globalPos());
 }
 
