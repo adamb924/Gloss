@@ -10,6 +10,7 @@
 #include <QHash>
 #include <QSet>
 #include <QString>
+#include <QPair>
 
 #include "writingsystem.h"
 #include "text.h"
@@ -21,6 +22,8 @@ class DatabaseAdapter;
 class QUrl;
 class QProgressDialog;
 class MainWindow;
+
+typedef QPair<qlonglong,qlonglong> LongLongPair;
 
 class Project : public QObject
 {
@@ -119,11 +122,14 @@ private:
     //! \brief A hash containing all "opened" texts, keyed by name
     QHash<QString,Text*> mTexts;
 
-    QList<qlonglong> getListOfNumbersFromXQuery(const QString & filepath, const QString & queryString);
+public:
+    static QList<qlonglong> getListOfNumbersFromXQuery(const QString & filepath, const QString & queryString);
 
-    QStringList getStringListFromXQuery(const QString & filepath, const QString & queryString);
+    static QStringList getStringListFromXQuery(const QString & filepath, const QString & queryString);
 
-    QStringList getInterpretationUsage(const QString & filepath, const QString & encodedSettings);
+    static QList<LongLongPair> getPairedNumbersFromXQuery(const QString & filepath, const QString & queryString);
+
+    static QStringList getInterpretationUsage(const QString & filepath, const QString & encodedSettings);
 };
 
 #endif // PROJECT_H

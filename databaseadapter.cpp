@@ -5,12 +5,16 @@
 #include <QXmlResultItems>
 #include <QDomDocument>
 #include <QXmlQuery>
+#include <QPair>
+#include <QProgressDialog>
 
 #include "textbit.h"
 #include "writingsystem.h"
 #include "messagehandler.h"
 #include "allomorph.h"
 #include "morphologicalanalysis.h"
+#include "text.h"
+#include "project.h"
 
 DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
         QObject(parent)
@@ -1124,20 +1128,29 @@ QStringList DatabaseAdapter::grammaticalTagsForAllomorph(qlonglong allomorphId) 
 bool DatabaseAdapter::textIndicesExist() const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    if( !q.exec("SELECT count(name) FROM sqlite_master WHERE type='table' AND (name='TextFormIndex' or name='GlossIndex' or name='InterpretationIndex' );") )
+    if( !q.exec("select count(name) from sqlite_master where type='table' and (name='TextFormIndex' or name='GlossIndex' or name='InterpretationIndex' );") )
+    {
         qWarning() << q.lastError().text() << q.executedQuery();
+        return false;
+    }
+    if( ! q.next() )
+        return false;
     return q.value(0).toInt() == 3;
 }
 
-void DatabaseAdapter::createTextIndices( const QStringList & filePaths ) const
+void DatabaseAdapter::createTextIndices( const QSet<QString> * filePaths ) const
 {
     createTextFormIndex(filePaths);
     createGlossIndex(filePaths);
     createInterpretationIndex(filePaths);
 }
 
-void DatabaseAdapter::createTextFormIndex( const QStringList & filePaths ) const
+void DatabaseAdapter::createTextFormIndex( const QSet<QString> * filePaths ) const
 {
+    QProgressDialog progress( QObject::tr("Creating text form index..."), QString(), 0, filePaths->count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+    int position = 0;
+
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
     if( !q.exec("drop table if exists TextFormIndex;") )
@@ -1146,10 +1159,38 @@ void DatabaseAdapter::createTextFormIndex( const QStringList & filePaths ) const
     if( !q.exec("create table if not exists TextFormIndex ( TextName text, LineNumber integer, Id integer );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
+    QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt']  "
+                          "let $line-number := string( $x/ancestor::phrase/item[@type='segnum']/text() ) "
+                          "return string-join( ($line-number, $x/@abg:id) , ',') ";
+
+    QSetIterator<QString> pathIter( *filePaths );
+    while( pathIter.hasNext() )
+    {
+        progress.setValue(position++);
+
+        QString path = pathIter.next();
+        QList< LongLongPair > result = Project::getPairedNumbersFromXQuery( path , queryString );
+        QString textName = Text::textNameFromPath( path );
+        foreach( const LongLongPair pair , result )
+        {
+            q.prepare("insert into TextFormIndex (TextName,LineNumber,Id) values (:TextName,:LineNumber,:Id)");
+            q.bindValue(":TextName", textName);
+            q.bindValue(":LineNumber", pair.first );
+            q.bindValue(":Id", pair.second );
+            if( !q.exec() )
+                qWarning() << q.lastError().text() << q.executedQuery();
+        }
+    }
+    progress.setValue(filePaths->count());
 }
 
-void DatabaseAdapter::createGlossIndex( const QStringList & filePaths ) const
+void DatabaseAdapter::createGlossIndex( const QSet<QString> * filePaths ) const
 {
+    QProgressDialog progress( QObject::tr("Creating gloss index..."), QString(), 0, filePaths->count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+    int position = 0;
+
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
     if( !q.exec("drop table if exists GlossIndex;") )
@@ -1158,10 +1199,38 @@ void DatabaseAdapter::createGlossIndex( const QStringList & filePaths ) const
     if( !q.exec("create table if not exists GlossIndex ( TextName text, LineNumber integer, Id integer );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
+    QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls']  "
+                          "let $line-number := string( $x/ancestor::phrase/item[@type='segnum']/text() ) "
+                          "return string-join( ($line-number, $x/@abg:id) , ',') ";
+
+    QSetIterator<QString> pathIter( *filePaths );
+    while( pathIter.hasNext() )
+    {
+        progress.setValue(position++);
+
+        QString path = pathIter.next();
+        QList< LongLongPair > result = Project::getPairedNumbersFromXQuery( path , queryString );
+        QString textName = Text::textNameFromPath( path );
+        foreach( const LongLongPair pair , result )
+        {
+            q.prepare("insert into GlossIndex (TextName,LineNumber,Id) values (:TextName,:LineNumber,:Id)");
+            q.bindValue(":TextName", textName);
+            q.bindValue(":LineNumber", pair.first );
+            q.bindValue(":Id", pair.second );
+            if( !q.exec() )
+                qWarning() << q.lastError().text() << q.executedQuery();
+        }
+    }
+    progress.setValue(filePaths->count());
 }
 
-void DatabaseAdapter::createInterpretationIndex( const QStringList & filePaths ) const
+void DatabaseAdapter::createInterpretationIndex( const QSet<QString> * filePaths ) const
 {
+    QProgressDialog progress( QObject::tr("Creating gloss index..."), QString(), 0, filePaths->count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+    int position = 0;
+
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
     if( !q.exec("drop table if exists InterpretationIndex;") )
@@ -1170,12 +1239,36 @@ void DatabaseAdapter::createInterpretationIndex( const QStringList & filePaths )
     if( !q.exec("create table if not exists InterpretationIndex ( TextName text, LineNumber integer, Id integer );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
+    QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
+                          "let $line-number := string( $x/ancestor::phrase/item[@type='segnum']/text() ) "
+                          "return string-join( ($line-number, $x/@abg:id) , ',') ";
+
+    QSetIterator<QString> pathIter( *filePaths );
+    while( pathIter.hasNext() )
+    {
+        progress.setValue(position++);
+
+        QString path = pathIter.next();
+        QList< LongLongPair > result = Project::getPairedNumbersFromXQuery( path , queryString );
+        QString textName = Text::textNameFromPath( path );
+        foreach( const LongLongPair pair , result )
+        {
+            q.prepare("insert into InterpretationIndex (TextName,LineNumber,Id) values (:TextName,:LineNumber,:Id)");
+            q.bindValue(":TextName", textName);
+            q.bindValue(":LineNumber", pair.first );
+            q.bindValue(":Id", pair.second );
+            if( !q.exec() )
+                qWarning() << q.lastError().text() << q.executedQuery();
+        }
+    }
+    progress.setValue(filePaths->count());
 }
 
 QSqlQuery DatabaseAdapter::searchIndexForTextForm( qlonglong id ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( "select TextName,LineNumber from TextFormIndex where Id=:Id;" );
+    q.prepare( "select TextName,LineNumber,count(Id) from TextFormIndex where Id=:Id group by LineNumber order by TextName asc,LineNumber asc;" );
     q.bindValue(":Id", id);
     q.exec();
     return q;
@@ -1184,7 +1277,7 @@ QSqlQuery DatabaseAdapter::searchIndexForTextForm( qlonglong id ) const
 QSqlQuery DatabaseAdapter::searchIndexForGloss( qlonglong id ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( "select TextName,LineNumber from GlossIndex where Id=:Id;" );
+    q.prepare( "select TextName,LineNumber,count(Id) from GlossIndex where Id=:Id group by LineNumber order by TextName asc,LineNumber asc;" );
     q.bindValue(":Id", id);
     q.exec();
     return q;
@@ -1193,7 +1286,7 @@ QSqlQuery DatabaseAdapter::searchIndexForGloss( qlonglong id ) const
 QSqlQuery DatabaseAdapter::searchIndexForInterpretation( qlonglong id ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( "select TextName,LineNumber from InterpretationIndex where Id=:Id;" );
+    q.prepare( "select TextName,LineNumber,count(Id) from InterpretationIndex where Id=:Id group by LineNumber order by TextName asc,LineNumber asc;" );
     q.bindValue(":Id", id);
     q.exec();
     return q;

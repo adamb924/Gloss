@@ -14,6 +14,7 @@ class QAction;
 class WritingSystem;
 class QModelIndex;
 class TextDisplayWidget;
+class QStandardItemModel;
 
 namespace Ui {
     class MainWindow;
@@ -41,7 +42,7 @@ private:
 
     WritingSystem selectWritingSystem(const QString & message, bool *ok);
 
-    void createSearchResultDock(const QString & query, const QString & reminder);
+    void createSearchResultDock(QStandardItemModel * model, const QString & reminder);
 
     QStringList textsWithOpenWindows();
 
@@ -51,6 +52,8 @@ public slots:
     void searchForGlossById(qlonglong id);
 
 private slots:
+    void rebuildIndex();
+
     void newProject();
     void openProject();
     void saveProject();

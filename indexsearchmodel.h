@@ -7,7 +7,7 @@
 class IndexSearchModel : public QStandardItemModel
 {
 public:
-    IndexSearchModel( const QSqlQuery & query );
+    IndexSearchModel( QSqlQuery query );
 
 private:
     QSqlQuery mQuery;

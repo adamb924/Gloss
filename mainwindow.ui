@@ -95,7 +95,9 @@
     <addaction name="actionInterpreation_by_id"/>
     <addaction name="actionText_form_by_id"/>
     <addaction name="actionGloss_by_id"/>
+    <addaction name="separator"/>
     <addaction name="actionSearch_files_instead_of_index"/>
+    <addaction name="actionRebuild_index"/>
     <addaction name="separator"/>
     <addaction name="actionUnapproved_lines"/>
     <addaction name="actionApproved_lines"/>
@@ -340,6 +342,11 @@
   <action name="actionEdit_lexicon">
    <property name="text">
     <string>Edit lexicon</string>
+   </property>
+  </action>
+  <action name="actionRebuild_index">
+   <property name="text">
+    <string>Rebuild index</string>
    </property>
   </action>
  </widget>

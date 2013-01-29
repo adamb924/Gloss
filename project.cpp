@@ -579,7 +579,7 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
     if(!query.setFocus(QUrl(filepath)))
         return list;
 
-    query.setMessageHandler(new MessageHandler(this));
+    query.setMessageHandler(new MessageHandler());
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -676,11 +676,34 @@ QStringList Project::getInterpretationUsage(const QString & filepath, const QStr
                           "return string-join( (string( $word/@abg:id ), $myset) , ',')";
 
     query.bindVariable("settings", QXmlItem(encodedSettings) );
-    query.setMessageHandler(new MessageHandler(this));
+    query.setMessageHandler(new MessageHandler());
     query.setQuery(queryString);
     query.evaluateTo(&result);
 
     return result;
+}
+
+QList<LongLongPair> Project::getPairedNumbersFromXQuery(const QString & filepath, const QString & queryString)
+{
+    QList< QPair<qlonglong,qlonglong> > pairs;
+
+    QStringList result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl(filepath)))
+        return pairs;
+
+    query.setMessageHandler(new MessageHandler());
+    query.setQuery(queryString);
+    query.evaluateTo(&result);
+
+    foreach( const QString string, result )
+    {
+        qlonglong first = string.left( string.indexOf(",") ).toLongLong();
+        qlonglong second = string.mid( string.indexOf(",") + 1 ).toLongLong();
+        pairs << QPair<qlonglong,qlonglong>(first, second);
+    }
+
+    return pairs;
 }
 
 QStringList Project::getStringListFromXQuery(const QString & filepath, const QString & queryString)
@@ -690,7 +713,7 @@ QStringList Project::getStringListFromXQuery(const QString & filepath, const QSt
     if(!query.setFocus(QUrl(filepath)))
         return result;
 
-    query.setMessageHandler(new MessageHandler(this));
+    query.setMessageHandler(new MessageHandler());
     query.setQuery(queryString);
     query.evaluateTo(&result);
     return result;

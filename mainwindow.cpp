@@ -17,6 +17,7 @@
 #include "singlephraseeditdialog.h"
 #include "choosetextlinedialog.h"
 #include "lexiconmodel.h"
+#include "indexsearchmodel.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -85,6 +86,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen_text_line_with_context, SIGNAL(triggered()), this, SLOT(openTextLineWithContext()));
 
     connect(ui->actionEdit_lexicon, SIGNAL(triggered()), this, SLOT(editLexicon()) );
+
+    connect(ui->actionRebuild_index, SIGNAL(triggered()), this, SLOT(rebuildIndex()));
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -458,41 +461,92 @@ void MainWindow::searchGlossItems()
                                 "let $count := string( count( $x/descendant::item[@lang='%1' and text()='%2'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        createSearchResultDock(query, tr("Containing exact string '%1'").arg(dialog.text()) );
+        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        createSearchResultDock(model, tr("Containing exact string '%1'").arg(dialog.text()) );
     }
 }
 
 void MainWindow::searchForInterpretationById(qlonglong id)
 {
-    QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
-                            "let $line-number := string( $x/item[@type='segnum']/text() ) "
-                            "let $count := string( count( $x/descendant::word[@abg:id='%1'] ) ) "
-                            "order by number($x/item[@type='segnum']/text()) "
-                            "return   string-join( ($line-number, $count) , ',') ").arg(id);
-    createSearchResultDock(query, tr("Interpretation ID: %1").arg(id));
+    QStandardItemModel *model;
+    if( ui->actionSearch_files_instead_of_index->isChecked() )
+    {
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::word[@abg:id='%1'] ) ) "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return   string-join( ($line-number, $count) , ',') ").arg(id);
+        model = new SearchQueryModel(query, mProject->textPaths(), this);
+    }
+    else
+    {
+        if( !mProject->dbAdapter()->textIndicesExist() )
+        {
+            if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
+                return;
+            mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
+        }
+        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForInterpretation( id ) );
+    }
+    createSearchResultDock(model, tr("Interpretation ID: %1").arg(id));
 }
 
 void MainWindow::searchForTextFormById(qlonglong id)
 {
-    QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
-                            "let $line-number := string( $x/item[@type='segnum']/text() ) "
-                            "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='txt'] ) ) "
-                            "order by number($x/item[@type='segnum']/text()) "
-                            "return   string-join( ($line-number, $count) , ',') ").arg(id);
-    createSearchResultDock(query, tr("Text Form ID: %1").arg(id));
+    QStandardItemModel *model;
+    if( ui->actionSearch_files_instead_of_index->isChecked() )
+    {
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='txt'] ) ) "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return   string-join( ($line-number, $count) , ',') ").arg(id);
+        model = new SearchQueryModel(query, mProject->textPaths(), this);
+    }
+    else
+    {
+        if( !mProject->dbAdapter()->textIndicesExist() )
+        {
+            if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
+                return;
+            mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
+        }
+        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForTextForm( id ) );
+    }
+    createSearchResultDock(model, tr("Text Form ID: %1").arg(id));
 }
 
 void MainWindow::searchForGlossById(qlonglong id)
 {
-    QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
-                            "let $line-number := string( $x/item[@type='segnum']/text() ) "
-                            "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='gls'] ) ) "
-                            "order by number($x/item[@type='segnum']/text()) "
-                            "return   string-join( ($line-number, $count) , ',') " ).arg(id);
-    createSearchResultDock(query, tr("Gloss ID: %1").arg(id));
+    QStandardItemModel *model;
+    if( ui->actionSearch_files_instead_of_index->isChecked() )
+    {
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='gls'] ) ) "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return   string-join( ($line-number, $count) , ',') " ).arg(id);
+        model = new SearchQueryModel(query, mProject->textPaths(), this);
+    }
+    else
+    {
+        if( !mProject->dbAdapter()->textIndicesExist() )
+        {
+            if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
+                return;
+            mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
+        }
+        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForGloss( id ) );
+    }
+    createSearchResultDock(model, tr("Gloss ID: %1").arg(id));
+}
+
+void MainWindow::rebuildIndex()
+{
+    mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
 }
 
 void MainWindow::searchForInterpretationById()
@@ -533,14 +587,14 @@ void MainWindow::substringSearchGlossItems()
                                 "let $count := string( count( $x/descendant::word[@lang='%1' and contains( text(), '%2') ] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        createSearchResultDock(query, tr("Items containing substring '%1'").arg(dialog.text()));
+        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        createSearchResultDock(model, tr("Items containing substring '%1'").arg(dialog.text()));
     }
 }
 
-void MainWindow::createSearchResultDock(const QString & query, const QString & reminder)
+void MainWindow::createSearchResultDock(QStandardItemModel * model, const QString & reminder)
 {
     // Pop up a dockable window showing the results
-    SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
     SearchQueryView *tree = new SearchQueryView(this);
     tree->setSortingEnabled(false);
     tree->setModel(model);
@@ -664,7 +718,10 @@ void MainWindow::rawXQuery()
     XQueryInputDialog dialog(this);
     dialog.setWindowTitle(tr("Perform a raw XQuery on all texts"));
     if( dialog.exec() == QDialog::Accepted )
-        createSearchResultDock(dialog.query(), tr("Raw XQuery"));
+    {
+        SearchQueryModel *model = new SearchQueryModel(dialog.query(), mProject->textPaths(), this);
+        createSearchResultDock(model, tr("Raw XQuery"));
+    }
 }
 
 void MainWindow::removeUnusedGlossItems()
@@ -896,7 +953,8 @@ void MainWindow::findApprovedLines()
                             "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[count(words/word/@abg:approval-status='false')=0] "
                             "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
-    createSearchResultDock(query, tr("Approved lines") );
+    SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+    createSearchResultDock(model, tr("Approved lines") );
 }
 
 void MainWindow::findUnapprovedLines()
@@ -905,7 +963,8 @@ void MainWindow::findUnapprovedLines()
                             "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
                             "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
-    createSearchResultDock(query, tr("Unapproved lines") );
+    SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+    createSearchResultDock(model, tr("Unapproved lines") );
 }
 
 void MainWindow::closeOpenTexts()
