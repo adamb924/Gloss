@@ -20,6 +20,8 @@ DatabaseQueryDialog::DatabaseQueryDialog(const QString & databaseName, QWidget *
 
     connect(ui->doQuery, SIGNAL(clicked()), this, SLOT(doQuery()));
 
+    ui->queryResult->setSortingEnabled(true);
+
     setWindowTitle(tr("Perform a raw SQL query"));
 }
 
