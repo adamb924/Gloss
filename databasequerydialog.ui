@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>552</width>
     <height>300</height>
    </rect>
   </property>
@@ -15,12 +15,26 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableView" name="queryResult"/>
+    <widget class="QTableView" name="queryResult">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="queryEdit"/>
+      <widget class="QPlainTextEdit" name="queryEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="doQuery">
@@ -34,8 +48,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>queryEdit</tabstop>
-  <tabstop>doQuery</tabstop>
   <tabstop>queryResult</tabstop>
  </tabstops>
  <resources/>

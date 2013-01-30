@@ -31,7 +31,7 @@ DatabaseQueryDialog::~DatabaseQueryDialog()
 void DatabaseQueryDialog::doQuery()
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare(ui->queryEdit->text());
+    q.prepare(ui->queryEdit->toPlainText());
     q.exec();
 
     QSqlQueryModel *model = new QSqlQueryModel( ui->queryResult );
