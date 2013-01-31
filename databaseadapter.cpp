@@ -342,7 +342,7 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
     return id;
 }
 
-void DatabaseAdapter::updateInterpretationTextForm( const TextBit & bit )
+void DatabaseAdapter::updateTextForm( const TextBit & bit ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("update TextForms set Form=:Form where _id=:_id;");
@@ -352,7 +352,7 @@ void DatabaseAdapter::updateInterpretationTextForm( const TextBit & bit )
         qWarning() << "DatabaseAdapter::updateInterpretationTextForm" << q.lastError().text() << q.executedQuery();
 }
 
-void DatabaseAdapter::updateInterpretationGloss( const TextBit & bit )
+void DatabaseAdapter::updateGloss( const TextBit & bit ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("update Glosses set Form=:Form where _id=:_id;");
@@ -361,6 +361,27 @@ void DatabaseAdapter::updateInterpretationGloss( const TextBit & bit )
     if( !q.exec()  )
         qWarning() << "DatabaseAdapter::updateInterpretationGloss" << q.lastError().text() << q.executedQuery();
 }
+
+void DatabaseAdapter::updateLexicalEntryCitationForm( const TextBit & bit ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update LexicalEntryCitationForm set Form=:Form where _id=:_id;");
+    q.bindValue(":Form",bit.text());
+    q.bindValue(":_id",bit.id());
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::updateLexicalEntryCitationForm" << q.lastError().text() << q.executedQuery();
+}
+
+void DatabaseAdapter::updateLexicalEntryGloss( const TextBit & bit ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update LexicalEntryGloss set Form=:Form where _id=:_id;");
+    q.bindValue(":Form",bit.text());
+    q.bindValue(":_id",bit.id());
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::updateLexicalEntryGloss" << q.lastError().text() << q.executedQuery();
+}
+
 
 TextBitHash DatabaseAdapter::guessInterpretationGlosses(qlonglong id) const
 {
@@ -653,13 +674,12 @@ QList<InterlinearItemType> DatabaseAdapter::analysisPhrasalGlossLines() const
     return mAnalysisPhrasalGlossLines;
 }
 
-// TODO rename this function so it doesn't make a funny overload
-QList<WritingSystem> DatabaseAdapter::lexicalEntryCitationForms() const
+QList<WritingSystem> DatabaseAdapter::lexicalEntryCitationFormFields() const
 {
     return mLexicalEntryCitationForms;
 }
 
-QList<WritingSystem> DatabaseAdapter::lexicalEntryGlosses() const
+QList<WritingSystem> DatabaseAdapter::lexicalEntryGlossFields() const
 {
     return mLexicalEntryGlosses;
 }

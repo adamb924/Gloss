@@ -59,8 +59,12 @@ SOURCES += main.cpp\
     choosetextlinedialog.cpp \
     lexicalentrysearchdialog.cpp \
     indexsearchmodel.cpp \
-    lexiconmodel.cpp \
-    treeitem.cpp
+    treeitem.cpp \
+    lexiconstandardmodel.cpp \
+    lexiconedit.cpp \
+    lexiconview.cpp \
+    allomorphmodel.cpp \
+    morphologicalanalysismodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -110,8 +114,12 @@ HEADERS  += mainwindow.h \
     choosetextlinedialog.h \
     lexicalentrysearchdialog.h \
     indexsearchmodel.h \
-    lexiconmodel.h \
-    treeitem.h
+    treeitem.h \
+    lexiconstandardmodel.h \
+    lexiconedit.h \
+    lexiconview.h \
+    allomorphmodel.h \
+    morphologicalanalysismodel.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -132,7 +140,8 @@ FORMS    += mainwindow.ui \
     singlephraseeditdialog.ui \
     mergeeafdialog.ui \
     choosetextlinedialog.ui \
-    lexicalentrysearchdialog.ui
+    lexicalentrysearchdialog.ui \
+    lexiconedit.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

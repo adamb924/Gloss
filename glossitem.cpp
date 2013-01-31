@@ -118,7 +118,7 @@ void GlossItem::setGloss(const TextBit & gloss)
 {
     if( mGlosses.value(gloss.writingSystem()) != gloss )
     {
-        mDbAdapter->updateInterpretationGloss(gloss);
+        mDbAdapter->updateGloss(gloss);
         mGlosses.insert( gloss.writingSystem(), gloss );
         emit fieldsChanged();
         emit glossChanged(gloss);
@@ -130,7 +130,7 @@ void GlossItem::setTextForm(const TextBit & textForm)
     WritingSystem ws = textForm.writingSystem();
     if( mTextForms.value(ws) != textForm )
     {
-        mDbAdapter->updateInterpretationTextForm(textForm);
+        mDbAdapter->updateTextForm(textForm);
         mTextForms.insert( ws , textForm );
 
         updateGlossItemConcordance();

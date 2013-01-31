@@ -5,6 +5,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QMessageBox>
+#include <QSortFilterProxyModel>
 
 DatabaseQueryDialog::DatabaseQueryDialog(const QString & databaseName, QWidget *parent) :
     QDialog(parent),
@@ -38,7 +39,12 @@ void DatabaseQueryDialog::doQuery()
 
     QSqlQueryModel *model = new QSqlQueryModel( ui->queryResult );
     model->setQuery( q );
-    ui->queryResult->setModel(model);
+
+    QSortFilterProxyModel * proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel( model );
+    proxyModel->setFilterKeyColumn(-1);
+
+    ui->queryResult->setModel(proxyModel);
     if( model->query().lastError().type() != QSqlError::NoError )
         QMessageBox::warning(this, tr("Error"), model->query().lastError().text() );
 }

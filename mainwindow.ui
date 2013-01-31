@@ -343,6 +343,9 @@
    <property name="text">
     <string>Edit lexicon</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
   </action>
   <action name="actionRebuild_index">
    <property name="text">

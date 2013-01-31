@@ -46,7 +46,7 @@ qlonglong CreateLexicalEntryDialog::lexicalEntryId() const
 
 void CreateLexicalEntryDialog::fillData()
 {
-    QList<WritingSystem> glosses = mDbAdapter->lexicalEntryGlosses();
+    QList<WritingSystem> glosses = mDbAdapter->lexicalEntryGlossFields();
     foreach( WritingSystem ws , glosses )
     {
         LingEdit *edit = new LingEdit( TextBit("", ws) );
@@ -56,7 +56,7 @@ void CreateLexicalEntryDialog::fillData()
             edit->setText( mGlossItem->glosses()->value(ws).text() );
     }
 
-    QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationForms();
+    QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationFormFields();
     foreach( WritingSystem ws , citationForms )
     {
         LingEdit *edit = new LingEdit( TextBit("", ws) );

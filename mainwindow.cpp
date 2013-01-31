@@ -16,8 +16,8 @@
 #include "replacedialog.h"
 #include "singlephraseeditdialog.h"
 #include "choosetextlinedialog.h"
-#include "lexiconmodel.h"
 #include "indexsearchmodel.h"
+#include "lexiconedit.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -997,10 +997,7 @@ QStringList MainWindow::textsWithOpenWindows()
 
 void MainWindow::editLexicon()
 {
-    LexiconModel *model = new LexiconModel(mProject->dbAdapter());
-    model->setHeaderData(0, Qt::Horizontal, tr("Name"));
-
-    QTreeView *view = new QTreeView;
-    view->setModel(model);
-    view->show();
+    LexiconEdit *edit = new LexiconEdit( mProject->dbAdapter(), this );
+    connect( edit, SIGNAL(textFormIdSearch(qlonglong)), this, SLOT(searchForTextFormById(qlonglong)) );
+    edit->show();
 }

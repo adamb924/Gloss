@@ -56,7 +56,7 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analy
 
     mLayout->addWidget( new ImmutableLabel( TextBit( analysis.baselineSummary() , mWritingSystem ) , false, this ) );
 
-    QList<WritingSystem> glossLines = mDbAdapter->lexicalEntryGlosses();
+    QList<WritingSystem> glossLines = mDbAdapter->lexicalEntryGlossFields();
     for(int i=0; i<glossLines.count(); i++)
         mLayout->addWidget( new ImmutableLabel( TextBit( analysis.glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
 }

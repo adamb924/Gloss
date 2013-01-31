@@ -407,7 +407,7 @@ void WordDisplayWidget::copyGlossFromBaseline(QAction *action)
         bit.setId( id );
     }
 
-    mDbAdapter->updateInterpretationGloss( bit );
+    mDbAdapter->updateGloss( bit );
     mGlossEdits[ws]->setTextBit( bit );
 }
 

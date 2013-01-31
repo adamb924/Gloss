@@ -148,8 +148,8 @@ public:
     //! \brief Returns the meta analysis language
     WritingSystem metaLanguage() const;
 
-    QList<WritingSystem> lexicalEntryCitationForms() const;
-    QList<WritingSystem> lexicalEntryGlosses() const;
+    QList<WritingSystem> lexicalEntryCitationFormFields() const;
+    QList<WritingSystem> lexicalEntryGlossFields() const;
 
     //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, which are possible lexical entries for the given form.
     QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit ) const;
@@ -232,10 +232,13 @@ signals:
 
 public slots:
     //! \brief Updates a gloss in the database, where the id of the gloss is the id field of \a bit
-    void updateInterpretationGloss( const TextBit & bit );
+    void updateGloss( const TextBit & bit ) const;
 
     //! \brief Updates a text form in the database, where the id of the text form is the id field of \a bit
-    void updateInterpretationTextForm( const TextBit & bit );
+    void updateTextForm( const TextBit & bit ) const;
+
+    void updateLexicalEntryCitationForm( const TextBit & bit ) const;
+    void updateLexicalEntryGloss( const TextBit & bit ) const;
 
 };
 
