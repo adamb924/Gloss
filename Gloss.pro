@@ -64,7 +64,8 @@ SOURCES += main.cpp\
     lexiconedit.cpp \
     lexiconview.cpp \
     allomorphmodel.cpp \
-    morphologicalanalysismodel.cpp
+    morphologicalanalysismodel.cpp \
+    sqltabledialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -119,7 +120,8 @@ HEADERS  += mainwindow.h \
     lexiconedit.h \
     lexiconview.h \
     allomorphmodel.h \
-    morphologicalanalysismodel.h
+    morphologicalanalysismodel.h \
+    sqltabledialog.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -141,7 +143,8 @@ FORMS    += mainwindow.ui \
     mergeeafdialog.ui \
     choosetextlinedialog.ui \
     lexicalentrysearchdialog.ui \
-    lexiconedit.ui
+    lexiconedit.ui \
+    sqltabledialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip

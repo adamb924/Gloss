@@ -18,6 +18,7 @@
 #include "choosetextlinedialog.h"
 #include "indexsearchmodel.h"
 #include "lexiconedit.h"
+#include "sqltabledialog.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -333,16 +334,9 @@ void MainWindow::importFlexText()
 void MainWindow::sqlTableView( QAction * action )
 {
     QString name = action->data().toString();
-    QSqlTableModel *model = new QSqlTableModel(this,QSqlDatabase::database(mProject->dbAdapter()->dbFilename()));
-    model->setTable(name);
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->select();
-
-    QTableView *view = new QTableView;
-    view->setModel(model);
-    view->setSortingEnabled(true);
-    view->setWindowTitle(name);
-    view->show();
+    SqlTableDialog * dialog = new SqlTableDialog(name, mProject->dbAdapter());
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }
 
 void MainWindow::setProjectActionsEnabled(bool enabled)
@@ -359,6 +353,7 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
     ui->actionWriting_systems->setEnabled(enabled);
     ui->actionClose_project_without_saving->setEnabled(enabled);
     ui->actionSearch_gloss_items->setEnabled(enabled);
+    ui->actionEdit_lexicon->setEnabled(enabled);
 }
 
 void MainWindow::openText()
