@@ -23,11 +23,7 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 
     mGlossLines = lines;
 
-    setMaximumWidth(100);
-
     setupLayout();
-
-    setMinimumSize(128,20);
 
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
 
@@ -102,6 +98,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     TextBit gloss = mGlossItem->gloss( glossLine.writingSystem() );
     LingEdit *edit = new LingEdit( gloss , this);
     edit->matchTextAlignmentTo( mGlossLines.first().writingSystem().layoutDirection() );
+    edit->setMaximumWidth(100);
 
     mGlossEdits.insert(glossLine.writingSystem(), edit);
 
@@ -121,6 +118,7 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
     TextBit textForm = mGlossItem->textForm( glossLine.writingSystem() );
     LingEdit *edit = new LingEdit(  textForm , this);
     edit->matchTextAlignmentTo( mGlossLines.first().writingSystem().layoutDirection() );
+    edit->setMaximumWidth(100);
 
     mTextFormEdits.insert(glossLine.writingSystem(), edit);
 
