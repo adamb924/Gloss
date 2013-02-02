@@ -785,8 +785,11 @@ QHash<qlonglong,QString> DatabaseAdapter::searchLexicalEntries( const TextBit & 
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare( QString("select _id from LexicalEntry where _id in "
-              "( select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%%1%' union "
-                 " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' );").arg( bit.text() ).arg(bit.writingSystem().id()) );
+                       "( select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%1%' union "
+                       "select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%' union "
+                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' union "
+                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%' "
+                       " );").arg( bit.text() ).arg(bit.writingSystem().id()) );
 
     if( q.exec() )
     {
