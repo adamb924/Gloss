@@ -32,18 +32,12 @@ TextBit& TextBit::operator=(const TextBit & other)
 
 bool TextBit::operator==(const TextBit & other) const
 {
-    if(other.isNull())
-        return isNull();
-    else
-        return mText == other.mText && mWritingSystem == other.mWritingSystem && mId == other.mId;
+    return mText == other.mText && mWritingSystem == other.mWritingSystem && mId == other.mId;
 }
 
 bool TextBit::operator!=(const TextBit & other) const
 {
-    if(other.isNull())
-        return !isNull();
-    else
-        return mText != other.mText || mWritingSystem != other.mWritingSystem || mId != other.mId;
+    return mText != other.mText || mWritingSystem != other.mWritingSystem || mId != other.mId;
 }
 
 void TextBit::setText(const QString & text)
