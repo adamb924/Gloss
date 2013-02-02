@@ -135,7 +135,6 @@ FORMS    += mainwindow.ui \
     databasequerydialog.ui \
     createanalysisdialog.ui \
     lexicalentryform.ui \
-    genericlexicalentryform.ui \
     createlexicalentrydialog.ui \
     replacedialog.ui \
     searchreplaceform.ui \
