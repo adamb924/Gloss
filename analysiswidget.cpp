@@ -75,6 +75,7 @@ void AnalysisWidget::enterAnalysis()
     if( dialog.exec() == QDialog::Accepted )
     {
         ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), textBit().writingSystem(), textBit().id() ), mGlossItem,  mDbAdapter , this);
+        connect( &leDialog, SIGNAL(rejected()), this, SLOT(enterAnalysis()) );
         if( leDialog.exec() == QDialog::Accepted )
         {
             createInitializedLayout( leDialog.morphologicalAnalysis() );

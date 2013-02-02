@@ -28,6 +28,7 @@ public:
     MorphologicalAnalysis morphologicalAnalysis() const;
 
 signals:
+    void resegment();
 
 public slots:
 
@@ -37,6 +38,7 @@ private:
     MorphologicalAnalysis mAnalysis;
     QList<LexicalEntryForm*> mEntries;
     QDialogButtonBox *mButtonBox;
+    QPushButton * mOk;
 
     void fillMorphologicalAnalysis();
     void setupLayout();

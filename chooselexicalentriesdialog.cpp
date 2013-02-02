@@ -66,10 +66,22 @@ void ChooseLexicalEntriesDialog::setupLayout()
         mEntries << form;
     }
 
-    mButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-    connect(mButtonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(mButtonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    layout->addWidget(mButtonBox);
+    mOk = new QPushButton("OK", this);
+    QPushButton * cancel = new QPushButton("Cancel", this);
+    QPushButton * resegment = new QPushButton("Resegment", this);
+
+    QHBoxLayout *buttons = new QHBoxLayout;
+    buttons->addStretch(1);
+    buttons->addWidget(mOk);
+    buttons->addWidget(cancel);
+    buttons->addWidget(resegment);
+
+    connect( mOk, SIGNAL(clicked()), this, SLOT(accept()) );
+    connect( cancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect( resegment, SIGNAL(clicked()), this, SLOT(reject()));
+    connect( resegment, SIGNAL(clicked()), this, SIGNAL(resegment()) );
+
+    layout->addLayout(buttons);
 
     setAcceptable();
 }
@@ -80,5 +92,5 @@ void ChooseLexicalEntriesDialog::setAcceptable()
     foreach(LexicalEntryForm *form, mEntries)
         if( form->id() == -1 )
             acceptable = false;
-    mButtonBox->button(QDialogButtonBox::Ok)->setEnabled(acceptable);
+    mOk->setEnabled(acceptable);
 }
