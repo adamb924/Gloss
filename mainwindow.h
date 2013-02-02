@@ -50,6 +50,8 @@ public slots:
     void searchForInterpretationById(qlonglong id);
     void searchForTextFormById(qlonglong id);
     void searchForGlossById(qlonglong id);
+    void searchForLexicalEntryById(qlonglong id);
+    void searchForAllomorphById(qlonglong id);
 
 private slots:
     void rebuildIndex();
@@ -82,6 +84,8 @@ private slots:
     void searchForInterpretationById();
     void searchForTextFormById();
     void searchForGlossById();
+    void searchForLexicalEntryById();
+    void searchForAllomorphById();
 
 
     void searchResultSelected( const QModelIndex & index );

@@ -95,6 +95,8 @@
     <addaction name="actionInterpreation_by_id"/>
     <addaction name="actionText_form_by_id"/>
     <addaction name="actionGloss_by_id"/>
+    <addaction name="actionAllomorph_by_id"/>
+    <addaction name="actionLexical_entry_by_id"/>
     <addaction name="separator"/>
     <addaction name="actionSearch_files_instead_of_index"/>
     <addaction name="actionRebuild_index"/>
@@ -350,6 +352,16 @@
   <action name="actionRebuild_index">
    <property name="text">
     <string>Rebuild index</string>
+   </property>
+  </action>
+  <action name="actionAllomorph_by_id">
+   <property name="text">
+    <string>Allomorph by id...</string>
+   </property>
+  </action>
+  <action name="actionLexical_entry_by_id">
+   <property name="text">
+    <string>Lexical entry by id...</string>
    </property>
   </action>
  </widget>

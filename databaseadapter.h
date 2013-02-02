@@ -203,6 +203,8 @@ public:
     QSqlQuery searchIndexForTextForm( qlonglong id ) const;
     QSqlQuery searchIndexForGloss( qlonglong id ) const;
     QSqlQuery searchIndexForInterpretation( qlonglong id ) const;
+    QSqlQuery searchIndexForLexicalEntry( qlonglong id ) const;
+    QSqlQuery searchIndexForAllomorph( qlonglong id ) const;
 
     int removeUnusedMorphologicalAnalysisMembers() const;
     int removeUnusedAllomorphs() const;

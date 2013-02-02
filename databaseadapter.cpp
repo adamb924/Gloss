@@ -1312,6 +1312,24 @@ QSqlQuery DatabaseAdapter::searchIndexForInterpretation( qlonglong id ) const
     return q;
 }
 
+QSqlQuery DatabaseAdapter::searchIndexForLexicalEntry( qlonglong id ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select TextName,LineNumber,count(Id) from TextFormIndex,MorphologicalAnalysisMembers,Allomorph where LexicalEntryId=:Id and TextFormId=Id and AllomorphId=Allomorph._id group by TextName,LineNumber order by TextName asc,LineNumber asc;" );
+    q.bindValue(":Id", id);
+    q.exec();
+    return q;
+}
+
+QSqlQuery DatabaseAdapter::searchIndexForAllomorph( qlonglong id ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select TextName,LineNumber,count(Id) from TextFormIndex,MorphologicalAnalysisMembers where AllomorphId=:Id and TextFormId=Id group by TextName,LineNumber order by TextName asc,LineNumber asc;" );
+    q.bindValue(":Id", id);
+    q.exec();
+    return q;
+}
+
 int DatabaseAdapter::removeUnusedMorphologicalAnalysisMembers() const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));

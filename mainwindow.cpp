@@ -90,6 +90,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionRebuild_index, SIGNAL(triggered()), this, SLOT(rebuildIndex()));
 
+    connect( ui->actionLexical_entry_by_id, SIGNAL(triggered()), this, SLOT(searchForLexicalEntryById()) );
+    connect( ui->actionAllomorph_by_id, SIGNAL(triggered()), this, SLOT(searchForAllomorphById()) );
+
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
 
@@ -539,6 +542,30 @@ void MainWindow::searchForGlossById(qlonglong id)
     createSearchResultDock(model, tr("Gloss ID: %1").arg(id));
 }
 
+void MainWindow::searchForLexicalEntryById(qlonglong id)
+{
+    if( !mProject->dbAdapter()->textIndicesExist() )
+    {
+        if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("Searching for lexical entries requires the index to be buildt. This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
+            return;
+        mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
+    }
+    QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForLexicalEntry( id ) );
+    createSearchResultDock(model, tr("Lexical Entry ID: %1").arg(id));
+}
+
+void MainWindow::searchForAllomorphById(qlonglong id)
+{
+    if( !mProject->dbAdapter()->textIndicesExist() )
+    {
+        if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("Searching for lexical entries requires the index to be buildt. This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
+            return;
+        mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
+    }
+    QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForAllomorph( id ) );
+    createSearchResultDock(model, tr("Allomorph ID: %1").arg(id));
+}
+
 void MainWindow::rebuildIndex()
 {
     mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
@@ -566,6 +593,22 @@ void MainWindow::searchForGlossById()
     int id = QInputDialog::getInt ( this, tr("Search by gloss ID"), tr("Gloss ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
         searchForGlossById(id);
+}
+
+void MainWindow::searchForLexicalEntryById()
+{
+    bool ok;
+    int id = QInputDialog::getInt ( this, tr("Search by lexical entry ID"), tr("Gloss ID"), 1, -2147483647, 2147483647, 1, &ok );
+    if( ok )
+        searchForLexicalEntryById(id);
+}
+
+void MainWindow::searchForAllomorphById()
+{
+    bool ok;
+    int id = QInputDialog::getInt ( this, tr("Search by allomorph ID"), tr("Gloss ID"), 1, -2147483647, 2147483647, 1, &ok );
+    if( ok )
+        searchForAllomorphById(id);
 }
 
 void MainWindow::substringSearchGlossItems()
