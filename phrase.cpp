@@ -33,7 +33,11 @@ TextBit Phrase::gloss(const WritingSystem & ws)
 
 void Phrase::setPhrasalGloss( const TextBit & bit )
 {
-    mGlosses.insert( bit.writingSystem(), bit );
+    if( !mGlosses.contains(bit.writingSystem()) || mGlosses.value(bit.writingSystem()) !=  bit )
+    {
+        mGlosses.insert( bit.writingSystem(), bit );
+        emit glossChanged();
+    }
 }
 
 QString Phrase::equivalentBaselineLineText() const

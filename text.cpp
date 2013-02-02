@@ -164,6 +164,7 @@ void Text::setGlossItemsFromBaseline()
             mPhrases.append( new Phrase( this, mProject) );
             connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
             connect( mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), this, SLOT(requestGuiRefresh(Phrase*)));
+            connect( mPhrases.last(), SIGNAL(glossChanged()), this, SLOT(markAsChanged()));
 
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )
@@ -282,6 +283,7 @@ Text::FlexTextReadResult Text::readTextFromFlexText(QFile *file, bool baselineIn
                 mPhrases.append( new Phrase(this, mProject) );
                 connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
                 connect( mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), this, SLOT(requestGuiRefresh(Phrase*)));
+                connect( mPhrases.last(), SIGNAL(glossChanged()), this, SLOT(markAsChanged()));
 
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )

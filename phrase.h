@@ -50,6 +50,7 @@ public:
 
 signals:
     void phraseChanged();
+    void glossChanged();
     void requestRemovePhrase(Phrase * phrase);
     void requestGuiRefresh(Phrase * phrase);
 
