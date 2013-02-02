@@ -65,7 +65,8 @@ SOURCES += main.cpp\
     lexiconview.cpp \
     allomorphmodel.cpp \
     morphologicalanalysismodel.cpp \
-    sqltabledialog.cpp
+    sqltabledialog.cpp \
+    tagmodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -121,7 +122,8 @@ HEADERS  += mainwindow.h \
     lexiconview.h \
     allomorphmodel.h \
     morphologicalanalysismodel.h \
-    sqltabledialog.h
+    sqltabledialog.h \
+    tagmodel.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

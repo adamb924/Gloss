@@ -194,6 +194,7 @@ public:
     QList<qlonglong> lexicalEntryIds() const;
 
     QStringList grammaticalTagsForAllomorph(qlonglong allomorphId) const;
+    QStringList grammaticalTags(qlonglong lexicalEntryId) const;
 
     bool textIndicesExist() const;
     void createTextIndices( const QSet<QString> * filePaths ) const;
@@ -209,6 +210,8 @@ public:
     int removeUnusedMorphologicalAnalysisMembers() const;
     int removeUnusedAllomorphs() const;
     int removeUnusedLexicalEntries() const;
+
+    QStringList availableGrammaticalTags() const;
 
 private:
     QString mFilename;

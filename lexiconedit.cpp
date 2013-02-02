@@ -5,6 +5,7 @@
 #include "allomorphmodel.h"
 #include "morphologicalanalysismodel.h"
 #include "mainwindow.h"
+#include "tagmodel.h"
 
 #include <QSortFilterProxyModel>
 
@@ -39,6 +40,17 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     analysisProxyModel->setSourceModel( analysisModel );
     analysisProxyModel->setFilterKeyColumn(-1);
     ui->analysisTable->setModel( analysisProxyModel );
+
+    TagModel *allTags = new TagModel( dbAdapter );
+    allTags->setLexicalEntry(-1);
+    ui->allTags->setModel(allTags);
+    ui->allTags->setDragEnabled(true);
+
+    TagModel *lexicalEntryTags = new TagModel( dbAdapter );
+    ui->lexicalEntryTags->setModel(lexicalEntryTags);
+    ui->lexicalEntryTags->setDragEnabled(true);
+
+    connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), lexicalEntryTags, SLOT(setLexicalEntry(qlonglong)));
 
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), analysisModel, SLOT(setLexicalEntry(qlonglong)));
     connect( ui->analysisTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(analysisDoubleClicked(QModelIndex)) );
