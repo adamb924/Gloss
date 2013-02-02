@@ -437,7 +437,11 @@ QString Project::doDatabaseCleanup()
 
     int nRemovedTextForms = removeUnusedTextForms();
 
-    return tr("%1 unused interpretations removed, %2 unused glosses removed, %3 unused text forms removed").arg(nRemovedInterpretations).arg(nRemovedGlosses).arg(nRemovedTextForms);
+    int analysisMembers = mDbAdapter->removeUnusedMorphologicalAnalysisMembers();
+    int allomorphs = mDbAdapter->removeUnusedAllomorphs();
+    int lexicalEntries = mDbAdapter->removeUnusedLexicalEntries();
+
+    return tr("Removed: %1 unused interpretations, %2 unused glosses, %3 unused text forms, %4 morphological analysis members, %5 allomorphs, %6 lexical entries").arg(nRemovedInterpretations).arg(nRemovedGlosses).arg(nRemovedTextForms).arg(analysisMembers).arg(allomorphs).arg(lexicalEntries);
 }
 
 int Project::removeUnusedInterpretations()

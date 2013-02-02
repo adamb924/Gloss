@@ -204,6 +204,10 @@ public:
     QSqlQuery searchIndexForGloss( qlonglong id ) const;
     QSqlQuery searchIndexForInterpretation( qlonglong id ) const;
 
+    int removeUnusedMorphologicalAnalysisMembers() const;
+    int removeUnusedAllomorphs() const;
+    int removeUnusedLexicalEntries() const;
+
 private:
     QString mFilename;
 

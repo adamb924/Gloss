@@ -1311,3 +1311,28 @@ QSqlQuery DatabaseAdapter::searchIndexForInterpretation( qlonglong id ) const
     q.exec();
     return q;
 }
+
+int DatabaseAdapter::removeUnusedMorphologicalAnalysisMembers() const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.exec("delete from MorphologicalAnalysisMembers where TextFormId not in (select _id from TextForms);");
+    return q.numRowsAffected();
+}
+
+int DatabaseAdapter::removeUnusedAllomorphs() const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.exec("delete from Allomorph where _id not in (select AllomorphId from MorphologicalAnalysisMembers);");
+    return q.numRowsAffected();
+}
+
+int DatabaseAdapter::removeUnusedLexicalEntries() const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.exec("delete from LexicalEntry where _id not in (select LexicalEntryId from Allomorph);");
+    int nLexEntriesDeleted = q.numRowsAffected();
+    q.exec("delete from LexicalEntryGloss where LexicalEntryId not in (select _id from LexicalEntry);");
+    q.exec("delete from LexicalEntry where LexicalEntryIdCitationForm not in (select _id from LexicalEntry);");
+    q.exec("delete from LexicalEntry where LexicalEntryIdGrammaticalTags not in (select _id from LexicalEntry);");
+    return nLexEntriesDeleted;
+}
