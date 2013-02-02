@@ -618,3 +618,19 @@ void Text::requestGuiRefresh( Phrase * phrase )
     if( lineNumber != -1 )
         emit phraseRefreshNeeded( lineNumber );
 }
+
+void Text::removeLine( int lineNumber )
+{
+    if( lineNumber < mPhrases.count() )
+    {
+        markAsChanged();
+
+        QStringList lines = mBaselineText.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
+        lines.removeAt(lineNumber);
+        mBaselineText = lines.join( "\n" );
+
+        delete mPhrases.takeAt( lineNumber );
+        emit baselineTextChanged(mBaselineText);
+        emit glossItemsChanged();
+    }
+}

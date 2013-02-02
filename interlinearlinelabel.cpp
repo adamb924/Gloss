@@ -2,6 +2,7 @@
 
 #include <QMenu>
 #include <QContextMenuEvent>
+#include <QMessageBox>
 
 InterlinearLineLabel::InterlinearLineLabel(int lineNumber, const QString & label, bool soundAvailable, const QString & soundSummary, QWidget *parent) :
     QLabel(label, parent)
@@ -28,6 +29,8 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
     if( !mSoundAvailable )
         playSound->setEnabled(false);
 
+    menu.addAction(tr("Remove line"), this, SLOT(emitRemoveLine()) );
+
     menu.exec(event->globalPos());
 }
 
@@ -49,4 +52,10 @@ void InterlinearLineLabel::emitPlaySound()
 void InterlinearLineLabel::emitEditLine()
 {
     emit editLine(mLineNumber);
+}
+
+void InterlinearLineLabel::emitRemoveLine()
+{
+    if( QMessageBox::Yes == QMessageBox::question(this, tr("Confirm deletion"), tr("Are you sure you want to remove this gloss item? This cannot be undone."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) )
+        emit removeLine(mLineNumber);
 }

@@ -70,6 +70,7 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
     connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
     connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));
+    connect(lineNumber, SIGNAL(removeLine(int)), mText, SLOT(removeLine(int)) );
 
     flowLayout->addWidget(lineNumber);
     mLineLabels.insert(i, lineNumber);

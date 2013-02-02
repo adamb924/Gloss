@@ -93,6 +93,7 @@ public:
 public slots:
     void setBaselineFromGlossItems();
     void markAsChanged();
+    void removeLine( int lineNumber );
 
 private:
     FlexTextReadResult mReadResult;
