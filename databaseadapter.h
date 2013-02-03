@@ -213,6 +213,13 @@ public:
 
     QStringList availableGrammaticalTags() const;
 
+    void setTagsForLexicalEntry( qlonglong lexicalEntryId, const QStringList & tags ) const;
+
+    //! \brief Renames a lexical entry tag. If the new name is an existing tag, references to the old tag are replaced with references to the existing tag.
+    void renameTag( const QString & oldName, const QString & newName ) const;
+
+    void removeTag( const QString & tag ) const;
+
 private:
     QString mFilename;
 

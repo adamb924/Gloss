@@ -62,7 +62,7 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists LexicalEntryCitationForm ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
-    if( !q.exec("create table if not exists LexicalEntryGrammaticalTags ( _id integer primary key autoincrement, LexicalEntryId integer, TagId integer );") )
+    if( !q.exec("create table if not exists LexicalEntryTags ( LexicalEntryId integer, TagId integer );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists GrammaticalTags ( _id integer primary key autoincrement, Tag text unique on conflict ignore );") )
@@ -890,7 +890,7 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, All
             if( ! q.exec() )
                 throw -1;
 
-            q.prepare("insert into LexicalEntryGrammaticalTags (LexicalEntryId,TagId) values select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;");
+            q.prepare("insert or ignore into LexicalEntryTags (LexicalEntryId,TagId) values select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;");
             q.bindValue(":LexicalEntryId",lexicalEntryId);
             q.bindValue(":Tag",tagIter.next());
 
@@ -1147,7 +1147,7 @@ QStringList DatabaseAdapter::grammaticalTagsForAllomorph(qlonglong allomorphId) 
 {
     QStringList tags;
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select GrammaticalTags.Tag from GrammaticalTags,LexicalEntryGrammaticalTags where GrammaticalTags._id=LexicalEntryGrammaticalTags.TagId and LexicalEntryId in (select LexicalEntryId from Allomorph where _id=:_id);");
+    q.prepare("select GrammaticalTags.Tag from GrammaticalTags,LexicalEntryTags where GrammaticalTags._id=LexicalEntryTags.TagId and LexicalEntryId in (select LexicalEntryId from Allomorph where _id=:_id);");
     q.bindValue(":_id",allomorphId);
     if( !q.exec()  )
         qWarning() << "DatabaseAdapter::grammaticalTagsForAllomorph" << q.lastError().text() << q.executedQuery() << allomorphId;
@@ -1160,7 +1160,7 @@ QStringList DatabaseAdapter::grammaticalTags(qlonglong lexicalEntryId) const
 {
     QStringList tags;
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select GrammaticalTags.Tag from GrammaticalTags,LexicalEntryGrammaticalTags where GrammaticalTags._id=LexicalEntryGrammaticalTags.TagId and LexicalEntryId=:_id;");
+    q.prepare("select GrammaticalTags.Tag from GrammaticalTags,LexicalEntryTags where GrammaticalTags._id=LexicalEntryTags.TagId and LexicalEntryId=:_id;");
     q.bindValue(":_id",lexicalEntryId);
     if( !q.exec()  )
         qWarning() << "DatabaseAdapter::grammaticalTags" << q.lastError().text() << q.executedQuery();
@@ -1391,4 +1391,88 @@ QStringList DatabaseAdapter::availableGrammaticalTags() const
         tags << q.value(0).toString();
     return tags;
 
+}
+
+void DatabaseAdapter::setTagsForLexicalEntry( qlonglong lexicalEntryId, const QStringList & tags ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    q.prepare( "delete from LexicalEntryTags where LexicalEntryId=:LexicalEntryId;" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    q.exec();
+
+    q.prepare( "insert into LexicalEntryTags (LexicalEntryId,TagId) select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+
+    QStringListIterator iter(tags);
+    while(iter.hasNext())
+    {
+        q.bindValue(":Tag", iter.next() );
+        q.exec();
+    }
+}
+
+void DatabaseAdapter::renameTag( const QString & oldName, const QString & newName ) const
+{
+    qlonglong oldTagId = -1;
+    qlonglong newTagId = -1;
+
+    // I'm taking a few extra calls because this will be infrequently invoked, and the cost to code clarity would be high
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select _id from GrammaticalTags where Tag=:Tag;" );
+    q.bindValue(":Tag", oldName );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        oldTagId = q.value(0).toLongLong();
+
+    q.prepare( "select _id from GrammaticalTags where Tag=:Tag;" );
+    q.bindValue(":Tag", newName );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        newTagId = q.value(0).toLongLong();
+
+    if( newTagId != -1 ) // the new tag already exists
+    {
+        q.prepare("update LexicalEntryTags set TagId=:NewTagId where Tag=:OldTagId;");
+        q.bindValue(":NewTagId", newTagId );
+        q.bindValue(":OldTagId", oldTagId );
+        if( !q.exec() )
+            qWarning() << q.lastError().text() << q.executedQuery();
+    }
+    else // then we're just renaming a tag
+    {
+        q.prepare("update GrammaticalTags set Tag=:Tag where _id=:OldTagId;");
+        q.bindValue(":Tag", newName );
+        q.bindValue(":OldTagId", oldTagId );
+        if( !q.exec() )
+            qWarning() << q.lastError().text() << q.executedQuery();
+    }
+}
+
+void DatabaseAdapter::removeTag( const QString & tag ) const
+{
+    qlonglong tagId = -1;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select _id from GrammaticalTags where Tag=:Tag;" );
+    q.bindValue(":Tag", tag );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        tagId = q.value(0).toLongLong();
+
+    if( tagId == -1 )
+        return;
+
+    q.exec("delete from LexicalEntryTags where TagId=:TagId");
+    q.bindValue(":TagId", tagId );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    q.exec("delete from GrammaticalTags where _id=:TagId");
+    q.bindValue(":TagId", tagId );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
 }

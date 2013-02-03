@@ -66,7 +66,9 @@ SOURCES += main.cpp\
     allomorphmodel.cpp \
     morphologicalanalysismodel.cpp \
     sqltabledialog.cpp \
-    tagmodel.cpp
+    tagmodel.cpp \
+    tagview.cpp \
+    alltagsmodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -123,7 +125,9 @@ HEADERS  += mainwindow.h \
     allomorphmodel.h \
     morphologicalanalysismodel.h \
     sqltabledialog.h \
-    tagmodel.h
+    tagmodel.h \
+    tagview.h \
+    alltagsmodel.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
