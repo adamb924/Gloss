@@ -60,7 +60,6 @@ SOURCES += main.cpp\
     lexicalentrysearchdialog.cpp \
     indexsearchmodel.cpp \
     treeitem.cpp \
-    lexiconstandardmodel.cpp \
     lexiconedit.cpp \
     lexiconview.cpp \
     allomorphmodel.cpp \
@@ -68,7 +67,8 @@ SOURCES += main.cpp\
     sqltabledialog.cpp \
     tagmodel.cpp \
     tagview.cpp \
-    alltagsmodel.cpp
+    alltagsmodel.cpp \
+    lexiconmodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -119,7 +119,6 @@ HEADERS  += mainwindow.h \
     lexicalentrysearchdialog.h \
     indexsearchmodel.h \
     treeitem.h \
-    lexiconstandardmodel.h \
     lexiconedit.h \
     lexiconview.h \
     allomorphmodel.h \
@@ -127,7 +126,8 @@ HEADERS  += mainwindow.h \
     sqltabledialog.h \
     tagmodel.h \
     tagview.h \
-    alltagsmodel.h
+    alltagsmodel.h \
+    lexiconmodel.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

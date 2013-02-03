@@ -25,6 +25,9 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="toolTip">
+         <string>Filter</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -35,6 +38,12 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <attribute name="horizontalHeaderVisible">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
        </widget>
       </item>
      </layout>
@@ -55,6 +64,12 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Allomorphs</string>
+        </property>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -77,6 +92,12 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Morphological Analyses</string>
+        </property>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -95,6 +116,9 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Tags</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -110,6 +134,9 @@
             <width>16777215</width>
             <height>16777215</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>All available tags</string>
           </property>
          </widget>
         </item>

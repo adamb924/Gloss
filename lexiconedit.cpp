@@ -1,7 +1,7 @@
 #include "lexiconedit.h"
 #include "ui_lexiconedit.h"
 
-#include "lexiconstandardmodel.h"
+#include "lexiconmodel.h"
 #include "allomorphmodel.h"
 #include "morphologicalanalysismodel.h"
 #include "mainwindow.h"
@@ -16,11 +16,15 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
 {
     ui->setupUi(this);
 
-    LexiconStandardModel *lexiconModel = new LexiconStandardModel( dbAdapter );
+    LexiconModel *lexiconModel = new LexiconModel( dbAdapter );
     QSortFilterProxyModel * lexiconProxyModel = new QSortFilterProxyModel(this);
     lexiconProxyModel->setSourceModel( lexiconModel );
     lexiconProxyModel->setFilterKeyColumn(-1);
     ui->lexiconTable->setModel( lexiconProxyModel );
+    ui->lexiconTable->setColumnHidden(1,true);
+    ui->lexiconTable->setColumnHidden(3,true);
+    ui->lexiconTable->setColumnHidden(5,true);
+    ui->lexiconTable->setColumnHidden(7,true);
 
     connect( ui->filterEdit, SIGNAL(textChanged(QString)), lexiconProxyModel, SLOT(setFilterRegExp(QString)) );
 

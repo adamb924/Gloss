@@ -17,7 +17,7 @@ void AllomorphModel::setLexicalEntry( qlonglong lexicalEntryId )
     mLexicalEntryId = lexicalEntryId;
 
     QSqlQuery q(QSqlDatabase::database( mDbAdapter->dbFilename() ));
-    q.prepare( "select Form,Name from Allomorph,WritingSystems where LexicalEntryId=:LexicalEntryId and Allomorph.WritingSystem=WritingSystems._id;" );
+    q.prepare( "select Form as Allomorph,Name as WS from Allomorph,WritingSystems where LexicalEntryId=:LexicalEntryId and Allomorph.WritingSystem=WritingSystems._id;" );
     q.bindValue(":LexicalEntryId", lexicalEntryId);
     q.exec();
     setQuery(q);
