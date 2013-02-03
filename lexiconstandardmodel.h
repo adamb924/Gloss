@@ -18,13 +18,14 @@ public:
     enum Type { Gloss, CitationForm, Other };
     enum Data { LexicalEntryId = Qt::UserRole, TextFormGlossId = Qt::UserRole + 1 };
 
+    QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
+
 signals:
 
 public slots:
 
 private:
     void refreshQuery();
-    void setHeaders();
     QString buildQueryString() const;
     QString buildCountQueryString() const;
     int rowCount ( const QModelIndex & parent = QModelIndex() ) const;

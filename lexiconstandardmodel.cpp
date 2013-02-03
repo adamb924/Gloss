@@ -9,8 +9,6 @@ LexiconStandardModel::LexiconStandardModel(const DatabaseAdapter * dbAdapter, QO
     mGlossFields= mDbAdapter->lexicalEntryGlossFields();
     mCitationFormFields = mDbAdapter->lexicalEntryCitationFormFields();
 
-    setHeaders();
-
     mQuery = QSqlQuery(QSqlDatabase::database( mDbAdapter->dbFilename() ));
 
     mRowCount = 0;
@@ -25,14 +23,6 @@ LexiconStandardModel::LexiconStandardModel(const DatabaseAdapter * dbAdapter, QO
 void LexiconStandardModel::refreshQuery()
 {
     mQuery.exec( mQueryString );
-}
-
-void LexiconStandardModel::setHeaders()
-{
-    for(int i=0; i< mCitationFormFields.count(); i++)
-        setHeaderData( columnForCitationForm( i ) , Qt::Horizontal , mCitationFormFields.at(i).name() );
-    for(int i=0; i< mGlossFields.count(); i++)
-        setHeaderData( columnForGloss( i ) , Qt::Horizontal , mGlossFields.at(i).name() );
 }
 
 QString LexiconStandardModel::buildQueryString() const
@@ -79,7 +69,7 @@ QString LexiconStandardModel::buildQueryString() const
     // add the text form count
     selectStatements << "TF";
     joins << "( select LexicalEntryId, count( distinct TextFormId ) as TF from MorphologicalAnalysisMembers,Allomorph where MorphologicalAnalysisMembers.AllomorphId=Allomorph._id group by LexicalEntryId ) as TextFormCount ";
-    onStatement << "TextFormCount.LexicalEntryId";
+    onStatement << "TextFormCount.LexicalEntryId and TextFormCount.LexicalEntryId";
 
     return "select " + selectStatements.join(",") + " from " + joins.join(" inner join ") + " on " + onStatement.join("=");
 }
@@ -215,4 +205,32 @@ bool LexiconStandardModel::setData(const QModelIndex &index,
         return true;
     }
     return false;
+}
+
+QVariant LexiconStandardModel::headerData ( int section, Qt::Orientation orientation, int role ) const
+{
+    if( role == Qt::DisplayRole && orientation == Qt::Horizontal )
+    {
+        if( section < mCitationFormFields.count() )
+        {
+            return mCitationFormFields.at(section).name();
+        }
+        else if( section < mCitationFormFields.count() + mGlossFields.count() )
+        {
+            return mGlossFields.at( section - mCitationFormFields.count() ).name();
+        }
+        else if( section - (mCitationFormFields.count() + mGlossFields.count()) == 0 )
+        {
+            return tr("# Allomorphs");
+        }
+        else if( section - (mCitationFormFields.count() + mGlossFields.count()) == 1 )
+        {
+            return tr("# Text Forms");
+        }
+    }
+    else if( role == Qt::DisplayRole && orientation == Qt::Vertical )
+    {
+        return section;
+    }
+    return QVariant();
 }

@@ -198,6 +198,7 @@ public:
 
     bool textIndicesExist() const;
     void createTextIndices( const QSet<QString> * filePaths ) const;
+    void createIndex( const QString & tableName, const QString & queryString, const QSet<QString> * filePaths ) const;
     void createTextFormIndex( const QSet<QString> * filePaths ) const;
     void createGlossIndex( const QSet<QString> * filePaths ) const;
     void createInterpretationIndex( const QSet<QString> * filePaths ) const;
