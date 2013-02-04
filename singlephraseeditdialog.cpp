@@ -20,7 +20,9 @@ SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *projec
 
     setTitle();
 
-    InterlinearDisplayWidget *idw = new InterlinearDisplayWidget( mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, mLines, this );
+    InterlinearDisplayWidget *idw = new InterlinearDisplayWidget( mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this );
+    idw->setLines(mLines);
+    idw->setLayoutFromText();
     connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()));
 
     ui->layout->addWidget( idw );

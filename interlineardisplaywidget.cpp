@@ -34,29 +34,6 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemTy
     setWidgetResizable(true);
     setBackgroundRole(QPalette::Light);
     this->setWidget( theWidget );
-
-    setLayoutFromText();
-}
-
-InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QList<int> lines, QWidget *parent)
-{
-    mText = text;
-    mProject = project;
-    mInterlinearDisplayLines = interlinearDisplayLines;
-    mPhrasalGlossLines = phrasalGlossLines;
-    mLines = lines;
-
-    mCurrentLine = -1;
-
-    mLayout = new QVBoxLayout;
-    QWidget *theWidget = new QWidget(this);
-    theWidget->setLayout(mLayout);
-
-    setWidgetResizable(true);
-    setBackgroundRole(QPalette::Light);
-    this->setWidget( theWidget );
-
-    setLayoutFromText();
 }
 
 InterlinearDisplayWidget::~InterlinearDisplayWidget()
@@ -268,6 +245,11 @@ void InterlinearDisplayWidget::setLinesToDefault()
     mLines.clear();
     for(int i=0; i<mText->phrases()->count(); i++)
         mLines << i;
+}
+
+void InterlinearDisplayWidget::setLines( const QList<int> lines )
+{
+    mLines = lines;
 }
 
 void InterlinearDisplayWidget::requestLineRefresh( int line )

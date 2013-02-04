@@ -24,6 +24,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     ui->baselineTextEdit->setPlainText( text->baselineText() );
 
     mGloss = new InterlinearDisplayWidget(mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this);
+    mGloss->setLayoutFromText();
     ui->glossTab->layout()->addWidget(mGloss);
 
     // text update connections
@@ -34,6 +35,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, QWidget *pare
     connect( mGloss, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
 
     mAnalysis = new InterlinearDisplayWidget(mProject->dbAdapter()->analysisInterlinearLines(), mProject->dbAdapter()->analysisPhrasalGlossLines(), mText, mProject, this);
+    mAnalysis->setLayoutFromText();
     ui->morphologyTab->layout()->addWidget(mAnalysis);
 
     connect( text, SIGNAL(baselineTextChanged(QString)), ui->baselineTextEdit, SLOT(setPlainText(QString)) );
