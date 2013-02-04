@@ -68,7 +68,8 @@ SOURCES += main.cpp\
     tagmodel.cpp \
     tagview.cpp \
     alltagsmodel.cpp \
-    lexiconmodel.cpp
+    lexiconmodel.cpp \
+    sqlquerywriter.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -127,7 +128,8 @@ HEADERS  += mainwindow.h \
     tagmodel.h \
     tagview.h \
     alltagsmodel.h \
-    lexiconmodel.h
+    lexiconmodel.h \
+    sqlquerywriter.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

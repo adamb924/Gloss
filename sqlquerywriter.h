@@ -1,0 +1,18 @@
+#ifndef SQLQUERYWRITER_H
+#define SQLQUERYWRITER_H
+
+#include <QSqlQuery>
+class QString;
+
+class SqlQueryWriter
+{
+public:
+    SqlQueryWriter(const QSqlQuery & query);
+
+    bool serialize(const QString & filePath);
+
+private:
+    QSqlQuery mQuery;
+};
+
+#endif // SQLQUERYWRITER_H

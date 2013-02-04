@@ -2,6 +2,7 @@
 #define DATABASEQUERYDIALOG_H
 
 #include <QDialog>
+#include <QSqlQuery>
 
 namespace Ui {
     class DatabaseQueryDialog;
@@ -17,9 +18,11 @@ public:
 
 private:
     Ui::DatabaseQueryDialog *ui;
+    QSqlQuery mQuery;
     QString mFilename;
 private slots:
     void doQuery();
+    void saveCsv();
 };
 
 #endif // DATABASEQUERYDIALOG_H
