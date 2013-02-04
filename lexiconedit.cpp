@@ -39,6 +39,7 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     ui->allomorphTable->setModel( allomorphProxyModel );
 
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), allomorphModel, SLOT(setLexicalEntry(qlonglong)) );
+    connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), ui->allomorphTable, SLOT(resizeColumnsToContents()) );
 
     MorphologicalAnalysisModel *analysisModel = new MorphologicalAnalysisModel( dbAdapter );
     QSortFilterProxyModel * analysisProxyModel = new QSortFilterProxyModel(this);
@@ -57,6 +58,8 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), lexicalEntryTags, SLOT(setLexicalEntry(qlonglong)));
 
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), analysisModel, SLOT(setLexicalEntry(qlonglong)));
+    connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), ui->analysisTable, SLOT(resizeColumnsToContents()) );
+
     connect( ui->analysisTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(analysisDoubleClicked(QModelIndex)) );
 }
 
