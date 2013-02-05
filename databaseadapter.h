@@ -26,9 +26,6 @@ public:
     DatabaseAdapter(const QString & filename, QObject *parent = 0);
     ~DatabaseAdapter();
 
-    //! \brief Returns the database object
-    QSqlDatabase* sqlDatabase();
-
     //! \brief Returns a set with all interpretation ids
     QSet<qlonglong> interpretationIds() const;
 
