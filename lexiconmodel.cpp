@@ -19,9 +19,7 @@ LexiconModel::LexiconModel(const DatabaseAdapter * dbAdapter, QObject *parent) :
 
 void LexiconModel::refreshQuery()
 {
-    QSqlQuery q(QSqlDatabase::database( mDbAdapter->dbFilename() ));
-    q.exec(mQueryString);
-    setQuery(q);
+    setQuery(mQueryString , QSqlDatabase::database( mDbAdapter->dbFilename() ) );
 }
 
 QString LexiconModel::buildQueryString()
@@ -123,18 +121,24 @@ bool LexiconModel::setData(const QModelIndex &modelIndex,
         int i;
         typeFromColumn( modelIndex.column() , type , i );
 
+
+        qlonglong databaseIndex = -1;
         switch( type )
         {
         case LexiconModel::CitationForm:
-            mDbAdapter->updateLexicalEntryCitationForm( TextBit( value.toString(), WritingSystem(), index( modelIndex.row(), modelIndex.column() - 1 ).data().toLongLong() ) );
+            databaseIndex = index( modelIndex.row(), modelIndex.column() - 1 ).data().toLongLong();
+            clear();
+            mDbAdapter->updateLexicalEntryCitationForm( TextBit( value.toString(), WritingSystem(), databaseIndex ) );
             break;
         case LexiconModel::Gloss:
-            mDbAdapter->updateLexicalEntryGloss( TextBit( value.toString(), WritingSystem(), index( modelIndex.row(), modelIndex.column() - 1 ).data().toLongLong() ) );
+            databaseIndex = index( modelIndex.row(), modelIndex.column() - 1 ).data().toLongLong();
+            clear();
+            mDbAdapter->updateLexicalEntryGloss( TextBit( value.toString(), WritingSystem(), databaseIndex ) );
             break;
         case LexiconModel::Other:
             break;
         }
-        emit dataChanged(modelIndex, modelIndex);
+//        emit dataChanged(modelIndex, modelIndex);
         refreshQuery();
         return true;
     }
