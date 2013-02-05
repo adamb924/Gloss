@@ -17,11 +17,6 @@ DatabaseQueryDialog::DatabaseQueryDialog(const QString & databaseName, QWidget *
     ui(new Ui::DatabaseQueryDialog)
 {
     mFilename = databaseName;
-
-    QSqlDatabase db = QSqlDatabase::database(mFilename);
-    db.setHostName("hostname");
-    db.setDatabaseName(mFilename);
-
     ui->setupUi(this);
 
     connect(ui->doQuery, SIGNAL(clicked()), this, SLOT(doQuery()));
@@ -39,12 +34,8 @@ DatabaseQueryDialog::~DatabaseQueryDialog()
 
 void DatabaseQueryDialog::doQuery()
 {
-    mQuery = QSqlQuery(QSqlDatabase::database(mFilename));
-    mQuery.prepare(ui->queryEdit->toPlainText());
-    mQuery.exec();
-
     QSqlQueryModel *model = new QSqlQueryModel( ui->queryResult );
-    model->setQuery( mQuery );
+    model->setQuery( ui->queryEdit->toPlainText() , QSqlDatabase::database(mFilename) );
 
     QSortFilterProxyModel * proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel( model );
@@ -52,7 +43,7 @@ void DatabaseQueryDialog::doQuery()
 
     ui->queryResult->setModel(proxyModel);
     if( model->query().lastError().type() != QSqlError::NoError )
-        QMessageBox::warning(this, tr("Error"), model->query().lastError().text() );
+        QMessageBox::warning(this, tr("Error"), model->lastError().text() );
     else
         ui->saveCsv->setEnabled(true);
 }
@@ -62,7 +53,7 @@ void DatabaseQueryDialog::saveCsv()
     QString filename = QFileDialog::getSaveFileName(this, tr("Save query"), QString(), tr("Comma separated values (*.csv)") );
     if( !filename.isNull() )
     {
-        SqlQueryWriter writer( mQuery );
+        SqlQueryWriter writer( QSqlQuery(ui->queryEdit->toPlainText() , QSqlDatabase::database(mFilename)) );
         if( writer.serialize(filename) )
         {
             if( QMessageBox::Yes == QMessageBox::question(this, tr("Gloss"), tr("The report is finished; would you like to open it?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes ) )

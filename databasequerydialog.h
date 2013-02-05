@@ -18,7 +18,6 @@ public:
 
 private:
     Ui::DatabaseQueryDialog *ui;
-    QSqlQuery mQuery;
     QString mFilename;
 private slots:
     void doQuery();
