@@ -19,6 +19,7 @@
 #include "indexsearchmodel.h"
 #include "lexiconedit.h"
 #include "sqltabledialog.h"
+#include "focus.h"
 
 #include <QtGui>
 #include <QtSql>
@@ -242,7 +243,7 @@ void MainWindow::addBlankText()
     if( dialog.exec() == QDialog::Accepted )
     {
         Text *text = mProject->newText(dialog.name(), dialog.writingSystem());
-        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
+        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();
     }
@@ -312,7 +313,7 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         Text *text = mProject->newText(name, ws, content, openText);
         if( openText )
         {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, this);
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -372,7 +373,7 @@ void MainWindow::openText()
         openText(whichText);
 }
 
-TextDisplayWidget* MainWindow::openText(const QString & textName)
+TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Focus> & foci)
 {
     Text *text;
     TextDisplayWidget *subWindow = 0;
@@ -382,7 +383,7 @@ TextDisplayWidget* MainWindow::openText(const QString & textName)
         text = mProject->texts()->value(textName, 0);
         if( text != 0 )
         {
-            subWindow = new TextDisplayWidget(text, mProject, this);
+            subWindow = new TextDisplayWidget(text, mProject, foci, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -467,6 +468,9 @@ void MainWindow::searchGlossItems()
 void MainWindow::searchForInterpretationById(qlonglong id)
 {
     QStandardItemModel *model;
+    QList<Focus> foci;
+    foci << Focus(Focus::Interpretation, id );
+
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
@@ -475,7 +479,7 @@ void MainWindow::searchForInterpretationById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word[@abg:id='%1'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(id);
-        model = new SearchQueryModel(query, mProject->textPaths(), this);
+        model = new SearchQueryModel(query, mProject->textPaths(), this, foci);
     }
     else
     {
@@ -485,7 +489,7 @@ void MainWindow::searchForInterpretationById(qlonglong id)
                 return;
             mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
         }
-        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForInterpretation( id ) );
+        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForInterpretation( id ) , foci );
     }
     createSearchResultDock(model, tr("Interpretation ID: %1").arg(id));
 }
@@ -493,6 +497,8 @@ void MainWindow::searchForInterpretationById(qlonglong id)
 void MainWindow::searchForTextFormById(qlonglong id)
 {
     QStandardItemModel *model;
+    QList<Focus> foci;
+    foci << Focus(Focus::TextForm, id );
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
@@ -501,7 +507,7 @@ void MainWindow::searchForTextFormById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='txt'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(id);
-        model = new SearchQueryModel(query, mProject->textPaths(), this);
+        model = new SearchQueryModel(query, mProject->textPaths(), this, foci);
     }
     else
     {
@@ -511,7 +517,7 @@ void MainWindow::searchForTextFormById(qlonglong id)
                 return;
             mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
         }
-        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForTextForm( id ) );
+        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForTextForm( id ), foci );
     }
     createSearchResultDock(model, tr("Text Form ID: %1").arg(id));
 }
@@ -519,6 +525,9 @@ void MainWindow::searchForTextFormById(qlonglong id)
 void MainWindow::searchForGlossById(qlonglong id)
 {
     QStandardItemModel *model;
+    QList<Focus> foci;
+    foci << Focus(Focus::Gloss, id );
+
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
@@ -527,7 +536,7 @@ void MainWindow::searchForGlossById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='gls'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') " ).arg(id);
-        model = new SearchQueryModel(query, mProject->textPaths(), this);
+        model = new SearchQueryModel(query, mProject->textPaths(), this, foci);
     }
     else
     {
@@ -537,21 +546,32 @@ void MainWindow::searchForGlossById(qlonglong id)
                 return;
             mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
         }
-        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForGloss( id ) );
+        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForGloss( id ), foci );
     }
     createSearchResultDock(model, tr("Gloss ID: %1").arg(id));
 }
 
 void MainWindow::searchForLexicalEntryById(qlonglong id)
 {
+    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
     if( !mProject->dbAdapter()->textIndicesExist() )
     {
         if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("Searching for lexical entries requires the index to be buildt. This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
             return;
         mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
     }
-    QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForLexicalEntry( id ) );
+    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
+
+    QList<Focus> foci;
+    QSetIterator<qlonglong> iter( mProject->dbAdapter()->lexicalEntryTextFormIds( id ) );
+    while( iter.hasNext() )
+        foci << Focus( Focus::TextForm , iter.next() );
+
+    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
+    QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForLexicalEntry( id ), foci );
+    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
     createSearchResultDock(model, tr("Lexical Entry ID: %1").arg(id));
+    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
 }
 
 void MainWindow::searchForAllomorphById(qlonglong id)
@@ -562,7 +582,13 @@ void MainWindow::searchForAllomorphById(qlonglong id)
             return;
         mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
     }
-    QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForAllomorph( id ) );
+
+    QList<Focus> foci;
+    QSetIterator<qlonglong> iter( mProject->dbAdapter()->allomorphTextFormIds( id ) );
+    while( iter.hasNext() )
+        foci << Focus( Focus::TextForm , iter.next() );
+
+    QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForAllomorph( id ), foci );
     createSearchResultDock(model, tr("Allomorph ID: %1").arg(id));
 }
 
@@ -598,7 +624,7 @@ void MainWindow::searchForGlossById()
 void MainWindow::searchForLexicalEntryById()
 {
     bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by lexical entry ID"), tr("Gloss ID"), 1, -2147483647, 2147483647, 1, &ok );
+    int id = QInputDialog::getInt ( this, tr("Search by lexical entry ID"), tr("Lexical Entry ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
         searchForLexicalEntryById(id);
 }
@@ -606,7 +632,7 @@ void MainWindow::searchForLexicalEntryById()
 void MainWindow::searchForAllomorphById()
 {
     bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by allomorph ID"), tr("Gloss ID"), 1, -2147483647, 2147483647, 1, &ok );
+    int id = QInputDialog::getInt ( this, tr("Search by allomorph ID"), tr("Allomorph ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
         searchForAllomorphById(id);
 }
@@ -639,10 +665,10 @@ void MainWindow::createSearchResultDock(QStandardItemModel * model, const QStrin
     tree->setHeaderHidden(true);
     tree->expandAll();
 
-    connect( tree, SIGNAL(requestOpenText(QString,int)), this, SLOT(focusTextPosition(QString,int)) );
+    connect( tree, SIGNAL(requestOpenText(QString,int,QList<Focus>)), this, SLOT(focusTextPosition(QString,int,QList<Focus>)));
     connect( tree, SIGNAL(requestPlaySound(QString,int)), this, SLOT(playSoundForLine(QString,int)) );
-    connect( tree, SIGNAL(requestEditLine(QString,int)), this, SLOT(editLine(QString,int)) );
-    connect( tree, SIGNAL(requestEditLineWithContext(QString,int)), this, SLOT(editLineWithContext(QString,int)) );
+    connect( tree, SIGNAL(requestEditLine(QString,int,QList<Focus>)), this, SLOT(editLine(QString,int,QList<Focus>)) );
+    connect( tree, SIGNAL(requestEditLineWithContext(QString,int,QList<Focus>)), this, SLOT(editLineWithContext(QString,int,QList<Focus>)) );
 
     QWidget *intermediateWidget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(intermediateWidget);
@@ -656,15 +682,7 @@ void MainWindow::createSearchResultDock(QStandardItemModel * model, const QStrin
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 }
 
-void MainWindow::searchResultSelected( const QModelIndex & index )
-{
-    int lineNumber = index.data(Qt::UserRole).toInt();
-    QString textName = index.parent().data(Qt::UserRole).toString();
-    if( !textName.isEmpty() )
-        focusTextPosition( textName, lineNumber );
-}
-
-void MainWindow::focusTextPosition( const QString & textName , int lineNumber )
+void MainWindow::focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci )
 {
     QList<QMdiSubWindow*> windows = ui->mdiArea->subWindowList();
     QListIterator<QMdiSubWindow*> iter(windows);
@@ -679,7 +697,7 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber )
         }
     }
     // at this point the window must not exist
-    TextDisplayWidget* tdw = openText(textName);
+    TextDisplayWidget* tdw = openText(textName, foci);
     if( tdw != 0 && lineNumber != -1 )
         tdw->focusGlossLine(lineNumber);
 }
@@ -696,7 +714,7 @@ void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
     text->playSoundForLine(lineNumber);
 }
 
-void MainWindow::editLine( const QString & textName , int lineNumber )
+void MainWindow::editLine( const QString & textName , int lineNumber, const QList<Focus> & foci )
 {
     if( lineNumber == -1 )
         return;
@@ -716,12 +734,12 @@ void MainWindow::editLine( const QString & textName , int lineNumber )
     QList<int> lines;
     lines << lineNumber;
 
-    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, 0);
+    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, foci);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
 }
 
-void MainWindow::editLineWithContext( const QString & textName , int lineNumber )
+void MainWindow::editLineWithContext( const QString & textName , int lineNumber, const QList<Focus> & foci )
 {
     if( lineNumber == -1 )
         return;
@@ -745,7 +763,7 @@ void MainWindow::editLineWithContext( const QString & textName , int lineNumber 
     if( lineNumber < text->phrases()->count()-1 )
         lines << lineNumber+1;
 
-    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, 0);
+    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, foci);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
 }
@@ -1015,14 +1033,14 @@ void MainWindow::openTextLine()
 {
     ChooseTextLineDialog dialog(mProject->textNames(), this);
     if( dialog.exec() == QDialog::Accepted )
-        editLine( dialog.textName() , dialog.lineNumber() );
+        editLine( dialog.textName() , dialog.lineNumber(), QList<Focus>() );
 }
 
 void MainWindow::openTextLineWithContext()
 {
     ChooseTextLineDialog dialog(mProject->textNames(), this);
     if( dialog.exec() == QDialog::Accepted )
-        editLineWithContext( dialog.textName() , dialog.lineNumber() );
+        editLineWithContext( dialog.textName() , dialog.lineNumber(), QList<Focus>() );
 }
 
 QStringList MainWindow::textsWithOpenWindows()

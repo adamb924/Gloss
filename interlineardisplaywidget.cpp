@@ -14,6 +14,7 @@
 #include "phrase.h"
 #include "interlinearlinelabel.h"
 #include "generictextinputdialog.h"
+#include "focus.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent) :
         QScrollArea(parent)
@@ -231,6 +232,14 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
     WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines, mProject->dbAdapter(), this );
+    for(int i=0; i<mFoci.count(); i++)
+    {
+        if( item->matchesFocus( mFoci.at(i) ) )
+        {
+            wdw->setFocused(true);
+            break;
+        }
+    }
 
     connect( wdw, SIGNAL(splitWidgetInTwo(GlossItem*,TextBit,TextBit)), phrase, SLOT(splitGlossInTwo(GlossItem*,TextBit,TextBit)) );
     connect( wdw, SIGNAL(mergeGlossItemWithNext(GlossItem*)), phrase, SLOT(mergeGlossItemWithNext(GlossItem*)));
@@ -255,4 +264,9 @@ void InterlinearDisplayWidget::setLines( const QList<int> lines )
 void InterlinearDisplayWidget::requestLineRefresh( int line )
 {
     mLineRefreshRequests.insert( line );
+}
+
+void InterlinearDisplayWidget::setFocus( const QList<Focus> & foci )
+{
+    mFoci = foci;
 }

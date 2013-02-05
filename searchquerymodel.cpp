@@ -9,9 +9,10 @@
 
 #include "messagehandler.h"
 
-SearchQueryModel::SearchQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent ) : QStandardItemModel( parent )
+SearchQueryModel::SearchQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus ) : QStandardItemModel( parent )
 {
     mQuery = queryString;
+    mFocus = focus;
 
     QStandardItem *parentItem = invisibleRootItem();
 
@@ -41,6 +42,15 @@ bool SearchQueryModel::query( QStandardItem *parentItem, const QString & filenam
     query.setMessageHandler(new MessageHandler(this));
     query.setQuery(mQuery);
     query.evaluateTo(&result);
+
+    QList<QVariant> types;
+    QList<QVariant> indices;
+    for(int i=0; i<mFocus.count(); i++)
+    {
+        types << mFocus.at(i).type();
+        indices << mFocus.at(i).index();
+    }
+
     QXmlItem item(result.next());
     if( !item.isNull() )
     {
@@ -73,6 +83,8 @@ bool SearchQueryModel::query( QStandardItem *parentItem, const QString & filenam
             QStandardItem *resultItem = new QStandardItem( displayString );
             resultItem->setEditable(false);
             resultItem->setData( lineNumber , Qt::UserRole );
+            resultItem->setData( types , Focus::TypeList );
+            resultItem->setData( indices , Focus::IndexList );
             filenameItem->appendRow(resultItem);
             item = result.next();
         }

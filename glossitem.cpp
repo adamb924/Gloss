@@ -5,6 +5,7 @@
 #include "databaseadapter.h"
 #include "textbit.h"
 #include "concordance.h"
+#include "focus.h"
 
 #include <QtDebug>
 #include <QHash>
@@ -382,4 +383,33 @@ void GlossItem::updateGlossItemConcordance()
 Project* GlossItem::project()
 {
     return mProject;
+}
+
+bool GlossItem::matchesFocus( const Focus & focus ) const
+{
+    if( focus.type() == Focus::Interpretation )
+    {
+        return mId == focus.index();
+    }
+    else if ( focus.type() == Focus::Gloss )
+    {
+        TextBitHashIterator iter(mGlosses);
+        while(iter.hasNext())
+        {
+            iter.next();
+            if( iter.value().id() == focus.index() )
+                return true;
+        }
+    }
+    else if ( focus.type() == Focus::TextForm )
+    {
+        TextBitHashIterator iter(mTextForms);
+        while(iter.hasNext())
+        {
+            iter.next();
+            if( iter.value().id() == focus.index() )
+                return true;
+        }
+    }
+    return false;
 }

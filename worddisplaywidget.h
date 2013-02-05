@@ -38,6 +38,7 @@ public:
     GlossItem* glossItem();
 
     void refreshMorphologicalAnalysis(const WritingSystem & ws);
+    void setFocused(bool isFocused);
 
 private:
     GlossItem *mGlossItem;
@@ -87,6 +88,7 @@ private slots:
     void interpretationSearch(QAction * action);
 
     void newInterpretation();
+    void duplicateInterpretation();
 
     void newGloss(QAction *action);
     void newTextForm(QAction *action);

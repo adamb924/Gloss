@@ -2,6 +2,9 @@
 
 #include <QMenu>
 #include <QtDebug>
+#include <QList>
+
+#include "focus.h"
 
 SearchQueryView::SearchQueryView(QWidget *parent) :
     QTreeView(parent)
@@ -27,27 +30,34 @@ void SearchQueryView::contextMenu( const QPoint & pos )
     }
 }
 
-void SearchQueryView::getDetails( const QModelIndex & index, QString &textName, int &lineNumber ) const
+void SearchQueryView::getDetails( const QModelIndex & index, QString &textName, int &lineNumber, QList<Focus> & foci ) const
 {
     lineNumber= index.data(Qt::UserRole).toInt();
     textName = index.parent().data(Qt::UserRole).toString();
     if( textName.isEmpty() )
         textName = index.data(Qt::UserRole).toString();
+
+    QList<QVariant> types = index.data(Focus::TypeList).toList();
+    QList<QVariant> indices = index.data(Focus::IndexList).toList();
+    for( int i=0; i<types.count(); i++ )
+        foci << Focus( (Focus::Type)types.at(i).toInt() , indices.at(i).toLongLong() );
 }
 
 void SearchQueryView::openText()
 {
     QString textName;
     int lineNumber;
-    getDetails( currentIndex(), textName , lineNumber );
-    emit requestOpenText( textName, lineNumber );
+    QList<Focus> foci;
+    getDetails( currentIndex(), textName , lineNumber, foci );
+    emit requestOpenText( textName, lineNumber, foci );
 }
 
 void SearchQueryView::playSound()
 {
     QString textName;
     int lineNumber;
-    getDetails( currentIndex(), textName , lineNumber );
+    QList<Focus> foci;
+    getDetails( currentIndex(), textName , lineNumber, foci );
     emit requestPlaySound( textName, lineNumber );
 }
 
@@ -55,14 +65,16 @@ void SearchQueryView::editLine()
 {
     QString textName;
     int lineNumber;
-    getDetails( currentIndex(), textName , lineNumber );
-    emit requestEditLine( textName, lineNumber );
+    QList<Focus> foci;
+    getDetails( currentIndex(), textName , lineNumber, foci );
+    emit requestEditLine( textName, lineNumber, foci );
 }
 
 void SearchQueryView::editLineWithContext()
 {
     QString textName;
     int lineNumber;
-    getDetails( currentIndex(), textName , lineNumber );
-    emit requestEditLineWithContext( textName, lineNumber );
+    QList<Focus> foci;
+    getDetails( currentIndex(), textName , lineNumber, foci );
+    emit requestEditLineWithContext( textName, lineNumber, foci );
 }

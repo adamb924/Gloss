@@ -22,6 +22,7 @@ class InterlinearLineLabel;
 class WordDisplayWidget;
 class GlossItem;
 class Phrase;
+class Focus;
 
 #include "interlinearitemtype.h"
 
@@ -30,7 +31,6 @@ class InterlinearDisplayWidget : public QScrollArea
     Q_OBJECT
 public:
     InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent = 0);
-    InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QList<int> lines, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
 
@@ -42,6 +42,9 @@ signals:
 public slots:
     void scrollToLine(int line);
     void requestLineRefresh( int line );
+    void setLayoutFromText();
+    void setLines( const QList<int> lines );
+    void setFocus( const QList<Focus> & foci );
 
 protected:
     void scrollContentsBy ( int dx, int dy );
@@ -55,9 +58,6 @@ private slots:
     void approveAll(int lineNumber);
     void playSound(int lineNumber);
     void editLine(int lineNumber);
-
-protected slots:
-    void setLayoutFromText();
 
 protected:
     Text *mText;
@@ -76,6 +76,7 @@ protected:
     QHash<int, QLayout*> mLineLayouts;
     QHash<int, InterlinearLineLabel*> mLineLabels;
     QList<int> mLines;
+    QList<Focus> mFoci;
 
     QMultiHash<int, QWidget*> mWordDisplayWidgets;
 

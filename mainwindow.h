@@ -9,12 +9,15 @@
 
 #include <QMainWindow>
 
+#include "focus.h"
+
 class Project;
 class QAction;
 class WritingSystem;
 class QModelIndex;
 class TextDisplayWidget;
 class QStandardItemModel;
+
 
 namespace Ui {
     class MainWindow;
@@ -65,7 +68,7 @@ private slots:
     void deleteText();
     void mergeTranslations();
 
-    TextDisplayWidget* openText(const QString & textName);
+    TextDisplayWidget* openText(const QString & textName, const QList<Focus> & foci = QList<Focus>() );
 
     void projectClose();
 
@@ -88,11 +91,10 @@ private slots:
     void searchForAllomorphById();
 
 
-    void searchResultSelected( const QModelIndex & index );
-    void focusTextPosition( const QString & textName , int lineNumber );
+    void focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci );
     void playSoundForLine( const QString & textName , int lineNumber );
-    void editLine( const QString & textName , int lineNumber );
-    void editLineWithContext( const QString & textName , int lineNumber );
+    void editLine( const QString & textName , int lineNumber, const QList<Focus> & foci );
+    void editLineWithContext( const QString & textName , int lineNumber, const QList<Focus> & foci );
     void rawXQuery();
     void removeUnusedGlossItems();
     void sqlQueryDialog();

@@ -14,6 +14,8 @@
 
 class InterlinearDisplayWidget;
 
+#include "focus.h"
+
 namespace Ui {
     class TextDisplayWidget;
 }
@@ -23,7 +25,7 @@ class TextDisplayWidget : public QTabWidget
     Q_OBJECT
 
 public:
-    TextDisplayWidget(Text *text, Project *project, QWidget *parent = 0);
+    TextDisplayWidget(Text *text, Project *project, const QList<Focus> & foci = QList<Focus>(), QWidget *parent = 0);
     ~TextDisplayWidget();
 
     void focusGlossLine(int line);

@@ -8,7 +8,7 @@
 
 #include <QList>
 
-SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *project, Text * text, QWidget *parent) :
+SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *project, Text * text, const QList<Focus> & foci, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::SinglePhraseEditDialog)
 {
@@ -22,6 +22,7 @@ SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *projec
 
     InterlinearDisplayWidget *idw = new InterlinearDisplayWidget( mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this );
     idw->setLines(mLines);
+    idw->setFocus(foci);
     idw->setLayoutFromText();
     connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()));
 

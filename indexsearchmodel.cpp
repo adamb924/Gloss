@@ -1,10 +1,20 @@
 #include "indexsearchmodel.h"
 
-IndexSearchModel::IndexSearchModel( QSqlQuery query )
+#include "focus.h"
+
+IndexSearchModel::IndexSearchModel( QSqlQuery query, const QList<Focus> & focus )
 {
     mQuery = query;
 
     QStandardItem *parentItem = invisibleRootItem();
+
+    QList<QVariant> types;
+    QList<QVariant> indices;
+    for(int i=0; i<focus.count(); i++)
+    {
+        types << focus.at(i).type();
+        indices << focus.at(i).index();
+    }
 
     if( query.size() == 0 )
     {
@@ -38,6 +48,8 @@ IndexSearchModel::IndexSearchModel( QSqlQuery query )
         QStandardItem *resultItem = new QStandardItem( displayString );
         resultItem->setEditable(false);
         resultItem->setData( lineNumber , Qt::UserRole );
+        resultItem->setData( types , Focus::TypeList );
+        resultItem->setData( indices , Focus::IndexList );
         filenameItem->appendRow(resultItem);
 
         previousTextName = textName;

@@ -180,6 +180,7 @@ AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType 
 
     connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), analysisWidget, SLOT(setupLayout()));
     connect( analysisWidget, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)) );
+    connect( analysisWidget, SIGNAL(requestAlternateInterpretation()), this, SLOT(duplicateInterpretation()) );
 
     return analysisWidget;
 }
@@ -389,6 +390,32 @@ void WordDisplayWidget::newInterpretation()
 {
     qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
     mGlossItem->setInterpretation(id, true); // true since there are no forms in the database, and so the fields need to be cleared
+    fillData();
+}
+
+void WordDisplayWidget::duplicateInterpretation()
+{
+    TextBitHash textForms = *mGlossItem->textForms();
+    TextBitHash glosses = *mGlossItem->glosses();
+
+    qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
+    mGlossItem->setInterpretation(id, true); // true since there are no forms in the database, and so the fields need to be cleared
+
+    TextBitHashIterator iter(textForms);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        if( iter.key() != mGlossItem->baselineWritingSystem() )
+            mGlossItem->setTextForm( iter.value() );
+    }
+
+    iter = TextBitHashIterator(glosses);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        mGlossItem->setGloss( iter.value() );
+    }
+
     fillData();
 }
 
@@ -663,4 +690,12 @@ void WordDisplayWidget::removeGlossItem()
 {
     if( QMessageBox::Yes == QMessageBox::question(this, tr("Confirm deletion"), tr("Are you sure you want to remove this gloss item? This cannot be undone."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) )
         emit requestRemoveGlossItem(mGlossItem);
+}
+
+void WordDisplayWidget::setFocused(bool isFocused)
+{
+    if( isFocused )
+        setStyleSheet("background-color: #FFFFCC;");
+    else
+        setStyleSheet("background-color: #FFFFFF;");
 }

@@ -26,6 +26,7 @@ public:
 
 signals:
     void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
+    void requestAlternateInterpretation();
 
 public slots:
     void setupLayout();

@@ -22,6 +22,7 @@ class TextBit;
 class Project;
 class DatabaseAdapter;
 class Concordance;
+class Focus;
 
 class GlossItem : public QObject
 {
@@ -91,6 +92,9 @@ public:
 
     //! \brief Sets the morphological analysis for the given writing system
     void setMorphologicalAnalysisFromDatabase( const WritingSystem & ws );
+
+    //! \brief Returns true if this gloss item matches the specified focus, otherwise false
+    bool matchesFocus( const Focus & focus ) const;
 
     Concordance* concordance();
 

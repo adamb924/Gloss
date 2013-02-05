@@ -66,6 +66,11 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
     QMenu menu(this);
     menu.addAction(tr("Monomorphemic"), this, SLOT(createMonomorphemicLexicalEntry()));
     menu.addAction(tr("Polymorphemic"), this, SLOT(enterAnalysis()));
+
+    menu.addSeparator();
+    QAction * duplicate = menu.addAction(tr("Duplicate interpretation"), this, SIGNAL(requestAlternateInterpretation()));
+    connect( duplicate, SIGNAL(triggered()), this, SLOT(enterAnalysis()));
+
     menu.exec(event->globalPos());
 }
 
