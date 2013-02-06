@@ -115,7 +115,7 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
     {
         TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
         LingEdit *edit = addPhrasalGlossLine( bit );
-        edit->matchTextAlignmentTo( mText->baselineWritingSystem().layoutDirection() );
+        edit->matchTextAlignmentTo( mInterlinearDisplayLines.first().writingSystem().layoutDirection() );
         connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
     }
 }
