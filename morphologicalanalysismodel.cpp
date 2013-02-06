@@ -24,15 +24,11 @@ void MorphologicalAnalysisModel::setLexicalEntry( qlonglong lexicalEntryId )
 
     QSqlQuery q(QSqlDatabase::database( mDbAdapter->dbFilename() ));
 
-    //    q.prepare("select Focus.TextFormId as ID, Focus, TextForm, Gloss from (select TextFormId,group_concat( Transcription , ' ' ) as TextForm, group_concat( Gloss , '-' ) as Gloss from (select TextFormId,AllomorphId,Allomorph.Form as Transcription,LexicalEntryGloss.Form as Gloss from MorphologicalAnalysisMembers,Allomorph,LexicalEntryGloss where TextFormId in ( select TextFormId from MorphologicalAnalysisMembers where AllomorphId in (select _id from Allomorph where  LexicalEntryId=:LexicalEntryId and WritingSystem=:TextFormWS) ) and AllomorphId = Allomorph._id and Allomorph.LexicalEntryId = LexicalEntryGloss.LexicalEntryId and LexicalEntryGloss.WritingSystem=:GlossWS order by TextFormId, AllomorphOrder) group by TextFormId ) as Concatenation left join  ( select TextFormId, Form as Focus from Allomorph,MorphologicalAnalysisMembers on Allomorph._id=MorphologicalAnalysisMembers.AllomorphId and LexicalEntryId=:LexicalEntryId ) as Focus on Focus.TextFormId = Concatenation.TextFormId;");
-    //    q.bindValue(":LexicalEntryId", mLexicalEntryId);
-    //    q.bindValue(":GlossWS", mGlossWs.id());
-    //    q.bindValue(":TextFormWS", mTextFormWs.id());
-
-    q.prepare(
-            QString("select Focus.TextFormId as ID, Focus, TextForm, Gloss from (select TextFormId,group_concat( Transcription , ' ' ) as TextForm, group_concat( Gloss , '-' ) as Gloss from (select TextFormId,AllomorphId,Allomorph.Form as Transcription,LexicalEntryGloss.Form as Gloss from MorphologicalAnalysisMembers,Allomorph,LexicalEntryGloss where TextFormId in ( select TextFormId from MorphologicalAnalysisMembers where AllomorphId in (select _id from Allomorph where  LexicalEntryId=%1 and WritingSystem=%3) ) and AllomorphId = Allomorph._id and Allomorph.LexicalEntryId = LexicalEntryGloss.LexicalEntryId and LexicalEntryGloss.WritingSystem=%2 order by TextFormId, AllomorphOrder) group by TextFormId ) as Concatenation left join  ( select TextFormId, Form as Focus from Allomorph,MorphologicalAnalysisMembers on Allomorph._id=MorphologicalAnalysisMembers.AllomorphId and LexicalEntryId=%1 ) as Focus on Focus.TextFormId = Concatenation.TextFormId;")
-            .arg(mLexicalEntryId).arg(mGlossWs.id()).arg(mTextFormWs.id())
-            );
+    q.prepare("select Focus.TextFormId as ID, Focus, TextForm, Gloss from (select TextFormId,group_concat( Transcription , ' ' ) as TextForm, group_concat( Gloss , '-' ) as Gloss from (select TextFormId,AllomorphId,Allomorph.Form as Transcription,LexicalEntryGloss.Form as Gloss from MorphologicalAnalysisMembers,Allomorph,LexicalEntryGloss where TextFormId in ( select TextFormId from MorphologicalAnalysisMembers where AllomorphId in (select _id from Allomorph where  LexicalEntryId=? and WritingSystem=?) ) and AllomorphId = Allomorph._id and Allomorph.LexicalEntryId = LexicalEntryGloss.LexicalEntryId and LexicalEntryGloss.WritingSystem=? order by TextFormId, AllomorphOrder) group by TextFormId ) as Concatenation left join  ( select TextFormId, Form as Focus from Allomorph,MorphologicalAnalysisMembers on Allomorph._id=MorphologicalAnalysisMembers.AllomorphId and LexicalEntryId=? ) as Focus on Focus.TextFormId = Concatenation.TextFormId;");
+    q.addBindValue(mLexicalEntryId);
+    q.addBindValue(mTextFormWs.id());
+    q.addBindValue(mGlossWs.id());
+    q.addBindValue(mLexicalEntryId);
 
     if( !q.exec() )
         qWarning() << q.lastError().text() << q.executedQuery();
