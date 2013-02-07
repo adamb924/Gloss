@@ -17,6 +17,7 @@ bool SqlQueryWriter::serialize(const QString & filePath)
     if (!file.open(QFile::WriteOnly))
         return false;
     QTextStream stream(&file);
+    stream.setCodec("UTF-8");
 
     QSqlRecord record = mQuery.record();
     for(int i=0; i<record.count(); i++)
