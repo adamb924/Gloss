@@ -706,12 +706,21 @@ void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
 {
     if( lineNumber == -1 )
         return;
-    mProject->openText(textName);
-    Text *text = mProject->texts()->value(textName, 0);
-    if( text == 0)
-        return;
-    lineNumber--;
-    text->playSoundForLine(lineNumber);
+
+    if( mProject->texts()->contains(textName) )
+    {
+        mProject->openText(textName);
+        Text *text = mProject->texts()->value(textName, 0);
+        if( text == 0)
+            return;
+        lineNumber--;
+        text->playSoundForLine(lineNumber);
+    }
+    else
+    {
+        mProject->playLine( textName, lineNumber );
+    }
+
 }
 
 void MainWindow::editLine( const QString & textName , int lineNumber, const QList<Focus> & foci )

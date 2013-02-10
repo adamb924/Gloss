@@ -86,6 +86,8 @@ public:
     Concordance* concordance();
     const MainWindow* mainWindow() const;
 
+    void playLine(const QString & textName, int lineNumber);
+
 public slots:
 
 private:

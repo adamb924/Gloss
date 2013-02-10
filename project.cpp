@@ -2,6 +2,7 @@
 #include "interlinearitemtype.h"
 #include "textbit.h"
 #include "databaseadapter.h"
+#include "sound.h"
 
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>
@@ -770,4 +771,33 @@ Concordance* Project::concordance()
 const MainWindow* Project::mainWindow() const
 {
     return mMainWindow;
+}
+
+void Project::playLine(const QString & textName, int lineNumber)
+{
+    QString textPath = filepathFromName(textName);
+
+    QString result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl( textPath )))
+        return;
+    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("line", QXmlItem(lineNumber) );
+    query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                   "declare variable $line external; "
+                   "declare variable $audio-file := /document/interlinear-text/@abg:audio-file; "
+                   "declare variable $start := /document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-start; "
+                   "declare variable $end := /document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-end; "
+                   "string-join( ( $audio-file , $start, $end ) , ',') ");
+
+    if( query.evaluateTo(&result) )
+    {
+        QStringList elements = result.split(",");
+        QString audioPath = elements.at(0);
+        int startTime = elements.at(1).toInt();
+        int endTime = elements.at(2).toInt();
+
+        Sound *sound = new Sound( QUrl::fromEncoded(audioPath.toUtf8()) );
+        sound->playSegment( startTime, endTime );
+    }
 }
