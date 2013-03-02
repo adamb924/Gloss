@@ -529,6 +529,8 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
 
     setSound( theUrl );
 
+    markAsChanged();
+
     return MergeEafSuccess;
 }
 
