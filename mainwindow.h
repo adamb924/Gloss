@@ -80,6 +80,8 @@ private slots:
     void importFlexText();
     void importPlainText();
     void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText);
+    void importEaf();
+    void importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText);
 
     void searchGlossItems();
     void substringSearchGlossItems();

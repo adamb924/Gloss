@@ -213,6 +213,8 @@ void GlossItem::guessInterpretation()
     else
         candidates =  mDbAdapter->candidateInterpretations( baselineText() );
 
+    qDebug() << candidates.count() << mTextForms.count() << mGlosses.count();
+
     if( candidates.length() == 0 )
     {
         if( mTextForms.count() > 0)

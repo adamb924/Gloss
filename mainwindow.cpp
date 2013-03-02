@@ -53,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionImport_FlexText, SIGNAL(triggered()), this, SLOT(importFlexText()));
     connect(ui->actionImport_plain_text, SIGNAL(triggered()), this, SLOT(importPlainText()));
     connect(ui->actionWriting_systems, SIGNAL(triggered()), this, SLOT(writingSystems()) );
+    connect(ui->actionImport_EAF, SIGNAL(triggered()), this, SLOT(importEaf()) );
 
     connect(ui->actionDelete_text, SIGNAL(triggered()), this, SLOT(deleteText()) );
     connect(ui->actionMerge_translations_from_other_FlexText_file, SIGNAL(triggered()), this, SLOT(mergeTranslations()));
@@ -319,6 +320,76 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         }
     }
 }
+
+void MainWindow::importEaf()
+{
+    QFileDialog dialog( this, tr("Select file(s) to import"), QString(), "*.eaf" );
+    dialog.setFileMode(QFileDialog::ExistingFiles);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        bool ok;
+
+        QString tierId = QInputDialog::getText(this, tr("Tier ID"), tr("Enter the tier ID:"), QLineEdit::Normal, "default", &ok);
+        if( ok )
+        {
+            WritingSystem ws = selectWritingSystem(tr("Select the baseline writing system for these texts."), &ok);
+            if( ok )
+            {
+                QStringList files = dialog.selectedFiles();
+                bool openText = files.count() == 1;
+
+                if( files.count() == 1 )
+                {
+                    importEaf( files.first(), tierId, ws , true );
+                }
+                else
+                {
+                    QProgressDialog progress("Importing texts...", "Cancel", 0, files.count(), this);
+                    progress.setWindowModality(Qt::WindowModal);
+                    for(int i=0; i<files.count(); i++)
+                    {
+                        progress.setValue(i);
+                        if( QFile::exists(files.at(i)))
+                            importEaf( files.at(i), tierId, ws , openText );
+                        if( progress.wasCanceled() )
+                            break;
+                    }
+                    progress.setValue(files.count());
+                }
+            }
+        }
+    }
+}
+
+void MainWindow::importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText)
+{
+    QStringList result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    if(!query.setFocus(QUrl(filepath)))
+        return;
+
+    QString queryString = "declare variable $tier-id external; "
+                          "for $x in /ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "
+                          "return string( $x/text() )";
+
+    query.bindVariable("tier-id", QXmlItem(tierId) );
+    query.setMessageHandler(new MessageHandler());
+    query.setQuery(queryString);
+    query.evaluateTo(&result);
+
+    QFileInfo info(filepath);
+    QString name = info.baseName();
+
+    Text *text = mProject->newText(name, ws, result.join("\n"), openText);
+//    text->mergeEaf(filepath);
+    if( openText )
+    {
+        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
+        ui->mdiArea->addSubWindow(subWindow);
+        subWindow->show();
+    }
+}
+
 
 void MainWindow::importFlexText()
 {

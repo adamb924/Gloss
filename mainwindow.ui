@@ -55,6 +55,7 @@
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
     <addaction name="actionImport_plain_text"/>
+    <addaction name="actionImport_EAF"/>
     <addaction name="separator"/>
     <addaction name="actionMerge_translations_from_other_FlexText_file"/>
     <addaction name="actionBulk_merge_translations"/>
@@ -362,6 +363,11 @@
   <action name="actionLexical_entry_by_id">
    <property name="text">
     <string>Lexical entry by id...</string>
+   </property>
+  </action>
+  <action name="actionImport_EAF">
+   <property name="text">
+    <string>Import EAF...</string>
    </property>
   </action>
  </widget>
