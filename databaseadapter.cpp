@@ -483,8 +483,6 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
 
     query.append(";");
 
-    qDebug() << query;
-
     QSqlQuery q(QSqlDatabase::database(mFilename));
     if( !q.exec(query)  )
         qWarning() << "DatabaseAdapter::candidateInterpretations" << q.lastError().text() << query;
