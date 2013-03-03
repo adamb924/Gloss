@@ -48,6 +48,12 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     connect( copyBaseline, SIGNAL(triggered()), this, SLOT(copyGlossFromBaseline()) );
     addAction(copyBaseline);
 
+    QAction *guessGloss = new QAction(this);
+    guessGloss->setShortcut( QKeySequence("Ctrl+Shift+G") );
+    guessGloss->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( guessGloss, SIGNAL(triggered()), this, SLOT(guessGloss()) );
+    addAction(guessGloss);
+
     fillData();
 }
 
@@ -793,5 +799,41 @@ void WordDisplayWidget::cycleGloss( const WritingSystem & ws )
         qDebug() << position;
         mGlossItem->setGloss( mDbAdapter->glossFromId( candidates.at(position) ) );
     }
+}
 
+void WordDisplayWidget::guessGloss()
+{
+    QHashIterator<WritingSystem, LingEdit*> iter(mGlossEdits);
+    while(iter.hasNext())
+    {
+        iter.next();
+        if( iter.value()->hasFocus() )
+        {
+            guessGloss( iter.key() );
+            return;
+        }
+    }
+}
+
+void WordDisplayWidget::guessGloss( const WritingSystem & ws )
+{
+    QString hint;
+    QHashIterator<WritingSystem, LingEdit*> iter(mGlossEdits);
+    while(iter.hasNext())
+    {
+        iter.next();
+        if( iter.key() != ws && !iter.value()->text().isEmpty() )
+        {
+            hint = iter.value()->text();
+            break;
+        }
+    }
+    if( !hint.isEmpty() )
+    {
+        QString guess = mDbAdapter->guessGloss( hint , ws );
+        if( !guess.isEmpty() )
+        {
+            mGlossEdits.value(ws)->setText( guess );
+        }
+    }
 }

@@ -220,6 +220,8 @@ public:
 
     void removeTag( const QString & tag ) const;
 
+    QString guessGloss( const QString & hint , const WritingSystem & ws );
+
 private:
     QString mFilename;
 

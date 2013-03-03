@@ -93,6 +93,9 @@ private slots:
     void glossSearch(QAction * action);
     void interpretationSearch(QAction * action);
 
+    void guessGloss();
+    void guessGloss( const WritingSystem & ws );
+
     void newInterpretation();
     void duplicateInterpretation();
 

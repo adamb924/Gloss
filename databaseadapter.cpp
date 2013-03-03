@@ -1486,3 +1486,16 @@ void DatabaseAdapter::removeTag( const QString & tag ) const
     if( !q.exec() )
         qWarning() << q.lastError().text() << q.executedQuery();
 }
+
+QString DatabaseAdapter::guessGloss( const QString & hint , const WritingSystem & ws )
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select Form from Glosses where InterpretationId in (select InterpretationId from Glosses where Form=:Form) and WritingSystem=:WritingSystem limit 1;" );
+    q.bindValue(":Form", hint );
+    q.bindValue(":WritingSystem", ws.id() );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        return q.value(0).toString();
+    return QString();
+}
