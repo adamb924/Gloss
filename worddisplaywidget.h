@@ -97,6 +97,8 @@ private slots:
     void newTextForm(const WritingSystem & ws);
 
     void copyGlossFromBaseline(QAction *action);
+    void copyGlossFromBaseline(const WritingSystem & ws);
+    void copyGlossFromBaseline();
 
     void removeGlossItem();
 

@@ -42,6 +42,12 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     connect( this, SIGNAL(requestTextFormSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForTextFormById(qlonglong) ));
     connect( this, SIGNAL(requestGlossSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForGlossById(qlonglong) ));
 
+    QAction *copyBaseline = new QAction(this);
+    copyBaseline->setShortcut( QKeySequence("Ctrl+Shift+C") );
+    copyBaseline->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( copyBaseline, SIGNAL(triggered()), this, SLOT(copyGlossFromBaseline()) );
+    addAction(copyBaseline);
+
     fillData();
 }
 
@@ -423,7 +429,25 @@ void WordDisplayWidget::copyGlossFromBaseline(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
+    copyGlossFromBaseline(ws);
+}
 
+void WordDisplayWidget::copyGlossFromBaseline()
+{
+    QMutableHashIterator<WritingSystem, LingEdit*> iter(mGlossEdits);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        if( iter.value()->hasFocus() )
+        {
+            copyGlossFromBaseline( iter.key() );
+            return;
+        }
+    }
+}
+
+void WordDisplayWidget::copyGlossFromBaseline(const WritingSystem & ws)
+{
     TextBit bit = mGlossEdits[ws]->textBit();
     bit.setText( mGlossItem->textForm(mGlossItem->baselineWritingSystem()).text() );
     if( bit.id() == -1 )
@@ -435,6 +459,7 @@ void WordDisplayWidget::copyGlossFromBaseline(QAction *action)
     mDbAdapter->updateGloss( bit );
     mGlossEdits[ws]->setTextBit( bit );
 }
+
 
 void WordDisplayWidget::newGloss(const WritingSystem & ws)
 {
