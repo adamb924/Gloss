@@ -45,11 +45,17 @@ private:
     Concordance *mConcordance;
     Qt::Alignment mAlignment;
 
+    void keyPressEvent ( QKeyEvent * event );
+
     void contextMenuEvent ( QContextMenuEvent * event );
     void addInterpretationSubmenu(QMenu *menu );
     void addTextFormSubmenu(QMenu *menu, const WritingSystem & writingSystem );
     void addGlossSubmenu(QMenu *menu, const WritingSystem & writingSystem );
     void addSearchSubmenu(QMenu *menu);
+
+    void cycleInterpretation();
+    void cycleTextForm( const WritingSystem & ws );
+    void cycleGloss( const WritingSystem & ws );
 
     void setupLayout();
     LingEdit* addGlossLine( const InterlinearItemType & glossLine );

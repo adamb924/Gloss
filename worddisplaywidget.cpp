@@ -724,3 +724,74 @@ void WordDisplayWidget::setFocused(bool isFocused)
     else
         setStyleSheet("background-color: #FFFFFF;");
 }
+
+void WordDisplayWidget::keyPressEvent ( QKeyEvent * event )
+{
+    int key = event->key();
+    if( key >= 0x01000030 && key <= 0x01000052 )
+    {
+        key -= 0x01000030; // now F1 is zero, F2 is one, etc.
+
+        if( key < mGlossLines.count() )
+        {
+            if( key == 0 ) // F1 is reserved for toggling interpretations
+            {
+                cycleInterpretation();
+            }
+            else if( mGlossLines.at(key).type() == InterlinearItemType::Text )
+            {
+                cycleTextForm( mGlossLines.at(key).writingSystem() );
+            }
+            else if( mGlossLines.at(key).type() == InterlinearItemType::Gloss )
+            {
+                cycleGloss( mGlossLines.at(key).writingSystem() );
+            }
+        }
+    }
+}
+
+void WordDisplayWidget::cycleInterpretation()
+{
+    QList<qlonglong> candidates = mDbAdapter->candidateInterpretations( mGlossItem->baselineText() );
+    qSort(candidates.begin(), candidates.end());
+    int position = candidates.indexOf( mGlossItem->id() );
+    if( position > -1 )
+    {
+        position++;
+        if( position == candidates.count() )
+            position = 0;
+        mGlossItem->setInterpretation( candidates.at(position) , true );
+    }
+}
+
+void WordDisplayWidget::cycleTextForm( const WritingSystem & ws )
+{
+    QHash<qlonglong,QString> textForms = mDbAdapter->interpretationTextForms(mGlossItem->id(), ws.id() );
+    QList<qlonglong> candidates = textForms.uniqueKeys();
+    qSort( candidates.begin(), candidates.end() );
+    int position = candidates.indexOf( mGlossItem->textForm( ws ).id() );
+    if( position > -1 )
+    {
+        position++;
+        if( position == candidates.count() )
+            position = 0;
+        mGlossItem->setTextForm( mDbAdapter->textFormFromId( candidates.at(position) ) );
+    }
+}
+
+void WordDisplayWidget::cycleGloss( const WritingSystem & ws )
+{
+    QHash<qlonglong,QString> glosses = mDbAdapter->interpretationGlosses( mGlossItem->id(), ws.id() );
+    QList<qlonglong> candidates = glosses.uniqueKeys();
+    qSort( candidates.begin(), candidates.end() );
+    int position = candidates.indexOf( mGlossItem->gloss( ws ).id() );
+    if( position > -1 )
+    {
+        position++;
+        if( position == candidates.count() )
+            position = 0;
+        qDebug() << position;
+        mGlossItem->setGloss( mDbAdapter->glossFromId( candidates.at(position) ) );
+    }
+
+}
