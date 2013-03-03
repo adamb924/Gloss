@@ -344,29 +344,37 @@ void MainWindow::importEaf()
                 }
                 else
                 {
+                    int successes = 0;
+                    int failures = 0;
                     QProgressDialog progress("Importing texts...", "Cancel", 0, files.count(), this);
                     progress.setWindowModality(Qt::WindowModal);
                     for(int i=0; i<files.count(); i++)
                     {
                         progress.setValue(i);
                         if( QFile::exists(files.at(i)))
-                            importEaf( files.at(i), tierId, ws , openText );
+                        {
+                            if( importEaf( files.at(i), tierId, ws , openText ) )
+                                successes++;
+                            else
+                                failures++;
+                        }
                         if( progress.wasCanceled() )
                             break;
                     }
                     progress.setValue(files.count());
+                    QMessageBox::information(this, tr("Eaf files imported"), tr("Result of importing files: %1 successes, %2 failures or overwrite preventions"));
                 }
             }
         }
     }
 }
 
-void MainWindow::importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText)
+bool MainWindow::importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText)
 {
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
     if(!query.setFocus(QUrl(filepath)))
-        return;
+        return false;
 
     QString queryString = "declare variable $tier-id external; "
                           "for $x in /ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "
@@ -380,14 +388,19 @@ void MainWindow::importEaf(const QString & filepath, const QString & tierId, con
     QFileInfo info(filepath);
     QString name = info.baseName();
 
-    Text *text = mProject->newText(name, ws, result.join("\n"), openText);
-//    text->mergeEaf(filepath);
-    if( openText )
+    if( !mProject->textNames().contains(name) )
     {
-        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
-        ui->mdiArea->addSubWindow(subWindow);
-        subWindow->show();
+        Text *text = mProject->newText(name, ws, result.join("\n"), openText);
+        text->mergeEaf(filepath);
+        if( openText )
+        {
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
+            ui->mdiArea->addSubWindow(subWindow);
+            subWindow->show();
+        }
+        return true;
     }
+    return false;
 }
 
 
