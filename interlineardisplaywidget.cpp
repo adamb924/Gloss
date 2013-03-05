@@ -241,10 +241,15 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
         }
     }
 
-    connect( wdw, SIGNAL(splitWidgetInTwo(GlossItem*,TextBit,TextBit)), phrase, SLOT(splitGlossInTwo(GlossItem*,TextBit,TextBit)) );
+    connect( wdw, SIGNAL(splitWidget(GlossItem*,QList<TextBit>)), phrase, SLOT(splitGloss(GlossItem*,QList<TextBit>)) );
+
     connect( wdw, SIGNAL(mergeGlossItemWithNext(GlossItem*)), phrase, SLOT(mergeGlossItemWithNext(GlossItem*)));
     connect( wdw, SIGNAL(mergeGlossItemWithPrevious(GlossItem*)), phrase, SLOT(mergeGlossItemWithPrevious(GlossItem*)));
     connect( wdw, SIGNAL(requestRemoveGlossItem(GlossItem*)), phrase, SLOT(removeGlossItem(GlossItem*)));
+
+    connect( wdw, SIGNAL(requestApproveLine(WordDisplayWidget*)), this, SLOT(approveAll(WordDisplayWidget*)) );
+    connect( wdw, SIGNAL(requestLeftGlossItem(WordDisplayWidget*)), this, SLOT(leftGlossItem(WordDisplayWidget*)));
+    connect( wdw, SIGNAL(requestRightGlossItem(WordDisplayWidget*)), this, SLOT(rightGlossItem(WordDisplayWidget*)));
 
     return wdw;
 }
@@ -269,4 +274,40 @@ void InterlinearDisplayWidget::requestLineRefresh( int line )
 void InterlinearDisplayWidget::setFocus( const QList<Focus> & foci )
 {
     mFoci = foci;
+}
+
+void InterlinearDisplayWidget::approveAll( WordDisplayWidget * wdw )
+{
+    int lineNumber = mWordDisplayWidgets.key( wdw );
+    approveAll(lineNumber);
+}
+
+void InterlinearDisplayWidget::leftGlossItem( WordDisplayWidget * wdw )
+{
+    // TODO think about whether this is possible to implement, or necessary
+    if( wdw->glossItem()->baselineWritingSystem().layoutDirection() == Qt::LeftToRight )
+    {
+        // next
+        qDebug() << "next";
+    }
+    else
+    {
+        // previous
+        qDebug() << "previous";
+    }
+}
+
+void InterlinearDisplayWidget::rightGlossItem( WordDisplayWidget * wdw )
+{
+    // TODO think about whether this is possible to implement, or necessary
+    if( wdw->glossItem()->baselineWritingSystem().layoutDirection() == Qt::LeftToRight )
+    {
+        // previous
+//        qDebug() << "previous";
+    }
+    else
+    {
+        // next
+//        qDebug() << "next";
+    }
 }

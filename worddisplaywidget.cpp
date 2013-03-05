@@ -9,6 +9,7 @@
 #include "analysiswidget.h"
 #include "generictextinputdialog.h"
 #include "mainwindow.h"
+#include "dealwithspacesdialog.h"
 
 #include <QtGui>
 #include <QtDebug>
@@ -42,17 +43,7 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
     connect( this, SIGNAL(requestTextFormSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForTextFormById(qlonglong) ));
     connect( this, SIGNAL(requestGlossSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForGlossById(qlonglong) ));
 
-    QAction *copyBaseline = new QAction(this);
-    copyBaseline->setShortcut( QKeySequence("Ctrl+Shift+C") );
-    copyBaseline->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect( copyBaseline, SIGNAL(triggered()), this, SLOT(copyGlossFromBaseline()) );
-    addAction(copyBaseline);
-
-    QAction *guessGloss = new QAction(this);
-    guessGloss->setShortcut( QKeySequence("Ctrl+Shift+G") );
-    guessGloss->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect( guessGloss, SIGNAL(triggered()), this, SLOT(guessGloss()) );
-    addAction(guessGloss);
+    setupShortcuts();
 
     fillData();
 }
@@ -103,6 +94,45 @@ void WordDisplayWidget::setupLayout()
             break;
         }
     }
+}
+
+void WordDisplayWidget::setupShortcuts()
+{
+    QAction *copyBaseline = new QAction(this);
+    copyBaseline->setShortcut( QKeySequence("Ctrl+Shift+C") );
+    copyBaseline->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( copyBaseline, SIGNAL(triggered()), this, SLOT(copyGlossFromBaseline()) );
+    addAction(copyBaseline);
+
+    QAction *guessGloss = new QAction(this);
+    guessGloss->setShortcut( QKeySequence("Ctrl+Shift+G") );
+    guessGloss->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( guessGloss, SIGNAL(triggered()), this, SLOT(guessGloss()) );
+    addAction(guessGloss);
+
+    QAction *editBaseline = new QAction(this);
+    editBaseline->setShortcut( QKeySequence("Ctrl+Shift+B") );
+    editBaseline->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( editBaseline, SIGNAL(triggered()), this, SLOT(editBaselineText()) );
+    addAction(editBaseline);
+
+    QAction *approveLine = new QAction(this);
+    approveLine->setShortcut( QKeySequence("Ctrl+Shift+A") );
+    approveLine->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( approveLine, SIGNAL(triggered()), this, SLOT(approveLine()) );
+    addAction(approveLine);
+
+    QAction *rightGlossItem = new QAction(this);
+    rightGlossItem->setShortcut( QKeySequence("Ctrl+Alt+Right") );
+    rightGlossItem->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( rightGlossItem, SIGNAL(triggered()), this, SLOT(rightGlossItem()) );
+    addAction(rightGlossItem);
+
+    QAction *leftGlossItem = new QAction(this);
+    leftGlossItem->setShortcut( QKeySequence("Ctrl+Alt+Left") );
+    leftGlossItem->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( leftGlossItem, SIGNAL(triggered()), this, SLOT(leftGlossItem()) );
+    addAction(leftGlossItem);
 }
 
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
@@ -203,7 +233,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu.addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
-    menu.addAction(tr("Change to two words"), this, SLOT(changeToTwoWords()));
+    menu.addAction(tr("Split into multiple words"), this, SLOT(splitIntoMultipleWords()));
     menu.addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
     menu.addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
     menu.addAction(tr("Remove"), this, SLOT(removeGlossItem()));
@@ -645,18 +675,29 @@ void WordDisplayWidget::editBaselineText()
     if( dialog.exec() == QDialog::Accepted )
     {
         QString text = dialog.text().trimmed();
-        int whitespaceCount = text.count(QRegExp("\\s+"));
-        if( whitespaceCount == 1 )
+        if( text.contains(QRegExp("\\s+")) )
         {
-            if( QMessageBox::Yes == QMessageBox::question(this, tr("Split the word?"), tr("You've entered a whitespace character, which is not allowed. Are you wanting to split this into two words?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes ))
+            DealWithSpacesDialog dealDialog(this);
+            dealDialog.exec();
+            if( dealDialog.choice() == DealWithSpacesDialog::SplitWord )
             {
-                QStringList items = text.split(QRegExp("\\s+"));
-                emit splitWidgetInTwo( mGlossItem, TextBit(items.at(0), mGlossItem->baselineWritingSystem()), TextBit(items.at(1), mGlossItem->baselineWritingSystem()) );
+                WritingSystem ws = dialog.writingSystem();
+                QList<TextBit> bits;
+                QStringList portions = text.split(QRegExp("\\s+"));
+                for(int i=0; i<portions.count(); i++)
+                    bits << TextBit( portions.at(i), ws );
+                emit splitWidget( mGlossItem , bits  );
             }
-        }
-        else if( whitespaceCount > 1 )
-        {
-            QMessageBox::information(this, tr("Oops"), tr("You've put some whitespace characters into this word, which is not allowed."));
+            else if( dealDialog.choice() == DealWithSpacesDialog::ConvertSpaces )
+            {
+                TextBit bit = dialog.textBit();
+                bit.setText( text.trimmed().replace(QChar(0x0020), QChar(0x00A0)) );
+                mGlossItem->resetBaselineText( bit );
+            }
+            else
+            {
+                return;
+            }
         }
         else
         {
@@ -687,22 +728,21 @@ void WordDisplayWidget::editBaselineTextKeepAnnotations()
     }
 }
 
-void WordDisplayWidget::changeToTwoWords()
+void WordDisplayWidget::splitIntoMultipleWords()
 {
     GenericTextInputDialog dialog( mGlossItem->baselineText() , this );
-    dialog.setWindowTitle(tr("Split the word with a space"));
+    dialog.setWindowTitle(tr("Split the word with spaces"));
     if( dialog.exec() == QDialog::Accepted )
     {
         QString text = dialog.text().trimmed();
         int whitespaceCount = text.count(QRegExp("\\s+"));
-        if( whitespaceCount == 1 )
+        if( whitespaceCount > 0 )
         {
-            QStringList items = text.split(QRegExp("\\s+"));
-            emit splitWidgetInTwo( mGlossItem, TextBit(items.at(0), mGlossItem->baselineWritingSystem()), TextBit(items.at(1), mGlossItem->baselineWritingSystem()) );
-        }
-        else
-        {
-            QMessageBox::information(this, tr("Oops"), tr("For this function to work you need to enter exactly one whitespace character (e.g., a space) to split the word in half."));
+            QList<TextBit> bits;
+            QStringList portions = text.split(QRegExp("\\s+"));
+            for(int i=0; i<portions.count(); i++)
+                bits << TextBit( portions.at(i), mGlossItem->baselineWritingSystem() );
+            emit splitWidget( mGlossItem , bits  );
         }
     }
 }
@@ -836,3 +876,19 @@ void WordDisplayWidget::guessGloss( const WritingSystem & ws )
         }
     }
 }
+
+void WordDisplayWidget::approveLine()
+{
+    emit requestApproveLine(this);
+}
+
+void WordDisplayWidget::rightGlossItem()
+{
+    emit requestLeftGlossItem(this);
+}
+
+void WordDisplayWidget::leftGlossItem()
+{
+    emit requestRightGlossItem(this);
+}
+

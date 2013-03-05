@@ -59,6 +59,10 @@ private slots:
     void playSound(int lineNumber);
     void editLine(int lineNumber);
 
+    void approveAll( WordDisplayWidget * wdw );
+    void leftGlossItem( WordDisplayWidget * wdw );
+    void rightGlossItem( WordDisplayWidget * wdw );
+
 protected:
     Text *mText;
     Project *mProject;
@@ -78,6 +82,7 @@ protected:
     QList<int> mLines;
     QList<Focus> mFoci;
 
+    // WordDisplayWidget objects, keyed to line number
     QMultiHash<int, QWidget*> mWordDisplayWidgets;
 
     QLayout* addLine(int lineNumber);

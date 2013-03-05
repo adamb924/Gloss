@@ -59,6 +59,7 @@ public slots:
     void setPhrasalGloss( const TextBit & bit );
 
     void splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
+    void splitGloss( GlossItem *glossItem, const QList<TextBit> & bits );
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
     void removeGlossItem( GlossItem *glossItem );

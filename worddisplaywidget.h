@@ -45,6 +45,8 @@ private:
     Concordance *mConcordance;
     Qt::Alignment mAlignment;
 
+    void setupShortcuts();
+
     void keyPressEvent ( QKeyEvent * event );
 
     void contextMenuEvent ( QContextMenuEvent * event );
@@ -79,6 +81,8 @@ private:
 
 signals:
     void splitWidgetInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
+    void splitWidget( GlossItem *glossItem, const QList<TextBit> & bits );
+
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
 
@@ -88,7 +92,15 @@ signals:
 
     void requestRemoveGlossItem( GlossItem *glossItem );
 
+    void requestApproveLine( WordDisplayWidget * wdw );
+    void requestLeftGlossItem( WordDisplayWidget * wdw );
+    void requestRightGlossItem( WordDisplayWidget * wdw );
+
 private slots:
+    void approveLine();
+    void rightGlossItem();
+    void leftGlossItem();
+
     void textFormSearch(QAction * action);
     void glossSearch(QAction * action);
     void interpretationSearch(QAction * action);
@@ -121,7 +133,7 @@ private slots:
 
     void editBaselineText();
     void editBaselineTextKeepAnnotations();
-    void changeToTwoWords();
+    void splitIntoMultipleWords();
     void mergeWithNext();
     void mergeWithPrevious();
 };

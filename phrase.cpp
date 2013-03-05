@@ -80,6 +80,25 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
     }
 }
 
+void Phrase::splitGloss( GlossItem *glossItem, const QList<TextBit> & bits )
+{
+    qDebug() << bits.count();
+    int index = mGlossItems.indexOf( glossItem );
+    if( index == -1 )
+        return;
+    mConcordance->removeGlossItemFromConcordance(glossItem);
+
+    mGlossItems.removeAt(index);
+    for(int i=0; i<bits.count(); i++)
+    {
+        GlossItem *tmp = connectGlossItem( new GlossItem( bits.at(i) , mProject ));
+        mGlossItems.insert(index, tmp);
+        index++;
+    }
+    emit requestGuiRefresh(this);
+    emit phraseChanged();
+}
+
 void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
 {
     int index = mGlossItems.indexOf( glossItem );

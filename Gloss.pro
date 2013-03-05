@@ -70,7 +70,8 @@ SOURCES += main.cpp\
     alltagsmodel.cpp \
     lexiconmodel.cpp \
     sqlquerywriter.cpp \
-    focus.cpp
+    focus.cpp \
+    dealwithspacesdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -131,7 +132,8 @@ HEADERS  += mainwindow.h \
     alltagsmodel.h \
     lexiconmodel.h \
     sqlquerywriter.h \
-    focus.h
+    focus.h \
+    dealwithspacesdialog.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -153,7 +155,8 @@ FORMS    += mainwindow.ui \
     choosetextlinedialog.ui \
     lexicalentrysearchdialog.ui \
     lexiconedit.ui \
-    sqltabledialog.ui
+    sqltabledialog.ui \
+    dealwithspacesdialog.ui
 
 LIBS += -L../quazip
 LIBS += -lquazip
