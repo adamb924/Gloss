@@ -311,9 +311,17 @@ void GlossItem::loadStringsFromDatabase()
         TextBit fromDatabase = mDbAdapter->textFormFromId( tfIter.value().id() );
 
         if( fromDatabase.isNull() )
-            fromTextForms.setId( mDbAdapter->newTextForm( mId, tfIter.value() ) );
+        {
+            QHash<qlonglong,QString> textForms = mDbAdapter->interpretationTextForms( mId, tfIter.key().id() );
+            if(textForms.count() > 0 )
+                fromTextForms.setId( textForms.keys().first() );
+            else
+                fromTextForms.setId( mDbAdapter->newTextForm( mId, tfIter.value() ) );
+        }
         else
+        {
             fromTextForms.setText( fromDatabase.text() );
+        }
 
         setTextForm( fromTextForms );
     }
@@ -327,9 +335,17 @@ void GlossItem::loadStringsFromDatabase()
         TextBit fromDatabase = mDbAdapter->glossFromId( gIter.value().id() );
 
         if( fromDatabase.isNull() )
-            fromGlosses.setId( mDbAdapter->newGloss( mId, gIter.value() ) );
+        {
+            QHash<qlonglong,QString> glosses = mDbAdapter->interpretationGlosses( mId , gIter.key().id() );
+            if(glosses.count() > 0 )
+                fromGlosses.setId( glosses.keys().first() );
+            else
+                fromGlosses.setId( mDbAdapter->newGloss( mId, gIter.value() ) );
+        }
         else
+        {
             fromGlosses.setText( fromDatabase.text() );
+        }
 
         setGloss( fromGlosses );
     }

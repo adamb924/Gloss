@@ -177,7 +177,7 @@ void Project::readTextPaths()
         mTextPaths << tempDir.absoluteFilePath(entries.at(i));
 }
 
-Text* Project::newText(const QString & name, const WritingSystem & ws, const QString & content , bool openText )
+Text* Project::newText(const QString & name, const WritingSystem & ws, const QString & content )
 {
     if( mTexts.contains(name) )
     {
@@ -190,10 +190,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
     if( text->isValid() )
     {
         text->saveText(false);
-        if( openText )
-            mTexts.insert(name, text);
-        else
-            delete text;
+        mTexts.insert(name, text);
         mTextPaths << filepathFromName(name);
         return text;
     }

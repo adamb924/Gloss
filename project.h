@@ -52,7 +52,7 @@ public:
 
     void deleteText(QString textName);
 
-    Text* newText(const QString & name, const WritingSystem & ws, const QString &content = QString() , bool openText = true );
+    Text* newText(const QString & name, const WritingSystem & ws, const QString &content = QString() );
     Text* textFromFlexText(const QString & filePath, const WritingSystem & ws);
     Text* textFromFlexText(const QString & filePath);
 

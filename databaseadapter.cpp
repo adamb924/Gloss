@@ -215,6 +215,8 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit
 
 qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writingSystemId)
 {
+    qDebug() << "Inserting" << interpretationId << writingSystemId;
+
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("insert into Glosses (InterpretationId,WritingSystem) values (:InterpretationId,:WritingSystem);");
     q.bindValue(":InterpretationId",interpretationId);

@@ -796,7 +796,6 @@ void WordDisplayWidget::cycleGloss( const WritingSystem & ws )
         position++;
         if( position == candidates.count() )
             position = 0;
-        qDebug() << position;
         mGlossItem->setGloss( mDbAdapter->glossFromId( candidates.at(position) ) );
     }
 }

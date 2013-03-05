@@ -311,7 +311,7 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         QString content = stream.readAll();
         file.close();
 
-        Text *text = mProject->newText(name, ws, content, openText);
+        Text *text = mProject->newText(name, ws, content );
         if( openText )
         {
             TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
@@ -362,7 +362,7 @@ void MainWindow::importEaf()
                             break;
                     }
                     progress.setValue(files.count());
-                    QMessageBox::information(this, tr("Eaf files imported"), tr("Result of importing files: %1 successes, %2 failures or overwrite preventions"));
+                    QMessageBox::information(this, tr("Eaf files imported"), tr("Result of importing files: %1 successes, %2 failures or overwrite preventions").arg(successes).arg(failures));
                 }
             }
         }
@@ -371,32 +371,36 @@ void MainWindow::importEaf()
 
 bool MainWindow::importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText)
 {
-    QStringList result;
-    QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return false;
-
-    QString queryString = "declare variable $tier-id external; "
-                          "for $x in /ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "
-                          "return string( $x/text() )";
-
-    query.bindVariable("tier-id", QXmlItem(tierId) );
-    query.setMessageHandler(new MessageHandler());
-    query.setQuery(queryString);
-    query.evaluateTo(&result);
-
     QFileInfo info(filepath);
     QString name = info.baseName();
 
     if( !mProject->textNames().contains(name) )
     {
-        Text *text = mProject->newText(name, ws, result.join("\n"), openText);
+        QStringList result;
+        QXmlQuery query(QXmlQuery::XQuery10);
+        if(!query.setFocus(QUrl(filepath)))
+            return false;
+
+        QString queryString = "declare variable $tier-id external; "
+                              "for $x in /ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "
+                              "return string( $x/text() )";
+
+        query.bindVariable("tier-id", QXmlItem(tierId) );
+        query.setMessageHandler(new MessageHandler());
+        query.setQuery(queryString);
+        query.evaluateTo(&result);
+
+        Text *text = mProject->newText(name, ws, result.join("\n") );
         text->mergeEaf(filepath);
         if( openText )
         {
             TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
+        }
+        else
+        {
+            mProject->saveAndCloseText(text);
         }
         return true;
     }
