@@ -233,7 +233,6 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu.addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
-    menu.addAction(tr("Split into multiple words"), this, SLOT(splitIntoMultipleWords()));
     menu.addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
     menu.addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
     menu.addAction(tr("Remove"), this, SLOT(removeGlossItem()));
