@@ -31,6 +31,9 @@ private:
     TextBit mTextBit;
 
     void focusInEvent ( QFocusEvent * e );
+    void focusOutEvent ( QFocusEvent * e );
+
+    void refreshStyle();
 
 signals:
     void stringChanged( const TextBit & , LingEdit *);

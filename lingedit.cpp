@@ -37,10 +37,21 @@ void LingEdit::setTextBit( const TextBit & bit )
 
 void LingEdit::focusInEvent ( QFocusEvent * e )
 {
+    QWidget::focusInEvent(e);
+
     // http://msdn.microsoft.com/en-us/goglobal/bb896001
     QProcess switchInput;
     switchInput.start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mTextBit.writingSystem().keyboardCommand() );
     switchInput.waitForFinished();
+
+    refreshStyle();
+}
+
+void LingEdit::focusOutEvent ( QFocusEvent * e )
+{
+    QWidget::focusOutEvent(e);
+
+    refreshStyle();
 }
 
 void LingEdit::textChanged()
@@ -72,10 +83,11 @@ void LingEdit::matchTextAlignmentTo( Qt::LayoutDirection target )
 
 void LingEdit::setWritingSystem( const WritingSystem & ws )
 {
-    setStyleSheet(QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid #f0f0f0; }").arg(ws.fontFamily()).arg(ws.fontSize()));
+    mTextBit.setWritingSystem( ws );
+
+    refreshStyle();
     setLayoutDirection(ws.layoutDirection());
     setToolTip(ws.name());
-    mTextBit.setWritingSystem( ws );
 }
 
 TextBit LingEdit::textBit() const
@@ -88,3 +100,14 @@ void LingEdit::updateMatchingTextBit( const TextBit & bit )
     if( bit.id() == mTextBit.id() && bit.writingSystem() == mTextBit.writingSystem() )
         setTextBit( bit );
 }
+
+void LingEdit::refreshStyle()
+{
+    QString borderColor;
+    if( hasFocus() )
+        borderColor = "#0000ff";
+    else
+        borderColor = "#f0f0f0";
+    setStyleSheet(QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid %3; }").arg(mTextBit.writingSystem().fontFamily()).arg(mTextBit.writingSystem().fontSize()).arg(borderColor));
+}
+
