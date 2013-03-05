@@ -675,56 +675,80 @@ void WordDisplayWidget::editBaselineText()
     if( dialog.exec() == QDialog::Accepted )
     {
         QString text = dialog.text().trimmed();
-        if( text.contains(QRegExp("\\s+")) )
+        editBaselineText( text );
+    }
+}
+
+void WordDisplayWidget::editBaselineText(const QString & text)
+{
+    if( text.contains(QRegExp("\\s+")) )
+    {
+        DealWithSpacesDialog dealDialog(this);
+        dealDialog.exec();
+        if( dealDialog.choice() == DealWithSpacesDialog::SplitWord )
         {
-            DealWithSpacesDialog dealDialog(this);
-            dealDialog.exec();
-            if( dealDialog.choice() == DealWithSpacesDialog::SplitWord )
-            {
-                WritingSystem ws = dialog.writingSystem();
-                QList<TextBit> bits;
-                QStringList portions = text.split(QRegExp("\\s+"));
-                for(int i=0; i<portions.count(); i++)
-                    bits << TextBit( portions.at(i), ws );
-                emit splitWidget( mGlossItem , bits  );
-            }
-            else if( dealDialog.choice() == DealWithSpacesDialog::ConvertSpaces )
-            {
-                TextBit bit = dialog.textBit();
-                bit.setText( text.trimmed().replace(QChar(0x0020), QChar(0x00A0)) );
-                mGlossItem->resetBaselineText( bit );
-            }
-            else
-            {
-                return;
-            }
+            QList<TextBit> bits;
+            QStringList portions = text.split(QRegExp("\\s+"));
+            for(int i=0; i<portions.count(); i++)
+                bits << TextBit( portions.at(i), mGlossItem->baselineWritingSystem() );
+            emit splitWidget( mGlossItem , bits  );
+        }
+        else if( dealDialog.choice() == DealWithSpacesDialog::ConvertSpaces )
+        {
+            QString replaced = text;
+            replaced.replace(QChar(0x0020), QChar(0x00A0));
+            TextBit bit( replaced , mGlossItem->baselineWritingSystem() );
+            mGlossItem->resetBaselineText( bit );
         }
         else
         {
-            mGlossItem->resetBaselineText( dialog.textBit() );
+            return;
         }
+    }
+    else
+    {
+        TextBit bit( text , mGlossItem->baselineWritingSystem() );
+        mGlossItem->resetBaselineText( bit );
     }
 }
 
 void WordDisplayWidget::editBaselineTextKeepAnnotations()
 {
-    TextBitHash textForms = *mGlossItem->textForms();
-    TextBitHash glosses = *mGlossItem->glosses();
-    editBaselineText();
-
-    TextBitHashIterator iter(textForms);
-    while( iter.hasNext() )
+    GenericTextInputDialog dialog( mGlossItem->baselineText() , this );
+    dialog.setWindowTitle(tr("Edit baseline text (%1)").arg(mGlossItem->baselineWritingSystem().name()));
+    if( dialog.exec() == QDialog::Accepted )
     {
-        iter.next();
-        if( iter.key() != mGlossItem->baselineWritingSystem() )
-            mGlossItem->setTextForm( iter.value() );
-    }
+        QString text = dialog.text().trimmed();
 
-    iter = TextBitHashIterator(glosses);
-    while( iter.hasNext() )
-    {
-        iter.next();
-        mGlossItem->setGloss( iter.value() );
+        QList<qlonglong> candidates = mDbAdapter->candidateInterpretations( TextBit(text, mGlossItem->baselineWritingSystem() ) );
+        if( candidates.count() > 0 )
+        {
+            if( QMessageBox::Yes == QMessageBox::question(this, tr("Use existing interpretation?"), tr("There is at least one interpretation for that text already. Would you like to use it instead of creating a new one?"), QMessageBox::Yes | QMessageBox::No , QMessageBox::Yes ) )
+            {
+                mGlossItem->setInterpretation( candidates.first(), true );
+                return;
+            }
+        }
+
+        TextBitHash textForms = *mGlossItem->textForms();
+        TextBitHash glosses = *mGlossItem->glosses();
+
+        editBaselineText( text );
+
+        TextBitHashIterator iter(textForms);
+        while( iter.hasNext() )
+        {
+            iter.next();
+            if( iter.key() != mGlossItem->baselineWritingSystem() )
+                mGlossItem->setTextForm( iter.value() );
+        }
+
+        iter = TextBitHashIterator(glosses);
+        while( iter.hasNext() )
+        {
+            iter.next();
+            mGlossItem->setGloss( iter.value() );
+        }
     }
 }
 

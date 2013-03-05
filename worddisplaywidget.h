@@ -132,6 +132,7 @@ private slots:
     void displayDatabaseReport();
 
     void editBaselineText();
+    void editBaselineText(const QString & text);
     void editBaselineTextKeepAnnotations();
     void splitIntoMultipleWords();
     void mergeWithNext();
