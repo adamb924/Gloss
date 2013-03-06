@@ -82,7 +82,6 @@ void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, con
 
 void Phrase::splitGloss( GlossItem *glossItem, const QList<TextBit> & bits )
 {
-    qDebug() << bits.count();
     int index = mGlossItems.indexOf( glossItem );
     if( index == -1 )
         return;
