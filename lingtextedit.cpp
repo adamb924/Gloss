@@ -2,7 +2,7 @@
 
 #include <QProcess>
 #include <QtDebug>
-#include <QtGui>
+#include <QtWidgets>
 
 LingTextEdit::LingTextEdit(QWidget *parent) :
         QPlainTextEdit(parent)

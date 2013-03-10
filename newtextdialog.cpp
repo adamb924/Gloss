@@ -1,7 +1,7 @@
 #include "newtextdialog.h"
 #include "ui_newtextdialog.h"
 
-#include <QtGui>
+#include <QtWidgets>
 
 NewTextDialog::NewTextDialog(const QList<WritingSystem> & ws, QWidget *parent) :
     QDialog(parent),

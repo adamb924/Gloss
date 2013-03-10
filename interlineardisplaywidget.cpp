@@ -1,7 +1,7 @@
 #include "interlineardisplaywidget.h"
 
 #include <QtDebug>
-#include <QtGui>
+#include <QtWidgets>
 #include <QStringList>
 #include <QLayout>
 

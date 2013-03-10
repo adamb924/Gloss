@@ -1,7 +1,7 @@
 #include "replacedialog.h"
 #include "ui_replacedialog.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QXmlStreamWriter>
 #include <QtDebug>
 

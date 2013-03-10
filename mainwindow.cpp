@@ -21,7 +21,7 @@
 #include "sqltabledialog.h"
 #include "focus.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtSql>
 #include <QStringList>
 
