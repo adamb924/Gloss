@@ -133,6 +133,12 @@ void WordDisplayWidget::setupShortcuts()
     leftGlossItem->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( leftGlossItem, SIGNAL(triggered()), this, SLOT(leftGlossItem()) );
     addAction(leftGlossItem);
+
+    QAction *playSound = new QAction(this);
+    playSound->setShortcut( QKeySequence("Ctrl+Alt+Q") );
+    playSound->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( playSound, SIGNAL(triggered()), this, SLOT(playSound()) );
+    addAction(playSound);
 }
 
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
@@ -915,3 +921,7 @@ void WordDisplayWidget::leftGlossItem()
     emit requestRightGlossItem(this);
 }
 
+void WordDisplayWidget::playSound()
+{
+    emit requestPlaySound(this);
+}

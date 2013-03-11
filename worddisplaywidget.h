@@ -95,8 +95,10 @@ signals:
     void requestApproveLine( WordDisplayWidget * wdw );
     void requestLeftGlossItem( WordDisplayWidget * wdw );
     void requestRightGlossItem( WordDisplayWidget * wdw );
+    void requestPlaySound( WordDisplayWidget * wdw );
 
 private slots:
+    void playSound();
     void approveLine();
     void rightGlossItem();
     void leftGlossItem();

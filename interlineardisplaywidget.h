@@ -60,6 +60,7 @@ private slots:
     void editLine(int lineNumber);
 
     void approveAll( WordDisplayWidget * wdw );
+    void playSound( WordDisplayWidget * wdw );
     void leftGlossItem( WordDisplayWidget * wdw );
     void rightGlossItem( WordDisplayWidget * wdw );
 

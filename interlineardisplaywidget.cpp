@@ -248,6 +248,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(requestRemoveGlossItem(GlossItem*)), phrase, SLOT(removeGlossItem(GlossItem*)));
 
     connect( wdw, SIGNAL(requestApproveLine(WordDisplayWidget*)), this, SLOT(approveAll(WordDisplayWidget*)) );
+    connect( wdw, SIGNAL(requestPlaySound(WordDisplayWidget*)), this, SLOT(playSound(WordDisplayWidget*)) );
     connect( wdw, SIGNAL(requestLeftGlossItem(WordDisplayWidget*)), this, SLOT(leftGlossItem(WordDisplayWidget*)));
     connect( wdw, SIGNAL(requestRightGlossItem(WordDisplayWidget*)), this, SLOT(rightGlossItem(WordDisplayWidget*)));
 
@@ -280,6 +281,12 @@ void InterlinearDisplayWidget::approveAll( WordDisplayWidget * wdw )
 {
     int lineNumber = mWordDisplayWidgets.key( wdw );
     approveAll(lineNumber);
+}
+
+void InterlinearDisplayWidget::playSound( WordDisplayWidget * wdw )
+{
+    int lineNumber = mWordDisplayWidgets.key( wdw );
+    playSound(lineNumber);
 }
 
 void InterlinearDisplayWidget::leftGlossItem( WordDisplayWidget * wdw )
