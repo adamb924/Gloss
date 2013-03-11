@@ -9,6 +9,7 @@
 #ifndef TEXTBIT_H
 #define TEXTBIT_H
 
+#include <QObject>
 #include <QString>
 #include "writingsystem.h"
 

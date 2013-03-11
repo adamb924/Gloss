@@ -6,7 +6,7 @@
 #include "databaseadapter.h"
 #include "glossitem.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtDebug>
 
 ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :

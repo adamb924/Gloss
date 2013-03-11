@@ -11,7 +11,7 @@
 #include "mainwindow.h"
 #include "dealwithspacesdialog.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtDebug>
 #include <QActionGroup>
 

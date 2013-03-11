@@ -37,7 +37,7 @@ void LingEdit::setTextBit( const TextBit & bit )
 
 void LingEdit::focusInEvent ( QFocusEvent * e )
 {
-    QWidget::focusInEvent(e);
+//    QWidget::focusInEvent(e);
 
     // http://msdn.microsoft.com/en-us/goglobal/bb896001
     QProcess switchInput;
@@ -47,12 +47,12 @@ void LingEdit::focusInEvent ( QFocusEvent * e )
     refreshStyle();
 }
 
-void LingEdit::focusOutEvent ( QFocusEvent * e )
-{
-    QWidget::focusOutEvent(e);
+//void LingEdit::focusOutEvent ( QFocusEvent * e )
+//{
+//    QWidget::focusOutEvent(e);
 
-    refreshStyle();
-}
+//    refreshStyle();
+//}
 
 void LingEdit::textChanged()
 {
@@ -103,11 +103,9 @@ void LingEdit::updateMatchingTextBit( const TextBit & bit )
 
 void LingEdit::refreshStyle()
 {
-    QString borderColor;
-    if( hasFocus() )
-        borderColor = "#0000ff";
-    else
-        borderColor = "#f0f0f0";
+    QString borderColor = "#f0f0f0";
+//    if( hasFocus() )
+//        borderColor = "#0000ff";
     setStyleSheet(QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid %3; }").arg(mTextBit.writingSystem().fontFamily()).arg(mTextBit.writingSystem().fontSize()).arg(borderColor));
 }
 

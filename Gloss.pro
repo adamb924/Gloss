@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql xml xmlpatterns multimedia
+QT       += widgets sql xml xmlpatterns multimedia
 
 TARGET = Gloss
 TEMPLATE = app
@@ -158,11 +158,9 @@ FORMS    += mainwindow.ui \
     sqltabledialog.ui \
     dealwithspacesdialog.ui
 
-LIBS += -L../quazip
-LIBS += -lquazip
-
 LIBS += -L./ \
-    -lexslt \
+    -lquazip \
+    -llibexslt \
     -llibxslt \
     -llibxml2 \
     -liconv

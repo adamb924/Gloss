@@ -1,7 +1,7 @@
 #include "importflextextdialog.h"
 #include "ui_importflextextdialog.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtXml>
 #include <QXmlQuery>
 #include <QXmlResultItems>
