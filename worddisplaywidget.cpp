@@ -186,7 +186,6 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
     TextBit bit = mGlossItem->textForm( glossLine.writingSystem() );
 
     ImmutableLabel *immutableLabel = new ImmutableLabel( bit, technicolor , this);
-    immutableLabel->setAlignment( mGlossLines.first().writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
     immutableLabel->setCandidateNumber(mGlossItem->candidateNumber());
     immutableLabel->setApprovalStatus(mGlossItem->approvalStatus());
 

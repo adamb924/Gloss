@@ -1065,7 +1065,7 @@ void DatabaseAdapter::loadWritingSystems()
         qWarning() << "DatabaseAdapter::loadWritingSystems" << q.lastError().text() << q.executedQuery();
     while( q.next() )
     {
-        WritingSystem ws(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString(), q.value(7).toInt() );
+        WritingSystem ws(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toInt() == 1 ? Qt::RightToLeft : Qt::LeftToRight , q.value(6).toString(), q.value(7).toInt() );
         mWritingSystems << ws;
         mWritingSystemByRowId.insert( q.value(0).toLongLong(), ws );
         mWritingSystemByFlexString.insert( q.value(3).toString(), ws );
