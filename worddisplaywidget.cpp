@@ -229,26 +229,26 @@ AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType 
 
 void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu = new QMenu(this);
 
-    menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
-    menu.addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
-    menu.addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
-    menu.addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
-    menu.addAction(tr("Remove"), this, SLOT(removeGlossItem()));
+    menu->addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
+    menu->addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
+    menu->addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
+    menu->addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
+    menu->addAction(tr("Remove"), this, SLOT(removeGlossItem()));
 
-    menu.addSeparator();
+    menu->addSeparator();
 
     // Approved button
-    QAction *approved = new QAction(tr("Approved"),&menu);
+    QAction *approved = new QAction(tr("Approved"),menu);
     approved->setCheckable(true);
     approved->setChecked(mGlossItem->approvalStatus() == GlossItem::Approved );
-    QActionGroup *gApproved = new QActionGroup(&menu);
+    QActionGroup *gApproved = new QActionGroup(menu);
     gApproved->addAction(approved);
-    menu.addAction(approved);
+    menu->addAction(approved);
     connect( gApproved, SIGNAL(triggered(QAction*)) , mGlossItem, SLOT(toggleApproval()) );
 
-    addInterpretationSubmenu(&menu);
+    addInterpretationSubmenu(menu);
 
 
     for(int i=0; i<mGlossLines.count(); i++)
@@ -259,10 +259,10 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
         case InterlinearItemType::ImmutableGloss:
             break;
         case InterlinearItemType::Text:
-            addTextFormSubmenu( &menu , mGlossLines.at(i).writingSystem() );
+            addTextFormSubmenu( menu , mGlossLines.at(i).writingSystem() );
             break;
         case InterlinearItemType::Gloss:
-            addGlossSubmenu( &menu , mGlossLines.at(i).writingSystem() );
+            addGlossSubmenu( menu , mGlossLines.at(i).writingSystem() );
             break;
         case InterlinearItemType::Analysis:
             break;
@@ -271,12 +271,12 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
         }
     }
 
-    menu.addSeparator();
+    menu->addSeparator();
 
-    menu.addAction(tr("Database report"), this, SLOT(displayDatabaseReport()) );
-    addSearchSubmenu(&menu);
+    menu->addAction(tr("Database report"), this, SLOT(displayDatabaseReport()) );
+    addSearchSubmenu(menu);
 
-    menu.exec(event->globalPos());
+    menu->exec(event->globalPos());
 }
 
 void WordDisplayWidget::addInterpretationSubmenu(QMenu *menu )
