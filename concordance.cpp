@@ -37,7 +37,6 @@ void Concordance::removeGlossItemFromConcordance( QObject * item )
     QListIterator<qlonglong> keys( mGlossItems.keys( (GlossItem*)item ) );
     while(keys.hasNext())
         mGlossItems.remove( keys.next(), (GlossItem*)item );
-//    qDebug() << "Concordance::removeGlossItemFromConcordance() end count:" << mGlossItems.count() << mGlossItems;
 }
 
 void Concordance::removeGlossFromImmutableLabelConcordance( QObject * edit )

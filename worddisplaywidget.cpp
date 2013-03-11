@@ -685,14 +685,14 @@ void WordDisplayWidget::editBaselineText()
 
 void WordDisplayWidget::editBaselineText(const QString & text)
 {
-    if( text.contains(QRegExp("\\s+")) )
+    if( text.contains(QRegExp("[ ]+")) )
     {
         DealWithSpacesDialog dealDialog(this);
         dealDialog.exec();
         if( dealDialog.choice() == DealWithSpacesDialog::SplitWord )
         {
             QList<TextBit> bits;
-            QStringList portions = text.split(QRegExp("\\s+"));
+            QStringList portions = text.split(QRegExp("[ ]+"));
             for(int i=0; i<portions.count(); i++)
                 bits << TextBit( portions.at(i), mGlossItem->baselineWritingSystem() );
             emit splitWidget( mGlossItem , bits  );

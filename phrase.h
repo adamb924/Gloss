@@ -58,7 +58,6 @@ public slots:
     //! \brief Adds or updates the phrase-level gloss to \a bit. The gloss to be added or updated is indicated by the WritingSystem of \bit.
     void setPhrasalGloss( const TextBit & bit );
 
-    void splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
     void splitGloss( GlossItem *glossItem, const QList<TextBit> & bits );
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );

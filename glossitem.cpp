@@ -386,7 +386,7 @@ Concordance* GlossItem::concordance()
 
 void GlossItem::updateGlossItemConcordance()
 {
-    // this is called five places
+    // TODO this is called five places, and there is surely some more efficient way to do that
     mConcordance->removeGlossItemFromConcordance(this);
     TextBitHashIterator iter(mTextForms);
     while(iter.hasNext())
