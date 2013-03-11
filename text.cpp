@@ -192,10 +192,11 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
 bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
 {
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.setFocus(QUrl(filePath));
-    query.setMessageHandler(new MessageHandler(this));
+    query.setMessageHandler(new MessageHandler("Text::setBaselineWritingSystemFromFile", this));
+    query.bindVariable("path", QVariant(QUrl(filePath).path()));
     query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                   "for $x in /document/interlinear-text/languages/language[@abg:is-baseline='true'] "
+                   "declare variable $path external; "
+                   "for $x in doc($path)/document/interlinear-text/languages/language[@abg:is-baseline='true'] "
                    "return string($x/@lang)");
     if (query.isValid())
     {
@@ -498,11 +499,11 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
 {
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( filename )))
-        return MergeEafFailure;
-    query.setMessageHandler(new MessageHandler());
-    query.setQuery( "declare variable $settings-array := /ANNOTATION_DOCUMENT/TIME_ORDER/TIME_SLOT; "
-                    "for $phrase in /ANNOTATION_DOCUMENT/TIER/ANNOTATION/ALIGNABLE_ANNOTATION "
+    query.setMessageHandler(new MessageHandler("Text::mergeEaf"));
+    query.bindVariable("path", QVariant(QUrl(filename).path()));
+    query.setQuery( "declare variable $path external; "
+                    "declare variable $settings-array := doc($path)/ANNOTATION_DOCUMENT/TIME_ORDER/TIME_SLOT; "
+                    "for $phrase in doc($path)/ANNOTATION_DOCUMENT/TIER/ANNOTATION/ALIGNABLE_ANNOTATION "
                     "return string-join( ( $settings-array[@TIME_SLOT_ID=$phrase/@TIME_SLOT_REF1]/@TIME_VALUE , $settings-array[@TIME_SLOT_ID=$phrase/@TIME_SLOT_REF2]/@TIME_VALUE ) , ',')" );
     query.evaluateTo(&result);
 

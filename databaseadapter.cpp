@@ -699,9 +699,8 @@ QList<InterlinearItemType> DatabaseAdapter::interlinearItemsFromConfigurationFil
     QList<InterlinearItemType> items;
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
-        return items;
-    query.setMessageHandler(new MessageHandler());
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::interlinearItemsFromConfigurationFile"));
+    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path()));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -718,13 +717,13 @@ void DatabaseAdapter::parseConfigurationFile(const QString & filename)
 {
     mConfigurationXmlPath = filename;
 
-    mGlossInterlinearLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/gloss-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
-    mGlossPhrasalGlossLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/gloss-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
-    mAnalysisInterlinearLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/analysis-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
-    mAnalysisPhrasalGlossLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/analysis-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
+    mGlossInterlinearLines = interlinearItemsFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/gloss-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
+    mGlossPhrasalGlossLines = interlinearItemsFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/gloss-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
+    mAnalysisInterlinearLines = interlinearItemsFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/analysis-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
+    mAnalysisPhrasalGlossLines = interlinearItemsFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/analysis-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
 
-    mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("for $i in /gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
-    mLexicalEntryGlosses = writingSystemListFromConfigurationFile("for $i in /gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
+    mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
+    mLexicalEntryGlosses = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
 
     metalanguageFromConfigurationFile();
 }
@@ -734,9 +733,8 @@ QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(con
     QList<WritingSystem> items;
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
-        return items;
-    query.setMessageHandler(new MessageHandler());
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::writingSystemListFromConfigurationFile"));
+    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path()));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -1027,10 +1025,9 @@ void DatabaseAdapter::metalanguageFromConfigurationFile()
 {
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
-        return;
-    query.setMessageHandler(new MessageHandler());
-    query.setQuery("for $i in /gloss-configuration/meta-language return string($i/@lang)");
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::metalanguageFromConfigurationFile"));
+    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path()));
+    query.setQuery("for $i in doc($path)/gloss-configuration/meta-language return string($i/@lang)");
     query.evaluateTo(&result);
     mMetaLanguage = writingSystem(result.trimmed());
 }
@@ -1224,10 +1221,8 @@ void DatabaseAdapter::createIndex( const QString & tableName, const QString & qu
 
         QStringList result;
         QXmlQuery query(QXmlQuery::XQuery10);
-        if(!query.setFocus(QUrl(path)))
-            continue;
-
-        query.setMessageHandler(new MessageHandler());
+        query.setMessageHandler(new MessageHandler("DatabaseAdapter::createIndex"));
+        query.bindVariable("path", QVariant(QUrl(path).path()));
         query.setQuery(queryString);
         query.evaluateTo(&result);
 

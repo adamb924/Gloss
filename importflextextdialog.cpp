@@ -59,13 +59,11 @@ void ImportFlexTextDialog::fillDataFromFlexText()
     }
 
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filename)))
-    {
-        QMessageBox::critical(this,tr("Error"),tr("Could not parse the XML in this file: %1").arg(filename));
-        return;
-    }
-    query.setMessageHandler(new MessageHandler(this));
-    query.setQuery("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/languages/language return string-join( ( string($x/@lang),string($x/@font),string($x/@RightToLeft) ) , ',')");
+    query.setMessageHandler(new MessageHandler("ImportFlexTextDialog::fillDataFromFlexText", this));
+    query.bindVariable("path", QVariant(QUrl(filename).path()));
+    query.setQuery("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; "
+                   "declare variable $path external; "
+                   "for $x in doc($path)/document/interlinear-text/languages/language return string-join( ( string($x/@lang),string($x/@font),string($x/@RightToLeft) ) , ',')");
     if (query.isValid())
     {
         QStringList result;

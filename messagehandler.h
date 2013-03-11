@@ -13,10 +13,12 @@ class MessageHandler : public QAbstractMessageHandler
 {
     Q_OBJECT
 public:
-    explicit MessageHandler(QObject *parent = 0);
+    MessageHandler(const QString & source, QObject *parent = 0);
 
 protected:
     void handleMessage( QtMsgType type, const QString & description, const QUrl & identifier, const QSourceLocation & sourceLocation );
+
+    QString mSource;
 
 signals:
 

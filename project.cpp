@@ -471,7 +471,7 @@ QSet<qlonglong> Project::getAllInterpretationIds()
     QSet<qlonglong> ids;
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word return string( $x/@abg:id )" ) );
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word return string( $x/@abg:id )" ) );
     return ids;
 }
 
@@ -480,7 +480,7 @@ QSet<qlonglong> Project::getAllGlossIds()
     QSet<qlonglong> ids;
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls'] return string( $x/@abg:id )" ) );
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls'] return string( $x/@abg:id )" ) );
     return ids;
 }
 
@@ -489,7 +489,7 @@ QSet<qlonglong> Project::getAllTextFormIds()
     QSet<qlonglong> ids;
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt'] return string( $x/@abg:id )" ) );
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt'] return string( $x/@abg:id )" ) );
     return ids;
 }
 
@@ -499,10 +499,8 @@ QSet<qlonglong> Project::getSetOfNumbersFromTextQuery(const QString & filepath, 
     QXmlResultItems result;
 
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return ids;
-
-    query.setMessageHandler(new MessageHandler(this));
+    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.setMessageHandler(new MessageHandler("Project::getSetOfNumbersFromTextQuery", this));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -552,7 +550,7 @@ bool Project::countItemsInTexts(const QString & filename, const QString & typeSt
 
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.append( getListOfNumbersFromXQuery( iter.next(), QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='%1'] return string( $x/@abg:id )").arg(typeString) ) );
+        ids.append( getListOfNumbersFromXQuery( iter.next(), QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='%1'] return string( $x/@abg:id )").arg(typeString) ) );
 
     QSet<qlonglong> set = ids.toSet();
     QSetIterator<qlonglong> setIter(set);
@@ -578,10 +576,8 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
     QXmlResultItems result;
 
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return list;
-
-    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.setMessageHandler(new MessageHandler("Project::getListOfNumbersFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -664,21 +660,21 @@ QStringList Project::getInterpretationUsage(const QString & filepath, const QStr
 {
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return result;
+    query.bindVariable("path", QVariant(QUrl(filepath).path()));
 
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+        "declare variable $path external; "
                           "declare variable $settings external; "
                           "declare variable $settings-array := tokenize($settings,',' ); "
                           "declare function local:writing-system( $x as xs:string ) as xs:string { substring-after($x,'=') }; "
                           "declare function local:line-type( $x as xs:string ) as xs:string { substring-before($x,'=') } ;"
                           "declare function local:get-item( $x as element(word), $writing-system as xs:string, $type as xs:string ) as xs:string { if( $x/item[@lang=$writing-system and @type=$type] ) then string( $x/item[@lang=$writing-system and @type=$type]/@abg:id ) else string(-1) }; "
-                          "for $word in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
+                          "for $word in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
                           "let $myset := for $setting in $settings-array return local:get-item( $word , local:writing-system($setting) , local:line-type($setting) )"
                           "return string-join( (string( $word/@abg:id ), $myset) , ',')";
 
     query.bindVariable("settings", QXmlItem(encodedSettings) );
-    query.setMessageHandler(new MessageHandler());
+    query.setMessageHandler(new MessageHandler("Project::getInterpretationUsage"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
 
@@ -691,10 +687,8 @@ QList<LongLongPair> Project::getPairedNumbersFromXQuery(const QString & filepath
 
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return pairs;
-
-    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.setMessageHandler(new MessageHandler("Project::getPairedNumbersFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
 
@@ -712,10 +706,8 @@ QStringList Project::getStringListFromXQuery(const QString & filepath, const QSt
 {
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return result;
-
-    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.setMessageHandler(new MessageHandler("Project::getStringListFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     return result;
@@ -776,15 +768,15 @@ void Project::playLine(const QString & textName, int lineNumber)
 
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( textPath )))
-        return;
-    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("path", QVariant(QUrl(textPath).path()));
+    query.setMessageHandler(new MessageHandler("Project::playLine"));
     query.bindVariable("line", QXmlItem(lineNumber) );
     query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                   "declare variable $path external; "
                    "declare variable $line external; "
-                   "declare variable $audio-file := /document/interlinear-text/@abg:audio-file; "
-                   "declare variable $start := /document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-start; "
-                   "declare variable $end := /document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-end; "
+                   "declare variable $audio-file := doc($path)/document/interlinear-text/@abg:audio-file; "
+                   "declare variable $start := doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-start; "
+                   "declare variable $end := doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-end; "
                    "string-join( ( $audio-file , $start, $end ) , ',') ");
 
     if( query.evaluateTo(&result) )

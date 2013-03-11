@@ -378,15 +378,14 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
     {
         QStringList result;
         QXmlQuery query(QXmlQuery::XQuery10);
-        if(!query.setFocus(QUrl(filepath)))
-            return false;
-
+        query.bindVariable("path", QVariant(QUrl(filepath).path()));
         QString queryString = "declare variable $tier-id external; "
-                              "for $x in /ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "
+            "declare variable $path external; "
+                              "for $x in doc($path)/ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "
                               "return string( $x/text() )";
 
         query.bindVariable("tier-id", QXmlItem(tierId) );
-        query.setMessageHandler(new MessageHandler());
+        query.setMessageHandler(new MessageHandler("MainWindow::importEaf"));
         query.setQuery(queryString);
         query.evaluateTo(&result);
 
@@ -543,7 +542,8 @@ void MainWindow::searchGlossItems()
     {
         // Do the search of the texts
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::item[@lang='%1' and text()='%2'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -562,7 +562,8 @@ void MainWindow::searchForInterpretationById(qlonglong id)
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::word[@abg:id='%1'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -590,7 +591,8 @@ void MainWindow::searchForTextFormById(qlonglong id)
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='txt'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -619,7 +621,8 @@ void MainWindow::searchForGlossById(qlonglong id)
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='gls'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -734,7 +737,8 @@ void MainWindow::substringSearchGlossItems()
     {
         // Do the search of the texts
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::word[@lang='%1' and contains( text(), '%2') ] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -1103,7 +1107,8 @@ void MainWindow::searchAndReplace()
 void MainWindow::findApprovedLines()
 {
     QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[count(words/word/@abg:approval-status='false')=0] "
+                            "declare variable $path external; "
+                            "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[count(words/word/@abg:approval-status='false')=0] "
                             "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
     SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
@@ -1113,7 +1118,8 @@ void MainWindow::findApprovedLines()
 void MainWindow::findUnapprovedLines()
 {
     QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
+                            "declare variable $path external; "
+                            "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
                             "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
     SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
