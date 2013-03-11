@@ -1,7 +1,7 @@
 #include "analysiswidget.h"
 #include "createanalysisdialog.h"
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "glossitem.h"
 #include "chooselexicalentriesdialog.h"
