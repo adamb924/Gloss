@@ -135,7 +135,7 @@ void WordDisplayWidget::setupShortcuts()
     addAction(leftGlossItem);
 
     QAction *playSound = new QAction(this);
-    playSound->setShortcut( QKeySequence("Ctrl+Alt+Q") );
+    playSound->setShortcut( QKeySequence("Ctrl+Shift+Q") );
     playSound->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( playSound, SIGNAL(triggered()), this, SLOT(playSound()) );
     addAction(playSound);
@@ -802,9 +802,9 @@ void WordDisplayWidget::setFocused(bool isFocused)
 void WordDisplayWidget::keyPressEvent ( QKeyEvent * event )
 {
     int key = event->key();
-    if( key >= 0x01000030 && key <= 0x01000052 )
+    if( key >= Qt::Key_F1 && key <= Qt::Key_F35 )
     {
-        key -= 0x01000030; // now F1 is zero, F2 is one, etc.
+        key -= Qt::Key_F1; // now F1 is zero, F2 is one, etc.
 
         if( key < mGlossLines.count() )
         {
@@ -822,6 +822,10 @@ void WordDisplayWidget::keyPressEvent ( QKeyEvent * event )
             }
         }
     }
+    else
+      {
+        QWidget::keyPressEvent(event);
+      }
 }
 
 void WordDisplayWidget::cycleInterpretation()
