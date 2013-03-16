@@ -35,17 +35,17 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, const QList<F
     connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), mGloss, SLOT(scrollToLine(int)) );
     connect( mGloss, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
 
-    mAnalysis = new InterlinearDisplayWidget(mProject->dbAdapter()->analysisInterlinearLines(), mProject->dbAdapter()->analysisPhrasalGlossLines(), mText, mProject, this);
-    mAnalysis->setFocus(foci);
-    mAnalysis->setLayoutFromText();
-    ui->morphologyTab->layout()->addWidget(mAnalysis);
+//    mAnalysis = new InterlinearDisplayWidget(mProject->dbAdapter()->analysisInterlinearLines(), mProject->dbAdapter()->analysisPhrasalGlossLines(), mText, mProject, this);
+//    mAnalysis->setFocus(foci);
+//    mAnalysis->setLayoutFromText();
+//    ui->morphologyTab->layout()->addWidget(mAnalysis);
 
     connect( text, SIGNAL(baselineTextChanged(QString)), ui->baselineTextEdit, SLOT(setPlainText(QString)) );
-    connect( text, SIGNAL(glossItemsChanged()), mAnalysis, SLOT(setLayoutFromText()));
+//    connect( text, SIGNAL(glossItemsChanged()), mAnalysis, SLOT(setLayoutFromText()));
 
     // line update connections
     connect( text, SIGNAL(phraseRefreshNeeded(int)), mGloss, SLOT(requestLineRefresh(int)) );
-    connect( text, SIGNAL(phraseRefreshNeeded(int)), mAnalysis, SLOT(requestLineRefresh(int)));
+//    connect( text, SIGNAL(phraseRefreshNeeded(int)), mAnalysis, SLOT(requestLineRefresh(int)));
 
     setWindowTitle(mText->name());
 }

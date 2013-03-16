@@ -34,7 +34,7 @@ private:
     Ui::TextDisplayWidget *ui;
     Project *mProject;
     InterlinearDisplayWidget *mGloss;
-    InterlinearDisplayWidget *mAnalysis;
+//    InterlinearDisplayWidget *mAnalysis;
     Text *mText;
 
 protected:
