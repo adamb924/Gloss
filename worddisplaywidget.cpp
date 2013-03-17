@@ -239,6 +239,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     menu->addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu->addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
     menu->addAction(tr("Match following items to this"), this, SLOT(matchFollowingTextFormsToThis()));
+    menu->addAction(tr("Edit baseline text of matching following"), this, SLOT(editBaselineTextMatchingFollowing()));
     menu->addSeparator();
     menu->addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
     menu->addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
@@ -934,4 +935,11 @@ void WordDisplayWidget::playSound()
 void WordDisplayWidget::matchFollowingTextFormsToThis()
 {
     emit requestSetFollowingInterpretations( mGlossItem );
+}
+
+void WordDisplayWidget::editBaselineTextMatchingFollowing()
+{
+    QString oldText = mGlossItem->baselineText().text();
+    editBaselineText();
+    emit requestReplaceFollowing( mGlossItem, oldText );
 }

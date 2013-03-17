@@ -98,6 +98,7 @@ signals:
     void requestPlaySound( WordDisplayWidget * wdw );
 
     void requestSetFollowingInterpretations( GlossItem *glossItem );
+    void requestReplaceFollowing( GlossItem *glossItem, const QString & searchFor );
 
 private slots:
     void playSound();
@@ -143,6 +144,7 @@ private slots:
     void mergeWithPrevious();
 
     void matchFollowingTextFormsToThis();
+    void editBaselineTextMatchingFollowing();
 };
 
 #endif // WORDDISPLAYWIDGET_H

@@ -638,23 +638,28 @@ void Text::removeLine( int lineNumber )
     }
 }
 
-void Text::setFollowingInterpretations( GlossItem *glossItem )
+void Text::findGlossItemLocation(GlossItem *glossItem, int & line, int & position)
 {
-    QString textForm = glossItem->baselineText().text();
-    qlonglong interpretationId = glossItem->id();
-
-    int startingPhrase = -1;
-    int startingGlossItem = -1;
+    line = -1;
+    position = -1;
     for(int i=0; i<mPhrases.count(); i++)
     {
         int index = mPhrases.at(i)->indexOfGlossItem(glossItem);
         if( index != -1 )
         {
-            startingPhrase = i;
-            startingGlossItem = index;
+            line = i;
+            position = index;
         }
     }
+}
 
+void Text::setFollowingInterpretations( GlossItem *glossItem )
+{
+    QString textForm = glossItem->baselineText().text();
+    qlonglong interpretationId = glossItem->id();
+
+    int startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
     if( startingPhrase == -1 || startingGlossItem == -1 )
         return;
 
@@ -674,6 +679,34 @@ void Text::setFollowingInterpretations( GlossItem *glossItem )
             if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == textForm )
             {
                 mPhrases.at(i)->glossItemAt(j)->setInterpretation( interpretationId );
+            }
+        }
+    }
+}
+
+void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
+{
+    int startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+    if( startingPhrase == -1 || startingGlossItem == -1 )
+        return;
+
+    // do the remainder of the starting phrase
+    for(int i=startingGlossItem+1; i < mPhrases.at(startingPhrase)->glossItemCount(); i++ )
+    {
+        if( mPhrases.at(startingPhrase)->glossItemAt(i)->baselineText().text() == searchFor )
+        {
+            mPhrases.at(startingPhrase)->glossItemAt(i)->setInterpretation( glossItem->id() );
+        }
+    }
+
+    for(int i=startingPhrase+1; i < mPhrases.count(); i++ )
+    {
+        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        {
+            if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == searchFor )
+            {
+                mPhrases.at(i)->glossItemAt(j)->setInterpretation( glossItem->id() );
             }
         }
     }

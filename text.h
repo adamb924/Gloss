@@ -95,6 +95,7 @@ public slots:
     void markAsChanged();
     void removeLine( int lineNumber );
     void setFollowingInterpretations( GlossItem *glossItem );
+    void replaceFollowing(GlossItem *glossItem, const QString & searchFor );
 
 private:
     FlexTextReadResult mReadResult;
@@ -112,6 +113,8 @@ private:
     WritingSystem mBaselineWritingSystem;
 
     QList<Phrase*> mPhrases;
+
+    void findGlossItemLocation(GlossItem *glossItem, int & line, int & position);
 
     void clearGlossItems();
 
