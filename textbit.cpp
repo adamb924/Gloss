@@ -30,6 +30,11 @@ TextBit& TextBit::operator=(const TextBit & other)
     return *this;
 }
 
+bool TextBit::operator==(qlonglong id) const
+{
+    return mId == id;
+}
+
 bool TextBit::operator==(const TextBit & other) const
 {
     return mText == other.mText && mWritingSystem == other.mWritingSystem && mId == other.mId;

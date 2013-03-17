@@ -204,3 +204,8 @@ const QList<GlossItem*>* Phrase::glossItems() const
 {
     return &mGlossItems;
 }
+
+int Phrase::indexOfGlossItem(GlossItem * item) const
+{
+    return mGlossItems.indexOf(item);
+}

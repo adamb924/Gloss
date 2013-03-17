@@ -97,6 +97,8 @@ signals:
     void requestRightGlossItem( WordDisplayWidget * wdw );
     void requestPlaySound( WordDisplayWidget * wdw );
 
+    void requestSetFollowingInterpretations( GlossItem *glossItem );
+
 private slots:
     void playSound();
     void approveLine();
@@ -139,6 +141,8 @@ private slots:
     void splitIntoMultipleWords();
     void mergeWithNext();
     void mergeWithPrevious();
+
+    void matchFollowingTextFormsToThis();
 };
 
 #endif // WORDDISPLAYWIDGET_H

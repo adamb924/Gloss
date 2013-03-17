@@ -238,6 +238,8 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     menu->addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu->addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
+    menu->addAction(tr("Match following items to this"), this, SLOT(matchFollowingTextFormsToThis()));
+    menu->addSeparator();
     menu->addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
     menu->addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
     menu->addAction(tr("Remove"), this, SLOT(removeGlossItem()));
@@ -927,4 +929,9 @@ void WordDisplayWidget::leftGlossItem()
 void WordDisplayWidget::playSound()
 {
     emit requestPlaySound(this);
+}
+
+void WordDisplayWidget::matchFollowingTextFormsToThis()
+{
+    emit requestSetFollowingInterpretations( mGlossItem );
 }

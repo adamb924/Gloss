@@ -42,6 +42,7 @@ public:
     const GlossItem* glossItemAt(int index) const;
     GlossItem* glossItemAt(int index);
     void clearGlossItems();
+    int indexOfGlossItem(GlossItem *item) const;
 
     GlossItem* connectGlossItem(GlossItem * item);
     void appendGlossItem(GlossItem * item);

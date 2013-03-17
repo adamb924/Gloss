@@ -43,7 +43,7 @@ public:
     void resetBaselineText( const TextBit & baselineBit );
 
     //! \brief Sets the id of this GlossItem (corresponding to the _id row of the Interpretations SQL table), and sets the data for the GlossItem accordingly. If \a takeFormsFromDatabase is true, the GlossItem is filled with values from the database.
-    void setInterpretation(qlonglong id, bool takeFormsFromDatabase );
+    void setInterpretation(qlonglong id, bool takeFormsFromDatabase = true );
 
     //! \brief Returns the id of the GlossItem (corresponding to the _id row of the Interpretations SQL table)
     qlonglong id() const;

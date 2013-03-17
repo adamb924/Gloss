@@ -21,6 +21,7 @@ public:
     TextBit(const QString & text, const WritingSystem & ws, qlonglong id = -1 );
     TextBit(const TextBit & other);
 
+    bool operator==(qlonglong id) const;
     bool operator==(const TextBit & other) const;
     TextBit& operator=(const TextBit & other);
     bool operator!=(const TextBit & other) const;

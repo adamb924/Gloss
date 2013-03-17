@@ -94,6 +94,7 @@ public slots:
     void setBaselineFromGlossItems();
     void markAsChanged();
     void removeLine( int lineNumber );
+    void setFollowingInterpretations( GlossItem *glossItem );
 
 private:
     FlexTextReadResult mReadResult;

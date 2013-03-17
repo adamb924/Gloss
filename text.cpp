@@ -637,3 +637,44 @@ void Text::removeLine( int lineNumber )
         emit glossItemsChanged();
     }
 }
+
+void Text::setFollowingInterpretations( GlossItem *glossItem )
+{
+    QString textForm = glossItem->baselineText().text();
+    qlonglong interpretationId = glossItem->id();
+
+    int startingPhrase = -1;
+    int startingGlossItem = -1;
+    for(int i=0; i<mPhrases.count(); i++)
+    {
+        int index = mPhrases.at(i)->indexOfGlossItem(glossItem);
+        if( index != -1 )
+        {
+            startingPhrase = i;
+            startingGlossItem = index;
+        }
+    }
+
+    if( startingPhrase == -1 || startingGlossItem == -1 )
+        return;
+
+    // do the remainder of the starting phrase
+    for(int i=startingGlossItem+1; i < mPhrases.at(startingPhrase)->glossItemCount(); i++ )
+    {
+        if( mPhrases.at(startingPhrase)->glossItemAt(i)->baselineText().text() == textForm )
+        {
+            mPhrases.at(startingPhrase)->glossItemAt(i)->setInterpretation( interpretationId );
+        }
+    }
+
+    for(int i=startingPhrase+1; i < mPhrases.count(); i++ )
+    {
+        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        {
+            if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == textForm )
+            {
+                mPhrases.at(i)->glossItemAt(j)->setInterpretation( interpretationId );
+            }
+        }
+    }
+}
