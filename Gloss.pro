@@ -59,7 +59,6 @@ SOURCES += main.cpp\
     choosetextlinedialog.cpp \
     lexicalentrysearchdialog.cpp \
     indexsearchmodel.cpp \
-    treeitem.cpp \
     lexiconedit.cpp \
     lexiconview.cpp \
     allomorphmodel.cpp \
@@ -123,7 +122,6 @@ HEADERS  += mainwindow.h \
     choosetextlinedialog.h \
     lexicalentrysearchdialog.h \
     indexsearchmodel.h \
-    treeitem.h \
     lexiconedit.h \
     lexiconview.h \
     allomorphmodel.h \
