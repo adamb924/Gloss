@@ -313,6 +313,7 @@ void WordDisplayWidget::addInterpretationSubmenu(QMenu *menu )
     }
 
     submenu->addAction(tr("New interpretation..."),this,SLOT(newInterpretation()));
+    submenu->addAction(tr("Duplicate interpretation"),this,SLOT(duplicateInterpretation()));
 
     menu->addMenu(submenu);
 }
@@ -455,14 +456,18 @@ void WordDisplayWidget::duplicateInterpretation()
     {
         iter.next();
         if( iter.key() != mGlossItem->baselineWritingSystem() )
-            mGlossItem->setTextForm( iter.value() );
+        {
+            qlonglong newId = mDbAdapter->newTextForm(id, iter.value() );
+            mGlossItem->setTextForm( mDbAdapter->textFormFromId(newId) );
+        }
     }
 
     iter = TextBitHashIterator(glosses);
     while( iter.hasNext() )
     {
         iter.next();
-        mGlossItem->setGloss( iter.value() );
+        qlonglong newId = mDbAdapter->newGloss( id, iter.value() );
+        mGlossItem->setGloss( mDbAdapter->glossFromId(newId) );
     }
 
     fillData();

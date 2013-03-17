@@ -87,10 +87,10 @@ public:
     TextBitHash guessInterpretationTextForms(qlonglong id) const;
 
     //! \brief Returns a TextBit with the data from the \a row of Glosses, or an empty TextBit if none exists
-    TextBit glossFromId(qlonglong id) const;
+    TextBit glossFromId(qlonglong glossId) const;
 
     //! \brief Returns a TextBit with the data from the \a row of TextForms, or an empty TextBit if none exists
-    TextBit textFormFromId(qlonglong id) const;
+    TextBit textFormFromId(qlonglong textFormId) const;
 
     qlonglong textFormId(const TextBit & bit, qlonglong interpretationId);
     qlonglong glossId(const TextBit & bit, qlonglong interpretationId);
