@@ -23,8 +23,6 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
     guessInterpretation();
 
     setCandidateNumberFromDatabase();
-
-    updateGlossItemConcordance();
 }
 
 GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
@@ -131,10 +129,12 @@ void GlossItem::setTextForm(const TextBit & textForm)
     WritingSystem ws = textForm.writingSystem();
     if( mTextForms.value(ws) != textForm )
     {
+        mConcordance->removeGlossItemTextFormIdPair( this, mTextForms.value(ws).id() );
+
         mDbAdapter->updateTextForm(textForm);
         mTextForms.insert( ws , textForm );
 
-        updateGlossItemConcordance();
+        mConcordance->updateGlossItemTextFormConcordance( this, textForm.id() );
 
         if( ws == mBaselineWritingSystem )
         {
@@ -386,6 +386,8 @@ Concordance* GlossItem::concordance()
 
 void GlossItem::updateGlossItemConcordance()
 {
+    qDebug() << "GlossItem::updateGlossItemConcordance()";
+
     // TODO this is called five places, and there is surely some more efficient way to do that
     mConcordance->removeGlossItemFromConcordance(this);
     TextBitHashIterator iter(mTextForms);

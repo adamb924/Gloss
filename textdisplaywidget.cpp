@@ -36,7 +36,6 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         idw->setFocus(foci);
         idw->setLayoutFromText();
 
-        // TODO do these two connections create redundant calls?
         connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()) );
         connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
         connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), idw, SLOT(scrollToLine(int)) );

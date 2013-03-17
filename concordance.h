@@ -38,6 +38,8 @@ public slots:
     //! Removes \a item from the GlossItem concordance and the GlossItem by TextForm id concordance.
     void removeGlossItemFromConcordance( QObject * item );
 
+    void removeGlossItemTextFormIdPair(GlossItem *item , qlonglong textFormId );
+
     //! Insert \a edit into the text form LingEdit concordance, indexed by \a newTextFormId. If \a edit was previouly indexed by another id, that is removed.
     void updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newTextFormId);
 

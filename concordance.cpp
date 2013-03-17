@@ -39,6 +39,11 @@ void Concordance::removeGlossItemFromConcordance( QObject * item )
         mGlossItems.remove( keys.next(), (GlossItem*)item );
 }
 
+void Concordance::removeGlossItemTextFormIdPair( GlossItem * item , qlonglong textFormId )
+{
+    mGlossItems.remove(textFormId, item);
+}
+
 void Concordance::removeGlossFromImmutableLabelConcordance( QObject * edit )
 {
     QListIterator<qlonglong> keys( mGlossImmutableLabels.keys( (ImmutableLabel*)edit ) );
