@@ -71,7 +71,9 @@ SOURCES += main.cpp\
     lexiconmodel.cpp \
     sqlquerywriter.cpp \
     focus.cpp \
-    dealwithspacesdialog.cpp
+    dealwithspacesdialog.cpp \
+    tab.cpp \
+    view.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -133,7 +135,9 @@ HEADERS  += mainwindow.h \
     lexiconmodel.h \
     sqlquerywriter.h \
     focus.h \
-    dealwithspacesdialog.h
+    dealwithspacesdialog.h \
+    tab.h \
+    view.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

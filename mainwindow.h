@@ -31,8 +31,13 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void refreshViews();
+
 private:
     Ui::MainWindow *ui;
+
+    QMenu *mInterlinearViewMenu;
+    QMenu *mQuickViewMenu;
 
     Project *mProject;
 

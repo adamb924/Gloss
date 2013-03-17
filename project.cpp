@@ -15,11 +15,13 @@
 #include <QXmlQuery>
 #include <QDesktopServices>
 #include <QProgressDialog>
+#include <QAction>
 
 #include "messagehandler.h"
 #include "xsltproc.h"
+#include "mainwindow.h"
 
-Project::Project(const MainWindow * mainWindow)
+Project::Project(MainWindow * mainWindow)
 {
     mMainWindow = mainWindow;
     mDatabaseFilename = "sqlite3-database.db";
@@ -31,6 +33,7 @@ Project::~Project()
     if( mDbAdapter != 0 )
         delete mDbAdapter;
     qDeleteAll(mTexts);
+    qDeleteAll(mViews);
 }
 
 bool Project::create(QString filename)
@@ -135,6 +138,7 @@ bool Project::readFromFile(QString filename)
         }
         else
         {
+            parseConfigurationFile();
             mDbAdapter->parseConfigurationFile( tempDir.absoluteFilePath("configuration.xml") );
         }
     }
@@ -789,4 +793,76 @@ void Project::playLine(const QString & textName, int lineNumber)
         Sound *sound = new Sound( QUrl::fromEncoded(audioPath.toUtf8()) );
         sound->playSegment( startTime, endTime );
     }
+}
+
+const QList<View*>* Project::views() const
+{
+    return &mViews;
+}
+
+void Project::parseConfigurationFile()
+{
+    QFile *file = new QFile( getTempDir().absoluteFilePath("configuration.xml") );
+    file->open(QFile::ReadOnly);
+    QXmlStreamReader stream(file);
+
+    bool inTab = false;
+
+    while (!stream.atEnd())
+    {
+        stream.readNext();
+        QString name = stream.name().toString();
+        if( stream.tokenType() == QXmlStreamReader::StartElement )
+        {
+            if( name == "view" )
+            {
+                mViews << new View( stream.attributes().value("name").toString() );
+            }
+            else if( name == "tab" )
+            {
+                inTab = true;
+                mViews.last()->tabs()->append( Tab( stream.attributes().value("name").toString() ) );
+            }
+            else if( name == "interlinear-line" && inTab )
+            {
+                QString type = stream.attributes().value("type").toString();
+                QString lang = stream.attributes().value("lang").toString();
+                InterlinearItemType iit( type, mDbAdapter->writingSystem(lang) );
+                mViews.last()->tabs()->last().addInterlinearLineType( iit );
+            }
+            else if( name == "phrasal-gloss" && inTab )
+            {
+                QString lang = stream.attributes().value("lang").toString();
+                InterlinearItemType iit( InterlinearItemType::Gloss , mDbAdapter->writingSystem(lang) );
+                mViews.last()->tabs()->last().addPhrasalGlossType( iit );
+            }
+        }
+        else if( stream.tokenType() == QXmlStreamReader::EndElement && name == "tab" )
+        {
+            inTab = false;
+        }
+    }
+    mMainWindow->refreshViews();
+}
+
+const View * Project::view(const View::Type type) const
+{
+    if( type == View::Full )
+        return mCurrentInterlinearView;
+    else
+        return mCurrentQuickView;
+}
+
+void Project::setInterlinearView(QAction * action)
+{
+    int index = action->data().toInt();
+    if( index >= 0 && index < mViews.count() )
+        mCurrentInterlinearView = mViews.at(index);
+}
+
+void Project::setQuickView(QAction * action)
+{
+    int index = action->data().toInt();
+    if( index >= 0 && index < mViews.count() )
+        mCurrentQuickView = mViews.at(index);
 }

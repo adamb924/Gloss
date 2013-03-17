@@ -20,6 +20,7 @@
 #include "lexiconedit.h"
 #include "sqltabledialog.h"
 #include "focus.h"
+#include "view.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -37,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui(new Ui::MainWindow)
 {
     mProject = 0;
+    mInterlinearViewMenu = 0;
+    mQuickViewMenu = 0;
 
     ui->setupUi(this);
 
@@ -244,7 +247,7 @@ void MainWindow::addBlankText()
     if( dialog.exec() == QDialog::Accepted )
     {
         Text *text = mProject->newText(dialog.name(), dialog.writingSystem());
-        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
+        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<Focus>(), this);
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();
     }
@@ -314,7 +317,7 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         Text *text = mProject->newText(name, ws, content );
         if( openText )
         {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<Focus>(), this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -393,7 +396,7 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
         text->mergeEaf(filepath);
         if( openText )
         {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<Focus>(), this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -470,7 +473,7 @@ TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Fo
         text = mProject->texts()->value(textName, 0);
         if( text != 0 )
         {
-            subWindow = new TextDisplayWidget(text, mProject, foci, this);
+            subWindow = new TextDisplayWidget(text, mProject, View::Full, foci, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -1159,4 +1162,52 @@ void MainWindow::editLexicon()
     LexiconEdit *edit = new LexiconEdit( mProject->dbAdapter(), this );
     connect( edit, SIGNAL(textFormIdSearch(qlonglong)), this, SLOT(searchForTextFormById(qlonglong)) );
     edit->show();
+}
+
+void MainWindow::refreshViews()
+{
+    if( mInterlinearViewMenu != 0 )
+        delete mInterlinearViewMenu;
+    mInterlinearViewMenu = new QMenu(tr("View"));
+
+    QActionGroup * views = new QActionGroup(this);
+
+    for(int i=0; i<mProject->views()->count(); i++)
+    {
+        QAction *act = mInterlinearViewMenu->addAction( mProject->views()->at(i)->name() );
+        act->setCheckable(true);
+        act->setData( i );
+        views->addAction(act);
+    }
+    connect( views, SIGNAL(triggered(QAction*)), mProject, SLOT(setInterlinearView(QAction*)) );
+
+    if( mQuickViewMenu != 0 )
+        delete mQuickViewMenu;
+    mQuickViewMenu = new QMenu(tr("Quick View"));
+
+    QActionGroup * interlinearViews = new QActionGroup(this);
+
+    for(int i=0; i<mProject->views()->count(); i++)
+    {
+        QAction *act = mQuickViewMenu->addAction( mProject->views()->at(i)->name() );
+        act->setCheckable(true);
+        act->setData( i );
+        interlinearViews->addAction(act);
+    }
+    connect( interlinearViews, SIGNAL(triggered(QAction*)), mProject, SLOT(setQuickView(QAction*)) );
+
+    if( mInterlinearViewMenu->actions().count() > 0 )
+    {
+        mInterlinearViewMenu->actions().first()->setChecked(true);
+        mProject->setInterlinearView(mInterlinearViewMenu->actions().first());
+    }
+
+    if( mQuickViewMenu->actions().count() > 0 )
+    {
+        mQuickViewMenu->actions().first()->setChecked(true);
+        mProject->setQuickView(mInterlinearViewMenu->actions().first());
+    }
+
+    ui->menuProject->addMenu(mInterlinearViewMenu);
+    ui->menuProject->addMenu(mQuickViewMenu);
 }

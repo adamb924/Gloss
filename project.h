@@ -15,6 +15,7 @@
 #include "writingsystem.h"
 #include "text.h"
 #include "concordance.h"
+#include "view.h"
 
 class InterlinearItemType;
 class TextBit;
@@ -22,6 +23,7 @@ class DatabaseAdapter;
 class QUrl;
 class QProgressDialog;
 class MainWindow;
+class QAction;
 
 typedef QPair<qlonglong,qlonglong> LongLongPair;
 
@@ -29,7 +31,7 @@ class Project : public QObject
 {
     Q_OBJECT
 public:
-    Project(const MainWindow * mainWindow);
+    Project(MainWindow *mainWindow);
     ~Project();
 
     enum OpenResult { Success, FileNotFound, XmlReadError };
@@ -88,14 +90,27 @@ public:
 
     void playLine(const QString & textName, int lineNumber);
 
+    const QList<View *> *views() const;
+
+    void parseConfigurationFile();
+
+    const View * view(const View::Type type) const;
+
 public slots:
+    void setInterlinearView(QAction * action);
+    void setQuickView(QAction * action);
 
 private:
     DatabaseAdapter *mDbAdapter;
     QString mDatabaseFilename;
     QString mDatabasePath;
 
-    const MainWindow *mMainWindow;
+    View * mCurrentInterlinearView;
+    View * mCurrentQuickView;
+
+    QList<View*> mViews;
+
+    MainWindow *mMainWindow;
 
     Concordance mConcordance;
 

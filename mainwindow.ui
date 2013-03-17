@@ -15,7 +15,16 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
      <number>0</number>
     </property>
     <item>
@@ -84,6 +93,7 @@
     </property>
     <addaction name="actionWriting_systems"/>
     <addaction name="actionDelete_text"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuSearch">
     <property name="title">
@@ -368,6 +378,11 @@
   <action name="actionImport_EAF">
    <property name="text">
     <string>Import EAF...</string>
+   </property>
+  </action>
+  <action name="actionViews">
+   <property name="text">
+    <string>Views</string>
    </property>
   </action>
  </widget>
