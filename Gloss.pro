@@ -72,7 +72,8 @@ SOURCES += main.cpp\
     focus.cpp \
     dealwithspacesdialog.cpp \
     tab.cpp \
-    view.cpp
+    view.cpp \
+    flextextimporter.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -135,7 +136,8 @@ HEADERS  += mainwindow.h \
     focus.h \
     dealwithspacesdialog.h \
     tab.h \
-    view.h
+    view.h \
+    flextextimporter.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

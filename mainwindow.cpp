@@ -417,7 +417,7 @@ void MainWindow::importFlexText()
     {
         if( QFile::exists(dialog.filename()) )
         {
-            mProject->textFromFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+            mProject->importFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
             Text *text = mProject->texts()->value( Text::textNameFromPath(dialog.filename()) );
             if(text != 0)
                 openText(text->name());

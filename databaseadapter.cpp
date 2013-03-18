@@ -266,6 +266,14 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & 
     }
 }
 
+qlonglong DatabaseAdapter::newInterpretation()
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    if( !q.exec("insert into Interpretations (_id) select null;")  )
+        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.executedQuery();
+    return q.lastInsertId().toLongLong();
+}
+
 qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);

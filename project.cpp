@@ -20,6 +20,7 @@
 #include "messagehandler.h"
 #include "xsltproc.h"
 #include "mainwindow.h"
+#include "flextextimporter.h"
 
 Project::Project(MainWindow * mainWindow)
 {
@@ -210,9 +211,15 @@ QString Project::filepathFromName(const QString & name) const
     return getTempDir().absoluteFilePath( QString("%1.flextext").arg(name) );
 }
 
-Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem & ws)
+Text* Project::importFlexText(const QString & filePath,  const WritingSystem & ws)
 {
-    Text *text = new Text(filePath,ws,this);
+    QFileInfo info(filePath);
+
+    Text *text = new Text(ws,info.baseName(),this);
+
+    FlexTextImporter importer(text);
+    importer.readFile(filePath);
+
     if(text->isValid())
     {
         text->saveText(false);
@@ -243,16 +250,16 @@ Text* Project::textFromFlexText(const QString & filePath)
     {
         switch( text->readResult() )
         {
-        case Text::FlexTextReadSuccess:
+        case FlexTextReader::FlexTextReadSuccess:
             QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened, but no error was reported.").arg(text->name()));
             break;
-        case Text::FlexTextReadBaselineNotFound:
+        case FlexTextReader::FlexTextReadBaselineNotFound:
             QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because the baseline text could not be read.").arg(text->name()));
             break;
-        case Text::FlexTextReadXmlReadError:
+        case FlexTextReader::FlexTextReadXmlReadError:
             QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because of a low-level XML reading error. ").arg(text->name()));
             break;
-        case Text::FlexTextReadNoAttempt:
+        case FlexTextReader::FlexTextReadNoAttempt:
             QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because no attempt was made to open it. (Figure that one out!)").arg(text->name()));
             break;
         }

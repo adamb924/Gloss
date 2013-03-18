@@ -25,25 +25,50 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
     setCandidateNumberFromDatabase();
 }
 
-GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent) : QObject(parent)
 {
     mBaselineWritingSystem = ws;
-
-    mTextForms = textForms;
-    mGlosses = glossForms;
-
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
     mConcordance = mProject->concordance();
 
-    if( mId == -1 )
-        guessInterpretation();
-    else
-        setInterpretation(id, false); // false because we have text forms and glosses from the arguments of the constructor
+    mTextForms = textForms;
+    mGlosses = glossForms;
+
+    guessInterpretation();
+    setCandidateNumberFromDatabase();
+    updateGlossItemConcordance();
+}
+
+GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms, const QSet<qlonglong> & glossForms, qlonglong interpretationId, Project *project, QObject *parent ) : QObject(parent)
+{
+    mBaselineWritingSystem = ws;
+    mProject = project;
+    mDbAdapter = mProject->dbAdapter();
+    mConcordance = mProject->concordance();
+
+    mId = interpretationId;
+
+    QSetIterator<qlonglong> tfIter(textForms);
+    while(tfIter.hasNext())
+    {
+        TextBit form = mDbAdapter->textFormFromId( tfIter.next() );
+        mTextForms.insert( form.writingSystem() , form );
+        if( form.writingSystem() == mBaselineWritingSystem )
+        {
+            MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( form.id() );
+            mMorphologicalAnalyses.insert( form.writingSystem() , newMa );
+        }
+    }
+
+    QSetIterator<qlonglong> gIter(glossForms);
+    while(gIter.hasNext())
+    {
+        TextBit gloss = mDbAdapter->glossFromId( gIter.next() );
+        mGlosses.insert( gloss.writingSystem() , gloss );
+    }
 
     setCandidateNumberFromDatabase();
-
-    updateGlossItemConcordance();
 }
 
 GlossItem::~GlossItem()
@@ -386,9 +411,6 @@ Concordance* GlossItem::concordance()
 
 void GlossItem::updateGlossItemConcordance()
 {
-    qDebug() << "GlossItem::updateGlossItemConcordance()";
-
-    // TODO this is called five places, and there is surely some more efficient way to do that
     mConcordance->removeGlossItemFromConcordance(this);
     TextBitHashIterator iter(mTextForms);
     while(iter.hasNext())

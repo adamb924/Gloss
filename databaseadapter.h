@@ -62,6 +62,9 @@ public:
     //! \brief Returns true if a the specified TextBit could belong to more than one Interpretation in the database, otherwise false.
     bool hasMultipleCandidateInterpretations(const TextBit & bit) const;
 
+    //! \brief Creates a new interpretation and returns the database index of the Interpreation
+    qlonglong newInterpretation();
+
     //! \brief Creates a new interpretation of the baseline TextBit \a bit and returns the database index of the Interpreation
     qlonglong newInterpretation( const TextBit & bit );
 

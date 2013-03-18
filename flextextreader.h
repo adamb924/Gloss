@@ -1,18 +1,22 @@
 #ifndef FLEXTEXTREADER_H
 #define FLEXTEXTREADER_H
 
-class Text;
 class QString;
+class DatabaseAdapter;
+class Text;
 
 class FlexTextReader
 {
 public:
     explicit FlexTextReader(Text *text);
 
-    bool readFile( const QString & filepath );
+    enum Result { FlexTextReadSuccess, FlexTextReadBaselineNotFound, FlexTextReadXmlReadError, FlexTextReadNoAttempt };
 
-private:
+    FlexTextReader::Result readFile(const QString & filepath , bool baselineInfoFromFile);
+
+protected:
     Text *mText;
+    DatabaseAdapter *mDbAdapter;
 };
 
 #endif // FLEXTEXTREADER_H

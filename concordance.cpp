@@ -124,10 +124,8 @@ void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::Candida
 
 void Concordance::updateGlossItemTextFormConcordance(GlossItem * item, qlonglong textFormId)
 {
-    // this function is called once: void GlossItem::updateGlossItemConcordance()
     mGlossItems.remove( textFormId, item );
     mGlossItems.insert(textFormId, item);
-//    qDebug() << "Concordance::updateGlossItemTextFormConcordance count:" << mGlossItems.count() << mGlossItems;
 }
 
 void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis)

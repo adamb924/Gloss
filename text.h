@@ -16,6 +16,7 @@
 #include "textbit.h"
 #include "glossitem.h"
 #include "phrase.h"
+#include "flextextreader.h"
 
 class WritingSystem;
 class Project;
@@ -32,6 +33,7 @@ class Text : public QObject
 
     friend class FlexTextReader;
     friend class FlexTextWriter;
+    friend class FlexTextImporter;
 
 public:
     enum MergeTranslationResult { Success, MergeStuckOldFileDeleted, MergeStuckOldFileStillThere, XslTranslationError };
@@ -88,7 +90,7 @@ public:
     //! \brief Plays the sound for the given 0-indexed line number, or returns an error.
     bool playSoundForLine( int lineNumber );
 
-    FlexTextReadResult readResult() const;
+    FlexTextReader::Result readResult() const;
 
 public slots:
     void setBaselineFromGlossItems();
@@ -98,7 +100,7 @@ public slots:
     void replaceFollowing(GlossItem *glossItem, const QString & searchFor );
 
 private:
-    FlexTextReadResult mReadResult;
+    FlexTextReader::Result mReadResult;
     bool mChanged;
 
     Sound *mSound;
@@ -121,9 +123,6 @@ private:
     void setGlossItemsFromBaseline();
 
     void setLineOfGlossItems(Phrase *phrase , const QString & line );
-
-    //! \brief Sets the text from the given file. Returns false if this fails.
-    Text::FlexTextReadResult readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 
 private slots:
     void requestGuiRefresh( Phrase * phrase );

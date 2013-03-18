@@ -34,8 +34,11 @@ public:
     //! \brief Construct a GlossItem that is empty except for the baseline TextBit.
     GlossItem(const TextBit & baselineBit, Project *project, QObject *parent = 0);
 
-    //! \brief Construct a GlossItem with the given WritingSystem, and gloss and text forms.
-    GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent = 0);
+    //! \brief Construct a GlossItem with the given WritingSystem, and gloss and text forms. Any id values are ignored. The interpretation id is guessed, or a new one is created if there are no possibilities. This constructor is for importing Flex Flextext files.
+    GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent = 0);
+
+    //! \brief Construct a GlossItem with the given WritingSystem, interpretation id, and the ids of the given gloss and text forms. This constructor is for reading Flextext files that Gloss created.
+    GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms, const QSet<qlonglong> & glossForms, qlonglong interpretationId, Project *project, QObject *parent = 0);
 
     ~GlossItem();
 

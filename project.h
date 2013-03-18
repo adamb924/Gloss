@@ -55,7 +55,7 @@ public:
     void deleteText(QString textName);
 
     Text* newText(const QString & name, const WritingSystem & ws, const QString &content = QString() );
-    Text* textFromFlexText(const QString & filePath, const WritingSystem & ws);
+    Text* importFlexText(const QString & filePath, const WritingSystem & ws);
     Text* textFromFlexText(const QString & filePath);
 
     //! \brief Returns a list of text names, sorted alphabetically.
