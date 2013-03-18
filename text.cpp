@@ -333,6 +333,7 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     setSound( theUrl );
 
     markAsChanged();
+    saveText(false,true);
 
     return MergeEafSuccess;
 }
