@@ -850,6 +850,7 @@ void Project::parseConfigurationFile()
         }
     }
     mMainWindow->refreshViews();
+    file->close();
 }
 
 const View * Project::view(const View::Type type) const
