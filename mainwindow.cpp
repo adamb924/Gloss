@@ -343,7 +343,14 @@ void MainWindow::importEaf()
 
                 if( files.count() == 1 )
                 {
-                    importEaf( files.first(), tierId, ws , true );
+                    if ( importEaf( files.first(), tierId, ws , true ) )
+                    {
+                        QMessageBox::information(this, tr("Eaf file imported"), tr("%1 has been successfully imported").arg(files.first()));
+                    }
+                    else
+                    {
+                        QMessageBox::information(this, tr("Error"), tr("There was an error importing %1.").arg(files.first()));
+                    }
                 }
                 else
                 {
@@ -394,6 +401,19 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
 
         Text *text = mProject->newText(name, ws, result.join("\n") );
         text->mergeEaf(filepath);
+
+        Text::MergeEafResult mergeResult = text->mergeEaf( filepath );
+        switch(mergeResult)
+        {
+        case Text::Success:
+            break;
+        case Text::MergeEafWrongNumberOfAnnotations:
+            QMessageBox::information(0, tr("Failure!"), tr("The import of %1 has failed because the number of annotations is wrong (in the merge stage).").arg( filepath ));
+        default:
+            QMessageBox::information(0, tr("Failure!"), tr("The merge into %1 has failed.").arg( filepath ));
+            break;
+        }
+
         if( openText )
         {
             TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<Focus>(), this);

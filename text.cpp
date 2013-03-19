@@ -313,7 +313,10 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     query.evaluateTo(&result);
 
     if( result.count() != mPhrases.count() )
+    {
+        qWarning() << result.count() << mPhrases.count();
         return MergeEafWrongNumberOfAnnotations;
+    }
 
     for(int i=0; i<result.count(); i++)
     {
