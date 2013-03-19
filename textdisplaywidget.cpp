@@ -64,8 +64,8 @@ void TextDisplayWidget::setupBaselineTab()
 
 void TextDisplayWidget::tabChanged(int i)
 {
-    if( i != 0 )
-        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
+//    if( i != 0 )
+//        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
 }
 
 void TextDisplayWidget::closeEvent(QCloseEvent *event)

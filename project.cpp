@@ -510,7 +510,7 @@ QSet<qlonglong> Project::getSetOfNumbersFromTextQuery(const QString & filepath, 
     QXmlResultItems result;
 
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.bindVariable("path", QVariant(QUrl(filepath).path(QUrl::FullyEncoded)));
     query.setMessageHandler(new MessageHandler("Project::getSetOfNumbersFromTextQuery", this));
     query.setQuery(queryString);
     query.evaluateTo(&result);
@@ -587,7 +587,7 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
     QXmlResultItems result;
 
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.bindVariable("path", QVariant(QUrl(filepath).path(QUrl::FullyEncoded)));
     query.setMessageHandler(new MessageHandler("Project::getListOfNumbersFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
@@ -671,7 +671,7 @@ QStringList Project::getInterpretationUsage(const QString & filepath, const QStr
 {
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.bindVariable("path", QVariant(QUrl(filepath).path(QUrl::FullyEncoded)));
 
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
         "declare variable $path external; "
@@ -698,7 +698,7 @@ QList<LongLongPair> Project::getPairedNumbersFromXQuery(const QString & filepath
 
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.bindVariable("path", QVariant(QUrl(filepath).path(QUrl::FullyEncoded)));
     query.setMessageHandler(new MessageHandler("Project::getPairedNumbersFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
@@ -717,7 +717,7 @@ QStringList Project::getStringListFromXQuery(const QString & filepath, const QSt
 {
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.bindVariable("path", QVariant(QUrl(filepath).path()));
+    query.bindVariable("path", QVariant(QUrl(filepath).path(QUrl::FullyEncoded)));
     query.setMessageHandler(new MessageHandler("Project::getStringListFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
@@ -779,7 +779,7 @@ void Project::playLine(const QString & textName, int lineNumber)
 
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.bindVariable("path", QVariant(QUrl(textPath).path()));
+    query.bindVariable("path", QVariant(QUrl(textPath).path(QUrl::FullyEncoded)));
     query.setMessageHandler(new MessageHandler("Project::playLine"));
     query.bindVariable("line", QXmlItem(lineNumber) );
     query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "

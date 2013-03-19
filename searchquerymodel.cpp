@@ -38,7 +38,7 @@ bool SearchQueryModel::query( QStandardItem *parentItem, const QString & filenam
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("SearchQueryModel::query",this));
-    query.bindVariable("path", QVariant(QUrl(filename).path()));
+    query.bindVariable("path", QVariant(QUrl(filename).path(QUrl::FullyEncoded)));
     query.setQuery(mQuery);
     query.evaluateTo(&result);
 

@@ -708,7 +708,7 @@ QList<InterlinearItemType> DatabaseAdapter::interlinearItemsFromConfigurationFil
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::interlinearItemsFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path()));
+    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -742,7 +742,7 @@ QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(con
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::writingSystemListFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path()));
+    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -1034,7 +1034,7 @@ void DatabaseAdapter::metalanguageFromConfigurationFile()
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::metalanguageFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path()));
+    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
     query.setQuery("for $i in doc($path)/gloss-configuration/meta-language return string($i/@lang)");
     query.evaluateTo(&result);
     mMetaLanguage = writingSystem(result.trimmed());
@@ -1230,7 +1230,7 @@ void DatabaseAdapter::createIndex( const QString & tableName, const QString & qu
         QStringList result;
         QXmlQuery query(QXmlQuery::XQuery10);
         query.setMessageHandler(new MessageHandler("DatabaseAdapter::createIndex"));
-        query.bindVariable("path", QVariant(QUrl(path).path()));
+        query.bindVariable("path", QVariant(QUrl(path).path(QUrl::FullyEncoded)));
         query.setQuery(queryString);
         query.evaluateTo(&result);
 

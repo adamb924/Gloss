@@ -60,7 +60,7 @@ void ImportFlexTextDialog::fillDataFromFlexText()
 
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("ImportFlexTextDialog::fillDataFromFlexText", this));
-    query.bindVariable("path", QVariant(QUrl(filename).path()));
+    query.bindVariable("path", QVariant(QUrl(filename).path(QUrl::FullyEncoded)));
     query.setQuery("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; "
                    "declare variable $path external; "
                    "for $x in doc($path)/document/interlinear-text/languages/language return string-join( ( string($x/@lang),string($x/@font),string($x/@RightToLeft) ) , ',')");

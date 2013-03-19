@@ -196,11 +196,12 @@ bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
 {
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("Text::setBaselineWritingSystemFromFile", this));
-    query.bindVariable("path", QVariant(QUrl(filePath).path()));
+    query.bindVariable("path", QVariant(QUrl(filePath).path(QUrl::FullyEncoded)));
     query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                    "declare variable $path external; "
                    "for $x in doc($path)/document/interlinear-text/languages/language[@abg:is-baseline='true'] "
                    "return string($x/@lang)");
+
     if (query.isValid())
     {
         QStringList result;
@@ -302,11 +303,13 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("Text::mergeEaf"));
-    query.bindVariable("path", QVariant(QUrl(filename).path()));
+
+    query.bindVariable("path", QVariant(QUrl(filename).path(QUrl::FullyEncoded)));
     query.setQuery( "declare variable $path external; "
                     "declare variable $settings-array := doc($path)/ANNOTATION_DOCUMENT/TIME_ORDER/TIME_SLOT; "
                     "for $phrase in doc($path)/ANNOTATION_DOCUMENT/TIER/ANNOTATION/ALIGNABLE_ANNOTATION "
                     "return string-join( ( $settings-array[@TIME_SLOT_ID=$phrase/@TIME_SLOT_REF1]/@TIME_VALUE , $settings-array[@TIME_SLOT_ID=$phrase/@TIME_SLOT_REF2]/@TIME_VALUE ) , ',')" );
+
     query.evaluateTo(&result);
 
     if( result.count() != mPhrases.count() )
@@ -323,7 +326,8 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     }
 
     // read the audio path
-    query.setQuery( "string(/ANNOTATION_DOCUMENT/HEADER/MEDIA_DESCRIPTOR/@MEDIA_URL)" );
+    query.bindVariable("path", QVariant(QUrl(filename).path(QUrl::FullyEncoded)));
+    query.setQuery( "string(doc($path)/ANNOTATION_DOCUMENT/HEADER/MEDIA_DESCRIPTOR/@MEDIA_URL)" );
 
     QString audioPath;
     query.evaluateTo(&audioPath);
