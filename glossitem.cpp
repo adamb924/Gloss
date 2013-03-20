@@ -69,6 +69,7 @@ GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms
     }
 
     setCandidateNumberFromDatabase();
+    updateGlossItemConcordance();
 }
 
 GlossItem::~GlossItem()
@@ -142,10 +143,28 @@ void GlossItem::setGloss(const TextBit & gloss)
 {
     if( mGlosses.value(gloss.writingSystem()) != gloss )
     {
+        mConcordance->removeGlossItemGlossIdPair(this, mGlosses.value(gloss.writingSystem()).id() );
+
         mDbAdapter->updateGloss(gloss);
         mGlosses.insert( gloss.writingSystem(), gloss );
+
+        mConcordance->updateGlossItemGlossConcordance( this, gloss.id() );
+
         emit fieldsChanged();
         emit glossChanged(gloss);
+    }
+}
+
+void GlossItem::setGlossText(const TextBit & gloss)
+{
+    if( mGlosses.value(gloss.writingSystem()).id() == gloss.id() )
+    {
+        if( mGlosses.value(gloss.writingSystem()).text() != gloss.text() )
+        {
+            mGlosses[gloss.writingSystem()].setText( gloss.text() );
+            emit glossChanged(gloss);
+            emit fieldsChanged();
+        }
     }
 }
 
@@ -170,6 +189,19 @@ void GlossItem::setTextForm(const TextBit & textForm)
         emit fieldsChanged();
         emit textFormChanged(textForm);
         emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( ws ) );
+    }
+}
+
+void GlossItem::setTextFormText(const TextBit & textForm)
+{
+    if( mTextForms.value(textForm.writingSystem()).id() == textForm.id() )
+    {
+        if( mTextForms.value(textForm.writingSystem()).text() != textForm.text() )
+        {
+            mTextForms[textForm.writingSystem()].setText(textForm.text());
+            emit textFormChanged(textForm);
+            emit fieldsChanged();
+        }
     }
 }
 
@@ -417,6 +449,13 @@ void GlossItem::updateGlossItemConcordance()
     {
         iter.next();
         mConcordance->updateGlossItemTextFormConcordance( this, iter.value().id() );
+    }
+
+    iter = TextBitHashIterator(mGlosses);
+    while(iter.hasNext())
+    {
+        iter.next();
+        mConcordance->updateGlossItemGlossConcordance( this, iter.value().id() );
     }
 }
 

@@ -137,8 +137,14 @@ public slots:
     //! \brief Sets a gloss to the value indicated. The gloss that is updated is the one that matches the WritingSystem of \a gloss.
     void setGloss(const TextBit & gloss);
 
+    //! \brief Changes the text of the gloss, if the id matches
+    void setGlossText(const TextBit & gloss);
+
     //! \brief Sets a text form to the value indicated. The text form that is updated is the one that matches the WritingSystem of \a textForm.
     void setTextForm(const TextBit & textForm);
+
+    //! \brief Changes the text of the text form, if the id matches
+    void setTextFormText(const TextBit & textForm);
 
 private:
     //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with the text forms and gloss forms, or if there are none, than for those compatible with the baseline bit. If no compatible interpretation is found, a new interpretation is created.

@@ -40,6 +40,8 @@ public slots:
 
     void removeGlossItemTextFormIdPair(GlossItem *item , qlonglong textFormId );
 
+    void removeGlossItemGlossIdPair(GlossItem *item , qlonglong glossId );
+
     //! Insert \a edit into the text form LingEdit concordance, indexed by \a newTextFormId. If \a edit was previouly indexed by another id, that is removed.
     void updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newTextFormId);
 
@@ -70,12 +72,18 @@ public slots:
     //! Insert \a item into the GlossItem by TextForm id concordance, indexed by \a textFormId. If \a item was previouly indexed by another id, that is removed.
     void updateGlossItemTextFormConcordance( GlossItem * item, qlonglong textFormId );
 
+    //! Insert \a item into the GlossItem by gloss id concordance, indexed by \a glossId. If \a item was previouly indexed by another id, that is removed.
+    void updateGlossItemGlossConcordance( GlossItem * item, qlonglong glossId );
+
     //! Updates gloss items with \a textFormId so that they contain \a analysis
     void updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis );
 
 private:
     //! \brief GlossItem objects, indexed by text form id
-    QMultiHash<qlonglong,GlossItem*> mGlossItems;
+    QMultiHash<qlonglong,GlossItem*> mGlossItemsByTextFormId;
+
+    //! \brief GlossItem objects, indexed by gloss form id
+    QMultiHash<qlonglong,GlossItem*> mGlossItemsByGlossId;
 
     //! \brief LingEdit objects for text forms, indexed by text form id
     QMultiHash<qlonglong,LingEdit*> mTextFormLingEdits;
