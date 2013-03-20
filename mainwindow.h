@@ -125,6 +125,8 @@ private slots:
     void openTextLineWithContext();
 
     void editLexicon();
+
+    void openTextInChunks();
 };
 
 #endif // MAINWINDOW_H

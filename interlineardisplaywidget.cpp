@@ -267,7 +267,13 @@ void InterlinearDisplayWidget::setLinesToDefault()
 
 void InterlinearDisplayWidget::setLines( const QList<int> lines )
 {
+    for(int i=0; i<mLines.count(); i++)
+        clearWidgetsFromLine(mLines.at(i));
     mLines = lines;
+    qDeleteAll(mLineLayouts);
+    mLineLayouts.clear();
+    mLineLabels.clear();
+    setLayoutFromText();
 }
 
 void InterlinearDisplayWidget::requestLineRefresh( int line )

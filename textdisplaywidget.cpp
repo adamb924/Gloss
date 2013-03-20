@@ -9,7 +9,7 @@
 #include <QLabel>
 #include <QMessageBox>
 
-TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type type, const QList<Focus> & foci, QWidget *parent) :
+TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci, QWidget *parent) :
     QTabWidget(parent),
     ui(new Ui::TextDisplayWidget)
 {
@@ -34,7 +34,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         Tab tab = view->tabs()->at(i);
         InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( tab.interlinearLines(), tab.phrasalGlossLines(), mText, mProject, this);
         idw->setFocus(foci);
-        idw->setLayoutFromText();
+        idw->setLines(lines);
 
         connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()) );
         connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
@@ -70,12 +70,21 @@ void TextDisplayWidget::tabChanged(int i)
 
 void TextDisplayWidget::closeEvent(QCloseEvent *event)
 {
-    mText->saveText(false);
+    saveText();
     event->accept();
 }
 
 void TextDisplayWidget::focusGlossLine(int line)
 {
-//    setCurrentWidget( ui->glossTab );
-    mGloss->scrollToLine(line);
+}
+
+void TextDisplayWidget::setLines(const QList<int> & lines)
+{
+    for(int i=0; i<mIdwTabs.count(); i++)
+        mIdwTabs.at(i)->setLines(lines);
+}
+
+void TextDisplayWidget::saveText()
+{
+    mText->saveText(false);
 }

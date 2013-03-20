@@ -82,6 +82,7 @@ protected:
     QHash<int, InterlinearLineLabel*> mLineLabels;
     QList<int> mLines;
     QList<Focus> mFoci;
+    QSet<int> mLineRefreshRequests;
 
     // WordDisplayWidget objects, keyed to line number
     QMultiHash<int, QWidget*> mWordDisplayWidgets;
@@ -95,7 +96,6 @@ protected:
 
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
 
-    QSet<int> mLineRefreshRequests;
 
     //! \brief Add the phrasal gloss lines for phrase \a i
     void addPhrasalGlossLines( int i );

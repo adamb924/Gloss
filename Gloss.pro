@@ -73,7 +73,8 @@ SOURCES += main.cpp\
     dealwithspacesdialog.cpp \
     tab.cpp \
     view.cpp \
-    flextextimporter.cpp
+    flextextimporter.cpp \
+    interlinearchunkeditor.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -137,7 +138,8 @@ HEADERS  += mainwindow.h \
     dealwithspacesdialog.h \
     tab.h \
     view.h \
-    flextextimporter.h
+    flextextimporter.h \
+    interlinearchunkeditor.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -160,7 +162,8 @@ FORMS    += mainwindow.ui \
     lexicalentrysearchdialog.ui \
     lexiconedit.ui \
     sqltabledialog.ui \
-    dealwithspacesdialog.ui
+    dealwithspacesdialog.ui \
+    interlinearchunkeditor.ui
 
 LIBS += -L./ \
     -lquazip \

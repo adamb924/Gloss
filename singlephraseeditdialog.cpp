@@ -21,9 +21,8 @@ SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *projec
     setTitle();
 
     InterlinearDisplayWidget *idw = new InterlinearDisplayWidget( mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this );
-    idw->setLines(mLines);
     idw->setFocus(foci);
-    idw->setLayoutFromText();
+    idw->setLines(mLines);
     connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()));
 
     ui->layout->addWidget( idw );

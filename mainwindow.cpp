@@ -21,6 +21,7 @@
 #include "sqltabledialog.h"
 #include "focus.h"
 #include "view.h"
+#include "interlinearchunkeditor.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -97,6 +98,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( ui->actionLexical_entry_by_id, SIGNAL(triggered()), this, SLOT(searchForLexicalEntryById()) );
     connect( ui->actionAllomorph_by_id, SIGNAL(triggered()), this, SLOT(searchForAllomorphById()) );
+
+    connect( ui->actionOpen_text_in_chunks, SIGNAL(triggered()), this, SLOT(openTextInChunks()) );
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -247,7 +250,7 @@ void MainWindow::addBlankText()
     if( dialog.exec() == QDialog::Accepted )
     {
         Text *text = mProject->newText(dialog.name(), dialog.writingSystem());
-        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<Focus>(), this);
+        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();
     }
@@ -317,7 +320,7 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         Text *text = mProject->newText(name, ws, content );
         if( openText )
         {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<Focus>(), this);
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -416,7 +419,7 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
 
         if( openText )
         {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<Focus>(), this);
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -493,7 +496,7 @@ TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Fo
         text = mProject->texts()->value(textName, 0);
         if( text != 0 )
         {
-            subWindow = new TextDisplayWidget(text, mProject, View::Full, foci, this);
+            subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), foci, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -1230,4 +1233,40 @@ void MainWindow::refreshViews()
 
     ui->menuProject->addMenu(mInterlinearViewMenu);
     ui->menuProject->addMenu(mQuickViewMenu);
+}
+
+void MainWindow::openTextInChunks()
+{
+    if( mProject->textPaths()->count() == 0)
+    {
+        QMessageBox::information(this, tr("No texts"), tr("The project has no texts to open."));
+        return;
+    }
+    bool ok;
+    QString whichText = QInputDialog::getItem( this, tr("Select text"), tr("Select the text to open"), mProject->textNames(), 0, false, &ok );
+    if( !ok )
+        return;
+
+    int nLines = QInputDialog::getInt(this, tr("Set chunk size"), tr("How many lines to each screen?"), 3, 1, 200, 1, &ok );
+
+    Text *text;
+    InterlinearChunkEditor *subWindow = 0;
+    switch( mProject->openText(whichText) )
+    {
+    case Project::Success:
+        text = mProject->texts()->value(whichText, 0);
+        if( text != 0 )
+        {
+            subWindow = new InterlinearChunkEditor(text, mProject, View::Full, nLines, this);
+            ui->mdiArea->addSubWindow(subWindow);
+            subWindow->show();
+        }
+        break;
+    case Project::FileNotFound:
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. The filename %2 could not be found.").arg(whichText).arg(mProject->filepathFromName(whichText)));
+        break;
+    case Project::XmlReadError:
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. There was a problem reading the XML.").arg(whichText));
+        break;
+    }
 }

@@ -60,6 +60,7 @@
     <addaction name="actionOpen_text"/>
     <addaction name="actionOpen_text_line"/>
     <addaction name="actionOpen_text_line_with_context"/>
+    <addaction name="actionOpen_text_in_chunks"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
@@ -383,6 +384,11 @@
   <action name="actionViews">
    <property name="text">
     <string>Views</string>
+   </property>
+  </action>
+  <action name="actionOpen_text_in_chunks">
+   <property name="text">
+    <string>Open text in chunks...</string>
    </property>
   </action>
  </widget>
