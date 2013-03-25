@@ -150,11 +150,6 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 
     mGlossEdits.insert(glossLine.writingSystem(), edit);
 
-    // update the concordance
-    mConcordance->updateGlossLingEditConcordance( edit, gloss.id() );
-    connect(edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromLingEditConcordance(QObject*)));
-    connect(edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mConcordance, SLOT(updateGlossLingEditConcordance(TextBit,LingEdit*)));
-
     // update the gloss item
     connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setGloss(TextBit)) );
 
@@ -169,11 +164,6 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
     edit->setMaximumWidth(100);
 
     mTextFormEdits.insert(glossLine.writingSystem(), edit);
-
-    // update the concordance
-    mConcordance->updateTextFormLingEditConcordance( edit, textForm.id() );
-    connect( edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromLingEditConcordance(QObject*)));
-    connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mConcordance, SLOT(updateTextFormLingEditConcordance(TextBit,LingEdit*)));
 
     // update the gloss item
     connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setTextForm(TextBit)) );
@@ -194,9 +184,6 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
 
-    mConcordance->updateTextForImmutableLabelConcordance( immutableLabel, bit.id() );
-    connect( immutableLabel, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromImmutableLabelConcordance(QObject*)));
-
     return immutableLabel;
 }
 
@@ -210,9 +197,6 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
     immutableLabel->setApprovalStatus(mGlossItem->approvalStatus());
 
     mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
-
-    mConcordance->updateGlossImmutableLabelConcordance( immutableLabel, bit.id() );
-    connect( immutableLabel, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromImmutableLabelConcordance(QObject*)));
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );

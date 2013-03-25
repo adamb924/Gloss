@@ -22,43 +22,12 @@ public:
 signals:
 
 public slots:
-
-    //! Removes \a edit from the gloss LingEdit concordance.
-    void removeGlossFromLingEditConcordance( QObject * edit );
-
-    //! Removes \a edit from the text form LingEdit concordance.
-    void removeTextFormFromLingEditConcordance( QObject * edit );
-
-    //! Removes \a edit from the gloss LingEdit concordance.
-    void removeGlossFromImmutableLabelConcordance( QObject * edit );
-
-    //! Removes \a edit from the text form LingEdit concordance.
-    void removeTextFormFromImmutableLabelConcordance( QObject * edit );
-
     //! Removes \a item from the GlossItem concordance and the GlossItem by TextForm id concordance.
     void removeGlossItemFromConcordance( QObject * item );
 
     void removeGlossItemTextFormIdPair(GlossItem *item , qlonglong textFormId );
 
     void removeGlossItemGlossIdPair(GlossItem *item , qlonglong glossId );
-
-    //! Insert \a edit into the text form LingEdit concordance, indexed by \a newTextFormId. If \a edit was previouly indexed by another id, that is removed.
-    void updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newTextFormId);
-
-    //! Insert \a edit into the gloss LingEdit concordance, indexed by \a newGlossId. If \a edit was previouly indexed by another id, that is removed.
-    void updateGlossLingEditConcordance(LingEdit * edit, qlonglong newGlossId);
-
-    //! Overloaded function for connecting to the LingEdit::stringChanged signal
-    void updateTextFormLingEditConcordance(const TextBit & bit, LingEdit * edit);
-
-    //! Overloaded function for connecting to the LingEdit::stringChanged signal
-    void updateGlossLingEditConcordance( const TextBit & bit, LingEdit * edit);
-
-    //! Insert \a edit into the text form LingEdit concordance, indexed by \a newTextFormId. If \a edit was previouly indexed by another id, that is removed.
-    void updateTextForImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newTextFormId);
-
-    //! Insert \a edit into the gloss LingEdit concordance, indexed by \a newGlossId. If \a edit was previouly indexed by another id, that is removed.
-    void updateGlossImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newGlossId);
 
     //! Updates all widgets displaying the gloss indicated by \a bit (and its id())
     void updateGloss( const TextBit & bit );
@@ -84,18 +53,6 @@ private:
 
     //! \brief GlossItem objects, indexed by gloss form id
     QMultiHash<qlonglong,GlossItem*> mGlossItemsByGlossId;
-
-    //! \brief LingEdit objects for text forms, indexed by text form id
-    QMultiHash<qlonglong,LingEdit*> mTextFormLingEdits;
-
-    //! \brief LingEdit objects for glosses, indexed by text form id
-    QMultiHash<qlonglong,LingEdit*> mGlossLingEdits;
-
-    //! \brief ImmutableLabel objects for text forms, indexed by text form id
-    QMultiHash<qlonglong,ImmutableLabel*> mTextFormImmutableLabels;
-
-    //! \brief ImmutableLabel objects for glosses, indexed by text form id
-    QMultiHash<qlonglong,ImmutableLabel*> mGlossImmutableLabels;
 };
 
 #endif // CONCORDANCE_H

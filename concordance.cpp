@@ -11,27 +11,6 @@ Concordance::Concordance(QObject *parent) :
 {
 }
 
-void Concordance::removeGlossFromLingEditConcordance( QObject * edit )
-{
-    QListIterator<qlonglong> keys( mGlossLingEdits.keys( (LingEdit*)edit ) );
-    while(keys.hasNext())
-        mGlossLingEdits.remove( keys.next() , (LingEdit*)edit );
-}
-
-void Concordance::removeTextFormFromLingEditConcordance( QObject * edit )
-{
-    QListIterator<qlonglong> keys( mTextFormLingEdits.keys( (LingEdit*)edit ) );
-    while(keys.hasNext())
-        mTextFormLingEdits.remove( keys.next() , (LingEdit*)edit );
-}
-
-void Concordance::removeTextFormFromImmutableLabelConcordance( QObject * edit )
-{
-    QListIterator<qlonglong> keys( mTextFormImmutableLabels.keys( (ImmutableLabel*)edit ) );
-    while(keys.hasNext())
-        mTextFormImmutableLabels.remove( keys.next() , (ImmutableLabel*)edit );
-}
-
 void Concordance::removeGlossItemFromConcordance( QObject * item )
 {
     QListIterator<qlonglong> keys( mGlossItemsByTextFormId.keys( (GlossItem*)item ) );
@@ -53,36 +32,6 @@ void Concordance::removeGlossItemGlossIdPair(GlossItem *item , qlonglong glossId
     mGlossItemsByTextFormId.remove(glossId, item);
 }
 
-void Concordance::removeGlossFromImmutableLabelConcordance( QObject * edit )
-{
-    QListIterator<qlonglong> keys( mGlossImmutableLabels.keys( (ImmutableLabel*)edit ) );
-    while(keys.hasNext())
-        mGlossImmutableLabels.remove( keys.next() , (ImmutableLabel*)edit );
-}
-
-void Concordance::updateTextFormLingEditConcordance(LingEdit * edit, qlonglong newTextFormId)
-{
-    removeTextFormFromLingEditConcordance( edit );
-    mTextFormLingEdits.insert(newTextFormId, edit);
-}
-
-void Concordance::updateGlossLingEditConcordance(LingEdit * edit, qlonglong newGlossId)
-{
-    removeGlossFromLingEditConcordance(edit);
-    mGlossLingEdits.insert(newGlossId, edit);
-}
-
-
-void Concordance::updateTextFormLingEditConcordance(const TextBit & bit, LingEdit * edit)
-{
-    updateTextFormLingEditConcordance( edit, bit.id() );
-}
-
-void Concordance::updateGlossLingEditConcordance( const TextBit & bit, LingEdit * edit)
-{
-    updateGlossLingEditConcordance( edit, bit.id() );
-}
-
 void Concordance::updateGloss( const TextBit & bit )
 {
     // this is the new code to update the GlossItems specifically
@@ -96,24 +45,6 @@ void Concordance::updateTextForm( const TextBit & bit )
    QList<GlossItem*> glossItems = mGlossItemsByTextFormId.values( bit.id() );
     foreach(GlossItem *glossItem, glossItems)
         glossItem->setTextFormText(bit);
-}
-
-void Concordance::updateTextForImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newTextFormId )
-{
-    // TODO fix this at some point
-    // TODO make a note of what is wrong with this!
-    qlonglong oldId = mTextFormImmutableLabels.key( edit );
-    mTextFormImmutableLabels.remove(oldId, edit);
-    mTextFormImmutableLabels.insert(newTextFormId , edit);
-}
-
-void Concordance::updateGlossImmutableLabelConcordance(ImmutableLabel * edit, qlonglong newGlossId )
-{
-    // TODO fix this at some point
-    // TODO make a note of what is wrong with this!
-    qlonglong oldId = mGlossImmutableLabels.key( edit );
-    mGlossImmutableLabels.remove(oldId, edit);
-    mGlossImmutableLabels.insert(newGlossId , edit);
 }
 
 void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId )
