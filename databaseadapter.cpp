@@ -1252,7 +1252,8 @@ void DatabaseAdapter::createIndex( const QString & tableName, const QString & qu
 void DatabaseAdapter::createTextFormIndex( const QSet<QString> * filePaths ) const
 {
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt']  "
+            "declare variable $path external; "
+                           "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt']  "
                           "let $line-number := string( $x/../../../../phrase/item[@type='segnum']/text() ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "TextFormIndex" , queryString , filePaths );
@@ -1261,7 +1262,8 @@ void DatabaseAdapter::createTextFormIndex( const QSet<QString> * filePaths ) con
 void DatabaseAdapter::createGlossIndex( const QSet<QString> * filePaths ) const
 {
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls']  "
+            "declare variable $path external; "
+                           "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls']  "
                           "let $line-number := string( $x/../../../../phrase/item[@type='segnum']/text() ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "GlossIndex" , queryString , filePaths );
@@ -1270,7 +1272,8 @@ void DatabaseAdapter::createGlossIndex( const QSet<QString> * filePaths ) const
 void DatabaseAdapter::createInterpretationIndex( const QSet<QString> * filePaths ) const
 {
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
+            "declare variable $path external; "
+                           "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
                           "let $line-number := string( $x/../../../phrase/item[@type='segnum']/text() ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "InterpretationIndex" , queryString , filePaths );
