@@ -192,35 +192,6 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
     emit phraseRefreshNeeded( mPhrases.indexOf(phrase) );
 }
 
-bool Text::setBaselineWritingSystemFromFile(const QString & filePath )
-{
-    QXmlQuery query(QXmlQuery::XQuery10);
-    query.setMessageHandler(new MessageHandler("Text::setBaselineWritingSystemFromFile", this));
-    query.bindVariable("path", QVariant(QUrl(filePath).path(QUrl::FullyEncoded)));
-    query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                   "declare variable $path external; "
-                   "for $x in doc($path)/document/interlinear-text/languages/language[@abg:is-baseline='true'] "
-                   "return string($x/@lang)");
-
-    if (query.isValid())
-    {
-        QStringList result;
-        query.evaluateTo(&result);
-
-        if( result.isEmpty() )
-            return false;
-
-        mBaselineWritingSystem = mProject->dbAdapter()->writingSystem( result.at(0) );
-
-        return true;
-    }
-    else
-    {
-        qWarning() << "Text::setBaselineWritingSystemFromFile" << "Invalid query";
-        return false;
-    }
-}
-
 void Text::saveText(bool verboseOutput, bool saveAnyway)
 {
     if( mChanged || saveAnyway )

@@ -72,9 +72,6 @@ public:
         return info.baseName();
     }
 
-    //! \brief Reads the given flextext file to set the baseline writing system for the text
-    bool setBaselineWritingSystemFromFile(const QString & filePath );
-
     //! \brief Returns true if the Text is valid, otherwise false. A Text can be invalid if there has been some error, for instance.
     bool isValid() const;
 

@@ -14,6 +14,12 @@ public:
 
     FlexTextReader::Result readFile(const QString & filepath , bool baselineInfoFromFile);
 
+private:
+
+    //! \brief Reads the given flextext file to set the baseline writing system for the text
+    bool setBaselineWritingSystemFromFile(const QString & filePath );
+
+
 protected:
     Text *mText;
     DatabaseAdapter *mDbAdapter;

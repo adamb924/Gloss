@@ -5,6 +5,7 @@
 #include "morphologicalanalysis.h"
 #include "databaseadapter.h"
 #include "project.h"
+#include "messagehandler.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -12,6 +13,7 @@
 #include <QXmlStreamReader>
 #include <QList>
 #include <QMessageBox>
+#include <QXmlQuery>
 
 FlexTextReader::FlexTextReader(Text *text)
 {
@@ -25,7 +27,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
 
     if( baselineInfoFromFile)
     {
-        if( !mText->setBaselineWritingSystemFromFile(file.fileName()) )
+        if( !setBaselineWritingSystemFromFile(file.fileName()) )
             return FlexTextReadBaselineNotFound;
     }
 
@@ -86,7 +88,9 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             else if ( name == "phrase" )
             {
                 inPhrase = true;
+
                 mText->mPhrases.append( new Phrase(mText, mText->mProject) );
+
                 QObject::connect( mText->mPhrases.last(), SIGNAL(phraseChanged()), mText, SLOT(setBaselineFromGlossItems()) );
                 QObject::connect( mText->mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), mText, SLOT(requestGuiRefresh(Phrase*)));
                 QObject::connect( mText->mPhrases.last(), SIGNAL(glossChanged()), mText, SLOT(markAsChanged()));
@@ -209,4 +213,33 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     }
     mText->setBaselineFromGlossItems();
     return FlexTextReadSuccess;
+}
+
+bool FlexTextReader::setBaselineWritingSystemFromFile(const QString & filePath )
+{
+    QXmlQuery query(QXmlQuery::XQuery10);
+    query.setMessageHandler(new MessageHandler("FlexTextReader::setBaselineWritingSystemFromFile" ));
+    query.bindVariable("path", QVariant(QUrl(filePath).path(QUrl::FullyEncoded)));
+    query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                   "declare variable $path external; "
+                   "for $x in doc($path)/document/interlinear-text/languages/language[@abg:is-baseline='true'] "
+                   "return string($x/@lang)");
+
+    if (query.isValid())
+    {
+        QStringList result;
+        query.evaluateTo(&result);
+
+        if( result.isEmpty() )
+            return false;
+
+        mText->mBaselineWritingSystem = mDbAdapter->writingSystem( result.at(0) );
+
+        return true;
+    }
+    else
+    {
+        qWarning() << "Text::setBaselineWritingSystemFromFile" << "Invalid query";
+        return false;
+    }
 }

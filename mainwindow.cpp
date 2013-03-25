@@ -403,6 +403,7 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
         query.evaluateTo(&result);
 
         Text *text = mProject->newText(name, ws, result.join("\n") );
+
         text->mergeEaf(filepath);
 
         Text::MergeEafResult mergeResult = text->mergeEaf( filepath );
