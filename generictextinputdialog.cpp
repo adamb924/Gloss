@@ -40,9 +40,7 @@ GenericTextInputDialog::GenericTextInputDialog(const TextBit & bit, QWidget *par
 
     mWritingSystem = bit.writingSystem();
 
-    ui->textEdit->setWritingSystem( mWritingSystem );
-
-    ui->textEdit->setText( bit.text() );
+    ui->textEdit->setTextBit(bit);
 }
 
 GenericTextInputDialog::~GenericTextInputDialog()
@@ -69,7 +67,7 @@ QString GenericTextInputDialog::text() const
 
 TextBit GenericTextInputDialog::textBit() const
 {
-    return TextBit(ui->textEdit->text(), mWritingSystem);
+    return ui->textEdit->textBit();
 }
 
 WritingSystem GenericTextInputDialog::writingSystem() const
