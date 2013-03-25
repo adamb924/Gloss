@@ -238,8 +238,11 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     menu->addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu->addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
-    menu->addAction(tr("Match following items to this"), this, SLOT(matchFollowingTextFormsToThis()));
+    menu->addAction(tr("Match following to this interpretation"), this, SLOT(matchFollowingTextFormsToThis()));
     menu->addAction(tr("Edit baseline text of matching following"), this, SLOT(editBaselineTextMatchingFollowing()));
+
+    menu->addAction(tr("Edit Text Form %1 (%2)").arg( mGlossItem->baselineText().id() ).arg( mGlossItem->baselineText().text() ), this, SLOT(editBaselineTextForm()));
+
     menu->addSeparator();
     menu->addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
     menu->addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
@@ -947,4 +950,15 @@ void WordDisplayWidget::editBaselineTextMatchingFollowing()
     QString oldText = mGlossItem->baselineText().text();
     editBaselineText();
     emit requestReplaceFollowing( mGlossItem, oldText );
+}
+
+void WordDisplayWidget::editBaselineTextForm()
+{
+    GenericTextInputDialog dialog( mGlossItem->baselineText() , this );
+    dialog.setWindowTitle(tr("Edit Text Form %1").arg( mGlossItem->baselineText().id() ));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mDbAdapter->updateTextForm( dialog.textBit() );
+        mGlossItem->setTextFormText( dialog.textBit() );
+    }
 }

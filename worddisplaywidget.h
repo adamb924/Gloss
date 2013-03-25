@@ -145,6 +145,8 @@ private slots:
 
     void matchFollowingTextFormsToThis();
     void editBaselineTextMatchingFollowing();
+
+    void editBaselineTextForm();
 };
 
 #endif // WORDDISPLAYWIDGET_H
