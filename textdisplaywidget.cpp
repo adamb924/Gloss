@@ -51,7 +51,8 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
 
 TextDisplayWidget::~TextDisplayWidget()
 {
-    mProject->closeText(mText);
+    if( mProject->memoryMode() == Project::OneAtATime )
+        mProject->closeText(mText);
     delete ui;
 }
 

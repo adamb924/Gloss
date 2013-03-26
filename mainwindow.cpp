@@ -107,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setProjectActionsEnabled(false);
 
     addTableMenuItems();
+    addMemoryModeMenuItems();
 }
 
 MainWindow::~MainWindow()
@@ -131,6 +132,39 @@ void MainWindow::addTableMenuItems()
         group->addAction(action);
         connect(group,SIGNAL(triggered(QAction*)),this,SLOT(sqlTableView(QAction*)));
     }
+}
+
+void MainWindow::addMemoryModeMenuItems()
+{
+    QActionGroup *group = new QActionGroup(this);
+    QAction *action;
+
+    QMenu *menu = new QMenu(tr("Memory mode"), ui->menuProject);
+
+//    enum MemoryMode { OneAtATime, AccumulateSlowly, GreedyFast };
+
+    action = new QAction(tr("One-at-a-time"), menu );
+    action->setData(Project::OneAtATime);
+    action->setCheckable(true);
+    action->setChecked(true);
+    menu->addAction(action);
+    group->addAction(action);
+
+    action = new QAction(tr("Accumulate slowly"), menu );
+    action->setData(Project::AccumulateSlowly);
+    action->setCheckable(true);
+    menu->addAction(action);
+    group->addAction(action);
+
+    action = new QAction(tr("Greedy / Fast"), menu );
+    action->setData(Project::GreedyFast);
+    action->setCheckable(true);
+    menu->addAction(action);
+    group->addAction(action);
+
+    connect( group, SIGNAL(triggered(QAction*)), this, SLOT(setMemoryMode(QAction*)) );
+
+    ui->menuProject->addMenu(menu);
 }
 
 void MainWindow::newProject()
@@ -1270,4 +1304,11 @@ void MainWindow::openTextInChunks()
         QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. There was a problem reading the XML.").arg(whichText));
         break;
     }
+}
+
+void MainWindow::setMemoryMode( QAction * action )
+{
+    if( mProject == 0 )
+        return;
+    mProject->setMemoryMode( (Project::MemoryMode)action->data().toInt() );
 }

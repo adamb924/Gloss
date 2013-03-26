@@ -42,6 +42,7 @@ private:
     Project *mProject;
 
     void addTableMenuItems();
+    void addMemoryModeMenuItems();
 
     void setProjectActionsEnabled(bool enabled);
 
@@ -127,6 +128,8 @@ private slots:
     void editLexicon();
 
     void openTextInChunks();
+
+    void setMemoryMode( QAction * action );
 };
 
 #endif // MAINWINDOW_H

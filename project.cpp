@@ -211,6 +211,11 @@ QString Project::filepathFromName(const QString & name) const
     return getTempDir().absoluteFilePath( QString("%1.flextext").arg(name) );
 }
 
+QString Project::nameFromFilepath(const QString & path) const
+{
+    return QFileInfo(path).baseName();
+}
+
 Text* Project::importFlexText(const QString & filePath,  const WritingSystem & ws)
 {
     QFileInfo info(filePath);
@@ -352,14 +357,16 @@ QHash<QString,Text*>* Project::texts()
 
 Project::OpenResult Project::openText(const QString & name)
 {
-    // if the text is already available
-    if( mTexts.contains(name) )
-        return Project::Success;
+    return openTextFromPath( filepathFromName(name) );
+}
 
-    QString filePath = filepathFromName(name);
-    if( QFile::exists( filePath ) )
+Project::OpenResult Project::openTextFromPath(const QString & path)
+{
+    if( mTexts.contains( nameFromFilepath(path) ) )
+        return Project::Success;
+    if( QFile::exists( path ) )
     {
-        textFromFlexText( filePath );
+        textFromFlexText( path );
         return Project::Success;
     }
     else
@@ -873,4 +880,36 @@ void Project::setQuickView(QAction * action)
     int index = action->data().toInt();
     if( index >= 0 && index < mViews.count() )
         mCurrentQuickView = mViews.at(index);
+}
+
+Project::MemoryMode Project::memoryMode() const
+{
+    return mMemoryMode;
+}
+
+void Project::setMemoryMode( Project::MemoryMode mode )
+{
+    mMemoryMode = mode;
+
+    if( mMemoryMode == Project::GreedyFast )
+        loadAllTextsIntoMemory();
+}
+
+void Project::loadAllTextsIntoMemory()
+{
+    QProgressDialog progress(tr("Opening texts..."), QString(tr("Cancel")), 0, mTextPaths.count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setValue( progress.value() + 1 );
+
+    int i=0;
+
+    QSetIterator<QString> iter(mTextPaths);
+    while( iter.hasNext() )
+    {
+        openTextFromPath( iter.next() );
+        progress.setValue(i++);
+        if (progress.wasCanceled())
+            break;
+    }
+    progress.setValue(mTextPaths.count());
 }

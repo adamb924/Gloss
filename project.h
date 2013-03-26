@@ -35,6 +35,7 @@ public:
     ~Project();
 
     enum OpenResult { Success, FileNotFound, XmlReadError };
+    enum MemoryMode { OneAtATime, AccumulateSlowly, GreedyFast };
 
     bool create(QString filename);
     bool readFromFile(QString filename);
@@ -68,8 +69,10 @@ public:
     QHash<QString,Text*>* texts();
 
     OpenResult openText(const QString & name);
+    OpenResult openTextFromPath(const QString & path);
 
     QString filepathFromName(const QString & name) const;
+    QString nameFromFilepath(const QString & path) const;
 
     QString doDatabaseCleanup();
     int removeUnusedInterpretations();
@@ -96,6 +99,9 @@ public:
 
     const View * view(const View::Type type) const;
 
+    Project::MemoryMode memoryMode() const;
+    void setMemoryMode( Project::MemoryMode mode );
+
 public slots:
     void setInterlinearView(QAction * action);
     void setQuickView(QAction * action);
@@ -104,6 +110,8 @@ private:
     DatabaseAdapter *mDbAdapter;
     QString mDatabaseFilename;
     QString mDatabasePath;
+
+    Project::MemoryMode mMemoryMode;
 
     View * mCurrentInterlinearView;
     View * mCurrentQuickView;
@@ -118,6 +126,8 @@ private:
 
     void readTextPaths();
     bool maybeDelete(QDir tempDir);
+
+    void loadAllTextsIntoMemory();
 
     //! \brief Get all interpretation ids in use in this project
     QSet<qlonglong> getAllInterpretationIds();
