@@ -784,6 +784,9 @@ void Project::playLine(const QString & textName, int lineNumber)
 {
     QString textPath = filepathFromName(textName);
 
+    if( ! QFileInfo(textPath).exists() )
+        return;
+
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.bindVariable("path", QVariant(QUrl(textPath).path(QUrl::FullyEncoded)));
