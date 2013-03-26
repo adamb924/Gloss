@@ -32,7 +32,11 @@ void SearchQueryView::contextMenu( const QPoint & pos )
 
 void SearchQueryView::getDetails( const QModelIndex & index, QString &textName, int &lineNumber, QList<Focus> & foci ) const
 {
-    lineNumber= index.data(Qt::UserRole).toInt();
+    bool ok;
+    lineNumber= index.data(Qt::UserRole).toInt(&ok);
+    if( !ok )
+        lineNumber = -1;
+
     textName = index.parent().data(Qt::UserRole).toString();
     if( textName.isEmpty() )
         textName = index.data(Qt::UserRole).toString();
