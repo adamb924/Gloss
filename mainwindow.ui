@@ -127,8 +127,8 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
-   <addaction name="menuProject"/>
    <addaction name="menuSearch"/>
+   <addaction name="menuProject"/>
    <addaction name="menuGuts"/>
    <addaction name="menuReports"/>
   </widget>
