@@ -95,6 +95,7 @@ public slots:
     void removeLine( int lineNumber );
     void setFollowingInterpretations( GlossItem *glossItem );
     void replaceFollowing(GlossItem *glossItem, const QString & searchFor );
+    void baselineSearchReplace( const TextBit & search , const TextBit & replace );
 
 private:
     FlexTextReader::Result mReadResult;

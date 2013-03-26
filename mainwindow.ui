@@ -116,6 +116,8 @@
     <addaction name="separator"/>
     <addaction name="actionUnapproved_lines"/>
     <addaction name="actionApproved_lines"/>
+    <addaction name="separator"/>
+    <addaction name="actionBaseline_text_search_and_replace"/>
    </widget>
    <widget class="QMenu" name="menuReports">
     <property name="title">
@@ -395,6 +397,11 @@
   <action name="actionSave_open_texts">
    <property name="text">
     <string>Save open texts</string>
+   </property>
+  </action>
+  <action name="actionBaseline_text_search_and_replace">
+   <property name="text">
+    <string>Baseline text search and replace...</string>
    </property>
   </action>
  </widget>

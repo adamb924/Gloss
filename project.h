@@ -102,6 +102,8 @@ public:
     Project::MemoryMode memoryMode() const;
     void setMemoryMode( Project::MemoryMode mode );
 
+    void baselineSearchReplace( const TextBit & search , const TextBit & replace );
+
 public slots:
     void setInterlinearView(QAction * action);
     void setQuickView(QAction * action);

@@ -22,6 +22,7 @@
 #include "focus.h"
 #include "view.h"
 #include "interlinearchunkeditor.h"
+#include "baselinesearchreplacedialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -101,6 +102,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionAllomorph_by_id, SIGNAL(triggered()), this, SLOT(searchForAllomorphById()) );
 
     connect( ui->actionOpen_text_in_chunks, SIGNAL(triggered()), this, SLOT(openTextInChunks()) );
+
+    connect( ui->actionBaseline_text_search_and_replace, SIGNAL(triggered()), this, SLOT(baselineSearchAndReplace()));
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -1317,4 +1320,41 @@ void MainWindow::setMemoryMode( QAction * action )
     if( mProject == 0 )
         return;
     mProject->setMemoryMode( (Project::MemoryMode)action->data().toInt() );
+}
+
+void MainWindow::baselineSearchAndReplace()
+{
+    if( mProject->memoryMode() != Project::GreedyFast )
+    {
+        int result = QMessageBox::question(this, tr("Gloss"), tr("This feature really only makes sense in Greedy/Fast memory mode. Do you want to switch to that? (Note that it will likely take some time to open all of your texts.)"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes );
+        switch( result )
+        {
+        case QMessageBox::Yes:
+            mProject->setMemoryMode( Project::GreedyFast );
+            break;
+        case QMessageBox::No:
+            break;
+        case QMessageBox::Cancel:
+        default:
+            return;
+            break;
+        }
+    }
+
+    QHashIterator<QString,Text*> iter( *mProject->texts() );
+    if( iter.hasNext() )
+    {
+        iter.next();
+
+        BaselineSearchReplaceDialog dialog(mProject->dbAdapter(), iter.value()->baselineWritingSystem(), this);
+        if( dialog.exec() == QDialog::Accepted )
+        {
+            mProject->baselineSearchReplace( dialog.searchString() , dialog.replaceString() );
+            QMessageBox::information(this, tr("Complete"), tr("The search-and-replace option is complete."));
+        }
+    }
+    else
+    {
+        QMessageBox::information(this, tr("Complete"), tr("There were no open texts on which to perform the operation."));
+    }
 }

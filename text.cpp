@@ -492,3 +492,17 @@ void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
         }
     }
 }
+
+void Text::baselineSearchReplace( const TextBit & search , const TextBit & replace )
+{
+    for(int i=0; i < mPhrases.count(); i++ )
+    {
+        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        {
+            if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == search.text() )
+            {
+                mPhrases.at(i)->glossItemAt(j)->resetBaselineText( replace );
+            }
+        }
+    }
+}

@@ -117,6 +117,7 @@ private slots:
     void createCountReport(const QString & typeString);
 
     void searchAndReplace();
+    void baselineSearchAndReplace();
 
     void findApprovedLines();
     void findUnapprovedLines();

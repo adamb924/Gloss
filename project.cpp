@@ -916,3 +916,13 @@ void Project::loadAllTextsIntoMemory()
     }
     progress.setValue(mTextPaths.count());
 }
+
+void Project::baselineSearchReplace(const TextBit &search , const TextBit &replace )
+{
+    QMutableHashIterator<QString,Text*> iter(mTexts);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        iter.value()->baselineSearchReplace( search, replace );
+    }
+}

@@ -74,7 +74,9 @@ SOURCES += main.cpp\
     tab.cpp \
     view.cpp \
     flextextimporter.cpp \
-    interlinearchunkeditor.cpp
+    interlinearchunkeditor.cpp \
+    baselinesearchreplacedialog.cpp \
+    writingsystemcombo.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -139,7 +141,9 @@ HEADERS  += mainwindow.h \
     tab.h \
     view.h \
     flextextimporter.h \
-    interlinearchunkeditor.h
+    interlinearchunkeditor.h \
+    baselinesearchreplacedialog.h \
+    writingsystemcombo.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \
@@ -163,7 +167,8 @@ FORMS    += mainwindow.ui \
     lexiconedit.ui \
     sqltabledialog.ui \
     dealwithspacesdialog.ui \
-    interlinearchunkeditor.ui
+    interlinearchunkeditor.ui \
+    baselinesearchreplacedialog.ui
 
 LIBS += -L./ \
     -lquazip \
