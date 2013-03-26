@@ -122,6 +122,7 @@ private slots:
     void findUnapprovedLines();
 
     void closeOpenTexts();
+    void saveOpenTexts();
     void openTextLine();
     void openTextLineWithContext();
 

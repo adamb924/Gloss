@@ -88,6 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionApproved_lines, SIGNAL(triggered()), this, SLOT(findApprovedLines()));
 
     connect(ui->actionClose_and_save_open_texts, SIGNAL(triggered()), this, SLOT(closeOpenTexts()));
+    connect(ui->actionSave_open_texts, SIGNAL(triggered()), this, SLOT(saveOpenTexts()));
 
     connect(ui->actionOpen_text_line, SIGNAL(triggered()), this, SLOT(openTextLine()) );
     connect(ui->actionOpen_text_line_with_context, SIGNAL(triggered()), this, SLOT(openTextLineWithContext()));
@@ -1191,6 +1192,11 @@ void MainWindow::closeOpenTexts()
 {
     mProject->saveOpenTexts();
     mProject->closeOpenTexts( textsWithOpenWindows() );
+}
+
+void MainWindow::saveOpenTexts()
+{
+    mProject->saveOpenTexts();
 }
 
 void MainWindow::openTextLine()

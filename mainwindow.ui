@@ -76,6 +76,7 @@
     <addaction name="actionSearch_and_replace"/>
     <addaction name="separator"/>
     <addaction name="actionClose_and_save_open_texts"/>
+    <addaction name="actionSave_open_texts"/>
    </widget>
    <widget class="QMenu" name="menuGuts">
     <property name="title">
@@ -389,6 +390,11 @@
   <action name="actionOpen_text_in_chunks">
    <property name="text">
     <string>Open text in chunks...</string>
+   </property>
+  </action>
+  <action name="actionSave_open_texts">
+   <property name="text">
+    <string>Save open texts</string>
    </property>
   </action>
  </widget>
