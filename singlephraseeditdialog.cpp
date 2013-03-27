@@ -24,6 +24,9 @@ SinglePhraseEditDialog::SinglePhraseEditDialog(QList<int> lines, Project *projec
     idw->setFocus(foci);
     idw->setLines(mLines);
     connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()));
+    connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
+    connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
+
 
     ui->layout->addWidget( idw );
 }
