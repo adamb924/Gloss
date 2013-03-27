@@ -15,8 +15,10 @@
 #include <QtDebug>
 #include <QActionGroup>
 
-WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, QWidget *parent) : QWidget(parent)
+WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, QWidget *parent) : QFrame(parent)
 {
+    setObjectName("WordDisplayWidget");
+
     mDbAdapter = dbAdapter;
     mGlossItem = item;
     mConcordance = mGlossItem->concordance();
@@ -789,9 +791,9 @@ void WordDisplayWidget::removeGlossItem()
 void WordDisplayWidget::setFocused(bool isFocused)
 {
     if( isFocused )
-        setStyleSheet("background-color: #FFFFCC;");
+        setStyleSheet("WordDisplayWidget { border: 1px solid red; }");
     else
-        setStyleSheet("background-color: #FFFFFF;");
+        setStyleSheet("WordDisplayWidget { border: none; }");
 }
 
 void WordDisplayWidget::keyPressEvent ( QKeyEvent * event )

@@ -7,7 +7,7 @@
 #ifndef WORDDISPLAYWIDGET_H
 #define WORDDISPLAYWIDGET_H
 
-#include <QWidget>
+#include <QFrame>
 #include <QString>
 #include <QList>
 #include <QHash>
@@ -25,7 +25,7 @@ class ImmutableLabel;
 class AnalysisWidget;
 class Concordance;
 
-class WordDisplayWidget : public QWidget
+class WordDisplayWidget : public QFrame
 {
     Q_OBJECT
 
