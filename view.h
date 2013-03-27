@@ -15,10 +15,13 @@ public:
     QString name() const;
     const QList<Tab> * tabs() const;
     QList<Tab> * tabs();
+    bool showBaselineTextTab() const;
+    void setShowBaselineTextTab(bool show);
 
 private:
     QString mName;
     QList<Tab> mTabs;
+    bool mBaselineTextTab;
 };
 
 #endif // VIEW_H

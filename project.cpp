@@ -853,6 +853,10 @@ void Project::parseConfigurationFile()
                 InterlinearItemType iit( InterlinearItemType::Gloss , mDbAdapter->writingSystem(lang) );
                 mViews.last()->tabs()->last().addPhrasalGlossType( iit );
             }
+            else if( name == "baseline-text" )
+            {
+                mViews.last()->setShowBaselineTextTab(true);
+            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement && name == "tab" )
         {

@@ -10,8 +10,8 @@
 #include <QMessageBox>
 
 TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci, QWidget *parent) :
-    QTabWidget(parent),
-    ui(new Ui::TextDisplayWidget)
+    QTabWidget(parent) //,
+//    ui(new Ui::TextDisplayWidget)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -24,10 +24,11 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         QMessageBox::critical(this, tr("Error"), tr("There is no valid view available. Something is likely wrong with your configuration.xml file."));
     }
 
-    ui->setupUi(this);
+//    ui->setupUi(this);
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
-    setupBaselineTab();
+    if( view->showBaselineTextTab() )
+        setupBaselineTab();
 
     for(int i=0; i<view->tabs()->count(); i++)
     {
@@ -38,9 +39,12 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
 
         connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()) );
         connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
-        connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), idw, SLOT(scrollToLine(int)) );
+        if( view->showBaselineTextTab() )
+            connect( mBaselineTextEdit, SIGNAL(lineNumberChanged(int)), idw, SLOT(scrollToLine(int)) );
         connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
-        connect( idw, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
+        if( view->showBaselineTextTab() )
+            connect( idw, SIGNAL(lineNumberChanged(int)), mBaselineTextEdit, SLOT(setLineNumber(int)) );
+        // the above is a bit odd because I'm not sure whether the order is important
 
         mIdwTabs << idw;
         addTab( idw, tab.name() );
@@ -53,14 +57,16 @@ TextDisplayWidget::~TextDisplayWidget()
 {
     if( mProject->memoryMode() == Project::OneAtATime )
         mProject->closeText(mText);
-    delete ui;
+//    delete ui;
 }
 
 void TextDisplayWidget::setupBaselineTab()
 {
-    ui->baselineTextEdit->setWritingSystem( mText->baselineWritingSystem());
-    ui->baselineTextEdit->setPlainText( mText->baselineText() );
-    connect( mText, SIGNAL(baselineTextChanged(QString)), ui->baselineTextEdit, SLOT(setPlainText(QString)) );
+    mBaselineTextEdit = new LingTextEdit(this);
+    mBaselineTextEdit->setWritingSystem( mText->baselineWritingSystem());
+    mBaselineTextEdit->setPlainText( mText->baselineText() );
+    connect( mText, SIGNAL(baselineTextChanged(QString)), mBaselineTextEdit, SLOT(setPlainText(QString)) );
+    addTab( mBaselineTextEdit, tr("Baseline") );
 }
 
 void TextDisplayWidget::tabChanged(int i)
