@@ -7,6 +7,8 @@
 #include "mainwindow.h"
 #include "tagmodel.h"
 #include "alltagsmodel.h"
+#include "writingsystemcombo.h"
+#include "databaseadapter.h"
 
 #include <QSortFilterProxyModel>
 
@@ -42,6 +44,13 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), ui->allomorphTable, SLOT(resizeColumnsToContents()) );
 
     MorphologicalAnalysisModel *analysisModel = new MorphologicalAnalysisModel( dbAdapter );
+
+    connect( ui->glossWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setGlossWritingSystem(WritingSystem)) );
+    connect( ui->textWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setTextFormWritingSystem(WritingSystem)) );
+
+    ui->glossWSCombo->setWritingSystems( dbAdapter->writingSystems() );
+    ui->textWSCombo->setWritingSystems( dbAdapter->writingSystems() );
+
     QSortFilterProxyModel * analysisProxyModel = new QSortFilterProxyModel(this);
     analysisProxyModel->setSourceModel( analysisModel );
     analysisProxyModel->setFilterKeyColumn(-1);
