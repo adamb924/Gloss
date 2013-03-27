@@ -123,21 +123,21 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                         qlonglong itemId = attr.hasAttribute("http://www.adambaker.org/gloss.php","id") ? attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() : -1;
                         // there's no handling here for the case where itemId == -1
                         // that is handled in GlossItem::loadStringsFromDatabase()
-                        if( type == "txt" )
+                        if( type == "txt" && lang.isValid() )
                         {
                             if( itemId == -1 )
                                 itemId = mDbAdapter->newTextForm(interpretationId, TextBit( text , lang) );
                             textFormIds.insert(itemId);
                             textFormsByWritingSystem.insert(lang.id(), itemId);
                         }
-                        else if( type == "gls" )
+                        else if( type == "gls" && lang.isValid() )
                         {
                             if( itemId == -1 )
                                 itemId = mDbAdapter->newGloss( interpretationId, TextBit( text , lang) );
                             glossFormIds.insert( itemId );
                         }
                     }
-                    else if ( inPhrase && type == "gls" )
+                    else if ( inPhrase && type == "gls" && lang.isValid() )
                     {
                         mText->mPhrases.last()->setPhrasalGloss( TextBit( text , lang ) );
                     }

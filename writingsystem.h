@@ -39,6 +39,9 @@ public:
     QString fontFamily() const;
     int fontSize() const;
 
+    bool isNull() const;
+    bool isValid() const;
+
 private:
     QString mName, mAbbreviation, mFlexString, mKeyboardCommand, mFontFamily;
     qlonglong mId;

@@ -2,7 +2,7 @@
 
 WritingSystem::WritingSystem()
 {
-    mId = 0;
+    mId = -1;
     mName = "";
     mAbbreviation = "";
     mFlexString = "";
@@ -107,4 +107,14 @@ WritingSystem& WritingSystem::operator=(const WritingSystem & other)
     mFontFamily = other.mFontFamily;
     mFontSize = other.mFontSize;
     return *this;
+}
+
+bool WritingSystem::isNull() const
+{
+    return mId == -1;
+}
+
+bool WritingSystem::isValid() const
+{
+    return mId != -1;
 }
