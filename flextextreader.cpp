@@ -48,6 +48,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
 
     QList<MorphologicalAnalysis*> morphologicalAnalyses;
     MorphologicalAnalysis *morphologicalAnalysis = 0;
+    QHash<QString,TextBit> annotations;
 
     QSet<qlonglong> textFormIds;
     QHash<qlonglong,qlonglong> textFormsByWritingSystem;
@@ -66,6 +67,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 textFormIds.clear();
                 textFormsByWritingSystem.clear();
                 glossFormIds.clear();
+                annotations.clear();
 
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
@@ -143,6 +145,17 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     }
                 }
             }
+            else if ( name == "annotation" && stream.namespaceUri().toString() == "http://www.adambaker.org/gloss.php" )
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("lang") && attr.hasAttribute("key") )
+                {
+                    WritingSystem ws = mDbAdapter->writingSystem( attr.value("lang").toString() );
+                    QString key = attr.value("key").toString();
+                    QString text = stream.readElementText();
+                    annotations.insert( key , TextBit(text, ws) );
+                }
+            }
             else if(name == "interlinear-text")
             {
                 QXmlStreamAttributes attr = stream.attributes();
@@ -186,6 +199,13 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     mText->mPhrases.last()->lastGlossItem()->setMorphologicalAnalysis( *iter.next() );
                 qDeleteAll( morphologicalAnalyses );
                 morphologicalAnalyses.clear();
+
+                QHashIterator<QString,TextBit> annIter(annotations);
+                while(annIter.hasNext())
+                {
+                    annIter.next();
+                    mText->mPhrases.last()->lastGlossItem()->setAnnotation( annIter.key(), annIter.value() );
+                }
 
                 inWord = false;
                 interpretationId = -1;

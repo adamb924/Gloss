@@ -492,3 +492,25 @@ bool GlossItem::matchesFocus( const Focus & focus ) const
     }
     return false;
 }
+
+TextBit GlossItem::getAnnotation( const QString & key ) const
+{
+    return mAnnotations.value(key, TextBit() );
+}
+
+void GlossItem::setAnnotation( const QString & key, const TextBit & annotation )
+{
+    mAnnotations.insert(key, annotation);
+    // this is sort of a cheap way to make sure the text is marked as changed
+    emit approvalStatusChanged(mApprovalStatus);
+}
+
+QHashIterator<QString,TextBit> GlossItem::annotations() const
+{
+    return QHashIterator<QString,TextBit>(mAnnotations);
+}
+
+bool GlossItem::hasAnnotations() const
+{
+    return mAnnotations.count() > 0;
+}

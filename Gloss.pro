@@ -76,7 +76,9 @@ SOURCES += main.cpp\
     flextextimporter.cpp \
     interlinearchunkeditor.cpp \
     baselinesearchreplacedialog.cpp \
-    writingsystemcombo.cpp
+    writingsystemcombo.cpp \
+    annotationmarkwidget.cpp \
+    annotationtype.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -143,7 +145,9 @@ HEADERS  += mainwindow.h \
     flextextimporter.h \
     interlinearchunkeditor.h \
     baselinesearchreplacedialog.h \
-    writingsystemcombo.h
+    writingsystemcombo.h \
+    annotationmarkwidget.h \
+    annotationtype.h
 
 FORMS    += mainwindow.ui \
     textdisplaywidget.ui \

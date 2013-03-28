@@ -149,6 +149,19 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
     if( mVerboseOutput )
         serializeMorphemes( glossItem, stream );
 
+    // custom annotations
+    QHashIterator<QString,TextBit> annIter = glossItem->annotations();
+    while ( annIter.hasNext() )
+    {
+        annIter.next();
+
+        stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation");
+        stream->writeAttribute("key", annIter.key() );
+        stream->writeAttribute("lang", annIter.value().writingSystem().flexString() );
+        stream->writeCharacters(annIter.value().text());
+        stream->writeEndElement();
+    }
+
     stream->writeEndElement(); // word
 
     return true;

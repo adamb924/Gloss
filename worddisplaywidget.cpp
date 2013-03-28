@@ -10,6 +10,7 @@
 #include "generictextinputdialog.h"
 #include "mainwindow.h"
 #include "dealwithspacesdialog.h"
+#include "annotationmarkwidget.h"
 
 #include <QtWidgets>
 #include <QtDebug>
@@ -56,8 +57,25 @@ WordDisplayWidget::~WordDisplayWidget()
 
 void WordDisplayWidget::setupLayout()
 {
-    mLayout = new QVBoxLayout(this);
-    setLayout(mLayout);
+    QHBoxLayout *hLayout = new QHBoxLayout;
+
+    mAnnotationMarks = new AnnotationMarkWidget( mDbAdapter->annotationTypes() , mGlossItem );
+    connect( mAnnotationMarks, SIGNAL(annotationActivated(QString)), this, SLOT(annotationMarkActivated(QString)) );
+
+    QVBoxLayout *vLayout = new QVBoxLayout;
+
+    if( mGlossItem->baselineWritingSystem().layoutDirection() == Qt::LeftToRight )
+    {
+        hLayout->addWidget(mAnnotationMarks);
+        hLayout->addLayout(vLayout);
+    }
+    else
+    {
+        hLayout->addLayout(vLayout);
+        hLayout->addWidget(mAnnotationMarks);
+    }
+
+    setLayout(hLayout);
 
     mTextFormEdits.clear();
     mGlossEdits.clear();
@@ -74,23 +92,23 @@ void WordDisplayWidget::setupLayout()
         {
         case InterlinearItemType::ImmutableText:
             immutableLabel = addImmutableTextFormLine( mGlossLines.at(i) , i == 0 );
-            mLayout->addWidget(immutableLabel);
+            vLayout->addWidget(immutableLabel);
             break;
         case InterlinearItemType::ImmutableGloss:
             immutableLabel = addImmutableGlossLine( mGlossLines.at(i) , i == 0 );
-            mLayout->addWidget(immutableLabel);
+            vLayout->addWidget(immutableLabel);
             break;
         case InterlinearItemType::Text:
             lineWidget = addTextFormLine( mGlossLines.at(i) );
-            mLayout->addWidget(lineWidget);
+            vLayout->addWidget(lineWidget);
             break;
         case InterlinearItemType::Gloss:
             lineWidget = addGlossLine( mGlossLines.at(i) );
-            mLayout->addWidget(lineWidget);
+            vLayout->addWidget(lineWidget);
             break;
         case InterlinearItemType::Analysis:
             analysisWidget = addAnalysisWidget( mGlossLines.at(i) );
-            mLayout->addWidget(analysisWidget);
+            vLayout->addWidget(analysisWidget);
             break;
         case InterlinearItemType::Null:
             break;
@@ -946,5 +964,22 @@ void WordDisplayWidget::editBaselineTextForm()
     {
         mDbAdapter->updateTextForm( dialog.textBit() );
         mGlossItem->setTextFormText( dialog.textBit() );
+    }
+}
+
+void WordDisplayWidget::annotationMarkActivated( const QString & key )
+{
+    TextBit annotation = mGlossItem->getAnnotation( key );
+    if( annotation.text().isEmpty() )
+        annotation.setWritingSystem( mDbAdapter->annotationType(key).writingSystem() );
+    if( annotation.writingSystem().isNull() )
+        return;
+
+    GenericTextInputDialog dialog(annotation, this);
+    dialog.setWindowTitle(key);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mGlossItem->setAnnotation( key , dialog.textBit() );
+        mAnnotationMarks->setupLayout();
     }
 }

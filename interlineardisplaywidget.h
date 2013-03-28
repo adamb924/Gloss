@@ -24,6 +24,7 @@ class GlossItem;
 class Phrase;
 class Focus;
 
+#include "annotationmarkwidget.h"
 #include "interlinearitemtype.h"
 
 class InterlinearDisplayWidget : public QScrollArea
@@ -95,7 +96,6 @@ protected:
     QList<InterlinearItemType> mPhrasalGlossLines;
 
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
-
 
     //! \brief Add the phrasal gloss lines for phrase \a i
     void addPhrasalGlossLines( int i );

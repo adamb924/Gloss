@@ -15,6 +15,7 @@
 #include "morphologicalanalysis.h"
 #include "text.h"
 #include "project.h"
+#include "annotationtype.h"
 
 DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
         QObject(parent)
@@ -734,6 +735,7 @@ void DatabaseAdapter::parseConfigurationFile(const QString & filename)
     mLexicalEntryGlosses = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
 
     metalanguageFromConfigurationFile();
+    annotationTypesFromConfigurationFile();
 }
 
 QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(const QString & queryString) const
@@ -1038,6 +1040,39 @@ void DatabaseAdapter::metalanguageFromConfigurationFile()
     query.setQuery("for $i in doc($path)/gloss-configuration/meta-language return string($i/@lang)");
     query.evaluateTo(&result);
     mMetaLanguage = writingSystem(result.trimmed());
+}
+
+void DatabaseAdapter::annotationTypesFromConfigurationFile()
+{
+    QStringList result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::annotationTypesFromConfigurationFile"));
+    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.setQuery("declare variable $path external; "
+                   "for $x in doc($path)/gloss-configuration/annotations/annotation "
+                   "return string-join( ($x/@name, $x/@mark , $x/@lang ) , ',') ");
+    query.evaluateTo(&result);
+
+    for(int i=0; i<result.count(); i++)
+    {
+        QStringList split = result.at(i).split(",");
+        if( split.count() != 3 )
+            continue;
+        mAnnotationTypes << AnnotationType(split.at(0),split.at(1), writingSystem(split.at(2)));
+    }
+}
+
+QList<AnnotationType> DatabaseAdapter::annotationTypes() const
+{
+    return mAnnotationTypes;
+}
+
+AnnotationType DatabaseAdapter::annotationType(const QString & label) const
+{
+    for(int i=0; i<mAnnotationTypes.count(); i++)
+        if( mAnnotationTypes.at(i).label() == label )
+            return mAnnotationTypes.at(i);
+    return AnnotationType();
 }
 
 TextBitHash DatabaseAdapter::lexicalItemGlosses(qlonglong lexicalEntryId) const

@@ -99,6 +99,11 @@ public:
     //! \brief Returns true if this gloss item matches the specified focus, otherwise false
     bool matchesFocus( const Focus & focus ) const;
 
+    TextBit getAnnotation( const QString & key ) const;
+    void setAnnotation( const QString & key, const TextBit & annotation );
+    QHashIterator<QString,TextBit> annotations() const;
+    bool hasAnnotations() const;
+
     Concordance* concordance();
 
     Project* project();
@@ -158,6 +163,8 @@ private:
     void updateGlossItemConcordance();
 
     QHash<WritingSystem,MorphologicalAnalysis> mMorphologicalAnalyses;
+
+    QHash<QString,TextBit> mAnnotations;
 
     TextBitHash mTextForms;
     TextBitHash mGlosses;

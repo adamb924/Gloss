@@ -15,6 +15,7 @@
 #include "textbit.h"
 #include "interlinearitemtype.h"
 #include "allomorph.h"
+#include "annotationtype.h"
 
 class WritingSystem;
 class MorphologicalAnalysis;
@@ -225,6 +226,9 @@ public:
 
     QString guessGloss( const QString & hint , const WritingSystem & ws );
 
+    QList<AnnotationType> annotationTypes() const;
+    AnnotationType annotationType(const QString & label) const;
+
 private:
     QString mFilename;
 
@@ -236,11 +240,13 @@ private:
     QList<InterlinearItemType> interlinearItemsFromConfigurationFile(const QString & queryString) const;
     QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
     void metalanguageFromConfigurationFile();
+    void annotationTypesFromConfigurationFile();
 
     QList<InterlinearItemType> mGlossInterlinearLines;
     QList<InterlinearItemType> mGlossPhrasalGlossLines;
     QList<InterlinearItemType> mAnalysisInterlinearLines;
     QList<InterlinearItemType> mAnalysisPhrasalGlossLines;
+    QList<AnnotationType> mAnnotationTypes;
 
     QList<WritingSystem> mLexicalEntryCitationForms;
     QList<WritingSystem> mLexicalEntryGlosses;

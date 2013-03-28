@@ -15,6 +15,7 @@
 #include "interlinearlinelabel.h"
 #include "generictextinputdialog.h"
 #include "focus.h"
+#include "annotationmarkwidget.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent) :
         QScrollArea(parent)
@@ -165,7 +166,7 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             layout->removeWidget(lineLabel);
         }
 
-        QListIterator<QWidget*> iter =  QListIterator<QWidget*>( mWordDisplayWidgets.values(lineNumber) );
+        QListIterator<QWidget*> iter( mWordDisplayWidgets.values(lineNumber) );
         while(iter.hasNext())
         {
             QWidget *wdw = iter.next();
@@ -173,7 +174,7 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             wdw->deleteLater();
             mWordDisplayWidgets.remove( lineNumber, wdw );
         }
-    }
+   }
 }
 
 void InterlinearDisplayWidget::setLayoutFromText()

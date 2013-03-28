@@ -24,6 +24,7 @@ class TextBit;
 class ImmutableLabel;
 class AnalysisWidget;
 class Concordance;
+class AnnotationMarkWidget;
 
 class WordDisplayWidget : public QFrame
 {
@@ -44,6 +45,7 @@ private:
     GlossItem *mGlossItem;
     Concordance *mConcordance;
     Qt::Alignment mAlignment;
+    AnnotationMarkWidget *mAnnotationMarks;
 
     void setupShortcuts();
 
@@ -65,8 +67,6 @@ private:
     ImmutableLabel* addImmutableTextFormLine( const InterlinearItemType & glossLine, bool technicolor );
     ImmutableLabel* addImmutableGlossLine( const InterlinearItemType & glossLine, bool technicolor );
     AnalysisWidget* addAnalysisWidget( const InterlinearItemType & glossLine );
-
-    QVBoxLayout *mLayout;
 
     QLabel *mBaselineWordLabel;
     QList<InterlinearItemType> mGlossLines;
@@ -101,6 +101,8 @@ signals:
     void requestReplaceFollowing( GlossItem *glossItem, const QString & searchFor );
 
 private slots:
+    void annotationMarkActivated( const QString & key );
+
     void playSound();
     void approveLine();
     void rightGlossItem();
