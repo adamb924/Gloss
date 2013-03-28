@@ -150,7 +150,6 @@ HEADERS  += mainwindow.h \
     annotationtype.h
 
 FORMS    += mainwindow.ui \
-    textdisplaywidget.ui \
     newtextdialog.ui \
     importflextextdialog.ui \
     interpretationsearchdialog.ui \

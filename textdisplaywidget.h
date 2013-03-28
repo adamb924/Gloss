@@ -18,10 +18,6 @@ class LingTextEdit;
 #include "focus.h"
 #include "view.h"
 
-namespace Ui {
-    class TextDisplayWidget;
-}
-
 class TextDisplayWidget : public QTabWidget
 {
     Q_OBJECT
@@ -35,7 +31,6 @@ public:
     void saveText();
 
 private:
-    Ui::TextDisplayWidget *ui;
     Project *mProject;
     Text *mText;
     LingTextEdit * mBaselineTextEdit;

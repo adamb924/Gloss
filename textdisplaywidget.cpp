@@ -10,8 +10,7 @@
 #include <QMessageBox>
 
 TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci, QWidget *parent) :
-    QTabWidget(parent) //,
-//    ui(new Ui::TextDisplayWidget)
+    QTabWidget(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -24,7 +23,6 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         QMessageBox::critical(this, tr("Error"), tr("There is no valid view available. Something is likely wrong with your configuration.xml file."));
     }
 
-//    ui->setupUi(this);
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
     if( view->showBaselineTextTab() )
@@ -50,6 +48,9 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         addTab( idw, tab.name() );
     }
 
+    if( count() == 1 )
+        tabBar()->hide();
+
     setWindowTitle(mText->name());
 }
 
@@ -57,7 +58,6 @@ TextDisplayWidget::~TextDisplayWidget()
 {
     if( mProject->memoryMode() == Project::OneAtATime )
         mProject->closeText(mText);
-//    delete ui;
 }
 
 void TextDisplayWidget::setupBaselineTab()
