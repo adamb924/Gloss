@@ -131,6 +131,12 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                                 itemId = mDbAdapter->newTextForm(interpretationId, TextBit( text , lang) );
                             textFormIds.insert(itemId);
                             textFormsByWritingSystem.insert(lang.id(), itemId);
+
+                            MorphologicalAnalysis *analysis = new MorphologicalAnalysis( mDbAdapter->morphologicalAnalysisFromTextFormId(itemId) );
+                            if( !analysis->isEmpty() )
+                                morphologicalAnalyses << analysis;
+                            else
+                                delete analysis;
                         }
                         else if( type == "gls" && lang.isValid() )
                         {
