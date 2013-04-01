@@ -902,12 +902,14 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, All
         {
             QString tag = tagIter.next();
 
+            qDebug() << tag << lexicalEntryId;
+
             q.prepare("insert or ignore into GrammaticalTags (Tag) values (:Tag);");
             q.bindValue(":Tag",tag);
             if( ! q.exec() )
                 throw -1;
 
-            q.prepare("insert or ignore into LexicalEntryTags (LexicalEntryId,TagId) values select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;");
+            q.prepare("insert or ignore into LexicalEntryTags (LexicalEntryId,TagId) select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;");
             q.bindValue(":LexicalEntryId",lexicalEntryId);
             q.bindValue(":Tag",tag);
 
