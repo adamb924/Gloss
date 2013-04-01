@@ -64,7 +64,7 @@ void WordDisplayWidget::setupLayout()
 
     QVBoxLayout *vLayout = new QVBoxLayout;
 
-    if( mGlossItem->baselineWritingSystem().layoutDirection() == Qt::LeftToRight )
+    if( mGlossLines.first().writingSystem().layoutDirection() == Qt::LeftToRight )
     {
         hLayout->addWidget(mAnnotationMarks);
         hLayout->addLayout(vLayout);
