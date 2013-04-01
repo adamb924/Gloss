@@ -118,6 +118,8 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
         LingEdit *edit = addPhrasalGlossLine( bit );
         edit->matchTextAlignmentTo( mInterlinearDisplayLines.first().writingSystem().layoutDirection() );
         connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
+
+        mPhrasalGlossWidgets.insert( i , edit );
     }
 }
 
@@ -173,6 +175,15 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             layout->removeWidget(wdw);
             wdw->deleteLater();
             mWordDisplayWidgets.remove( lineNumber, wdw );
+        }
+
+        QListIterator<QWidget*> phrasalIter( mPhrasalGlossWidgets.values(lineNumber) );
+        while(phrasalIter.hasNext())
+        {
+            QWidget *gloss = phrasalIter.next();
+            layout->removeWidget(gloss);
+            gloss->deleteLater();
+            mPhrasalGlossWidgets.remove( lineNumber, gloss );
         }
    }
 }
