@@ -1014,6 +1014,15 @@ MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlon
     return analysis;
 }
 
+void DatabaseAdapter::clearMorphologicalAnalysis( qlonglong textFormId ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId;");
+    q.bindValue(":TextFormId", textFormId);
+    if( ! q.exec() )
+        qWarning() << "DatabaseAdapter::clearMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
+}
+
 bool DatabaseAdapter::textFormHasMorphologicalAnalysis( qlonglong textFormId ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));

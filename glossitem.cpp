@@ -170,6 +170,9 @@ void GlossItem::setGlossText(const TextBit & gloss)
 void GlossItem::setTextForm(const TextBit & textForm)
 {
     WritingSystem ws = textForm.writingSystem();
+
+    bool textUpdate = mTextForms.value(ws).id() == textForm.id() && mTextForms.value(ws).text() != textForm.text();
+
     if( mTextForms.value(ws) != textForm )
     {
         mConcordance->removeGlossItemTextFormIdPair( this, mTextForms.value(ws).id() );
@@ -179,11 +182,11 @@ void GlossItem::setTextForm(const TextBit & textForm)
 
         mConcordance->updateGlossItemTextFormConcordance( this, textForm.id() );
 
-        if( ws == mBaselineWritingSystem )
-        {
-            MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() );
-            mMorphologicalAnalyses.insert( ws , newMa );
-        }
+        if( textUpdate )
+            mDbAdapter->clearMorphologicalAnalysis(textForm.id());
+
+        MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() );
+        mMorphologicalAnalyses.insert( ws , newMa );
 
         emit fieldsChanged();
         emit textFormChanged(textForm);
@@ -198,6 +201,7 @@ void GlossItem::setTextFormText(const TextBit & textForm)
         if( mTextForms.value(textForm.writingSystem()).text() != textForm.text() )
         {
             mTextForms[textForm.writingSystem()].setText(textForm.text());
+            mDbAdapter->clearMorphologicalAnalysis( textForm.id() );
             emit textFormChanged(textForm);
             emit fieldsChanged();
         }
