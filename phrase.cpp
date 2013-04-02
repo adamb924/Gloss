@@ -184,6 +184,7 @@ void Phrase::clearGlossItems()
 
 GlossItem* Phrase::connectGlossItem(GlossItem * item)
 {
+    item->connectToConcordance();
     connect( item, SIGNAL(baselineTextChanged(TextBit)), this, SIGNAL(phraseChanged()) );
     connect( item, SIGNAL(fieldsChanged()), mText, SLOT(markAsChanged()) );
     connect( item, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), mText, SLOT(markAsChanged()) );

@@ -108,6 +108,9 @@ public:
 
     Project* project();
 
+    // TODO this is so awkward to have to call each time I create a new object. I wonder what the better way to to it is.
+    void connectToConcordance();
+
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
     void candidateNumberChanged(GlossItem::CandidateNumber status);

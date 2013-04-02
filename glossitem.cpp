@@ -517,3 +517,12 @@ bool GlossItem::hasAnnotations() const
 {
     return mAnnotations.count() > 0;
 }
+
+void GlossItem::connectToConcordance()
+{
+    connect( this, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)), Qt::UniqueConnection);
+    connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)), Qt::UniqueConnection);
+    connect( this, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)), Qt::UniqueConnection);
+    connect( this, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)), Qt::UniqueConnection);
+    connect( this, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)), Qt::UniqueConnection);
+}

@@ -198,6 +198,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             if(name == "word")
             {
                 mText->mPhrases.last()->appendGlossItem(new GlossItem( mText->mBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject ));
+                mText->mPhrases.last()->lastGlossItem()->connectToConcordance();
                 mText->mPhrases.last()->lastGlossItem()->setApprovalStatus(approvalStatus);
 
                 QListIterator<MorphologicalAnalysis*> iter(morphologicalAnalyses);
