@@ -580,7 +580,7 @@ void WordDisplayWidget::fillData()
                 mImmutableLines[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
                 break;
             case InterlinearItemType::Analysis:
-                // TODO how does one fill the data here? what does this function even do?
+                mAnalysisWidgets[mGlossLines.at(i).writingSystem()]->setupLayout();
                 break;
             case InterlinearItemType::Null:
                 break;
