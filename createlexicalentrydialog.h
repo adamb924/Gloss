@@ -20,6 +20,7 @@ class CreateLexicalEntryDialog : public QDialog
     Q_OBJECT
 
 public:
+    CreateLexicalEntryDialog(qlonglong lexicalEntryId, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
     ~CreateLexicalEntryDialog();
 
@@ -32,19 +33,24 @@ signals:
 
 private:
     Ui::CreateLexicalEntryDialog *ui;
-    const DatabaseAdapter *mDbAdapter;
-    const GlossItem *mGlossItem;
+    const DatabaseAdapter * mDbAdapter;
+    const GlossItem * mGlossItem;
     const Allomorph * mAllomorph;
     bool mIsMonomorphemic;
 
-    qlonglong mId;
+    qlonglong mLexicalEntryId;
 
     QList<LingEdit*> mGlossEdits;
     QList<LingEdit*> mCitationFormEdits;
 
 private slots:
     void fillData();
+    void guessAppropriateValues();
+    void fillFromDatabase();
+
+
     void createLexicalEntry();
+    void changeLexicalEntry();
 };
 
 #endif // CREATELEXICALENTRYDIALOG_H

@@ -396,6 +396,27 @@ void DatabaseAdapter::updateLexicalEntryGloss( const TextBit & bit ) const
         qWarning() << "DatabaseAdapter::updateLexicalEntryGloss" << q.lastError().text() << q.executedQuery();
 }
 
+void DatabaseAdapter::updateLexicalEntryCitationForm( qlonglong lexicalEntryId, const TextBit & bit ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update LexicalEntryCitationForm set Form=:Form where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem;");
+    q.bindValue(":Form", bit.text() );
+    q.bindValue(":LexicalEntryId", lexicalEntryId);
+    q.bindValue(":WritingSystem", bit.writingSystem().id() );
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::updateLexicalEntryCitationForm" << q.lastError().text() << q.executedQuery();
+}
+
+void DatabaseAdapter::updateLexicalEntryGloss( qlonglong lexicalEntryId, const TextBit & bit ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update LexicalEntryGloss set Form=:Form where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem;");
+    q.bindValue(":Form", bit.text() );
+    q.bindValue(":LexicalEntryId", lexicalEntryId);
+    q.bindValue(":WritingSystem", bit.writingSystem().id() );
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::updateLexicalEntryGloss" << q.lastError().text() << q.executedQuery();
+}
 
 TextBitHash DatabaseAdapter::guessInterpretationGlosses(qlonglong id) const
 {
@@ -901,8 +922,6 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, All
         while( tagIter.hasNext() )
         {
             QString tag = tagIter.next();
-
-            qDebug() << tag << lexicalEntryId;
 
             q.prepare("insert or ignore into GrammaticalTags (Tag) values (:Tag);");
             q.bindValue(":Tag",tag);
@@ -1454,10 +1473,18 @@ void DatabaseAdapter::setTagsForLexicalEntry( qlonglong lexicalEntryId, const QS
     q.bindValue(":LexicalEntryId", lexicalEntryId );
     q.exec();
 
+    q.prepare("insert or ignore into GrammaticalTags (Tag) values (:Tag);");
+    QStringListIterator iter(tags);
+    while( iter.hasNext() )
+    {
+        q.bindValue(":Tag", iter.next() );
+        q.exec();
+    }
+
     q.prepare( "insert into LexicalEntryTags (LexicalEntryId,TagId) select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;" );
     q.bindValue(":LexicalEntryId", lexicalEntryId );
 
-    QStringListIterator iter(tags);
+    iter = QStringListIterator(tags);
     while(iter.hasNext())
     {
         q.bindValue(":Tag", iter.next() );
@@ -1541,4 +1568,26 @@ QString DatabaseAdapter::guessGloss( const QString & hint , const WritingSystem 
     if( q.next() )
         return q.value(0).toString();
     return QString();
+}
+
+qlonglong DatabaseAdapter::lexicalEntryIdFromAllomorph(qlonglong allomorphId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select LexicalEntryId from Allomorph where _id=:_id;" );
+    q.bindValue(":_id", allomorphId );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        return q.value(0).toLongLong();
+    return -1;
+}
+
+void DatabaseAdapter::setLexicalEntryCitationForm(qlonglong lexicalEntryId, const TextBit & citationForm) const
+{
+
+}
+
+void DatabaseAdapter::setLexicalEntryGloss(qlonglong lexicalEntryId, const TextBit & gloss) const
+{
+
 }

@@ -197,6 +197,9 @@ public:
     QStringList grammaticalTagsForAllomorph(qlonglong allomorphId) const;
     QStringList grammaticalTags(qlonglong lexicalEntryId) const;
 
+    void setLexicalEntryCitationForm(qlonglong lexicalEntryId, const TextBit & citationForm) const;
+    void setLexicalEntryGloss(qlonglong lexicalEntryId, const TextBit & gloss) const;
+
     bool textIndicesExist() const;
     void createTextIndices( const QSet<QString> * filePaths ) const;
     void createIndex( const QString & tableName, const QString & queryString, const QSet<QString> * filePaths ) const;
@@ -228,6 +231,8 @@ public:
 
     QList<AnnotationType> annotationTypes() const;
     AnnotationType annotationType(const QString & label) const;
+
+    qlonglong lexicalEntryIdFromAllomorph(qlonglong allomorphId) const;
 
 private:
     QString mFilename;
@@ -266,7 +271,8 @@ public slots:
 
     void updateLexicalEntryCitationForm( const TextBit & bit ) const;
     void updateLexicalEntryGloss( const TextBit & bit ) const;
-
+    void updateLexicalEntryCitationForm( qlonglong lexicalEntryId, const TextBit & bit ) const;
+    void updateLexicalEntryGloss( qlonglong lexicalEntryId, const TextBit & bit ) const;
 };
 
 #endif // DATABASEADAPTER_H

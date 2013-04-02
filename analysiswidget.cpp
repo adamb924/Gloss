@@ -94,7 +94,16 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 void AnalysisWidget::editLexicalEntry(QAction * action)
 {
     qlonglong allomorphId = action->data().toLongLong();
+    qlonglong lexicalEntryId = mDbAdapter->lexicalEntryIdFromAllomorph(allomorphId);
 
+    if( lexicalEntryId == -1 )
+    {
+        qWarning() << "No lexical id for that allomorph";
+        return;
+    }
+
+    CreateLexicalEntryDialog dialog( lexicalEntryId, mGlossItem, mDbAdapter, this);
+    dialog.exec();
 }
 
 void AnalysisWidget::enterAnalysis()
