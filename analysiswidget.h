@@ -57,6 +57,7 @@ private slots:
     void enterAnalysis();
     void createMonomorphemicLexicalEntry();
     void linkToOther();
+    void editLexicalEntry(QAction * action);
 };
 
 #endif // ANALYSISWIDGET_H

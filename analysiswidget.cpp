@@ -63,15 +63,38 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analy
 
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
-    menu.addAction(tr("Monomorphemic"), this, SLOT(createMonomorphemicLexicalEntry()));
-    menu.addAction(tr("Polymorphemic"), this, SLOT(enterAnalysis()));
+    QMenu * menu = new QMenu(this);
+    menu->addAction(tr("Monomorphemic"), this, SLOT(createMonomorphemicLexicalEntry()));
+    menu->addAction(tr("Polymorphemic"), this, SLOT(enterAnalysis()));
 
-    menu.addSeparator();
-    QAction * duplicate = menu.addAction(tr("Duplicate interpretation"), this, SIGNAL(requestAlternateInterpretation()));
+    menu->addSeparator();
+    QAction * duplicate = menu->addAction(tr("Duplicate interpretation"), this, SIGNAL(requestAlternateInterpretation()));
     connect( duplicate, SIGNAL(triggered()), this, SLOT(enterAnalysis()));
 
-    menu.exec(event->globalPos());
+    MorphologicalAnalysis analysis = mGlossItem->morphologicalAnalysis(mWritingSystem);
+    if( !analysis.isEmpty() )
+    {
+        menu->addSeparator();
+        AllomorphIterator iter = analysis.allomorphIterator();
+        QActionGroup * group = new QActionGroup(this);
+        while(iter.hasNext())
+        {
+            Allomorph allomorph = iter.next();
+            QAction * action = new QAction(tr("Edit %1").arg( allomorph.text() ), this);
+            action->setData( allomorph.id() );
+            menu->addAction(action);
+            group->addAction(action);
+        }
+        connect( group, SIGNAL(triggered(QAction*)) , this, SLOT(editLexicalEntry(QAction*)) );
+    }
+
+    menu->exec(event->globalPos());
+}
+
+void AnalysisWidget::editLexicalEntry(QAction * action)
+{
+    qlonglong allomorphId = action->data().toLongLong();
+
 }
 
 void AnalysisWidget::enterAnalysis()
