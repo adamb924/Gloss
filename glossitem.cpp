@@ -133,7 +133,6 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 
         loadMorphologicalAnalysesFromDatabase();
 
-        emit interpretationIdChanged(mId);
         emit fieldsChanged();
     }
     // TODO possibly update the concordance at this point

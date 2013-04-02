@@ -118,9 +118,6 @@ signals:
     //! \brief Emitted when the approval status of the GlossItem changes
     void approvalStatusChanged(GlossItem::ApprovalStatus status);
 
-    //! \brief Emitted when the interpretation id of the GlossItem changes
-    void interpretationIdChanged(qlonglong id);
-
     //! \brief Emitted whenever the text form or glosses have changed (in order to signal the need of a GUI refresh)
     void fieldsChanged();
 
