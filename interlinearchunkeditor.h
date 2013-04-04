@@ -21,6 +21,8 @@ public:
     InterlinearChunkEditor(Text *text, Project *project, View::Type type, int chunkSize, QWidget *parent = 0);
     ~InterlinearChunkEditor();
 
+    void moveToLine(int line);
+
 private:
     Ui::InterlinearChunkEditor *ui;
 

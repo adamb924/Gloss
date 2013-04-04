@@ -23,6 +23,7 @@
 #include "view.h"
 #include "interlinearchunkeditor.h"
 #include "baselinesearchreplacedialog.h"
+#include "opentextdialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -100,8 +101,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( ui->actionLexical_entry_by_id, SIGNAL(triggered()), this, SLOT(searchForLexicalEntryById()) );
     connect( ui->actionAllomorph_by_id, SIGNAL(triggered()), this, SLOT(searchForAllomorphById()) );
-
-    connect( ui->actionOpen_text_in_chunks, SIGNAL(triggered()), this, SLOT(openTextInChunks()) );
 
     connect( ui->actionBaseline_text_search_and_replace, SIGNAL(triggered()), this, SLOT(baselineSearchAndReplace()));
 
@@ -519,10 +518,21 @@ void MainWindow::openText()
         QMessageBox::information(this, tr("No texts"), tr("The project has no texts to open."));
         return;
     }
-    bool ok;
-    QString whichText = QInputDialog::getItem( this, tr("Select text"), tr("Select the text to open"), mProject->textNames(), 0, false, &ok );
-    if( ok )
-        openText(whichText);
+
+    OpenTextDialog dialog(mProject->textNames(), this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        if( dialog.linesPerScreen() == -1 )
+        {
+            openText( dialog.textName() );
+        }
+        else
+        {
+            InterlinearChunkEditor * ice = openTextInChunks( dialog.textName(), dialog.linesPerScreen() );
+            if( ice != 0 )
+                ice->moveToLine( dialog.goToLine() );
+        }
+    }
 }
 
 TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Focus> & foci)
@@ -1279,38 +1289,29 @@ void MainWindow::refreshViews()
     ui->menuProject->addMenu(mQuickViewMenu);
 }
 
-void MainWindow::openTextInChunks()
+InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, int linesPerScreen)
 {
-    if( mProject->textPaths()->count() == 0)
-    {
-        QMessageBox::information(this, tr("No texts"), tr("The project has no texts to open."));
-        return;
-    }
-    bool ok;
-    QString whichText = QInputDialog::getItem( this, tr("Select text"), tr("Select the text to open"), mProject->textNames(), 0, false, &ok );
-    if( !ok )
-        return;
-
-    int nLines = QInputDialog::getInt(this, tr("Set chunk size"), tr("How many lines to each screen?"), 3, 1, 200, 1, &ok );
-
     Text *text;
-    InterlinearChunkEditor *subWindow = 0;
-    switch( mProject->openText(whichText) )
+    InterlinearChunkEditor * subWindow = 0;
+    switch( mProject->openText(textName) )
     {
     case Project::Success:
-        text = mProject->texts()->value(whichText, 0);
+        text = mProject->texts()->value(textName, 0);
         if( text != 0 )
         {
-            subWindow = new InterlinearChunkEditor(text, mProject, View::Full, nLines, this);
+            subWindow = new InterlinearChunkEditor(text, mProject, View::Full, linesPerScreen, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
+        return subWindow;
         break;
     case Project::FileNotFound:
-        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. The filename %2 could not be found.").arg(whichText).arg(mProject->filepathFromName(whichText)));
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. The filename %2 could not be found.").arg(textName).arg(mProject->filepathFromName(textName)));
+        return 0;
         break;
     case Project::XmlReadError:
-        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. There was a problem reading the XML.").arg(whichText));
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. There was a problem reading the XML.").arg(textName));
+        return 0;
         break;
     }
 }

@@ -78,7 +78,8 @@ SOURCES += main.cpp\
     baselinesearchreplacedialog.cpp \
     writingsystemcombo.cpp \
     annotationmarkwidget.cpp \
-    annotationtype.cpp
+    annotationtype.cpp \
+    opentextdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -147,7 +148,8 @@ HEADERS  += mainwindow.h \
     baselinesearchreplacedialog.h \
     writingsystemcombo.h \
     annotationmarkwidget.h \
-    annotationtype.h
+    annotationtype.h \
+    opentextdialog.h
 
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
@@ -171,7 +173,8 @@ FORMS    += mainwindow.ui \
     sqltabledialog.ui \
     dealwithspacesdialog.ui \
     interlinearchunkeditor.ui \
-    baselinesearchreplacedialog.ui
+    baselinesearchreplacedialog.ui \
+    opentextdialog.ui
 
 LIBS += -L./ \
     -lquazip \

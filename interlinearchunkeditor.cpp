@@ -61,10 +61,13 @@ void InterlinearChunkEditor::goTo()
     bool ok;
     int newPosition = QInputDialog::getInt(this, tr("Go to"), tr("Go to the chunk with line..."), mPosition, 1, mNPhrases, 1, &ok );
     if( ok )
-    {
-        newPosition--; // zero-index it
-        moveToPosition( (newPosition / mChunkSize) * mChunkSize );
-    }
+        moveToLine( newPosition );
+}
+
+void InterlinearChunkEditor::moveToLine(int line)
+{
+    line--; // zero-index it
+    moveToPosition( (line / mChunkSize) * mChunkSize );
 }
 
 void InterlinearChunkEditor::moveToPosition(int position)

@@ -17,7 +17,7 @@ class WritingSystem;
 class QModelIndex;
 class TextDisplayWidget;
 class QStandardItemModel;
-
+class InterlinearChunkEditor;
 
 namespace Ui {
     class MainWindow;
@@ -129,7 +129,7 @@ private slots:
 
     void editLexicon();
 
-    void openTextInChunks();
+    InterlinearChunkEditor * openTextInChunks(const QString & textName, int linesPerScreen);
 
     void setMemoryMode( QAction * action );
 };
