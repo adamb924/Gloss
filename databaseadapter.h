@@ -148,6 +148,8 @@ public:
 
     //! \brief Returns the meta analysis language
     WritingSystem metaLanguage() const;
+    WritingSystem defaultGlossLanguage() const;
+    WritingSystem defaultTextFormLanguage() const;
 
     QList<WritingSystem> lexicalEntryCitationFormFields() const;
     QList<WritingSystem> lexicalEntryGlossFields() const;
@@ -246,7 +248,7 @@ private:
 
     QList<InterlinearItemType> interlinearItemsFromConfigurationFile(const QString & queryString) const;
     QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
-    void metalanguageFromConfigurationFile();
+    void languageSettingsFromConfigurationFile();
     void annotationTypesFromConfigurationFile();
 
     QList<InterlinearItemType> mGlossInterlinearLines;
@@ -259,6 +261,8 @@ private:
     QList<WritingSystem> mLexicalEntryGlosses;
 
     WritingSystem mMetaLanguage;
+    WritingSystem mDefaultTextFormLanguage;
+    WritingSystem mDefaultGlossLanguage;
 
     QString mConfigurationXmlPath;
 

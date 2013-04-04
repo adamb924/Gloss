@@ -444,12 +444,12 @@ TextBitHash DatabaseAdapter::guessInterpretationTextForms(qlonglong id) const
 
 WritingSystem DatabaseAdapter::writingSystem(const QString & flexString) const
 {
-    return mWritingSystemByFlexString.value(flexString);
+    return mWritingSystemByFlexString.value(flexString, WritingSystem() );
 }
 
 WritingSystem DatabaseAdapter::writingSystem(qlonglong id) const
 {
-    return mWritingSystemByRowId.value(id);
+    return mWritingSystemByRowId.value(id , WritingSystem() );
 }
 
 QList<WritingSystem> DatabaseAdapter::writingSystems() const
@@ -755,7 +755,7 @@ void DatabaseAdapter::parseConfigurationFile(const QString & filename)
     mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
     mLexicalEntryGlosses = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
 
-    metalanguageFromConfigurationFile();
+    languageSettingsFromConfigurationFile();
     annotationTypesFromConfigurationFile();
 }
 
@@ -1061,15 +1061,42 @@ WritingSystem DatabaseAdapter::metaLanguage() const
     return mMetaLanguage;
 }
 
-void DatabaseAdapter::metalanguageFromConfigurationFile()
+WritingSystem DatabaseAdapter::defaultGlossLanguage() const
+{
+    return mDefaultGlossLanguage;
+}
+
+WritingSystem DatabaseAdapter::defaultTextFormLanguage() const
+{
+    return mDefaultTextFormLanguage;
+}
+
+void DatabaseAdapter::languageSettingsFromConfigurationFile()
 {
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::metalanguageFromConfigurationFile"));
     query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
-    query.setQuery("for $i in doc($path)/gloss-configuration/meta-language return string($i/@lang)");
+
+    query.setQuery("string(doc($path)/gloss-configuration/meta-language/@lang)");
     query.evaluateTo(&result);
     mMetaLanguage = writingSystem(result.trimmed());
+
+    query.setQuery("string(doc($path)/gloss-configuration/default-gloss-language/@lang)");
+    query.evaluateTo(&result);
+    mDefaultGlossLanguage = writingSystem(result.trimmed());
+
+    query.setQuery("string(doc($path)/gloss-configuration/default-text-form-language/@lang)");
+    query.evaluateTo(&result);
+    mDefaultTextFormLanguage = writingSystem(result.trimmed());
+
+    // in case anything's gone wrong...
+    if( mMetaLanguage.isNull() )
+        mMetaLanguage = mWritingSystems.first();
+    if( mDefaultGlossLanguage.isNull() )
+        mDefaultGlossLanguage = mWritingSystems.first();
+    if( mDefaultTextFormLanguage.isNull() )
+        mDefaultTextFormLanguage = mWritingSystems.first();
 }
 
 void DatabaseAdapter::annotationTypesFromConfigurationFile()

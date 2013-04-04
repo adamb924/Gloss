@@ -51,6 +51,9 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     ui->glossWSCombo->setWritingSystems( dbAdapter->writingSystems() );
     ui->textWSCombo->setWritingSystems( dbAdapter->writingSystems() );
 
+    ui->glossWSCombo->setCurrentWritingSystem( dbAdapter->defaultGlossLanguage() );
+    ui->textWSCombo->setCurrentWritingSystem( dbAdapter->defaultTextFormLanguage() );
+
     QSortFilterProxyModel * analysisProxyModel = new QSortFilterProxyModel(this);
     analysisProxyModel->setSourceModel( analysisModel );
     analysisProxyModel->setFilterKeyColumn(-1);
