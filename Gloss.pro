@@ -29,7 +29,6 @@ SOURCES += main.cpp\
     messagehandler.cpp \
     lingtextedit.cpp \
     interlinearitemtype.cpp \
-    interpretationsearchdialog.cpp \
     writingsystemsdialog.cpp \
     mergetranslationdialog.cpp \
     xsltproc.cpp \
@@ -99,7 +98,6 @@ HEADERS  += mainwindow.h \
     lingtextedit.h \
     glossitem.h \
     interlinearitemtype.h \
-    interpretationsearchdialog.h \
     writingsystemsdialog.h \
     mergetranslationdialog.h \
     xsltproc.h \
@@ -154,7 +152,6 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
     importflextextdialog.ui \
-    interpretationsearchdialog.ui \
     writingsystemsdialog.ui \
     mergetranslationdialog.ui \
     generictextinputdialog.ui \
