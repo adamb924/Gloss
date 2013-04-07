@@ -54,7 +54,7 @@ void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
 void LexicalEntryForm::fillTypes()
 {
     for(int i=0; i<10; i++)
-        ui->morphemeType->addItem( Allomorph::getTypeString( (Allomorph::Type)i ) );
+        ui->morphemeType->addItem( mAllomorph.getTypeString( (Allomorph::Type)i ) , i );
 }
 
 void LexicalEntryForm::newLexicalEntry()
@@ -101,8 +101,8 @@ TextBit LexicalEntryForm::textBit() const
     return mAllomorph.textBit();
 }
 
-void LexicalEntryForm::setType(int type)
+void LexicalEntryForm::setType(int index)
 {
-    mAllomorph.setType( (Allomorph::Type)type );
+    mAllomorph.setType(  (Allomorph::Type)ui->morphemeType->itemData(index).toInt() );
     fillData();
 }
