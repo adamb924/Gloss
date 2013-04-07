@@ -28,3 +28,8 @@ void WritingSystemCombo::indexChanged( int index )
         emit writingSystemSelected( mWritingSystems.at(index) );
     }
 }
+
+WritingSystem WritingSystemCombo::currentWritingSystem() const
+{
+    return mWritingSystems.at( currentIndex() );
+}

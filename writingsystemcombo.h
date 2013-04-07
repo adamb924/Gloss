@@ -17,6 +17,8 @@ public:
     void setWritingSystems(const QList<WritingSystem> & writingSystems);
     void setCurrentWritingSystem(const WritingSystem & ws);
 
+    WritingSystem currentWritingSystem() const;
+
 signals:
     void writingSystemSelected( qlonglong wsId );
     void writingSystemSelected( const WritingSystem & ws );
