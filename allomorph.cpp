@@ -162,3 +162,70 @@ void Allomorph::setType( Type t )
     mTextBit.setText( getTypeFormatTextString( text(), t ) );
     mType = t;
 }
+
+
+QString Allomorph::getTypeString(Type t) const
+{
+    switch(t)
+    {
+    case Stem:
+        return "Stem";
+    case Prefix:
+        return "Prefix";
+    case Suffix:
+        return "Suffix";
+    case Infix:
+        return "Infix";
+    case BoundStem:
+        return "Bound Stem";
+    case Proclitic:
+        return "Proclitic";
+    case Enclitic:
+        return "Enclitic";
+    case Simulfix:
+        return "Simulfix";
+    case Suprafix:
+        return "Suprafix";
+    case Null:
+    default:
+        return "Null";
+    }
+}
+
+QString Allomorph::getTypeFormatTextString( const QString & text, Type t ) const
+{
+    switch(t)
+    {
+    case Stem:
+        return text;
+        break;
+    case Prefix:
+        return text + "-";
+        break;
+    case Suffix:
+        return "-" + text;
+        break;
+    case Infix:
+        return "-" + text + "-";
+        break;
+    case BoundStem:
+        return "*" + text;
+        break;
+    case Proclitic:
+        return text + "=";
+        break;
+    case Enclitic:
+        return "=" + text;
+        break;
+    case Simulfix:
+        return "=" + text + "=";
+        break;
+    case Suprafix:
+        return "~" + text + "~";
+        break;
+    case Null:
+        return text;
+        break;
+    }
+    return text;
+}
