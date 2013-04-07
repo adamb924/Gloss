@@ -25,10 +25,8 @@ public:
 private:
     Ui::LexicalEntrySearchDialog *ui;
     const DatabaseAdapter * mDbAdapter;
-    WritingSystem mWritingSystem;
 
     QList<WritingSystem> mWritingSystems;
-    void fillWritingSystems();
     QStandardItemModel *mModel;
 
 private slots:

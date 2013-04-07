@@ -17,10 +17,11 @@ LexicalEntrySearchDialog::LexicalEntrySearchDialog(const DatabaseAdapter * dbAda
     mModel = new QStandardItemModel;
     ui->listView->setModel(mModel);
 
+    ui->writingSystemCombo->setWritingSystems(dbAdapter->writingSystems());
+    ui->writingSystemCombo->setCurrentWritingSystem(dbAdapter->defaultGlossLanguage());
+
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeCurrentWritingSystem(int)));
     connect(ui->textEdit, SIGNAL(textChanged(QString)), this, SLOT(fillCandidates(QString)));
-
-    fillWritingSystems();
 }
 
 LexicalEntrySearchDialog::~LexicalEntrySearchDialog()
@@ -36,12 +37,6 @@ qlonglong LexicalEntrySearchDialog::lexicalEntryId() const
         return -1;
 }
 
-void LexicalEntrySearchDialog::fillWritingSystems()
-{
-    for(int i=0; i<mWritingSystems.count(); i++)
-        ui->writingSystemCombo->addItem( tr("%1 (%2)").arg(mWritingSystems.at(i).name()).arg(mWritingSystems.at(i).flexString()), i );
-}
-
 void LexicalEntrySearchDialog::fillCandidates( const QString & searchString )
 {
     if( searchString.length() < 1 )
@@ -51,7 +46,7 @@ void LexicalEntrySearchDialog::fillCandidates( const QString & searchString )
     }
 
     mModel->clear();
-    QHash<qlonglong,QString> candidates = mDbAdapter->searchLexicalEntries( TextBit( searchString, mWritingSystem ) );
+    QHash<qlonglong,QString> candidates = mDbAdapter->searchLexicalEntries( TextBit( searchString, ui->writingSystemCombo->currentWritingSystem() ) );
     QHashIterator<qlonglong,QString> iter(candidates);
 
     while(iter.hasNext())
@@ -70,5 +65,4 @@ void LexicalEntrySearchDialog::fillCandidates( const QString & searchString )
 void LexicalEntrySearchDialog::changeCurrentWritingSystem(int index)
 {
     ui->textEdit->setWritingSystem( mWritingSystems.at(index) );
-    mWritingSystem = mWritingSystems.at(index);
 }
