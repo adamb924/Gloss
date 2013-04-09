@@ -47,6 +47,12 @@
    <header>lingedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>textEdit</tabstop>
+  <tabstop>writingSystemCombo</tabstop>
+  <tabstop>listView</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
