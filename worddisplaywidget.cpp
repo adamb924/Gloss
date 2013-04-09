@@ -260,17 +260,15 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     {
         switch( mGlossLines.at(i).type() )
         {
-        case InterlinearItemType::ImmutableText:
-        case InterlinearItemType::ImmutableGloss:
-            break;
         case InterlinearItemType::Text:
+        case InterlinearItemType::ImmutableText:
             addTextFormSubmenu( menu , mGlossLines.at(i).writingSystem() );
             break;
         case InterlinearItemType::Gloss:
+        case InterlinearItemType::ImmutableGloss:
             addGlossSubmenu( menu , mGlossLines.at(i).writingSystem() );
             break;
         case InterlinearItemType::Analysis:
-            break;
         case InterlinearItemType::Null:
             break;
         }
