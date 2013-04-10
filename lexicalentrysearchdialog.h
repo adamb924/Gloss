@@ -30,7 +30,7 @@ private:
     QStandardItemModel *mModel;
 
 private slots:
-    void fillCandidates( const QString & searchString );
+    void fillCandidates();
     void changeCurrentWritingSystem(int index);
 };
 

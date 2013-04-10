@@ -21,7 +21,8 @@ LexicalEntrySearchDialog::LexicalEntrySearchDialog(const DatabaseAdapter * dbAda
     ui->writingSystemCombo->setCurrentWritingSystem(dbAdapter->defaultGlossLanguage());
 
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeCurrentWritingSystem(int)));
-    connect(ui->textEdit, SIGNAL(textChanged(QString)), this, SLOT(fillCandidates(QString)));
+    connect(ui->textEdit, SIGNAL(textChanged(QString)), this, SLOT(fillCandidates()));
+    connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(fillCandidates()));
 }
 
 LexicalEntrySearchDialog::~LexicalEntrySearchDialog()
@@ -37,8 +38,10 @@ qlonglong LexicalEntrySearchDialog::lexicalEntryId() const
         return -1;
 }
 
-void LexicalEntrySearchDialog::fillCandidates( const QString & searchString )
+void LexicalEntrySearchDialog::fillCandidates()
 {
+    QString searchString = ui->textEdit->text();
+
     if( searchString.length() < 1 )
     {
         ui->listView->setEnabled(false);
