@@ -335,6 +335,13 @@ void WordDisplayWidget::addTextFormSubmenu(QMenu *menu, const WritingSystem & wr
         }
         connect( gTextForms , SIGNAL(triggered(QAction*)) , this , SLOT(selectDifferentTextForm(QAction*)) );
         submenu->addSeparator();
+
+        QActionGroup *oneOffgroup = new QActionGroup(menu);
+        QAction *action = new QAction(tr("Match following text forms to this"),menu);
+        action->setData( writingSystem.id() );
+        oneOffgroup->addAction(action);
+        connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(changeFollowingToMatchTextForm(QAction*)) );
+        submenu->addAction(action);
     }
 
     // Text forms
@@ -370,6 +377,13 @@ void WordDisplayWidget::addGlossSubmenu(QMenu *menu, const WritingSystem & writi
         }
         connect( gGlosses, SIGNAL(triggered(QAction*)), this, SLOT(selectDifferentGloss(QAction*)) );
         submenu->addSeparator();
+
+        QActionGroup *oneOffgroup = new QActionGroup(menu);
+        QAction *action = new QAction(tr("Match following glosses to this"),menu);
+        action->setData( writingSystem.id() );
+        oneOffgroup->addAction(action);
+        connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(changeFollowingToMatchGloss(QAction*)) );
+        submenu->addAction(action);
     }
 
     // Glosses
@@ -539,6 +553,7 @@ void WordDisplayWidget::newGloss(QAction *action)
     WritingSystem ws = mDbAdapter->writingSystem(wsId);
     newGloss(ws);
 }
+
 
 void WordDisplayWidget::newTextForm(QAction *action)
 {
@@ -970,4 +985,14 @@ void WordDisplayWidget::annotationMarkActivated( const QString & key )
         mGlossItem->setAnnotation( key , dialog.textBit() );
         mAnnotationMarks->setupLayout();
     }
+}
+
+void WordDisplayWidget::changeFollowingToMatchTextForm(QAction *action)
+{
+    emit requestSetFollowingTextForms( mGlossItem , mDbAdapter->writingSystem( action->data().toLongLong() ) );
+}
+
+void WordDisplayWidget::changeFollowingToMatchGloss(QAction *action)
+{
+    emit requestSetFollowingGlosses( mGlossItem , mDbAdapter->writingSystem( action->data().toLongLong() ) );
 }

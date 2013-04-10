@@ -100,6 +100,9 @@ signals:
     void requestSetFollowingInterpretations( GlossItem *glossItem );
     void requestReplaceFollowing( GlossItem *glossItem, const QString & searchFor );
 
+    void requestSetFollowingTextForms( GlossItem *glossItem , const WritingSystem & ws );
+    void requestSetFollowingGlosses( GlossItem *glossItem , const WritingSystem & ws );
+
 private slots:
     void annotationMarkActivated( const QString & key );
 
@@ -123,6 +126,9 @@ private slots:
 
     void newGloss(const WritingSystem & ws);
     void newTextForm(const WritingSystem & ws);
+
+    void changeFollowingToMatchTextForm(QAction *action);
+    void changeFollowingToMatchGloss(QAction *action);
 
     void copyGlossFromBaseline(QAction *action);
     void copyGlossFromBaseline(const WritingSystem & ws);

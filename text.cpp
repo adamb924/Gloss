@@ -496,6 +496,62 @@ void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
     }
 }
 
+void Text::matchFollowingTextForms(GlossItem *glossItem, const WritingSystem & ws )
+{
+    int startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+    if( startingPhrase == -1 || startingGlossItem == -1 )
+        return;
+
+    // do the remainder of the starting phrase
+    for(int i=startingGlossItem+1; i < mPhrases.at(startingPhrase)->glossItemCount(); i++ )
+    {
+        if( mPhrases.at(startingPhrase)->glossItemAt(i)->id() == glossItem->id() )
+        {
+            mPhrases.at(startingPhrase)->glossItemAt(i)->setTextForm( glossItem->textForm(ws) );
+        }
+    }
+
+    for(int i=startingPhrase+1; i < mPhrases.count(); i++ )
+    {
+        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        {
+            if( mPhrases.at(i)->glossItemAt(j)->id() == glossItem->id() )
+            {
+                mPhrases.at(i)->glossItemAt(j)->setTextForm( glossItem->textForm(ws) );
+            }
+        }
+    }
+}
+
+void Text::matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws )
+{
+    int startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+    if( startingPhrase == -1 || startingGlossItem == -1 )
+        return;
+
+    // do the remainder of the starting phrase
+    for(int i=startingGlossItem+1; i < mPhrases.at(startingPhrase)->glossItemCount(); i++ )
+    {
+        if( mPhrases.at(startingPhrase)->glossItemAt(i)->id() == glossItem->id() )
+        {
+            mPhrases.at(startingPhrase)->glossItemAt(i)->setGloss( glossItem->gloss(ws) );
+        }
+    }
+
+    for(int i=startingPhrase+1; i < mPhrases.count(); i++ )
+    {
+        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        {
+            if( mPhrases.at(i)->glossItemAt(j)->id() == glossItem->id() )
+            {
+                mPhrases.at(i)->glossItemAt(j)->setGloss( glossItem->gloss(ws) );
+            }
+        }
+    }
+}
+
 void Text::baselineSearchReplace( const TextBit & search , const TextBit & replace )
 {
     for(int i=0; i < mPhrases.count(); i++ )

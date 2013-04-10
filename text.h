@@ -96,6 +96,8 @@ public slots:
     void setFollowingInterpretations( GlossItem *glossItem );
     void replaceFollowing(GlossItem *glossItem, const QString & searchFor );
     void baselineSearchReplace( const TextBit & search , const TextBit & replace );
+    void matchFollowingTextForms(GlossItem *glossItem, const WritingSystem & ws );
+    void matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws );
 
 private:
     FlexTextReader::Result mReadResult;
