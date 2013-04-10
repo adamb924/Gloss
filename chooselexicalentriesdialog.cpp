@@ -81,7 +81,10 @@ void ChooseLexicalEntriesDialog::setupLayout()
     connect( resegment, SIGNAL(clicked()), this, SLOT(reject()));
     connect( resegment, SIGNAL(clicked()), this, SIGNAL(resegment()) );
 
+
     layout->addLayout(buttons);
+
+    mOk->setDefault(true);
 
     setAcceptable();
 }
@@ -93,4 +96,5 @@ void ChooseLexicalEntriesDialog::setAcceptable()
         if( form->id() == -1 )
             acceptable = false;
     mOk->setEnabled(acceptable);
+    mOk->setDefault(true);
 }
