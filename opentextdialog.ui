@@ -63,7 +63,7 @@
    <item>
     <widget class="QCheckBox" name="loadEntireText">
      <property name="text">
-      <string>Load entire text</string>
+      <string>Load entire text in one screen</string>
      </property>
     </widget>
    </item>
