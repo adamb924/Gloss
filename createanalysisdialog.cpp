@@ -9,6 +9,8 @@ CreateAnalysisDialog::CreateAnalysisDialog(const TextBit & initialString, QWidge
     ui->analysisEdit->setText(initialString.text());
     ui->analysisEdit->setWritingSystem(initialString.writingSystem());
 
+    ui->analysisEdit->setFontSize(24);
+
     setWindowTitle(tr("Analyze word"));
 }
 

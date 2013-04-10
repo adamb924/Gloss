@@ -8,6 +8,8 @@
 LingEdit::LingEdit(QWidget *parent) :
     QLineEdit(parent)
 {
+    mOverrideFontSize = -1;
+
     mTextBit = TextBit();
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
@@ -15,6 +17,8 @@ LingEdit::LingEdit(QWidget *parent) :
 LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
     QLineEdit(parent)
 {
+    mOverrideFontSize = -1;
+
     mTextBit = bit;
     setWritingSystem( mTextBit.writingSystem() );
     setText( mTextBit.text() );
@@ -106,6 +110,11 @@ void LingEdit::refreshStyle()
     QString borderColor = "#f0f0f0";
 //    if( hasFocus() )
 //        borderColor = "#0000ff";
-    setStyleSheet(QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid %3; }").arg(mTextBit.writingSystem().fontFamily()).arg(mTextBit.writingSystem().fontSize()).arg(borderColor));
+    setStyleSheet(QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid %3; }").arg(mTextBit.writingSystem().fontFamily()).arg( mOverrideFontSize == -1 ? mTextBit.writingSystem().fontSize() : mOverrideFontSize ).arg(borderColor));
 }
 
+void LingEdit::setFontSize(int fontSize)
+{
+    mOverrideFontSize = fontSize;
+    refreshStyle();
+}
