@@ -64,8 +64,8 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analy
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu * menu = new QMenu(this);
-    menu->addAction(tr("Monomorphemic"), this, SLOT(createMonomorphemicLexicalEntry()));
-    menu->addAction(tr("Polymorphemic"), this, SLOT(enterAnalysis()));
+    menu->addAction(tr("Create monomorphemic analysis"), this, SLOT(createMonomorphemicLexicalEntry()));
+    menu->addAction(tr("Create polymorphemic analysis"), this, SLOT(enterAnalysis()));
 
     menu->addSeparator();
     QAction * duplicate = menu->addAction(tr("Duplicate interpretation"), this, SIGNAL(requestAlternateInterpretation()));
