@@ -54,7 +54,7 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists Allomorph ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
-    if( !q.exec("create table if not exists LexicalEntry ( _id integer primary key autoincrement, GrammaticalInformation text );") )
+    if( !q.exec("create table if not exists LexicalEntry ( _id integer primary key autoincrement, GrammaticalInformation text, MorphologicalCategory text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists LexicalEntryGloss ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
@@ -1039,8 +1039,7 @@ bool DatabaseAdapter::textFormHasMorphologicalAnalysis( qlonglong textFormId ) c
 Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-
-    q.prepare("select LexicalEntryId,Form,WritingSystem from Allomorph where _id=:_id;");
+    q.prepare("select LexicalEntryId,Form,WritingSystem,LexicalEntry.MorphologicalCategory from Allomorph,LexicalEntry on LexicalEntryId=LexicalEntry._id where Allomorph._id=:_id;");
     q.bindValue(":_id", allomorphId);
     if( q.exec() )
     {
@@ -1049,7 +1048,7 @@ Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
             qlonglong lexicalEntryId = q.value(0).toLongLong();
             TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
             TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
-            return Allomorph(allomorphId, bit, glosses );
+            return Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) );
         }
     }
     qWarning() << "DatabaseAdapter::allomorphFromId"  << allomorphId << q.lastError().text() << q.executedQuery();

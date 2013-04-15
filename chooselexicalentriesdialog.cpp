@@ -48,7 +48,10 @@ void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
     QStringList bits = mParseString.text().split(QRegExp("\\s"), QString::SkipEmptyParts );
     QStringListIterator iter(bits);
     while(iter.hasNext())
-        mAnalysis.addAllomorph( Allomorph( -1, TextBit( iter.next() , mParseString.writingSystem()) ) );
+    {
+        QString text = iter.next();
+        mAnalysis.addAllomorph( Allomorph( -1, TextBit( text , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
+    }
 }
 
 void ChooseLexicalEntriesDialog::setupLayout()

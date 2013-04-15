@@ -127,7 +127,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
 
     lexicalEntryId = selectCandidateLexicalEntry();
 
-    Allomorph allomorph( -1, textBit() );
+    Allomorph allomorph( -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
     if( lexicalEntryId == -1 )
     {
         CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mDbAdapter, this);

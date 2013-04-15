@@ -54,7 +54,7 @@ void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
 void LexicalEntryForm::fillTypes()
 {
     for(int i=0; i<10; i++)
-        ui->morphemeType->addItem( mAllomorph.getTypeString( (Allomorph::Type)i ) , i );
+        ui->morphemeType->addItem( Allomorph::getTypeString( (Allomorph::Type)i ) , i );
 }
 
 void LexicalEntryForm::newLexicalEntry()
