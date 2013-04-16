@@ -65,12 +65,12 @@ QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
 
 void InterlinearDisplayWidget::saveText()
 {
-    mText->saveText(false);
+    mText->saveText(false, true);
 }
 
 void InterlinearDisplayWidget::saveTextVerbose()
 {
-    mText->saveText(true);
+    mText->saveText(true, true);
 }
 
 void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
