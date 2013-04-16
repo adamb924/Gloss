@@ -396,6 +396,16 @@ void DatabaseAdapter::updateLexicalEntryGloss( const TextBit & bit ) const
         qWarning() << "DatabaseAdapter::updateLexicalEntryGloss" << q.lastError().text() << q.executedQuery();
 }
 
+void DatabaseAdapter::updateLexicalEntryType( qlonglong lexicalEntryId , const QString & allomorphType ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update LexicalEntry set MorphologicalCategory=:MorphologicalCategory where _id=:_id;");
+    q.bindValue(":MorphologicalCategory", allomorphType );
+    q.bindValue(":_id", lexicalEntryId );
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::updateLexicalEntryGloss" << q.lastError().text() << q.executedQuery();
+}
+
 void DatabaseAdapter::updateLexicalEntryCitationForm( qlonglong lexicalEntryId, const TextBit & bit ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));

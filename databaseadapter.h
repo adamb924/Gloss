@@ -277,6 +277,7 @@ public slots:
 
     void updateLexicalEntryCitationForm( const TextBit & bit ) const;
     void updateLexicalEntryGloss( const TextBit & bit ) const;
+    void updateLexicalEntryType( qlonglong lexicalEntryId , const QString & allomorphType ) const;
     void updateLexicalEntryCitationForm( qlonglong lexicalEntryId, const TextBit & bit ) const;
     void updateLexicalEntryGloss( qlonglong lexicalEntryId, const TextBit & bit ) const;
 };

@@ -67,17 +67,21 @@ QString LexiconModel::buildQueryString()
             onStatement << glossTable(wsId) + ".LexicalEntryId and " + glossTable(wsId) + ".LexicalEntryId";
     }
 
+    // add the morpheme type
+    selectStatements << "MorphologicalCategory as 'Type'";
+    mEditable << true;
+    joins << "( select _id as LexicalEntryId, MorphologicalCategory from LexicalEntry ) as MC ";
+    onStatement << "MC.LexicalEntryId and MC.LexicalEntryId";
+
     // add the allomorph count
     selectStatements << "AC as '# Allomorphs'";
     mEditable << false;
-
     joins << "( select LexicalEntryId, count(_id) as AC from Allomorph group by LexicalEntryId ) as AllomorphCount ";
     onStatement << "AllomorphCount.LexicalEntryId and AllomorphCount.LexicalEntryId";
 
     // add the text form count
     selectStatements << "TF as '# Text Forms'";
     mEditable << false;
-
     joins << "( select LexicalEntryId, count( distinct TextFormId ) as TF from MorphologicalAnalysisMembers,Allomorph where MorphologicalAnalysisMembers.AllomorphId=Allomorph._id group by LexicalEntryId ) as TextFormCount ";
     onStatement << "TextFormCount.LexicalEntryId and TextFormCount.LexicalEntryId";
 
@@ -117,13 +121,10 @@ bool LexiconModel::setData(const QModelIndex &modelIndex,
 {
     if (modelIndex.isValid() && role == Qt::EditRole)
     {
-        Type type;
-        int i;
-        typeFromColumn( modelIndex.column() , type , i );
-
-
+        // the database index can be the _id of different tables. And it has to be declared out here because of how switches work.
         qlonglong databaseIndex = -1;
-        switch( type )
+
+        switch( typeFromColumn( modelIndex.column() ) )
         {
         case LexiconModel::CitationForm:
             databaseIndex = index( modelIndex.row(), modelIndex.column() - 1 ).data().toLongLong();
@@ -135,31 +136,37 @@ bool LexiconModel::setData(const QModelIndex &modelIndex,
             clear();
             mDbAdapter->updateLexicalEntryGloss( TextBit( value.toString(), WritingSystem(), databaseIndex ) );
             break;
+        case LexiconModel::MorphologicalType:
+            databaseIndex = lexicalEntryId( modelIndex );
+            clear();
+            if( Allomorph::getType( value.toString() ) != Allomorph::Null )
+                mDbAdapter->updateLexicalEntryType( databaseIndex , value.toString() );
+            break;
         case LexiconModel::Other:
             break;
         }
-//        emit dataChanged(modelIndex, modelIndex);
         refreshQuery();
         return true;
     }
     return false;
 }
 
-void LexiconModel::typeFromColumn( const int col, Type & type , int & index )
+LexiconModel::Type LexiconModel::typeFromColumn(int col)
 {
     if( col < 1 + 2*mCitationFormFields.count() )
     {
-        type = LexiconModel::CitationForm;
-        index = (col - 1)/2;
+        return LexiconModel::CitationForm;
     }
     else if ( col < 1 + 2 * (mCitationFormFields.count() + mGlossFields.count() ) )
     {
-        type = LexiconModel::Gloss;
-        index = (col - mCitationFormFields.count() - 1) / 2;
+        return LexiconModel::Gloss;
+    }
+    else if ( col == 1 + 2 * (mCitationFormFields.count() + mGlossFields.count() ) )
+    {
+        return LexiconModel::MorphologicalType;
     }
     else
     {
-        type = LexiconModel::Other;
-        index = -1;
+        return LexiconModel::Other;
     }
 }

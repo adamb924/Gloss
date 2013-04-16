@@ -11,7 +11,7 @@ class LexiconModel : public QSqlQueryModel
 {
     Q_OBJECT
 public:
-    enum Type { Gloss, CitationForm, Other };
+    enum Type { Gloss, CitationForm, MorphologicalType, Other };
 
     LexiconModel(const DatabaseAdapter * dbAdapter, QObject *parent = 0);
 
@@ -22,7 +22,7 @@ public slots:
 private:
     QString buildQueryString();
     void refreshQuery();
-    void typeFromColumn( const int col, Type & type , int & index );
+    Type typeFromColumn(int col);
 
     qlonglong lexicalEntryId( const QModelIndex & modelIndex ) const;
 
