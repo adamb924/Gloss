@@ -13,6 +13,8 @@
 
 #include "allomorph.h"
 
+#include <QSet>
+
 namespace Ui {
     class LexicalEntryForm;
 }
@@ -36,6 +38,7 @@ private:
     Allomorph mAllomorph;
     const DatabaseAdapter *mDbAdapter;
     const GlossItem *mGlossItem;
+    QSet<Allomorph::Type> mTypes;
 
     void fillTypes();
     void fillData(qlonglong currentLexicalEntryId = -1);

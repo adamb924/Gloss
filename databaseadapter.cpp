@@ -829,6 +829,29 @@ QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextB
     return candidates;
 }
 
+QSet<Allomorph::Type> DatabaseAdapter::getPossibleMorphologicalTypes( const TextBit & bit ) const
+{
+    QSet<Allomorph::Type> types;
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select distinct(LexicalEntry.MorphologicalCategory) from Allomorph,LexicalEntry on Allomorph.LexicalEntryId=LexicalEntry._id where WritingSystem=:WritingSystem and Form=:Form;");
+    q.bindValue(":WritingSystem", bit.writingSystem().id());
+    q.bindValue(":Form", bit.text());
+    if( q.exec() )
+    {
+        while( q.next() )
+        {
+            types << Allomorph::getType( q.value(0).toString() );
+        }
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::getPossibleMorphologicalTypes" << q.lastError().text() << q.executedQuery();
+    }
+    return types;
+}
+
+
 QHash<qlonglong,QString> DatabaseAdapter::searchLexicalEntries( const TextBit & bit ) const
 {
     QHash<qlonglong,QString> candidates;

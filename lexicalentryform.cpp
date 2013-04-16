@@ -14,13 +14,15 @@ LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem 
     mDbAdapter = dbAdapter;
     mGlossItem = glossItem;
 
-    fillTypes();
+    // the available types are whatever is available in the database, plus whatever the user entered
+    mTypes = mDbAdapter->getPossibleMorphologicalTypes( mAllomorph.textBit() );
+    mTypes << mAllomorph.type();
+
     fillData();
 
     connect(ui->candidatesCombo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(entryChanged()) );
     connect(ui->newForm, SIGNAL(clicked()), this, SLOT(newLexicalEntry()));
     connect(ui->linkToOther, SIGNAL(clicked()), this, SLOT(linkToOther()));
-    connect(ui->morphemeType, SIGNAL(currentIndexChanged(int)), this, SLOT(setType(int)));
 }
 
 LexicalEntryForm::~LexicalEntryForm()
@@ -31,7 +33,8 @@ LexicalEntryForm::~LexicalEntryForm()
 void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
 {
     ui->formLabel->setText( mAllomorph.text() );
-    ui->morphemeType->setCurrentIndex( (int)mAllomorph.type() );
+
+    fillTypes();
 
     ui->candidatesCombo->clear();
 
@@ -53,8 +56,20 @@ void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
 
 void LexicalEntryForm::fillTypes()
 {
+    disconnect(ui->morphemeType, SIGNAL(currentIndexChanged(int)), this, SLOT(setType(int)));
+    ui->morphemeType->clear();
+    int currentIndex=0;
     for(int i=0; i<10; i++)
-        ui->morphemeType->addItem( Allomorph::getTypeString( (Allomorph::Type)i ) , i );
+    {
+        if( mTypes.contains( (Allomorph::Type)i ))
+        {
+            ui->morphemeType->addItem( Allomorph::getTypeString( (Allomorph::Type)i ) , i );
+            if( mAllomorph.type() == (Allomorph::Type)i )
+                currentIndex = ui->morphemeType->count()-1;
+        }
+    }
+    ui->morphemeType->setCurrentIndex(currentIndex);
+    connect(ui->morphemeType, SIGNAL(currentIndexChanged(int)), this, SLOT(setType(int)));
 }
 
 void LexicalEntryForm::newLexicalEntry()
@@ -103,6 +118,9 @@ TextBit LexicalEntryForm::textBit() const
 
 void LexicalEntryForm::setType(int index)
 {
-    mAllomorph.setType(  (Allomorph::Type)ui->morphemeType->itemData(index).toInt() );
-    fillData();
+    if( index > -1 && mAllomorph.type() != (Allomorph::Type)ui->morphemeType->itemData(index).toInt() )
+    {
+        mAllomorph.setType(  (Allomorph::Type)ui->morphemeType->itemData(index).toInt() );
+        fillData();
+    }
 }
