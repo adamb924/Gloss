@@ -20,6 +20,8 @@ LexiconModel::LexiconModel(const DatabaseAdapter * dbAdapter, QObject *parent) :
 void LexiconModel::refreshQuery()
 {
     setQuery(mQueryString , QSqlDatabase::database( mDbAdapter->dbFilename() ) );
+    if( canFetchMore() )
+        fetchMore();
 }
 
 QString LexiconModel::buildQueryString()
