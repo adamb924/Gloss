@@ -1442,7 +1442,6 @@ QSqlQuery DatabaseAdapter::searchIndexForLexicalEntry( qlonglong id ) const
 
 QSet<qlonglong> DatabaseAdapter::lexicalEntryTextFormIds( qlonglong id ) const
 {
-    qDebug() << "Beginning" << QDateTime::currentDateTime ().toString(Qt::ISODate);
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare( "select TextFormIndex.Id from TextFormIndex,MorphologicalAnalysisMembers,Allomorph on TextFormId=Id and AllomorphId=Allomorph._id where LexicalEntryId=:Id;" );
     q.bindValue(":Id", id);
@@ -1454,14 +1453,10 @@ QSet<qlonglong> DatabaseAdapter::lexicalEntryTextFormIds( qlonglong id ) const
         return textFormIds;
     }
 
-    qDebug() << "Before while" << QDateTime::currentDateTime ().toString(Qt::ISODate);
-    int nResults = 0;
     while( q.next() )
     {
-        qDebug() << nResults++ << QDateTime::currentDateTime().toString(Qt::ISODate);
         q.value(0).toLongLong();
     }
-    qDebug() << "After while";
 
     return textFormIds;
 }

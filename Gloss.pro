@@ -79,7 +79,8 @@ SOURCES += main.cpp\
     annotationmarkwidget.cpp \
     annotationtype.cpp \
     opentextdialog.cpp \
-    editwithsuggestionsdialog.cpp
+    editwithsuggestionsdialog.cpp \
+    searchform.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -149,7 +150,8 @@ HEADERS  += mainwindow.h \
     annotationmarkwidget.h \
     annotationtype.h \
     opentextdialog.h \
-    editwithsuggestionsdialog.h
+    editwithsuggestionsdialog.h \
+    searchform.h
 
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
@@ -174,7 +176,8 @@ FORMS    += mainwindow.ui \
     interlinearchunkeditor.ui \
     baselinesearchreplacedialog.ui \
     opentextdialog.ui \
-    editwithsuggestionsdialog.ui
+    editwithsuggestionsdialog.ui \
+    searchform.ui
 
 LIBS += -L./ \
     -lquazip \

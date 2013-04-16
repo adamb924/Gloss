@@ -36,6 +36,8 @@ public:
 private:
     Ui::MainWindow *ui;
 
+    QDockWidget * mSearchDock;
+
     QMenu *mInterlinearViewMenu;
     QMenu *mQuickViewMenu;
 
@@ -73,6 +75,8 @@ private slots:
     void openText();
     void deleteText();
     void mergeTranslations();
+
+    void toggleSearchDock();
 
     TextDisplayWidget* openText(const QString & textName, const QList<Focus> & foci = QList<Focus>() );
 

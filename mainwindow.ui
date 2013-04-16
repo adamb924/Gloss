@@ -100,6 +100,8 @@
     <property name="title">
      <string>Search</string>
     </property>
+    <addaction name="actionSearch_dock"/>
+    <addaction name="separator"/>
     <addaction name="actionSearch_gloss_items"/>
     <addaction name="actionSubstring_search_gloss_items"/>
     <addaction name="actionRaw_XQuery"/>
@@ -401,6 +403,11 @@
   <action name="actionBaseline_text_search_and_replace">
    <property name="text">
     <string>Baseline text search and replace...</string>
+   </property>
+  </action>
+  <action name="actionSearch_dock">
+   <property name="text">
+    <string>Search dock...</string>
    </property>
   </action>
  </widget>

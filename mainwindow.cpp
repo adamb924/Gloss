@@ -24,6 +24,7 @@
 #include "interlinearchunkeditor.h"
 #include "baselinesearchreplacedialog.h"
 #include "opentextdialog.h"
+#include "searchform.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -43,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mProject = 0;
     mInterlinearViewMenu = 0;
     mQuickViewMenu = 0;
+    mSearchDock = 0;
 
     ui->setupUi(this);
 
@@ -103,6 +105,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionAllomorph_by_id, SIGNAL(triggered()), this, SLOT(searchForAllomorphById()) );
 
     connect( ui->actionBaseline_text_search_and_replace, SIGNAL(triggered()), this, SLOT(baselineSearchAndReplace()));
+
+    connect( ui->actionSearch_dock, SIGNAL(triggered()), this, SLOT(toggleSearchDock()));
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -726,25 +730,20 @@ void MainWindow::searchForGlossById(qlonglong id)
 
 void MainWindow::searchForLexicalEntryById(qlonglong id)
 {
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
     if( !mProject->dbAdapter()->textIndicesExist() )
     {
         if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("Searching for lexical entries requires the index to be buildt. This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
             return;
         mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
     }
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
 
     QList<Focus> foci;
     QSetIterator<qlonglong> iter( mProject->dbAdapter()->lexicalEntryTextFormIds( id ) );
     while( iter.hasNext() )
         foci << Focus( Focus::TextForm , iter.next() );
 
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
     QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForLexicalEntry( id ), foci );
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
     createSearchResultDock(model, tr("Lexical Entry ID: %1").arg(id));
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
 }
 
 void MainWindow::searchForAllomorphById(qlonglong id)
@@ -1365,4 +1364,23 @@ void MainWindow::baselineSearchAndReplace()
     {
         QMessageBox::information(this, tr("Complete"), tr("There were no open texts on which to perform the operation."));
     }
+}
+
+void MainWindow::toggleSearchDock()
+{
+    if( mSearchDock != 0 )
+        delete mSearchDock;
+
+    SearchForm * searchForm = new SearchForm(mProject->dbAdapter(), this);
+
+    connect( searchForm, SIGNAL(searchForInterpretationById(qlonglong)), this, SLOT(searchForInterpretationById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForTextFormById(qlonglong)), this, SLOT(searchForTextFormById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForGlossById(qlonglong)), this, SLOT(searchForGlossById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForLexicalEntryById(qlonglong)), this, SLOT(searchForLexicalEntryById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForAllomorphById(qlonglong)), this, SLOT(searchForAllomorphById(qlonglong)) );
+
+    mSearchDock = new QDockWidget(tr("Search"), this);
+    mSearchDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mSearchDock->setWidget(searchForm);
+    addDockWidget(Qt::RightDockWidgetArea, mSearchDock);
 }
