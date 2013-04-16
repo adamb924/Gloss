@@ -37,7 +37,7 @@ void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
 
     int currentIndex = 0;
 
-    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mAllomorph.textBit());
+    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mAllomorph.textBit(), mAllomorph.typeString() );
     QHashIterator<qlonglong,QString> iter(candidates);
 
     while(iter.hasNext())

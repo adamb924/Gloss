@@ -114,6 +114,5 @@ bool Allomorph::isClitic() const
 
 void Allomorph::setType( Type t )
 {
-    mTextBit.setText( getTypeFormatTextString( text(), t ) );
     mType = t;
 }

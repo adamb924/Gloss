@@ -787,14 +787,15 @@ QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(con
     return items;
 }
 
-QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit ) const
+QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit , const QString & morphologicalType ) const
 {
     QHash<qlonglong,QString> candidates;
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select LexicalEntryId,_id from Allomorph where WritingSystem=:WritingSystem and Form=:Form;");
+    q.prepare("select LexicalEntryId,Allomorph._id from Allomorph,LexicalEntry on Allomorph.LexicalEntryId=LexicalEntry._id where WritingSystem=:WritingSystem and Form=:Form and LexicalEntry.MorphologicalCategory=:MorphologicalCategory;");
     q.bindValue(":WritingSystem", bit.writingSystem().id());
     q.bindValue(":Form", bit.text());
+    q.bindValue(":MorphologicalCategory", morphologicalType );
     if( q.exec() )
     {
         while( q.next() )

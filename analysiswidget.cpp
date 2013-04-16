@@ -154,7 +154,7 @@ qlonglong AnalysisWidget::selectCandidateLexicalEntry()
 {
     QStringList candidateItems;
     QList<qlonglong> indices;
-    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( textBit() );
+    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( textBit() , Allomorph::getTypeString(Allomorph::Stem) );
 
     if(candidates.isEmpty())
         return -1;

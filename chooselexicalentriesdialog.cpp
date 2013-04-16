@@ -50,7 +50,7 @@ void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
     while(iter.hasNext())
     {
         QString text = iter.next();
-        mAnalysis.addAllomorph( Allomorph( -1, TextBit( text , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
+        mAnalysis.addAllomorph( Allomorph( -1, TextBit( Allomorph::stripPunctuation(text) , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
     }
 }
 
