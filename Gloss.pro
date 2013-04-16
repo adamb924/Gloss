@@ -78,7 +78,8 @@ SOURCES += main.cpp\
     writingsystemcombo.cpp \
     annotationmarkwidget.cpp \
     annotationtype.cpp \
-    opentextdialog.cpp
+    opentextdialog.cpp \
+    editwithsuggestionsdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -147,7 +148,8 @@ HEADERS  += mainwindow.h \
     writingsystemcombo.h \
     annotationmarkwidget.h \
     annotationtype.h \
-    opentextdialog.h
+    opentextdialog.h \
+    editwithsuggestionsdialog.h
 
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
@@ -171,7 +173,8 @@ FORMS    += mainwindow.ui \
     dealwithspacesdialog.ui \
     interlinearchunkeditor.ui \
     baselinesearchreplacedialog.ui \
-    opentextdialog.ui
+    opentextdialog.ui \
+    editwithsuggestionsdialog.ui
 
 LIBS += -L./ \
     -lquazip \

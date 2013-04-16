@@ -9,6 +9,7 @@
 #include "alltagsmodel.h"
 #include "writingsystemcombo.h"
 #include "databaseadapter.h"
+#include "editwithsuggestionsdialog.h"
 
 #include <QSortFilterProxyModel>
 
@@ -18,9 +19,11 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
 {
     ui->setupUi(this);
 
-    LexiconModel *lexiconModel = new LexiconModel( dbAdapter );
+    mDbAdapter = dbAdapter;
+
+    mLexiconModel = new LexiconModel( dbAdapter );
     QSortFilterProxyModel * lexiconProxyModel = new QSortFilterProxyModel(this);
-    lexiconProxyModel->setSourceModel( lexiconModel );
+    lexiconProxyModel->setSourceModel( mLexiconModel );
     lexiconProxyModel->setFilterKeyColumn(-1);
     ui->lexiconTable->setModel( lexiconProxyModel );
     ui->lexiconTable->setColumnHidden(1,true);
@@ -68,6 +71,7 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     ui->lexicalEntryTags->setDragDropMode(QAbstractItemView::DropOnly);
 
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), lexicalEntryTags, SLOT(setLexicalEntry(qlonglong)));
+    connect( ui->lexiconTable, SIGNAL(requestEditForm(QModelIndex)), this, SLOT(editForm(QModelIndex)) );
 
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), analysisModel, SLOT(setLexicalEntry(qlonglong)));
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), ui->analysisTable, SLOT(resizeColumnsToContents()) );
@@ -86,4 +90,43 @@ void LexiconEdit::analysisDoubleClicked( const QModelIndex & index )
     qlonglong textFormIndex = index.data().toString().toLongLong(&ok);
     if( ok )
         emit textFormIdSearch( textFormIndex );
+}
+
+void LexiconEdit::editForm( const QModelIndex & index )
+{
+    qlonglong lexicalEntryId = index.data(Qt::UserRole).toLongLong();
+    int column = index.column();
+
+    if ( mLexiconModel->typeFromColumn(column) == LexiconModel::CitationForm )
+    {
+        WritingSystem ws = mLexiconModel->writingSystemFromColumn(column);
+        if( ws.isValid() )
+        {
+            EditWithSuggestionsDialog dialog( ws, this );
+            dialog.setWindowTitle(tr("Edit the %1 citation form").arg(ws.name()));
+            dialog.setDefaultString( mDbAdapter->guessLexicalEntryCitationForm(lexicalEntryId, ws) );
+            dialog.setSuggestions( mDbAdapter->suggestLexicalEntryCitationForms(lexicalEntryId, ws) );
+            if( dialog.exec() == QDialog::Accepted )
+            {
+                mDbAdapter->updateLexicalEntryCitationForm(lexicalEntryId, dialog.textBit() );
+                mLexiconModel->refreshQuery();
+            }
+        }
+    }
+    else if ( mLexiconModel->typeFromColumn(column) == LexiconModel::Gloss )
+    {
+        WritingSystem ws = mLexiconModel->writingSystemFromColumn(column);
+        if( ws.isValid() )
+        {
+            EditWithSuggestionsDialog dialog( ws, this );
+            dialog.setWindowTitle(tr("Edit the %1 gloss").arg(ws.name()));
+            dialog.setDefaultString( mDbAdapter->guessLexicalEntryGloss(lexicalEntryId, ws) );
+            dialog.setSuggestions( mDbAdapter->suggestLexicalEntryGlosses( lexicalEntryId, ws) );
+            if( dialog.exec() == QDialog::Accepted )
+            {
+                mDbAdapter->updateLexicalEntryGloss(lexicalEntryId, dialog.textBit() );
+                mLexiconModel->refreshQuery();
+            }
+        }
+    }
 }

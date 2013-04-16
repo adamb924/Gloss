@@ -201,9 +201,6 @@ public:
     QStringList grammaticalTagsForAllomorph(qlonglong allomorphId) const;
     QStringList grammaticalTags(qlonglong lexicalEntryId) const;
 
-    void setLexicalEntryCitationForm(qlonglong lexicalEntryId, const TextBit & citationForm) const;
-    void setLexicalEntryGloss(qlonglong lexicalEntryId, const TextBit & gloss) const;
-
     bool textIndicesExist() const;
     void createTextIndices( const QSet<QString> * filePaths ) const;
     void createIndex( const QString & tableName, const QString & queryString, const QSet<QString> * filePaths ) const;
@@ -237,6 +234,11 @@ public:
     AnnotationType annotationType(const QString & label) const;
 
     qlonglong lexicalEntryIdFromAllomorph(qlonglong allomorphId) const;
+
+    QString guessLexicalEntryCitationForm( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
+    QStringList suggestLexicalEntryCitationForms( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
+    QString guessLexicalEntryGloss( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
+    QStringList suggestLexicalEntryGlosses( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
 
 private:
     QString mFilename;

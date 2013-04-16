@@ -170,3 +170,14 @@ LexiconModel::Type LexiconModel::typeFromColumn(int col)
         return LexiconModel::Other;
     }
 }
+
+WritingSystem LexiconModel::writingSystemFromColumn(int col)
+{
+    int visibleColumn = (col-1)/2; // actually, the index of the visible column, after the Id column
+    if( visibleColumn < mCitationFormFields.count() )
+        return mCitationFormFields.at(visibleColumn);
+    visibleColumn -= mCitationFormFields.count();
+    if( visibleColumn < mGlossFields.count() )
+        return mGlossFields.at(visibleColumn);
+    return WritingSystem();
+}

@@ -10,6 +10,7 @@ namespace Ui {
 class DatabaseAdapter;
 class MainWindow;
 class QModelIndex;
+class LexiconModel;
 
 class LexiconEdit : public QMainWindow
 {
@@ -24,9 +25,12 @@ signals:
 
 private slots:
     void analysisDoubleClicked( const QModelIndex & index );
+    void editForm( const QModelIndex & index );
 
 private:
     Ui::LexiconEdit *ui;
+    LexiconModel *mLexiconModel;
+    const DatabaseAdapter * mDbAdapter;
 };
 
 #endif // LEXICONEDIT_H
