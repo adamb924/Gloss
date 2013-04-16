@@ -496,19 +496,26 @@ void MainWindow::sqlTableView( QAction * action )
 
 void MainWindow::setProjectActionsEnabled(bool enabled)
 {
+    foreach(QAction * action , ui->menuData->actions() )
+        action->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuSearch->actions() )
+        action->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuProject->actions() )
+        action->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuGuts->actions() )
+        action->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuReports->actions() )
+        action->setEnabled(enabled);
+
     ui->menuData->setEnabled(enabled);
     ui->menuGuts->setEnabled(enabled);
     ui->menuProject->setEnabled(enabled);
     ui->menuSearch->setEnabled(enabled);
     ui->menuReports->setEnabled(enabled);
-    ui->actionAdd_text->setEnabled(enabled);
-    ui->actionImport_FlexText->setEnabled(enabled);
-    ui->actionSave_Project->setEnabled(enabled);
-    ui->actionClose_Project->setEnabled(enabled);
-    ui->actionWriting_systems->setEnabled(enabled);
-    ui->actionClose_project_without_saving->setEnabled(enabled);
-    ui->actionSearch_gloss_items->setEnabled(enabled);
-    ui->actionEdit_lexicon->setEnabled(enabled);
 }
 
 void MainWindow::openText()
