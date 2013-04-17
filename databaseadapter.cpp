@@ -852,31 +852,40 @@ QSet<Allomorph::Type> DatabaseAdapter::getPossibleMorphologicalTypes( const Text
 }
 
 
-QHash<qlonglong,QString> DatabaseAdapter::searchLexicalEntries( const TextBit & bit ) const
+void DatabaseAdapter::searchLexicalEntries( const TextBit & bit, QHash<qlonglong,QString> * first , QHash<qlonglong,QString> * second  ) const
 {
-    QHash<qlonglong,QString> candidates;
-
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( QString("select _id from LexicalEntry where _id in "
-                       "( select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%1%' union "
-                       "select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%' union "
-                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' union "
-                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%' "
-                       " );").arg( bit.text() ).arg(bit.writingSystem().id()) );
+    q.prepare( QString("select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%1%' union "
+                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%1%';" ).arg( bit.text() ).arg(bit.writingSystem().id()) );
 
     if( q.exec() )
     {
         while( q.next() )
         {
             qlonglong lexicalEntryId = q.value(0).toLongLong();
-            candidates.insert( lexicalEntryId , lexicalEntrySummary(lexicalEntryId) );
+            first->insert( lexicalEntryId , lexicalEntrySummary(lexicalEntryId) );
         }
     }
     else
     {
         qWarning() << "DatabaseAdapter::searchLexicalEntries" << q.lastError().text() << q.executedQuery();
     }
-    return candidates;
+
+    q.prepare( QString("select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%' union "
+                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%';").arg( bit.text() ).arg(bit.writingSystem().id()) );
+
+    if( q.exec() )
+    {
+        while( q.next() )
+        {
+            qlonglong lexicalEntryId = q.value(0).toLongLong();
+            second->insert( lexicalEntryId , lexicalEntrySummary(lexicalEntryId) );
+        }
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::searchLexicalEntries" << q.lastError().text() << q.executedQuery();
+    }
 }
 
 QString DatabaseAdapter::lexicalEntrySummary( qlonglong lexicalEntryId ) const

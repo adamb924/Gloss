@@ -27,11 +27,14 @@ private:
     const DatabaseAdapter * mDbAdapter;
 
     QList<WritingSystem> mWritingSystems;
-    QStandardItemModel *mModel;
+    QStandardItemModel *mFirstModel;
+    QStandardItemModel *mSecondModel;
+    qlonglong mLexicalEntryId;
 
 private slots:
     void fillCandidates();
     void changeCurrentWritingSystem(int index);
+    void activated(const QModelIndex & index);
 };
 
 #endif // LEXICALENTRYSEARCHDIALOG_H
