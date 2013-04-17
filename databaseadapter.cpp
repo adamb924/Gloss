@@ -1010,7 +1010,24 @@ qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexical
     }
 }
 
-void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis ) const
+bool DatabaseAdapter::hasMorphologicalAnalysis( qlonglong textFormId ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from MorphologicalAnalysisMembers where TextFormId=:TextFormId limit 1;");
+    q.bindValue(":TextFormId",textFormId);
+
+    if( q.exec() )
+    {
+        return q.next();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::hasMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+}
+
+void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis * morphologicalAnalysis ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId;");
@@ -1019,7 +1036,7 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
 
     q.prepare("insert into MorphologicalAnalysisMembers (TextFormId,AllomorphId,AllomorphOrder) values (:TextFormId,:AllomorphId,:AllomorphOrder);");
 
-    AllomorphIterator iter = morphologicalAnalysis.allomorphIterator();
+    AllomorphIterator iter = morphologicalAnalysis->allomorphIterator();
     int position = 0;
     while( iter.hasNext() )
     {
@@ -1032,10 +1049,10 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
     }
 }
 
-MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const
+MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const
 {
     TextBit textForm = textFormFromId(textFormId);
-    MorphologicalAnalysis analysis( textForm );
+    MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textForm );
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select Allomorphid from MorphologicalAnalysisMembers where TextFormId=:TextFormId order by AllomorphOrder;");
@@ -1044,7 +1061,7 @@ MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlon
     while(q.next())
     {
         qlonglong allomorphId = q.value(0).toLongLong();
-        analysis.addAllomorph( allomorphFromId( allomorphId ) );
+        analysis->addAllomorph( allomorphFromId( allomorphId ) );
     }
     return analysis;
 }

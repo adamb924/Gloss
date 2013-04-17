@@ -169,11 +169,13 @@ public:
     qlonglong addLexicalEntry( const QString & grammaticalInfo, Allomorph::Type type, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const;
     qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId ) const;
 
+    bool hasMorphologicalAnalysis( qlonglong textFormId ) const;
+
     //! \brief Adds the specified morphological analysis to the database. Any existing morphological analysis associated with the text form is deleted. The
-    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis ) const;
+    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis * morphologicalAnalysis ) const;
 
     //! \brief Returns the morphological analysis associated with the given TextForm id. The analysis is empty if none is found in the database.
-    MorphologicalAnalysis morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const;
+    MorphologicalAnalysis * morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const;
 
     void clearMorphologicalAnalysis( qlonglong textFormId ) const;
 

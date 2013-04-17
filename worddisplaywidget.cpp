@@ -219,8 +219,8 @@ AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType 
     AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mDbAdapter, this);
     mAnalysisWidgets.insert( glossLine.writingSystem(), analysisWidget );
 
-    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), analysisWidget, SLOT(setupLayout()));
-    connect( analysisWidget, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)) );
+    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis*)), analysisWidget, SLOT(setupLayout()));
+    connect( analysisWidget, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis*)) );
     connect( analysisWidget, SIGNAL(requestAlternateInterpretation()), this, SLOT(duplicateInterpretation()) );
 
     return analysisWidget;

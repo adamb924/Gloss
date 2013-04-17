@@ -25,7 +25,7 @@ public:
     AnalysisWidget(const GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
 signals:
-    void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
+    void morphologicalAnalysisChanged(MorphologicalAnalysis * analysis);
     void requestAlternateInterpretation();
 
 public slots:
@@ -41,7 +41,7 @@ private:
 
     QVBoxLayout *mLayout;
 
-    void createInitializedLayout(const MorphologicalAnalysis & analysis);
+    void createInitializedLayout(const MorphologicalAnalysis * analysis);
     void createUninitializedLayout();
 
     void clearWidgetsFromLayout();

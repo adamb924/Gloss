@@ -66,10 +66,10 @@ void Concordance::updateGlossItemGlossConcordance( GlossItem * item, qlonglong g
     mGlossItemsByGlossId.insert( glossId, item );
 }
 
-void Concordance::updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis)
+void Concordance::updateGlossItemMorphologicalAnalysis( MorphologicalAnalysis * analysis)
 {
     // TODO another concordance problem
-    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis.textFormId() );
+    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis->textFormId() );
     foreach(GlossItem *item, itemList)
         item->setMorphologicalAnalysis( analysis );
 }

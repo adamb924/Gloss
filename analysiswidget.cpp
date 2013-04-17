@@ -26,7 +26,7 @@ AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem &
 
 void AnalysisWidget::setupLayout()
 {
-    if( mGlossItem->morphologicalAnalysis(mWritingSystem).isEmpty() )
+    if( mGlossItem->morphologicalAnalysis(mWritingSystem)->isEmpty() )
         createUninitializedLayout();
     else
         createInitializedLayout( mGlossItem->morphologicalAnalysis(mWritingSystem) );
@@ -50,15 +50,15 @@ void AnalysisWidget::createUninitializedLayout()
     connect(analyze, SIGNAL(clicked()), this, SLOT(enterAnalysis()));
 }
 
-void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analysis)
+void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analysis)
 {
     clearWidgetsFromLayout();
 
-    mLayout->addWidget( new ImmutableLabel( TextBit( analysis.baselineSummary() , mWritingSystem ) , false, this ) );
+    mLayout->addWidget( new ImmutableLabel( TextBit( analysis->baselineSummary() , mWritingSystem ) , false, this ) );
 
     QList<WritingSystem> glossLines = mDbAdapter->lexicalEntryGlossFields();
     for(int i=0; i<glossLines.count(); i++)
-        mLayout->addWidget( new ImmutableLabel( TextBit( analysis.glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
+        mLayout->addWidget( new ImmutableLabel( TextBit( analysis->glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
 }
 
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -71,11 +71,11 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
     QAction * duplicate = menu->addAction(tr("Duplicate interpretation"), this, SIGNAL(requestAlternateInterpretation()));
     connect( duplicate, SIGNAL(triggered()), this, SLOT(enterAnalysis()));
 
-    MorphologicalAnalysis analysis = mGlossItem->morphologicalAnalysis(mWritingSystem);
-    if( !analysis.isEmpty() )
+    MorphologicalAnalysis * analysis = mGlossItem->morphologicalAnalysis(mWritingSystem);
+    if( !analysis->isEmpty() )
     {
         menu->addSeparator();
-        AllomorphIterator iter = analysis.allomorphIterator();
+        AllomorphIterator iter = analysis->allomorphIterator();
         QActionGroup * group = new QActionGroup(this);
         while(iter.hasNext())
         {
@@ -141,8 +141,8 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
         allomorph = mDbAdapter->allomorphFromId(allomorphId);
 
-        MorphologicalAnalysis analysis( textBit() );
-        analysis.addAllomorph( allomorph );
+        MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textBit() );
+        analysis->addAllomorph( allomorph );
         mDbAdapter->setMorphologicalAnalysis( textBit().id(), analysis );
 
         createInitializedLayout( analysis );
@@ -195,8 +195,8 @@ void AnalysisWidget::linkToOther()
         if( lexicalEntryId != -1 )
         {
             qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
-            MorphologicalAnalysis monomorphemic( textBit() );
-            monomorphemic.addAllomorph( mDbAdapter->allomorphFromId(allomorphId) );
+            MorphologicalAnalysis * monomorphemic = new MorphologicalAnalysis( textBit() );
+            monomorphemic->addAllomorph( mDbAdapter->allomorphFromId(allomorphId) );
             emit morphologicalAnalysisChanged( monomorphemic );
         }
     }

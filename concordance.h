@@ -45,7 +45,7 @@ public slots:
     void updateGlossItemGlossConcordance( GlossItem * item, qlonglong glossId );
 
     //! Updates gloss items with \a textFormId so that they contain \a analysis
-    void updateGlossItemMorphologicalAnalysis( const MorphologicalAnalysis & analysis );
+    void updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis *analysis );
 
 private:
     //! \brief GlossItem objects, indexed by text form id

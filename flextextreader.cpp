@@ -41,17 +41,12 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
 
     bool inWord = false;
     bool inPhrase = false;
-    bool inMorphemes = false;
 
     qlonglong interpretationId = -1;
     GlossItem::ApprovalStatus approvalStatus = GlossItem::Unapproved;
 
-    QList<MorphologicalAnalysis*> morphologicalAnalyses;
-    MorphologicalAnalysis *morphologicalAnalysis = 0;
     QHash<QString,TextBit> annotations;
-
     QSet<qlonglong> textFormIds;
-    QHash<qlonglong,qlonglong> textFormsByWritingSystem;
     QSet<qlonglong> glossFormIds;
 
     while (!stream.atEnd())
@@ -65,7 +60,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 inWord = true;
 
                 textFormIds.clear();
-                textFormsByWritingSystem.clear();
                 glossFormIds.clear();
                 annotations.clear();
 
@@ -77,14 +71,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                         if(stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php", "approval-status") && stream.attributes().value("http://www.adambaker.org/gloss.php", "approval-status").toString() == "true" )
                             approvalStatus = GlossItem::Approved;
                     }
-                    else
-                    {
-                        interpretationId = mDbAdapter->newInterpretation();
-                    }
-                }
-                else
-                {
-                    interpretationId = mDbAdapter->newInterpretation();
                 }
             }
             else if ( name == "phrase" )
@@ -116,32 +102,15 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                             lang = mText->mProject->dbAdapter()->writingSystem( attr.value("lang").toString() );
                     QString text = stream.readElementText();
 
-                    if( inMorphemes )
-                    {
-                        // TODO do something with this information, eventually
-                    }
-                    else if( inWord )
+                    if( inWord )
                     {
                         qlonglong itemId = attr.hasAttribute("http://www.adambaker.org/gloss.php","id") ? attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() : -1;
-                        // there's no handling here for the case where itemId == -1
-                        // that is handled in GlossItem::loadStringsFromDatabase()
-                        if( type == "txt" && lang.isValid() )
+                        if( type == "txt" && itemId != -1 && lang.isValid() )
                         {
-                            if( itemId == -1 )
-                                itemId = mDbAdapter->newTextForm(interpretationId, TextBit( text , lang) );
-                            textFormIds.insert(itemId);
-                            textFormsByWritingSystem.insert(lang.id(), itemId);
-
-                            MorphologicalAnalysis *analysis = new MorphologicalAnalysis( mDbAdapter->morphologicalAnalysisFromTextFormId(itemId) );
-                            if( !analysis->isEmpty() )
-                                morphologicalAnalyses << analysis;
-                            else
-                                delete analysis;
+                            textFormIds.insert( itemId );
                         }
-                        else if( type == "gls" && lang.isValid() )
+                        else if( type == "gls" && itemId != -1 && lang.isValid() )
                         {
-                            if( itemId == -1 )
-                                itemId = mDbAdapter->newGloss( interpretationId, TextBit( text , lang) );
                             glossFormIds.insert( itemId );
                         }
                     }
@@ -170,28 +139,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     mText->setSound( QUrl::fromEncoded( attr.value("http://www.adambaker.org/gloss.php","audio-file").toString().toUtf8() ) );
                 }
             }
-            else if(name == "morphemes")
-            {
-                QXmlStreamAttributes attr = stream.attributes();
-                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","lang") )
-                {
-                    WritingSystem ws = mDbAdapter->writingSystem( attr.value("http://www.adambaker.org/gloss.php","lang").toString() );
-                    if( textFormsByWritingSystem.contains(ws.id()) )
-                    {
-                        morphologicalAnalysis = new MorphologicalAnalysis( textFormsByWritingSystem.value(ws.id()) , ws );
-                        inMorphemes = true;
-                    }
-                }
-            }
-            else if(name == "morph")
-            {
-                if( morphologicalAnalysis != 0 )
-                {
-                    QXmlStreamAttributes attr = stream.attributes();
-                    if( attr.hasAttribute("http://www.adambaker.org/gloss.php","id") )
-                        morphologicalAnalysis->addAllomorph( mDbAdapter->allomorphFromId( attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() ) );
-                }
-            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
@@ -200,12 +147,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 mText->mPhrases.last()->appendGlossItem(new GlossItem( mText->mBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject ));
                 mText->mPhrases.last()->lastGlossItem()->connectToConcordance();
                 mText->mPhrases.last()->lastGlossItem()->setApprovalStatus(approvalStatus);
-
-                QListIterator<MorphologicalAnalysis*> iter(morphologicalAnalyses);
-                while(iter.hasNext())
-                    mText->mPhrases.last()->lastGlossItem()->setMorphologicalAnalysis( *iter.next() );
-                qDeleteAll( morphologicalAnalyses );
-                morphologicalAnalyses.clear();
 
                 QHashIterator<QString,TextBit> annIter(annotations);
                 while(annIter.hasNext())
@@ -221,13 +162,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             else if(name == "phrase")
             {
                 inPhrase = false;
-            }
-            else if(name == "morphemes")
-            {
-                if( !morphologicalAnalysis->isEmpty() )
-                    morphologicalAnalyses << morphologicalAnalysis;
-                morphologicalAnalysis = 0;
-                inMorphemes = false;
             }
         }
     }

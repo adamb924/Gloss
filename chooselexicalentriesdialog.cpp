@@ -15,7 +15,7 @@ ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseStri
     mDbAdapter = dbAdapter;
     mParseString = parseString;
     mGlossItem = glossItem;
-    mAnalysis = MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem() );
+    mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem() );
 
     fillMorphologicalAnalysis();
     setupLayout();
@@ -25,32 +25,32 @@ ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseStri
     setWindowTitle(tr("Choose lexical entries"));
 }
 
-MorphologicalAnalysis ChooseLexicalEntriesDialog::morphologicalAnalysis() const
+MorphologicalAnalysis * ChooseLexicalEntriesDialog::morphologicalAnalysis() const
 {
     return mAnalysis;
 }
 
 void ChooseLexicalEntriesDialog::commitChangesToDatabase()
 {
-    for(int i=0; i<mAnalysis.allomorphCount(); i++)
+    for(int i=0; i<mAnalysis->allomorphCount(); i++)
     {
         qlonglong allomorphId = mDbAdapter->addAllomorph( mEntries.at(i)->textBit() , mEntries.at(i)->id() );
-        mAnalysis[i]->setId(allomorphId);
-        mAnalysis[i]->setGlosses( mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ) );
+        mAnalysis->allomorph(i)->setId(allomorphId);
+        mAnalysis->allomorph(i)->setGlosses( mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ) );
     }
     mDbAdapter->setMorphologicalAnalysis( mParseString.id() , mAnalysis );
 }
 
 void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
 {
-    mAnalysis = MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem() );
+    mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem() );
 
     QStringList bits = mParseString.text().split(QRegExp("\\s"), QString::SkipEmptyParts );
     QStringListIterator iter(bits);
     while(iter.hasNext())
     {
         QString text = iter.next();
-        mAnalysis.addAllomorph( Allomorph( -1, TextBit( Allomorph::stripPunctuation(text) , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
+        mAnalysis->addAllomorph( Allomorph( -1, TextBit( Allomorph::stripPunctuation(text) , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
     }
 }
 
@@ -59,7 +59,7 @@ void ChooseLexicalEntriesDialog::setupLayout()
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
 
-    AllomorphIterator iter = mAnalysis.allomorphIterator();
+    AllomorphIterator iter = mAnalysis->allomorphIterator();
     while(iter.hasNext())
     {
         LexicalEntryForm *form = new LexicalEntryForm( iter.next(), mGlossItem, mDbAdapter, this );

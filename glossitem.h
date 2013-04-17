@@ -85,13 +85,13 @@ public:
     WritingSystem baselineWritingSystem() const;
 
     //! \brief Returns the morphological analysis for the given writing system, or an empty one
-    MorphologicalAnalysis morphologicalAnalysis(const WritingSystem & ws) const;
+    MorphologicalAnalysis * morphologicalAnalysis(const WritingSystem & ws) const;
 
     //! \brief Returns a list of languages for which there are morphological analyses
     QList<WritingSystem> morphologicalAnalysisLanguages() const;
 
     //! \brief Sets the morphological analysis for the given writing system
-    void setMorphologicalAnalysis( const MorphologicalAnalysis & analysis );
+    void setMorphologicalAnalysis(MorphologicalAnalysis * analysis );
 
     //! \brief Sets the morphological analysis for the given writing system
     void setMorphologicalAnalysisFromDatabase( const WritingSystem & ws );
@@ -133,7 +133,7 @@ signals:
     void baselineTextChanged(const TextBit & textForm);
 
     //! \brief Emitted when the morphological analysis for \a textFormId changes
-    void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
+    void morphologicalAnalysisChanged(MorphologicalAnalysis * analysis);
 
 public slots:
     //! \brief Toggles the approval status of the GlossItem
@@ -162,7 +162,7 @@ private:
 
     void updateGlossItemConcordance();
 
-    QHash<WritingSystem,MorphologicalAnalysis> mMorphologicalAnalyses;
+    QHash<WritingSystem,MorphologicalAnalysis*> mMorphologicalAnalyses;
 
     QHash<QString,TextBit> mAnnotations;
 

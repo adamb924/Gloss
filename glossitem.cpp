@@ -54,11 +54,8 @@ GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms
     {
         TextBit form = mDbAdapter->textFormFromId( tfIter.next() );
         mTextForms.insert( form.writingSystem() , form );
-        if( form.writingSystem() == mBaselineWritingSystem )
-        {
-            MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( form.id() );
-            mMorphologicalAnalyses.insert( form.writingSystem() , newMa );
-        }
+        if( mDbAdapter->hasMorphologicalAnalysis( form.id() ) )
+            mMorphologicalAnalyses.insert( form.writingSystem() , mDbAdapter->morphologicalAnalysisFromTextFormId( form.id() ) );
     }
 
     QSetIterator<qlonglong> gIter(glossForms);
@@ -74,6 +71,7 @@ GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms
 
 GlossItem::~GlossItem()
 {
+    qDeleteAll(mMorphologicalAnalyses);
 }
 
 void GlossItem::resetBaselineText( const TextBit & baselineBit )
@@ -185,8 +183,7 @@ void GlossItem::setTextForm(const TextBit & textForm)
         if( textUpdate )
             mDbAdapter->clearMorphologicalAnalysis(textForm.id());
 
-        MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() );
-        mMorphologicalAnalyses.insert( ws , newMa );
+        mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() ) );
 
         emit fieldsChanged();
         emit textFormChanged(textForm);
@@ -339,18 +336,18 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
     return mGlosses.value(ws);
 }
 
-MorphologicalAnalysis GlossItem::morphologicalAnalysis(const WritingSystem & ws) const
+MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws) const
 {
-    return mMorphologicalAnalyses.value(ws, MorphologicalAnalysis(mTextForms.value(ws)) );
+    return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
 }
 
-void GlossItem::setMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
+void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
 {
-    if( !mMorphologicalAnalyses.contains(analysis.writingSystem()) || ( mMorphologicalAnalyses.contains(analysis.writingSystem()) && mMorphologicalAnalyses.value( analysis.writingSystem() ) != analysis ) )
+    if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) || ( mMorphologicalAnalyses.contains(analysis->writingSystem()) && mMorphologicalAnalyses.value( analysis->writingSystem() ) != analysis ) )
     {
-        mMorphologicalAnalyses.insert( analysis.writingSystem() , analysis);
+        mMorphologicalAnalyses.insert( analysis->writingSystem() , analysis);
         emit fieldsChanged();
-        emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis.writingSystem() ) );
+        emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis->writingSystem() ) );
     }
 }
 
@@ -429,11 +426,11 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
 QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
     QList<WritingSystem> languages;
-    QHashIterator<WritingSystem,MorphologicalAnalysis> iter( mMorphologicalAnalyses );
+    QHashIterator<WritingSystem,MorphologicalAnalysis*> iter( mMorphologicalAnalyses );
     while(iter.hasNext())
     {
         iter.next();
-        if( !iter.value().isEmpty() )
+        if( !iter.value()->isEmpty() )
             languages << iter.key();
     }
     return languages;
@@ -524,5 +521,5 @@ void GlossItem::connectToConcordance()
     connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)), Qt::UniqueConnection);
     connect( this, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)), Qt::UniqueConnection);
     connect( this, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)), Qt::UniqueConnection);
-    connect( this, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)), Qt::UniqueConnection);
+    connect( this, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis*)), Qt::UniqueConnection);
 }

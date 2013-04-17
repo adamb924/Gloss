@@ -172,13 +172,13 @@ bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem, QXmlStreamWriter *
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
     foreach( WritingSystem ws, analysisLanguages )
     {
-        const MorphologicalAnalysis analysis = glossItem->morphologicalAnalysis( ws );
-        if( ! analysis.isEmpty() )
+        const MorphologicalAnalysis * analysis = glossItem->morphologicalAnalysis( ws );
+        if( ! analysis->isEmpty() )
         {
             stream->writeStartElement("morphemes");
             stream->writeAttribute("http://www.adambaker.org/gloss.php", "lang", ws.flexString() );
 
-            AllomorphIterator iter = analysis.allomorphIterator();
+            AllomorphIterator iter = analysis->allomorphIterator();
             while(iter.hasNext())
                 serializeAllomorph( iter.next() , stream );
             stream->writeEndElement(); // morphemes
