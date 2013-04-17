@@ -82,11 +82,11 @@ public:
         else if( t == "Proclitic" )
             return Proclitic;
         else if( t == "Enclitic" )
-            return Simulfix;
-        else if( t == "Simulfix" )
-            return Suprafix;
-        else if( t == "Suprafix" )
             return Enclitic;
+        else if( t == "Simulfix" )
+            return Simulfix;
+        else if( t == "Suprafix" )
+            return Suprafix;
         else
             return Null;
     }

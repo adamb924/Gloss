@@ -16,7 +16,12 @@ LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem 
 
     // the available types are whatever is available in the database, plus whatever the user entered
     mTypes = mDbAdapter->getPossibleMorphologicalTypes( mAllomorph.textBit() );
+
+    qDebug() << mTypes;
+
     mTypes << mAllomorph.type();
+
+    qDebug() << mAllomorph.type();
 
     fillData();
 
