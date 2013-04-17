@@ -921,8 +921,9 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, All
 
     try
     {
-        q.prepare("insert into LexicalEntry (GrammaticalInformation) values (:GrammaticalInformation);");
+        q.prepare("insert into LexicalEntry (GrammaticalInformation, MorphologicalCategory) values (:GrammaticalInformation, :MorphologicalCategory);");
         q.bindValue(":GrammaticalInformation",grammaticalInfo);
+        q.bindValue(":MorphologicalCategory", Allomorph::getTypeString(type) );
 
         if(!q.exec())
             throw -1;
