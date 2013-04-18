@@ -14,7 +14,6 @@
 #include "xqueryinputdialog.h"
 #include "databasequerydialog.h"
 #include "replacedialog.h"
-#include "singlephraseeditdialog.h"
 #include "choosetextlinedialog.h"
 #include "indexsearchmodel.h"
 #include "lexiconedit.h"
@@ -916,9 +915,9 @@ void MainWindow::editLine( const QString & textName , int lineNumber, const QLis
     QList<int> lines;
     lines << lineNumber;
 
-    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, foci);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, lines, foci, 0);
+    subWindow->resize(850,250);
+    subWindow->show();
 }
 
 void MainWindow::editLineWithContext( const QString & textName , int lineNumber, const QList<Focus> & foci )
@@ -945,9 +944,9 @@ void MainWindow::editLineWithContext( const QString & textName , int lineNumber,
     if( lineNumber < text->phrases()->count()-1 )
         lines << lineNumber+1;
 
-    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, foci);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, lines, foci, 0);
+    subWindow->resize(850,250);
+    subWindow->show();
 }
 
 void MainWindow::rawXQuery()

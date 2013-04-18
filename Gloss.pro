@@ -47,7 +47,6 @@ SOURCES += main.cpp\
     interlinearlinelabel.cpp \
     replacedialog.cpp \
     searchreplaceform.cpp \
-    singlephraseeditdialog.cpp \
     searchqueryview.cpp \
     mergeeafdialog.cpp \
     annotation.cpp \
@@ -118,7 +117,6 @@ HEADERS  += mainwindow.h \
     interlinearlinelabel.h \
     replacedialog.h \
     searchreplaceform.h \
-    singlephraseeditdialog.h \
     searchqueryview.h \
     mergeeafdialog.h \
     annotation.h \
@@ -166,7 +164,6 @@ FORMS    += mainwindow.ui \
     createlexicalentrydialog.ui \
     replacedialog.ui \
     searchreplaceform.ui \
-    singlephraseeditdialog.ui \
     mergeeafdialog.ui \
     choosetextlinedialog.ui \
     lexicalentrysearchdialog.ui \
