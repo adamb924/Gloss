@@ -10,7 +10,7 @@
 #include "immutablelabel.h"
 #include "lexicalentrysearchdialog.h"
 
-AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent) :
+AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent) :
         QWidget(parent)
 {
     mGlossItem = glossItem;

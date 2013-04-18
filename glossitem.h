@@ -85,7 +85,7 @@ public:
     WritingSystem baselineWritingSystem() const;
 
     //! \brief Returns the morphological analysis for the given writing system, or an empty one
-    MorphologicalAnalysis * morphologicalAnalysis(const WritingSystem & ws) const;
+    MorphologicalAnalysis * morphologicalAnalysis(const WritingSystem & ws);
 
     //! \brief Returns a list of languages for which there are morphological analyses
     QList<WritingSystem> morphologicalAnalysisLanguages() const;

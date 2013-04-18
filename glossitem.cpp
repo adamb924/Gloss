@@ -54,8 +54,6 @@ GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms
     {
         TextBit form = mDbAdapter->textFormFromId( tfIter.next() );
         mTextForms.insert( form.writingSystem() , form );
-        if( mDbAdapter->hasMorphologicalAnalysis( form.id() ) )
-            mMorphologicalAnalyses.insert( form.writingSystem() , mDbAdapter->morphologicalAnalysisFromTextFormId( form.id() ) );
     }
 
     QSetIterator<qlonglong> gIter(glossForms);
@@ -336,8 +334,11 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
     return mGlosses.value(ws);
 }
 
-MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws) const
+MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws)
 {
+    if( !mMorphologicalAnalyses.contains(ws) && mDbAdapter->hasMorphologicalAnalysis( mTextForms.value(ws).id() ) )
+        mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
+
     return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
 }
 
