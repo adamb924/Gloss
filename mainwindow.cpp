@@ -857,17 +857,29 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
     while(iter.hasNext())
     {
         QMdiSubWindow* w = iter.next();
-        TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
-        if( w->windowTitle() == textName && tdw != 0 )
+        if( w->windowTitle() == textName )
         {
-            tdw->focusGlossLine( lineNumber );
-            return;
+            ui->mdiArea->setActiveSubWindow(w);
+            TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
+            if( tdw != 0 )
+            {
+                tdw->focusGlossLine( lineNumber );
+                return;
+            }
+            InterlinearChunkEditor * ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
+            if( ice != 0 )
+            {
+                ice->moveToLine( lineNumber );
+                return;
+            }
         }
+
+
     }
     // at this point the window must not exist
-    TextDisplayWidget* tdw = openText(textName, foci);
-    if( tdw != 0 && lineNumber != -1 )
-        tdw->focusGlossLine(lineNumber);
+    InterlinearChunkEditor * ice = openTextInChunks( textName, 3 );
+    if( ice != 0 )
+        ice->moveToLine( lineNumber );
 }
 
 void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
@@ -1297,6 +1309,7 @@ InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, 
         return 0;
         break;
     case Project::XmlReadError:
+    default:
         QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. There was a problem reading the XML.").arg(textName));
         return 0;
         break;
