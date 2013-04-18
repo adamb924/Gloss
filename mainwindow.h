@@ -128,8 +128,6 @@ private slots:
 
     void closeOpenTexts();
     void saveOpenTexts();
-    void openTextLine();
-    void openTextLineWithContext();
 
     void editLexicon();
 

@@ -54,7 +54,6 @@ SOURCES += main.cpp\
     concordance.cpp \
     flextextwriter.cpp \
     flextextreader.cpp \
-    choosetextlinedialog.cpp \
     lexicalentrysearchdialog.cpp \
     indexsearchmodel.cpp \
     lexiconedit.cpp \
@@ -124,7 +123,6 @@ HEADERS  += mainwindow.h \
     concordance.h \
     flextextwriter.h \
     flextextreader.h \
-    choosetextlinedialog.h \
     lexicalentrysearchdialog.h \
     indexsearchmodel.h \
     lexiconedit.h \
@@ -165,7 +163,6 @@ FORMS    += mainwindow.ui \
     replacedialog.ui \
     searchreplaceform.ui \
     mergeeafdialog.ui \
-    choosetextlinedialog.ui \
     lexicalentrysearchdialog.ui \
     lexiconedit.ui \
     sqltabledialog.ui \

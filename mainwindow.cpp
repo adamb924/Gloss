@@ -14,7 +14,6 @@
 #include "xqueryinputdialog.h"
 #include "databasequerydialog.h"
 #include "replacedialog.h"
-#include "choosetextlinedialog.h"
 #include "indexsearchmodel.h"
 #include "lexiconedit.h"
 #include "sqltabledialog.h"
@@ -92,9 +91,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionClose_and_save_open_texts, SIGNAL(triggered()), this, SLOT(closeOpenTexts()));
     connect(ui->actionSave_open_texts, SIGNAL(triggered()), this, SLOT(saveOpenTexts()));
-
-    connect(ui->actionOpen_text_line, SIGNAL(triggered()), this, SLOT(openTextLine()) );
-    connect(ui->actionOpen_text_line_with_context, SIGNAL(triggered()), this, SLOT(openTextLineWithContext()));
 
     connect(ui->actionEdit_lexicon, SIGNAL(triggered()), this, SLOT(editLexicon()) );
 
@@ -1215,20 +1211,6 @@ void MainWindow::closeOpenTexts()
 void MainWindow::saveOpenTexts()
 {
     mProject->saveOpenTexts();
-}
-
-void MainWindow::openTextLine()
-{
-    ChooseTextLineDialog dialog(mProject->textNames(), this);
-    if( dialog.exec() == QDialog::Accepted )
-        editLine( dialog.textName() , dialog.lineNumber(), QList<Focus>() );
-}
-
-void MainWindow::openTextLineWithContext()
-{
-    ChooseTextLineDialog dialog(mProject->textNames(), this);
-    if( dialog.exec() == QDialog::Accepted )
-        editLineWithContext( dialog.textName() , dialog.lineNumber(), QList<Focus>() );
 }
 
 QStringList MainWindow::textsWithOpenWindows()
