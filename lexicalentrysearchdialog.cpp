@@ -28,6 +28,18 @@ LexicalEntrySearchDialog::LexicalEntrySearchDialog(const DatabaseAdapter * dbAda
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeCurrentWritingSystem(int)));
     connect(ui->textEdit, SIGNAL(textChanged(QString)), this, SLOT(fillCandidates()));
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(fillCandidates()));
+
+    connect(ui->listView, SIGNAL(activated(QModelIndex)), this, SLOT(activated(QModelIndex)));
+    connect(ui->lowerListView, SIGNAL(activated(QModelIndex)), this, SLOT(activated(QModelIndex)));
+
+    connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(activated(QModelIndex)));
+    connect(ui->lowerListView, SIGNAL(clicked(QModelIndex)), this, SLOT(activated(QModelIndex)));
+
+    connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
+    connect(ui->lowerListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
+
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 LexicalEntrySearchDialog::~LexicalEntrySearchDialog()
