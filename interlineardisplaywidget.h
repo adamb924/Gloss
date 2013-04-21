@@ -73,6 +73,7 @@ protected:
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
+    QSpacerItem * mBottomSpacing;
 
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
     void addWordWidgets( int i , QLayout * flowLayout );

@@ -25,6 +25,8 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemTy
     mInterlinearDisplayLines = interlinearDisplayLines;
     mPhrasalGlossLines = phrasalGlossLines;
 
+    mBottomSpacing = new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding);
+
     setLinesToDefault();
 
     mCurrentLine = -1;
@@ -193,6 +195,8 @@ void InterlinearDisplayWidget::setLayoutFromText()
     if( mLines.isEmpty() )
         setLinesToDefault();
 
+    mLayout->removeItem(mBottomSpacing);
+
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mLines.count(), 0);
     progress.setWindowModality(Qt::WindowModal);
 
@@ -229,6 +233,8 @@ void InterlinearDisplayWidget::setLayoutFromText()
         mLineRefreshRequests.clear();
     }
     progress.setValue(mLines.count());
+
+    mLayout->addSpacerItem( mBottomSpacing );
 }
 
 void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
