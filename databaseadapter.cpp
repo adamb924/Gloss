@@ -1743,3 +1743,16 @@ QStringList DatabaseAdapter::suggestLexicalEntryGlosses( qlonglong lexicalEntryI
         retVal << q.value(0).toString();
     return retVal;
 }
+
+Allomorph::Type DatabaseAdapter::lexicalEntryMorphologicalType( qlonglong lexicalEntryId ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select MorphologicalCategory from LexicalEntry where _id=:LexicalEntryId;" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        return Allomorph::getType(q.value(0).toString());
+    else
+        return Allomorph::Stem;
+}

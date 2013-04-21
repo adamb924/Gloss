@@ -97,6 +97,9 @@ void LexicalEntryForm::linkToOther()
         qlonglong lexicalEntryId = dialog.lexicalEntryId();
         if( lexicalEntryId != -1 )
         {
+            Allomorph::Type type = mDbAdapter->lexicalEntryMorphologicalType( lexicalEntryId );
+            mAllomorph.setType(type);
+            mTypes << type;
             mDbAdapter->addAllomorph( mAllomorph.textBit() , lexicalEntryId );
             fillData(lexicalEntryId);
             emit entryChanged();
