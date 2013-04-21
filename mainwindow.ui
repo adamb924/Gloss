@@ -58,8 +58,6 @@
      <string>Texts</string>
     </property>
     <addaction name="actionOpen_text"/>
-    <addaction name="actionOpen_text_line"/>
-    <addaction name="actionOpen_text_line_with_context"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
