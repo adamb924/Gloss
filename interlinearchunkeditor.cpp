@@ -59,7 +59,7 @@ void InterlinearChunkEditor::previous()
 void InterlinearChunkEditor::goTo()
 {
     bool ok;
-    int newPosition = QInputDialog::getInt(this, tr("Go to"), tr("Go to the chunk with line..."), mPosition, 1, mNPhrases, 1, &ok );
+    int newPosition = QInputDialog::getInt(this, tr("Go to"), tr("Go to the chunk with line... (1-%1)").arg(mNPhrases), mPosition, 1, mNPhrases, 1, &ok );
     if( ok )
         moveToLine( newPosition );
 }
