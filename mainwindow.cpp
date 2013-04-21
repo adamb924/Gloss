@@ -495,6 +495,11 @@ void MainWindow::sqlTableView( QAction * action )
 
 void MainWindow::setProjectActionsEnabled(bool enabled)
 {
+    ui->actionSave_Project->setEnabled(enabled);
+    ui->actionSave_Project_As->setEnabled(enabled);
+    ui->actionClose_Project->setEnabled(enabled);
+    ui->actionClose_project_without_saving->setEnabled(enabled);
+
     foreach(QAction * action , ui->menuData->actions() )
         action->setEnabled(enabled);
 

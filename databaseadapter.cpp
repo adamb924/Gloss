@@ -855,32 +855,34 @@ QSet<Allomorph::Type> DatabaseAdapter::getPossibleMorphologicalTypes( const Text
 void DatabaseAdapter::searchLexicalEntries( const TextBit & bit, QHash<qlonglong,QString> * first , QHash<qlonglong,QString> * second  ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( QString("select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%1%' union "
-                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%1%';" ).arg( bit.text() ).arg(bit.writingSystem().id()) );
+    q.prepare(QString("select LexicalEntryId, Summary from "
+              "(select LexicalEntryId from LexicalEntryGloss where WritingSystem=%1 and Form like '%2%' union select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%1 and Form like '%2%') as A "
+              "left join "
+              "( select LexicalEntryId as LID, group_concat(Form,', ') as Summary from ( "
+              "select nullif(Form,'') as Form,LexicalEntryId from LexicalEntryGloss union select nullif(Form,'') as Form,LexicalEntryId from LexicalEntryCitationForm ) group by LexicalEntryId ) as B "
+              "on A.LexicalEntryId=B.LID;").arg(bit.writingSystem().id()).arg(bit.text()));
 
     if( q.exec() )
     {
         while( q.next() )
-        {
-            qlonglong lexicalEntryId = q.value(0).toLongLong();
-            first->insert( lexicalEntryId , lexicalEntrySummary(lexicalEntryId) );
-        }
+            first->insert( q.value(0).toLongLong() , q.value(1).toString() );
     }
     else
     {
         qWarning() << "DatabaseAdapter::searchLexicalEntries" << q.lastError().text() << q.executedQuery();
     }
 
-    q.prepare( QString("select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%' union "
-                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%';").arg( bit.text() ).arg(bit.writingSystem().id()) );
+    q.prepare(QString("select LexicalEntryId, Summary from "
+              "(select LexicalEntryId from LexicalEntryGloss where WritingSystem=%1 and Form like '%%2%' and Form not like '%2%' union  select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%1 and Form like '%%2%' and Form not like '%2%') as A "
+              "left join "
+              "( select LexicalEntryId as LID, group_concat(Form,', ') as Summary from ( "
+              "select nullif(Form,'') as Form,LexicalEntryId from LexicalEntryGloss union select nullif(Form,'') as Form,LexicalEntryId from LexicalEntryCitationForm ) group by LexicalEntryId ) as B "
+              "on A.LexicalEntryId=B.LID;").arg(bit.writingSystem().id()).arg(bit.text()));
 
     if( q.exec() )
     {
         while( q.next() )
-        {
-            qlonglong lexicalEntryId = q.value(0).toLongLong();
-            second->insert( lexicalEntryId , lexicalEntrySummary(lexicalEntryId) );
-        }
+            second->insert( q.value(0).toLongLong() , q.value(1).toString() );
     }
     else
     {
@@ -890,34 +892,22 @@ void DatabaseAdapter::searchLexicalEntries( const TextBit & bit, QHash<qlonglong
 
 QString DatabaseAdapter::lexicalEntrySummary( qlonglong lexicalEntryId ) const
 {
-    QStringList items;
-
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select Form from LexicalEntryGloss where LexicalEntryId=:LexicalEntryId;");
+    q.prepare("select group_concat(Form,', ') from (select Form from LexicalEntryGloss where LexicalEntryId=:LexicalEntryId union select Form from LexicalEntryCitationForm where LexicalEntryId=:LexicalEntryId);");
     q.bindValue(":LexicalEntryId", lexicalEntryId );
+
     if( q.exec() )
     {
-        while( q.next() )
-            items << q.value(0).toString();
+        if( q.next() )
+            return q.value(0).toString();
+        else
+            return "";
     }
     else
     {
         qWarning() << "DatabaseAdapter::lexicalEntrySummary" << q.lastError().text() << q.executedQuery() << lexicalEntryId;
+        return "";
     }
-
-    q.prepare("select Form from LexicalEntryCitationForm where LexicalEntryId=:LexicalEntryId;");
-    q.bindValue(":LexicalEntryId", lexicalEntryId );
-    if( q.exec() )
-    {
-        while( q.next() )
-            items << q.value(0).toString();
-    }
-    else
-    {
-        qWarning() << "DatabaseAdapter::LexicalEntryCitationForm" << q.lastError().text() << q.executedQuery() << lexicalEntryId;
-    }
-
-    return items.join(", ");
 }
 
 qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, Allomorph::Type type, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const

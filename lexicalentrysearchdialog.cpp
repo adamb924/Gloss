@@ -26,8 +26,9 @@ LexicalEntrySearchDialog::LexicalEntrySearchDialog(const DatabaseAdapter * dbAda
     ui->writingSystemCombo->setCurrentWritingSystem(dbAdapter->defaultGlossLanguage());
 
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeCurrentWritingSystem(int)));
-    connect(ui->textEdit, SIGNAL(textChanged(QString)), this, SLOT(fillCandidates()));
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(fillCandidates()));
+
+    connect(ui->searchButton, SIGNAL(clicked()), this, SLOT(fillCandidates()));
 
     connect(ui->listView, SIGNAL(activated(QModelIndex)), this, SLOT(activated(QModelIndex)));
     connect(ui->lowerListView, SIGNAL(activated(QModelIndex)), this, SLOT(activated(QModelIndex)));
@@ -78,7 +79,6 @@ void LexicalEntrySearchDialog::fillCandidates()
         item->setData( iter.key(), Qt::UserRole );
         mFirstModel->appendRow(item);
     }
-    mFirstModel->sort(0);
 
     mSecondModel->clear();
     iter = QHashIterator<qlonglong,QString>(lower);
@@ -91,7 +91,6 @@ void LexicalEntrySearchDialog::fillCandidates()
         item->setData( iter.key(), Qt::UserRole );
         mSecondModel->appendRow(item);
     }
-    mSecondModel->sort(0);
 
     ui->listView->setEnabled(true);
     ui->lowerListView->setEnabled(true);
