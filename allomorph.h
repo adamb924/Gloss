@@ -136,9 +136,9 @@ public:
         QRegExp reSuffix("^-.*[^-]$");
         QRegExp reInfix("^-.*-$");
         QRegExp reBoundStem("^\\*.*$");
-        QRegExp reProclitic("^[^=].*=$");
-        QRegExp reEnclitic("^=.*[^=]$");
-        QRegExp reSimulfix("^=.*=$");
+        QRegExp reProclitic("^[^=].*={1,2}$");
+        QRegExp reEnclitic("^={1,2}.*[^=]$");
+        QRegExp reSimulfix("^={1,2}.*={1,2}$");
         QRegExp reSuprafix("^~.*~$");
 
         if( rePrefix.exactMatch( string ) )
