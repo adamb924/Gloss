@@ -540,7 +540,7 @@ void MainWindow::openText()
         else
         {
             InterlinearChunkEditor * ice = openTextInChunks( dialog.textName(), dialog.linesPerScreen() );
-            if( ice != 0 )
+            if( ice != 0 && dialog.goToLine() > dialog.linesPerScreen() )
                 ice->moveToLine( dialog.goToLine() );
         }
     }
@@ -884,7 +884,7 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
     // at this point the window must not exist
     InterlinearChunkEditor * ice = openTextInChunks( textName, 3 );
     if( ice != 0 )
-        ice->moveToLine( lineNumber );
+        ice->moveToLine( lineNumber  && lineNumber > 3 );
 }
 
 void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
