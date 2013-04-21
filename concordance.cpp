@@ -68,7 +68,6 @@ void Concordance::updateGlossItemGlossConcordance( GlossItem * item, qlonglong g
 
 void Concordance::updateGlossItemMorphologicalAnalysis( MorphologicalAnalysis * analysis)
 {
-    // TODO another concordance problem
     QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis->textFormId() );
     foreach(GlossItem *item, itemList)
         item->setMorphologicalAnalysis( analysis );

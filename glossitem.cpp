@@ -344,9 +344,9 @@ MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & w
 
 void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
 {
-    if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) || ( mMorphologicalAnalyses.contains(analysis->writingSystem()) && mMorphologicalAnalyses.value( analysis->writingSystem() ) != analysis ) )
+    if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) || ( mMorphologicalAnalyses.contains(analysis->writingSystem()) && *mMorphologicalAnalyses.value( analysis->writingSystem() ) != *analysis ) )
     {
-        mMorphologicalAnalyses.insert( analysis->writingSystem() , analysis);
+        mMorphologicalAnalyses.insert( analysis->writingSystem() , new MorphologicalAnalysis(*analysis) );
         emit fieldsChanged();
         emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis->writingSystem() ) );
     }
