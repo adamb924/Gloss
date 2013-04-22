@@ -23,13 +23,30 @@ AnnotationForm::AnnotationForm(Text *text, const DatabaseAdapter *dbAdapter, QWi
         ui->comboBox->addItem( annotationTypes.at(i).label() );
     }
 
+
     mAnnotationModel = new AnnotationModel(text, annotationTypes.first().label() );
     connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), mAnnotationModel, SLOT(setAnnotationType(QString)) );
     ui->listView->setModel(mAnnotationModel);
+    ui->listView->setEditTriggers(QAbstractItemView::SelectedClicked);
+
+    connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(focusLine(QModelIndex)) );
 }
 
 AnnotationForm::~AnnotationForm()
 {
     delete mAnnotationModel;
     delete ui;
+}
+
+void AnnotationForm::focusLine(const QModelIndex & index)
+{
+    int line, position;
+    mText->findGlossItemLocation( mAnnotationModel->glossItem(index) , line , position );
+    if( line == -1 || position == -1 )
+        return;
+
+    QList<Focus> foci;
+    foci << Focus( Focus::Interpretation,  mAnnotationModel->glossItem(index)->id() );
+
+    emit focusTextPosition( mText->name(), line, foci );
 }

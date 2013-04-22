@@ -89,6 +89,8 @@ public:
 
     FlexTextReader::Result readResult() const;
 
+    void findGlossItemLocation(GlossItem *glossItem, int & line, int & position) const;
+
 public slots:
     void setBaselineFromGlossItems();
     void markAsChanged();
@@ -116,7 +118,6 @@ private:
 
     QList<Phrase*> mPhrases;
 
-    void findGlossItemLocation(GlossItem *glossItem, int & line, int & position);
 
     void clearGlossItems();
 

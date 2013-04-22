@@ -73,3 +73,8 @@ Qt::ItemFlags AnnotationModel::flags(const QModelIndex & index) const
 {
     return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
+
+GlossItem * AnnotationModel::glossItem( const QModelIndex & index ) const
+{
+    return mGlossItems.at( index.row() );
+}

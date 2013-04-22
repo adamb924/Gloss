@@ -1406,6 +1406,7 @@ void MainWindow::annotationDock()
     mAnnotationDock->setWidget(annotationForm);
     addDockWidget(Qt::BottomDockWidgetArea, mAnnotationDock);
 
+    connect( annotationForm, SIGNAL(focusTextPosition(QString,int,QList<Focus>)), this, SLOT(focusTextPosition(QString,int,QList<Focus>)));
     connect( text, SIGNAL(destroyed()), mAnnotationDock, SLOT(close()) );
 }
 

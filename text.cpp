@@ -422,7 +422,7 @@ void Text::removeLine( int lineNumber )
     }
 }
 
-void Text::findGlossItemLocation(GlossItem *glossItem, int & line, int & position)
+void Text::findGlossItemLocation(GlossItem *glossItem, int & line, int & position) const
 {
     line = -1;
     position = -1;
