@@ -79,6 +79,7 @@ void LexicalEntrySearchDialog::fillCandidates()
         item->setData( iter.key(), Qt::UserRole );
         mFirstModel->appendRow(item);
     }
+    mFirstModel->sort(0);
 
     mSecondModel->clear();
     iter = QHashIterator<qlonglong,QString>(lower);
@@ -91,6 +92,7 @@ void LexicalEntrySearchDialog::fillCandidates()
         item->setData( iter.key(), Qt::UserRole );
         mSecondModel->appendRow(item);
     }
+    mSecondModel->sort(0);
 
     ui->listView->setEnabled(true);
     ui->lowerListView->setEnabled(true);
