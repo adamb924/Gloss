@@ -859,7 +859,7 @@ void DatabaseAdapter::searchLexicalEntries( const TextBit & bit, QHash<qlonglong
               "(select LexicalEntryId from LexicalEntryGloss where WritingSystem=%1 and Form like '%2%' union select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%1 and Form like '%2%') as A "
               "left join "
               "( select LexicalEntryId as LID, group_concat(Form,', ') as Summary from ( "
-              "select nullif(Form,'') as Form,LexicalEntryId from LexicalEntryGloss union select nullif(Form,'') as Form,LexicalEntryId from LexicalEntryCitationForm ) group by LexicalEntryId ) as B "
+              "select nullif(Form,'') as Form,LexicalEntryId,replace(WritingSystem,'%1','-1') as WritingSystem from LexicalEntryGloss union select nullif(Form,'') as Form,LexicalEntryId,replace(WritingSystem,'%1','-1') as WritingSystem from LexicalEntryCitationForm order by WritingSystem ) group by LexicalEntryId ) as B "
               "on A.LexicalEntryId=B.LID;").arg(bit.writingSystem().id()).arg(bit.text()));
 
     if( q.exec() )
