@@ -22,6 +22,7 @@ public:
     ~InterlinearChunkEditor();
 
     void moveToLine(int line);
+    Text * text();
 
 private:
     Ui::InterlinearChunkEditor *ui;

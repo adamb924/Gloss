@@ -95,3 +95,8 @@ void TextDisplayWidget::saveText()
 {
     mText->saveText(false);
 }
+
+Text * TextDisplayWidget::text()
+{
+    return mText;
+}

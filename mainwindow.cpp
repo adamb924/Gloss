@@ -34,6 +34,7 @@
 #include "messagehandler.h"
 #include "searchqueryview.h"
 #include "mergeeafdialog.h"
+#include "annotationform.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -43,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mInterlinearViewMenu = 0;
     mQuickViewMenu = 0;
     mSearchDock = 0;
+    mAnnotationDock = 0;
 
     ui->setupUi(this);
 
@@ -102,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionBaseline_text_search_and_replace, SIGNAL(triggered()), this, SLOT(baselineSearchAndReplace()));
 
     connect( ui->actionSearch_dock, SIGNAL(triggered()), this, SLOT(toggleSearchDock()));
+    connect( ui->actionAnnotation_dock, SIGNAL(triggered()), this, SLOT(annotationDock()));
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -1382,4 +1385,40 @@ void MainWindow::toggleSearchDock()
     mSearchDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mSearchDock->setWidget(searchForm);
     addDockWidget(Qt::RightDockWidgetArea, mSearchDock);
+}
+
+void MainWindow::annotationDock()
+{
+    if( mAnnotationDock != 0 )
+        delete mAnnotationDock;
+
+    Text * text = textOfCurrentSubWindow();
+    if( text == 0 )
+        return;
+
+    AnnotationForm * annotationForm = new AnnotationForm(text, mProject->dbAdapter(), this);
+
+    mAnnotationDock = new QDockWidget(text->name(), this);
+    mAnnotationDock->setWidget(annotationForm);
+    addDockWidget(Qt::BottomDockWidgetArea, mAnnotationDock);
+}
+
+Text * MainWindow::textOfCurrentSubWindow()
+{
+    QMdiSubWindow * w = ui->mdiArea->activeSubWindow();
+    if( w == 0 )
+        return 0;
+
+    TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
+    if( tdw != 0 )
+    {
+        return tdw->text();
+    }
+
+    InterlinearChunkEditor * ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
+    if( ice != 0 )
+    {
+        return ice->text();
+    }
+    return 0;
 }

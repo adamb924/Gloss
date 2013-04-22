@@ -112,3 +112,8 @@ void InterlinearChunkEditor::closeEvent(QCloseEvent *event)
     mTextDisplayWidget->saveText();
     event->accept();
 }
+
+Text * InterlinearChunkEditor::text()
+{
+    return mText;
+}

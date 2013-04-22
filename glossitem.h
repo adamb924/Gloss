@@ -103,6 +103,7 @@ public:
     void setAnnotation( const QString & key, const TextBit & annotation );
     QHashIterator<QString,TextBit> annotations() const;
     bool hasAnnotations() const;
+    bool hasAnnotation( const QString & key ) const;
 
     Concordance* concordance();
 

@@ -29,6 +29,7 @@ public:
     void focusGlossLine(int line);
     void setLines(const QList<int> & lines);
     void saveText();
+    Text * text();
 
 private:
     Project *mProject;

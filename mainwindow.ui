@@ -99,6 +99,7 @@
      <string>Search</string>
     </property>
     <addaction name="actionSearch_dock"/>
+    <addaction name="actionAnnotation_dock"/>
     <addaction name="separator"/>
     <addaction name="actionSearch_gloss_items"/>
     <addaction name="actionSubstring_search_gloss_items"/>
@@ -406,6 +407,11 @@
   <action name="actionSearch_dock">
    <property name="text">
     <string>Search dock...</string>
+   </property>
+  </action>
+  <action name="actionAnnotation_dock">
+   <property name="text">
+    <string>Annotation dock...</string>
    </property>
   </action>
  </widget>

@@ -18,6 +18,7 @@ class QModelIndex;
 class TextDisplayWidget;
 class QStandardItemModel;
 class InterlinearChunkEditor;
+class Text;
 
 namespace Ui {
     class MainWindow;
@@ -37,6 +38,7 @@ private:
     Ui::MainWindow *ui;
 
     QDockWidget * mSearchDock;
+    QDockWidget * mAnnotationDock;
 
     QMenu *mInterlinearViewMenu;
     QMenu *mQuickViewMenu;
@@ -130,10 +132,13 @@ private slots:
     void saveOpenTexts();
 
     void editLexicon();
+    void annotationDock();
 
     InterlinearChunkEditor * openTextInChunks(const QString & textName, int linesPerScreen);
 
     void setMemoryMode( QAction * action );
+
+    Text * textOfCurrentSubWindow();
 };
 
 #endif // MAINWINDOW_H

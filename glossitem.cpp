@@ -516,6 +516,14 @@ bool GlossItem::hasAnnotations() const
     return mAnnotations.count() > 0;
 }
 
+bool GlossItem::hasAnnotation( const QString & key ) const
+{
+    if( mAnnotations.contains( key ) )
+        return ! mAnnotations.value(key).text().isEmpty();
+    else
+        return false;
+}
+
 void GlossItem::connectToConcordance()
 {
     connect( this, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)), Qt::UniqueConnection);
