@@ -856,6 +856,8 @@ void MainWindow::createSearchResultDock(QStandardItemModel * model, const QStrin
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dock->setWidget(intermediateWidget);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
+
+    connect(mProject, SIGNAL(destroyed()), dock, SLOT(close()));
 }
 
 void MainWindow::focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci )
@@ -1385,6 +1387,8 @@ void MainWindow::toggleSearchDock()
     mSearchDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mSearchDock->setWidget(searchForm);
     addDockWidget(Qt::RightDockWidgetArea, mSearchDock);
+
+    connect(mProject, SIGNAL(destroyed()), mSearchDock, SLOT(close()));
 }
 
 void MainWindow::annotationDock()
