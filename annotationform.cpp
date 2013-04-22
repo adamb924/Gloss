@@ -25,9 +25,6 @@ AnnotationForm::AnnotationForm(Text *text, const DatabaseAdapter *dbAdapter, QWi
 
     mAnnotationModel = new AnnotationModel(text, annotationTypes.first().label() );
     connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), mAnnotationModel, SLOT(setAnnotationType(QString)) );
-
-    qDebug() << mAnnotationModel->rowCount() << mAnnotationModel->columnCount();
-
     ui->listView->setModel(mAnnotationModel);
 }
 

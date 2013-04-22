@@ -12,6 +12,8 @@ AnnotationModel::AnnotationModel(Text * text , const QString & annotationLabel, 
 
 void AnnotationModel::setAnnotationType(const QString & label)
 {
+    beginResetModel();
+    mGlossItems.clear();
     mAnnotationLabel = label;
     for(int i=0; i<mText->phrases()->count(); i++)
     {
@@ -23,6 +25,7 @@ void AnnotationModel::setAnnotationType(const QString & label)
             }
         }
     }
+    endResetModel();
 }
 
 int AnnotationModel::rowCount(const QModelIndex & parent ) const
@@ -37,7 +40,7 @@ int AnnotationModel::columnCount(const QModelIndex & parent ) const
 
 QVariant AnnotationModel::data(const QModelIndex & index, int role ) const
 {
-    if ( role == Qt::DisplayRole )
+    if ( role == Qt::DisplayRole || role == Qt::EditRole )
     {
         return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).text();
     }
@@ -50,4 +53,23 @@ QVariant AnnotationModel::headerData(int section, Qt::Orientation orientation, i
         return QVariant(section);
     else
         return QVariant(section);
+}
+
+bool AnnotationModel::setData(const QModelIndex & index, const QVariant & value, int role )
+{
+    if( role == Qt::EditRole )
+    {
+        if( index.row() < mGlossItems.count() )
+        {
+            TextBit annotation = mGlossItems.at( index.row() )->getAnnotation(mAnnotationLabel);
+            annotation.setText(value.toString());
+            mGlossItems.at( index.row() )->setAnnotation( mAnnotationLabel, annotation );
+        }
+    }
+    return false;
+}
+
+Qt::ItemFlags AnnotationModel::flags(const QModelIndex & index) const
+{
+    return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }

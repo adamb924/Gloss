@@ -1401,6 +1401,8 @@ void MainWindow::annotationDock()
     mAnnotationDock = new QDockWidget(text->name(), this);
     mAnnotationDock->setWidget(annotationForm);
     addDockWidget(Qt::BottomDockWidgetArea, mAnnotationDock);
+
+    connect( text, SIGNAL(destroyed()), mAnnotationDock, SLOT(close()) );
 }
 
 Text * MainWindow::textOfCurrentSubWindow()
