@@ -118,22 +118,34 @@ QHash<qlonglong,QString> DatabaseAdapter::candidateInterpretationWithSummaries(c
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
 //    q.prepare("select InterpretationId,group_concat(Form,', ') from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) ) group by InterpretationId;");
+//    q.prepare("select InterpretationId,group_concat(Form,', ') from ( "
+//              "(select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) as A "
+//              "left join "
+//              "(select InterpretationId as IID, Form,WritingSystem from TextForms "
+//              "union "
+//              "select InterpretationId, Form,WritingSystem from Glosses "
+//              "union "
+//              "select InterpretationId, Form,WritingSystem from ( "
+//              "select InterpretationId,TextFormId,WritingSystem,group_concat(Form,'-') as Form from ( "
+//              "select InterpretationId,TextFormId,LexicalEntryGloss.WritingSystem as WritingSystem,LexicalEntryGloss.Form as Form from TextForms,MorphologicalAnalysisMembers,Allomorph,LexicalEntryGloss  "
+//              "on "
+//              "TextForms._id=MorphologicalAnalysisMembers.TextFormId and "
+//              "MorphologicalAnalysisMembers.AllomorphId = Allomorph._id and "
+//              "Allomorph.LexicalEntryId = LexicalEntryGloss.LexicalEntryId order by AllomorphOrder ) group by TextFormId,WritingSystem ) "
+//              ") as B "
+//              "on A.InterpretationId=B.IID "
+//              " ) group by InterpretationId; ");
     q.prepare("select InterpretationId,group_concat(Form,', ') from ( "
-              "(select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) as A "
-              "left join "
-              "(select InterpretationId as IID, Form,WritingSystem from TextForms "
+              "select InterpretationId, Form,WritingSystem,0 as TextFormId from TextForms where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) "
               "union "
-              "select InterpretationId, Form,WritingSystem from Glosses "
+              "select InterpretationId, Form,WritingSystem,0 as TextFormId from Glosses where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) "
               "union "
-              "select InterpretationId, Form,WritingSystem from ( "
-              "select InterpretationId,TextFormId,WritingSystem,group_concat(Form,'-') as Form from ( "
+              "select InterpretationId,group_concat(Form,'-') as Form,WritingSystem,TextFormId from ( "
               "select InterpretationId,TextFormId,LexicalEntryGloss.WritingSystem as WritingSystem,LexicalEntryGloss.Form as Form from TextForms,MorphologicalAnalysisMembers,Allomorph,LexicalEntryGloss  "
               "on "
               "TextForms._id=MorphologicalAnalysisMembers.TextFormId and "
               "MorphologicalAnalysisMembers.AllomorphId = Allomorph._id and "
-              "Allomorph.LexicalEntryId = LexicalEntryGloss.LexicalEntryId order by AllomorphOrder ) group by TextFormId,WritingSystem ) "
-              ") as B "
-              "on A.InterpretationId=B.IID "
+              "Allomorph.LexicalEntryId = LexicalEntryGloss.LexicalEntryId where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) order by AllomorphOrder ) group by TextFormId,WritingSystem "
               " ) group by InterpretationId; ");
     q.bindValue(":Form", bit.text());
     q.bindValue(":WritingSystem", bit.writingSystem().id() );
