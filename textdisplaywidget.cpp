@@ -100,3 +100,9 @@ Text * TextDisplayWidget::text()
 {
     return mText;
 }
+
+void TextDisplayWidget::setFocus( const QList<Focus> & foci )
+{
+    for(int i=0; i<mIdwTabs.count(); i++)
+        mIdwTabs.at(i)->setFocus(foci);
+}

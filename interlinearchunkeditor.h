@@ -6,6 +6,7 @@
 class Text;
 class Project;
 class TextDisplayWidget;
+class Focus;
 
 #include "view.h"
 
@@ -23,6 +24,7 @@ public:
 
     void moveToLine(int line);
     Text * text();
+    void setFocus( const QList<Focus> & foci );
 
 private:
     Ui::InterlinearChunkEditor *ui;

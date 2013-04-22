@@ -491,6 +491,10 @@ bool GlossItem::matchesFocus( const Focus & focus ) const
                 return true;
         }
     }
+    else if ( focus.type() == Focus::GlossItem )
+    {
+        return (qlonglong)this == focus.index();
+    }
     return false;
 }
 

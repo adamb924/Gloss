@@ -87,7 +87,7 @@ protected:
     QSet<int> mLineRefreshRequests;
 
     // WordDisplayWidget objects, keyed to line number
-    QMultiHash<int, QWidget*> mWordDisplayWidgets;
+    QMultiHash<int, WordDisplayWidget*> mWordDisplayWidgets;
     QMultiHash<int, QWidget*> mPhrasalGlossWidgets;
 
     QLayout* addLine(int lineNumber);
@@ -104,6 +104,8 @@ protected:
 
     //! \brief Add a line label for phrase \a i
     void addLineLabel( int i , QLayout * flowLayout  );
+
+    void maybeFocus(WordDisplayWidget * wdw);
 };
 
 #endif // INTERLINEARDISPLAYWIDGET_H

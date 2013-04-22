@@ -874,12 +874,14 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
             if( tdw != 0 )
             {
                 tdw->focusGlossLine( lineNumber );
+                tdw->setFocus(foci);
                 return;
             }
             InterlinearChunkEditor * ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
             if( ice != 0 )
             {
                 ice->moveToLine( lineNumber );
+                ice->setFocus(foci);
                 return;
             }
         }
@@ -889,7 +891,11 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
     // at this point the window must not exist
     InterlinearChunkEditor * ice = openTextInChunks( textName, 3 );
     if( ice != 0 )
+    {
+        qDebug() << lineNumber;
         ice->moveToLine( lineNumber  && lineNumber > 3 );
+        ice->setFocus(foci);
+    }
 }
 
 void MainWindow::playSoundForLine( const QString & textName , int lineNumber )

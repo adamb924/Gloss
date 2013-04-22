@@ -66,6 +66,7 @@ void InterlinearChunkEditor::goTo()
 
 void InterlinearChunkEditor::moveToLine(int line)
 {
+    qDebug() << "InterlinearChunkEditor::moveToLine(int line)" << line;
     line--; // zero-index it
     moveToPosition( (line / mChunkSize) * mChunkSize );
 }
@@ -116,4 +117,9 @@ void InterlinearChunkEditor::closeEvent(QCloseEvent *event)
 Text * InterlinearChunkEditor::text()
 {
     return mText;
+}
+
+void InterlinearChunkEditor::setFocus( const QList<Focus> & foci )
+{
+    mTextDisplayWidget->setFocus(foci);
 }

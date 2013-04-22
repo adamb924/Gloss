@@ -30,6 +30,7 @@ public:
     void setLines(const QList<int> & lines);
     void saveText();
     Text * text();
+    void setFocus( const QList<Focus> & foci );
 
 private:
     Project *mProject;

@@ -6,7 +6,7 @@
 class Focus
 {
 public:
-    enum Type { Interpretation = Qt::UserRole, TextForm, Gloss, Null };
+    enum Type { Interpretation = Qt::UserRole, TextForm, Gloss, GlossItem, Null };
     enum ListType { TypeList = Qt::UserRole + 1, IndexList = Qt::UserRole + 2 };
 
     Focus();

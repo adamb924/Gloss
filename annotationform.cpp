@@ -45,8 +45,11 @@ void AnnotationForm::focusLine(const QModelIndex & index)
     if( line == -1 || position == -1 )
         return;
 
+    line++; // make it 1-indexed
+
+    // TODO focusing the interpretation isn't strictly correct. We actually want to focus the gloss item itself.
     QList<Focus> foci;
-    foci << Focus( Focus::Interpretation,  mAnnotationModel->glossItem(index)->id() );
+    foci << Focus( Focus::GlossItem,  (qlonglong)mAnnotationModel->glossItem(index) );
 
     emit focusTextPosition( mText->name(), line, foci );
 }

@@ -170,10 +170,10 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             layout->removeWidget(lineLabel);
         }
 
-        QListIterator<QWidget*> iter( mWordDisplayWidgets.values(lineNumber) );
+        QListIterator<WordDisplayWidget*> iter( mWordDisplayWidgets.values(lineNumber) );
         while(iter.hasNext())
         {
-            QWidget *wdw = iter.next();
+            WordDisplayWidget *wdw = iter.next();
             layout->removeWidget(wdw);
             wdw->deleteLater();
             mWordDisplayWidgets.remove( lineNumber, wdw );
@@ -250,14 +250,7 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
     WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines, mProject->dbAdapter(), this );
-    for(int i=0; i<mFoci.count(); i++)
-    {
-        if( item->matchesFocus( mFoci.at(i) ) )
-        {
-            wdw->setFocused(true);
-            break;
-        }
-    }
+    maybeFocus(wdw);
 
     connect( wdw, SIGNAL(splitWidget(GlossItem*,QList<TextBit>)), phrase, SLOT(splitGloss(GlossItem*,QList<TextBit>)) );
 
@@ -276,6 +269,20 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(requestSetFollowingGlosses(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingGlosses(GlossItem*,WritingSystem)) );
 
     return wdw;
+}
+
+void InterlinearDisplayWidget::maybeFocus(WordDisplayWidget * wdw)
+{
+    bool isFocused = false;
+    for(int i=0; i<mFoci.count(); i++)
+    {
+        if( wdw->glossItem()->matchesFocus( mFoci.at(i) ) )
+        {
+            isFocused = true;
+            break;
+        }
+    }
+    wdw->setFocused(isFocused);
 }
 
 void InterlinearDisplayWidget::setLinesToDefault()
@@ -304,6 +311,10 @@ void InterlinearDisplayWidget::requestLineRefresh( int line )
 void InterlinearDisplayWidget::setFocus( const QList<Focus> & foci )
 {
     mFoci = foci;
+
+    QListIterator<WordDisplayWidget*> iter( mWordDisplayWidgets.values() );
+    while(iter.hasNext())
+        maybeFocus( iter.next() );
 }
 
 void InterlinearDisplayWidget::approveAll( WordDisplayWidget * wdw )
