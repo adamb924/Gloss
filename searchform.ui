@@ -32,6 +32,9 @@
      <property name="text">
       <string>Substring search</string>
      </property>
+     <property name="tristate">
+      <bool>false</bool>
+     </property>
     </widget>
    </item>
    <item>

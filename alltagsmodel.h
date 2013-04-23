@@ -1,11 +1,11 @@
 #ifndef ALLTAGSMODEL_H
 #define ALLTAGSMODEL_H
 
-#include <QStringListModel>
+#include <QStandardItemModel>
 
 class DatabaseAdapter;
 
-class AllTagsModel : public QStringListModel
+class AllTagsModel : public QStandardItemModel
 {
     Q_OBJECT
 public:
@@ -14,8 +14,10 @@ public:
     void refreshTags( );
 
     bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() );
-    Qt::ItemFlags flags ( const QModelIndex & index ) const;
-    bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+    bool setData ( const QModelIndex & index, const QVariant & value, int role );
+
+    QStringList positiveTags() const;
+    QStringList negativeTags() const;
 
 signals:
 

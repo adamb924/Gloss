@@ -21,7 +21,15 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
 
     mDbAdapter = dbAdapter;
 
-    mLexiconModel = new LexiconModel( dbAdapter );
+    AllTagsModel *allTags = new AllTagsModel( dbAdapter , this );
+    ui->allTags->setModel(allTags);
+    ui->allTags->setDragEnabled(true);
+
+    TagModel *lexicalEntryTags = new TagModel( dbAdapter , this );
+    ui->lexicalEntryTags->setModel(lexicalEntryTags);
+    ui->lexicalEntryTags->setDragDropMode(QAbstractItemView::DropOnly);
+
+    mLexiconModel = new LexiconModel( allTags , dbAdapter , this );
     QSortFilterProxyModel * lexiconProxyModel = new QSortFilterProxyModel(this);
     lexiconProxyModel->setSourceModel( mLexiconModel );
     lexiconProxyModel->setFilterKeyColumn(-1);
@@ -37,7 +45,7 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     ui->allomorphTable->setSortingEnabled(true);
     ui->analysisTable->setSortingEnabled(true);
 
-    AllomorphModel *allomorphModel = new AllomorphModel( dbAdapter );
+    AllomorphModel *allomorphModel = new AllomorphModel( dbAdapter , this );
     QSortFilterProxyModel * allomorphProxyModel = new QSortFilterProxyModel(this);
     allomorphProxyModel->setSourceModel( allomorphModel );
     allomorphProxyModel->setFilterKeyColumn(-1);
@@ -46,7 +54,7 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), allomorphModel, SLOT(setLexicalEntry(qlonglong)) );
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), ui->allomorphTable, SLOT(resizeColumnsToContents()) );
 
-    MorphologicalAnalysisModel *analysisModel = new MorphologicalAnalysisModel( dbAdapter );
+    MorphologicalAnalysisModel *analysisModel = new MorphologicalAnalysisModel( dbAdapter , this );
 
     connect( ui->glossWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setGlossWritingSystem(WritingSystem)) );
     connect( ui->textWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setTextFormWritingSystem(WritingSystem)) );
@@ -62,14 +70,6 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     analysisProxyModel->setFilterKeyColumn(-1);
     ui->analysisTable->setModel( analysisProxyModel );
 
-    AllTagsModel *allTags = new AllTagsModel( dbAdapter );
-    ui->allTags->setModel(allTags);
-    ui->allTags->setDragEnabled(true);
-
-    TagModel *lexicalEntryTags = new TagModel( dbAdapter );
-    ui->lexicalEntryTags->setModel(lexicalEntryTags);
-    ui->lexicalEntryTags->setDragDropMode(QAbstractItemView::DropOnly);
-
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), lexicalEntryTags, SLOT(setLexicalEntry(qlonglong)));
     connect( ui->lexiconTable, SIGNAL(requestEditForm(QModelIndex)), this, SLOT(editForm(QModelIndex)) );
 
@@ -77,6 +77,8 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), ui->analysisTable, SLOT(resizeColumnsToContents()) );
 
     connect( ui->analysisTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(analysisDoubleClicked(QModelIndex)) );
+
+    connect( ui->refreshButton, SIGNAL(clicked()), mLexiconModel, SLOT(refreshQuery()) );
 }
 
 LexiconEdit::~LexiconEdit()

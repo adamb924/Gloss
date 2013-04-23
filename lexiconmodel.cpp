@@ -4,21 +4,23 @@
 #include <QSqlQuery>
 
 #include "databaseadapter.h"
+#include "alltagsmodel.h"
 
-LexiconModel::LexiconModel(const DatabaseAdapter * dbAdapter, QObject *parent) :
+LexiconModel::LexiconModel(const AllTagsModel * allTags, const DatabaseAdapter * dbAdapter, QObject *parent) :
     QSqlQueryModel(parent)
 {
     mDbAdapter = dbAdapter;
     mGlossFields= mDbAdapter->lexicalEntryGlossFields();
     mCitationFormFields = mDbAdapter->lexicalEntryCitationFormFields();
 
-    mQueryString = buildQueryString();
+    mAllTags = allTags;
 
     refreshQuery();
 }
 
 void LexiconModel::refreshQuery()
 {
+    mQueryString = buildQueryString();
     setQuery(mQueryString , QSqlDatabase::database( mDbAdapter->dbFilename() ) );
     if( canFetchMore() )
         fetchMore();
@@ -29,6 +31,29 @@ QString LexiconModel::buildQueryString()
     QStringList selectStatements;
     QStringList joins;
     QStringList onStatement;
+
+    QStringList positiveTags = mAllTags->positiveTags();
+    QStringList negativeTags = mAllTags->negativeTags();
+
+    QString negative = "select _id as LexicalEntryId from LexicalEntry where _id not in ( select LexicalEntryId from LexicalEntryTags where TagId in ( select _id from GrammaticalTags where Tag in ('" + negativeTags.join("','") + "') ) )";
+    QString positive = QString("select LexicalEntryId from ( select LexicalEntryId,count(TagId) as Count from LexicalEntryTags where TagId in ( select _id from GrammaticalTags where Tag in ('%1') ) group by LexicalEntryId ) where Count =%2").arg(positiveTags.join("','")).arg(positiveTags.count());
+
+    if( positiveTags.isEmpty() && negativeTags.isEmpty() )
+    {
+        joins << "(select _id as LexicalEntryId from LexicalEntry ) as TagFilter";
+    }
+    else if( positiveTags.isEmpty() && ! negativeTags.isEmpty() )
+    {
+        joins << "( " + negative + " ) as TagFilter";
+    }
+    else if( ! positiveTags.isEmpty() && negativeTags.isEmpty() )
+    {
+        joins << "( " + positive + " ) as TagFilter";
+    }
+    else
+    {
+        joins << "( " + negative + " intersect " + positive + " ) as TagFilter";
+    }
 
     QListIterator<WritingSystem> cIter(mCitationFormFields);
     while( cIter.hasNext() )
@@ -86,6 +111,8 @@ QString LexiconModel::buildQueryString()
     mEditable << false;
     joins << "( select LexicalEntryId, count( distinct TextFormId ) as TF from MorphologicalAnalysisMembers,Allomorph where MorphologicalAnalysisMembers.AllomorphId=Allomorph._id group by LexicalEntryId ) as TextFormCount ";
     onStatement << "TextFormCount.LexicalEntryId and TextFormCount.LexicalEntryId";
+
+    onStatement << "TagFilter.LexicalEntryId and TagFilter.LexicalEntryId";
 
     return "select " + selectStatements.join(",") + " from " + joins.join(" inner join ") + " on " + onStatement.join("=");
 }
