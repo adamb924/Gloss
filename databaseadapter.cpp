@@ -1559,8 +1559,8 @@ int DatabaseAdapter::removeUnusedLexicalEntries() const
     q.exec("delete from LexicalEntry where _id not in (select LexicalEntryId from Allomorph);");
     int nLexEntriesDeleted = q.numRowsAffected();
     q.exec("delete from LexicalEntryGloss where LexicalEntryId not in (select _id from LexicalEntry);");
-    q.exec("delete from LexicalEntry where LexicalEntryIdCitationForm not in (select _id from LexicalEntry);");
-    q.exec("delete from LexicalEntry where LexicalEntryIdGrammaticalTags not in (select _id from LexicalEntry);");
+    q.exec("delete from LexicalEntryCitationForm where LexicalEntryId not in (select _id from LexicalEntry);");
+    q.exec("delete from LexicalEntryTags where LexicalEntryId not in (select _id from LexicalEntry);");
     return nLexEntriesDeleted;
 }
 
