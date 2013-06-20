@@ -1,9 +1,9 @@
 #include "textdisplaywidget.h"
-#include "ui_textdisplaywidget.h"
 
 #include "databaseadapter.h"
 #include "text.h"
 #include "interlineardisplaywidget.h"
+#include "lingtextedit.h"
 
 #include <QCloseEvent>
 #include <QLabel>

@@ -30,16 +30,16 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     ui->lexicalEntryTags->setDragDropMode(QAbstractItemView::DropOnly);
 
     mLexiconModel = new LexiconModel( allTags , dbAdapter , this );
-    QSortFilterProxyModel * lexiconProxyModel = new QSortFilterProxyModel(this);
-    lexiconProxyModel->setSourceModel( mLexiconModel );
-    lexiconProxyModel->setFilterKeyColumn(-1);
-    ui->lexiconTable->setModel( lexiconProxyModel );
+    mLexiconProxyModel = new QSortFilterProxyModel(this);
+    mLexiconProxyModel->setSourceModel( mLexiconModel );
+    mLexiconProxyModel->setFilterKeyColumn(-1);
+    ui->lexiconTable->setModel( mLexiconProxyModel );
     ui->lexiconTable->setColumnHidden(1,true);
     ui->lexiconTable->setColumnHidden(3,true);
     ui->lexiconTable->setColumnHidden(5,true);
     ui->lexiconTable->setColumnHidden(7,true);
 
-    connect( ui->filterEdit, SIGNAL(textChanged(QString)), lexiconProxyModel, SLOT(setFilterRegExp(QString)) );
+    connect( ui->filterEdit, SIGNAL(textChanged(QString)), mLexiconProxyModel, SLOT(setFilterRegExp(QString)) );
 
     ui->lexiconTable->setSortingEnabled(true);
     ui->allomorphTable->setSortingEnabled(true);
@@ -79,6 +79,9 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     connect( ui->analysisTable, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(analysisDoubleClicked(QModelIndex)) );
 
     connect( ui->refreshButton, SIGNAL(clicked()), mLexiconModel, SLOT(refreshQuery()) );
+
+    connect( ui->filterSortColumnOnlyCheckbox, SIGNAL(toggled(bool)), this, SLOT(setFilterAppliesToSortColumnOnly()));
+    setFilterAppliesToSortColumnOnly( );
 }
 
 LexiconEdit::~LexiconEdit()
@@ -131,4 +134,12 @@ void LexiconEdit::editForm( const QModelIndex & index )
             }
         }
     }
+}
+
+void LexiconEdit::setFilterAppliesToSortColumnOnly( )
+{
+    if( ui->filterSortColumnOnlyCheckbox )
+        mLexiconProxyModel->setFilterKeyColumn( mLexiconProxyModel->sortColumn() );
+    else
+        mLexiconProxyModel->setFilterKeyColumn(-1);
 }

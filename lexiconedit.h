@@ -11,6 +11,7 @@ class DatabaseAdapter;
 class MainWindow;
 class QModelIndex;
 class LexiconModel;
+class QSortFilterProxyModel;
 
 class LexiconEdit : public QMainWindow
 {
@@ -26,10 +27,12 @@ signals:
 private slots:
     void analysisDoubleClicked( const QModelIndex & index );
     void editForm( const QModelIndex & index );
+    void setFilterAppliesToSortColumnOnly();
 
 private:
-    Ui::LexiconEdit *ui;
-    LexiconModel *mLexiconModel;
+    Ui::LexiconEdit * ui;
+    LexiconModel * mLexiconModel;
+    QSortFilterProxyModel * mLexiconProxyModel;
     const DatabaseAdapter * mDbAdapter;
 };
 
