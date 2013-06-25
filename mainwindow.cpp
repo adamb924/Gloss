@@ -1197,6 +1197,8 @@ void MainWindow::createCountReport(const QString & typeString)
 
 void MainWindow::searchAndReplace()
 {
+    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from MainWindow::searchAndReplace(), but the code to be fixed is in ReplaceDialog."));
+/*
     ReplaceDialog dialog(mProject->dbAdapter(), this);
     if( dialog.exec() == QDialog::Accepted )
     {
@@ -1205,6 +1207,7 @@ void MainWindow::searchAndReplace()
         mProject->applyXslTransformationToTexts( QDir::current().absoluteFilePath("search-replace.xsl"), parameters );
         QMessageBox::information(this, tr("Gloss"), tr("The search-and-replace operation has been completed.") );
     }
+*/
 }
 
 void MainWindow::findApprovedLines()

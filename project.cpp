@@ -609,6 +609,9 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
 
 bool Project::interpretationUsageReport(const QString & filename)
 {
+    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::interpretationUsageReport()."));
+    return false;
+/*
     QStringList instances;
     QStringList settings;
 
@@ -621,10 +624,14 @@ bool Project::interpretationUsageReport(const QString & filename)
         instances.append( getInterpretationUsage( iter.next(), settings.join(",") ) );
 
     return outputInterpretationUsageReport( filename, instances );
+*/
 }
 
 bool Project::outputInterpretationUsageReport(const QString & filename, const QStringList & instances )
 {
+    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::outputInterpretationUsageReport()."));
+    return false;
+/*
     QList<InterlinearItemType> lineTypes = mDbAdapter->glossInterlinearLines();
     QSet<QString> set = instances.toSet();
 
@@ -672,6 +679,7 @@ bool Project::outputInterpretationUsageReport(const QString & filename, const QS
     out.close();
 
     return true;
+    */
 }
 
 QStringList Project::getInterpretationUsage(const QString & filepath, const QString & encodedSettings)

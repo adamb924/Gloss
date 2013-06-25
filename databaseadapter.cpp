@@ -733,26 +733,6 @@ int DatabaseAdapter::removeTextForms( QSet<qlonglong> ids )
     return count;
 }
 
-QList<InterlinearItemType> DatabaseAdapter::glossInterlinearLines() const
-{
-    return mGlossInterlinearLines;
-}
-
-QList<InterlinearItemType> DatabaseAdapter::glossPhrasalGlossLines() const
-{
-    return mGlossPhrasalGlossLines;
-}
-
-QList<InterlinearItemType> DatabaseAdapter::analysisInterlinearLines() const
-{
-    return mAnalysisInterlinearLines;
-}
-
-QList<InterlinearItemType> DatabaseAdapter::analysisPhrasalGlossLines() const
-{
-    return mAnalysisPhrasalGlossLines;
-}
-
 QList<WritingSystem> DatabaseAdapter::lexicalEntryCitationFormFields() const
 {
     return mLexicalEntryCitationForms;
@@ -763,33 +743,9 @@ QList<WritingSystem> DatabaseAdapter::lexicalEntryGlossFields() const
     return mLexicalEntryGlosses;
 }
 
-QList<InterlinearItemType> DatabaseAdapter::interlinearItemsFromConfigurationFile(const QString & queryString) const
-{
-    QList<InterlinearItemType> items;
-    QXmlResultItems result;
-    QXmlQuery query(QXmlQuery::XQuery10);
-    query.setMessageHandler(new MessageHandler("DatabaseAdapter::interlinearItemsFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
-    query.setQuery(queryString);
-    query.evaluateTo(&result);
-    QXmlItem item(result.next());
-    while (!item.isNull())
-    {
-        QStringList values = item.toAtomicValue().toString().split(',');
-        items << InterlinearItemType( values.at(0) , writingSystem(values.at(1)) );
-        item = result.next();
-    }
-    return items;
-}
-
 void DatabaseAdapter::parseConfigurationFile(const QString & filename)
 {
     mConfigurationXmlPath = filename;
-
-    mGlossInterlinearLines = interlinearItemsFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/gloss-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
-    mGlossPhrasalGlossLines = interlinearItemsFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/gloss-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
-    mAnalysisInterlinearLines = interlinearItemsFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/analysis-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
-    mAnalysisPhrasalGlossLines = interlinearItemsFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/analysis-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
 
     mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
     mLexicalEntryGlosses = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");

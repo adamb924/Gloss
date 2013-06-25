@@ -16,7 +16,8 @@ ReplaceDialog::ReplaceDialog(DatabaseAdapter *dbAdapter, QWidget *parent) :
 
     mDbAdapter = dbAdapter;
 
-    mInterlinearLines = mDbAdapter->glossInterlinearLines();
+    // TODO the offending line:
+//    mInterlinearLines = mDbAdapter->glossInterlinearLines();
 
     setWindowTitle(tr("Search & Replace"));
 

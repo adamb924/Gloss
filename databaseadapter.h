@@ -134,18 +134,6 @@ public:
 
     void parseConfigurationFile(const QString & filename);
 
-    //! \brief Returns a list of types of interlinear text lines (InterlinearItemType objects) for the gloss tab.
-    QList<InterlinearItemType> glossInterlinearLines() const;
-
-    //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects) for the gloss tab.
-    QList<InterlinearItemType> glossPhrasalGlossLines() const;
-
-    //! \brief Returns a list of types of interlinear text lines (InterlinearItemType objects) for the analysis tab.
-    QList<InterlinearItemType> analysisInterlinearLines() const;
-
-    //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects) for the analysis tab.
-    QList<InterlinearItemType> analysisPhrasalGlossLines() const;
-
     //! \brief Returns the meta analysis language
     WritingSystem metaLanguage() const;
     WritingSystem defaultGlossLanguage() const;
@@ -255,15 +243,10 @@ private:
     QHash<qlonglong, WritingSystem> mWritingSystemByRowId;
     QHash<QString, WritingSystem> mWritingSystemByFlexString;
 
-    QList<InterlinearItemType> interlinearItemsFromConfigurationFile(const QString & queryString) const;
     QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
     void languageSettingsFromConfigurationFile();
     void annotationTypesFromConfigurationFile();
 
-    QList<InterlinearItemType> mGlossInterlinearLines;
-    QList<InterlinearItemType> mGlossPhrasalGlossLines;
-    QList<InterlinearItemType> mAnalysisInterlinearLines;
-    QList<InterlinearItemType> mAnalysisPhrasalGlossLines;
     QList<AnnotationType> mAnnotationTypes;
 
     QList<WritingSystem> mLexicalEntryCitationForms;
