@@ -99,18 +99,30 @@ public:
     //! \brief Returns true if this gloss item matches the specified focus, otherwise false
     bool matchesFocus( const Focus & focus ) const;
 
+    //! \brief Returns the annotation for the given \a key, or an empty TextBit if none exists
     TextBit getAnnotation( const QString & key ) const;
+
+    //! \brief Sets the annotation for the given \a key to \a annotation
     void setAnnotation( const QString & key, const TextBit & annotation );
+
+    //! \brief Returns all annotations associated with the GlossItem
     QHashIterator<QString,TextBit> annotations() const;
+
+    //! \brief Returns true if the GlossItem has at least one annotation, otherwise returns false
     bool hasAnnotations() const;
+
+    //! \brief Returns true if the GlossItem an annotation for the specified \a key, otherwise returns false
     bool hasAnnotation( const QString & key ) const;
 
-    Concordance* concordance();
+    //! \brief Returns a pointer to the project's Concordance object
+    Concordance * concordance();
 
-    Project* project();
+    //! \brief Returns a pointer to the project's Project object
+    Project * project();
 
-    // TODO this is so awkward to have to call each time I create a new object. I wonder what the better way to to it is.
+    //! \brief Connects various signals of the object to the project's Concordance object
     void connectToConcordance();
+    // TODO this is so awkward to have to call each time I create a new object. I wonder what the better way to to it is.
 
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
@@ -159,8 +171,10 @@ private:
     //! \brief Resets the strings for the text forms and gloss forms from the database. If an id doesn't exist in the database, then a new text form or gloss is created.
     void loadStringsFromDatabase();
 
+    //! \brief Loads all morphological analyses in the database into the object's data structure
     void loadMorphologicalAnalysesFromDatabase();
 
+    //! \brief Resets the concordance's entries for this GlossItem (by text form and gloss)
     void updateGlossItemConcordance();
 
     QHash<WritingSystem,MorphologicalAnalysis*> mMorphologicalAnalyses;
