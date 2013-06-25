@@ -34,5 +34,6 @@ private:
     WritingSystem mWritingSystem;
 };
 
+typedef QList<InterlinearItemType> InterlinearItemTypeList;
 
 #endif // GLOSSLINE_H

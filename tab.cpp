@@ -1,8 +1,7 @@
 #include "tab.h"
 
-Tab::Tab(const QString &name)
+Tab::Tab(const QString &name) : mName(name)
 {
-    mName = name;
 }
 
 QString Tab::name() const
@@ -10,22 +9,22 @@ QString Tab::name() const
     return mName;
 }
 
-void Tab::addInterlinearLineType( const InterlinearItemType & type )
+void Tab::addInterlinearLineType( const WritingSystem & ws, const InterlinearItemType & type )
 {
-    mInterlinearLines.append( type );
+    mInterlinearLines[ws].append( type );
 }
 
-void Tab::addPhrasalGlossType( const InterlinearItemType & type )
+void Tab::addPhrasalGlossType(const InterlinearItemType & type )
 {
     mPhrasalGlossLines.append( type );
 }
 
-QList<InterlinearItemType> Tab::interlinearLines() const
+QHash<WritingSystem,InterlinearItemTypeList> Tab::interlinearLines() const
 {
     return mInterlinearLines;
 }
 
-QList<InterlinearItemType> Tab::phrasalGlossLines() const
+InterlinearItemTypeList Tab::phrasalGlossLines() const
 {
     return mPhrasalGlossLines;
 }

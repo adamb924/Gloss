@@ -23,6 +23,7 @@ class WordDisplayWidget;
 class GlossItem;
 class Phrase;
 class Focus;
+class Tab;
 
 #include "annotationmarkwidget.h"
 #include "interlinearitemtype.h"
@@ -31,7 +32,7 @@ class InterlinearDisplayWidget : public QScrollArea
 {
     Q_OBJECT
 public:
-    InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent = 0);
+    InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
 
@@ -94,7 +95,7 @@ protected:
 
     QVBoxLayout *mLayout;
 
-    QList<InterlinearItemType> mInterlinearDisplayLines;
+    const Tab * mTab;
     QList<InterlinearItemType> mPhrasalGlossLines;
 
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );

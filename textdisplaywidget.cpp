@@ -30,8 +30,9 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
 
     for(int i=0; i<view->tabs()->count(); i++)
     {
-        Tab tab = view->tabs()->at(i);
-        InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( tab.interlinearLines(), tab.phrasalGlossLines(), mText, mProject, this);
+        // TODO really these should just be stored as pointers. This will waste memory; I'm just doing it to have it done with for now.
+        Tab * tab = new Tab( view->tabs()->at(i) );
+        InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( tab, mText, mProject, this);
         idw->setFocus(foci);
         idw->setLines(lines);
 
@@ -45,7 +46,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         // the above is a bit odd because I'm not sure whether the order is important
 
         mIdwTabs << idw;
-        addTab( idw, tab.name() );
+        addTab( idw, tab->name() );
     }
 
     if( count() == 1 )

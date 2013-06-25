@@ -832,6 +832,7 @@ void Project::parseConfigurationFile()
     QXmlStreamReader stream(file);
 
     bool inTab = false;
+    WritingSystem itemTypeWs;
 
     while (!stream.atEnd())
     {
@@ -848,12 +849,27 @@ void Project::parseConfigurationFile()
                 inTab = true;
                 mViews.last()->tabs()->append( Tab( stream.attributes().value("name").toString() ) );
             }
+            else if( name == "item-type" )
+            {
+                inTab = true;
+                if( stream.attributes().hasAttribute("baseline-writing-system") )
+                {
+                    itemTypeWs = mDbAdapter->writingSystem( stream.attributes().value("baseline-writing-system").toString() );
+                }
+                else
+                {
+                    itemTypeWs = WritingSystem();
+                }
+            }
             else if( name == "interlinear-line" && inTab )
             {
                 QString type = stream.attributes().value("type").toString();
                 QString lang = stream.attributes().value("lang").toString();
                 InterlinearItemType iit( type, mDbAdapter->writingSystem(lang) );
-                mViews.last()->tabs()->last().addInterlinearLineType( iit );
+                if( itemTypeWs.isValid() )
+                {
+                    mViews.last()->tabs()->last().addInterlinearLineType( itemTypeWs, iit );
+                }
             }
             else if( name == "phrasal-gloss" && inTab )
             {

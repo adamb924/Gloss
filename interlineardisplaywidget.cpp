@@ -16,15 +16,11 @@
 #include "generictextinputdialog.h"
 #include "focus.h"
 #include "annotationmarkwidget.h"
+#include "tab.h"
 
-InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent) :
-        QScrollArea(parent)
+InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
+    mTab(tab), mText(text), mProject(project), QScrollArea(parent)
 {
-    mText = text;
-    mProject = project;
-    mInterlinearDisplayLines = interlinearDisplayLines;
-    mPhrasalGlossLines = phrasalGlossLines;
-
     mBottomSpacing = new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding);
 
     setLinesToDefault();
@@ -59,7 +55,7 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 
 QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
 {
-    FlowLayout *flowLayout = new FlowLayout( mInterlinearDisplayLines.first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
+    FlowLayout *flowLayout = new FlowLayout( mTab->interlinearLines().value( mText->baselineWritingSystem()).first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
     mLineLayouts.insert(lineNumber, flowLayout);
     mLayout->addLayout(flowLayout);
     return flowLayout;
@@ -114,11 +110,11 @@ void InterlinearDisplayWidget::scrollContentsBy ( int dx, int dy )
 
 void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
 {
-    for(int j=0; j<mPhrasalGlossLines.count(); j++)
+    for(int j=0; j< mTab->phrasalGlossLines().count(); j++)
     {
-        TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
+        TextBit bit = mText->phrases()->at(i)->gloss( mTab->phrasalGlossLines().at(j).writingSystem() );
         LingEdit *edit = addPhrasalGlossLine( bit );
-        edit->matchTextAlignmentTo( mInterlinearDisplayLines.first().writingSystem().layoutDirection() );
+        edit->matchTextAlignmentTo( mTab->interlinearLines().value( mText->baselineWritingSystem()).first().writingSystem().layoutDirection() );
         connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
 
         mPhrasalGlossWidgets.insert( i , edit );
@@ -249,7 +245,7 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines, mProject->dbAdapter(), this );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mTab->interlinearLines().value(item->baselineWritingSystem()), mProject->dbAdapter(), this );
     maybeFocus(wdw);
 
     connect( wdw, SIGNAL(splitWidget(GlossItem*,QList<TextBit>)), phrase, SLOT(splitGloss(GlossItem*,QList<TextBit>)) );

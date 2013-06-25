@@ -12,17 +12,16 @@ public:
 
   QString name() const;
 
-  void addInterlinearLineType( const InterlinearItemType & type );
-  void addPhrasalGlossType( const InterlinearItemType & type );
+  void addInterlinearLineType( const WritingSystem & ws, const InterlinearItemType & type );
+  void addPhrasalGlossType(const InterlinearItemType & type );
 
-  QList<InterlinearItemType> interlinearLines() const;
-  QList<InterlinearItemType> phrasalGlossLines() const;
+  QHash<WritingSystem,InterlinearItemTypeList> interlinearLines() const;
+  InterlinearItemTypeList phrasalGlossLines() const;
 
 private:
     QString mName;
-
-    QList<InterlinearItemType> mInterlinearLines;
-    QList<InterlinearItemType> mPhrasalGlossLines;
+    QHash<WritingSystem,InterlinearItemTypeList> mInterlinearLines;
+    InterlinearItemTypeList mPhrasalGlossLines;
 };
 
 #endif // TAB_H
