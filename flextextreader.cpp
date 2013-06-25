@@ -44,6 +44,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
 
     qlonglong interpretationId = -1;
     GlossItem::ApprovalStatus approvalStatus = GlossItem::Unapproved;
+    WritingSystem glossItemBaselineWritingSystem;
 
     QHash<QString,TextBit> annotations;
     QSet<qlonglong> textFormIds;
@@ -71,6 +72,11 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                         if(stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php", "approval-status") && stream.attributes().value("http://www.adambaker.org/gloss.php", "approval-status").toString() == "true" )
                             approvalStatus = GlossItem::Approved;
                     }
+                }
+
+                if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system") )
+                {
+                    glossItemBaselineWritingSystem = mDbAdapter->writingSystem( stream.attributes().value("http://www.adambaker.org/gloss.php", "baseline-writing-system").toString() );
                 }
             }
             else if ( name == "phrase" )
@@ -144,7 +150,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
         {
             if(name == "word")
             {
-                mText->mPhrases.last()->appendGlossItem(new GlossItem( mText->mBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject ));
+                mText->mPhrases.last()->appendGlossItem(new GlossItem( glossItemBaselineWritingSystem.isNull() ? mText->mBaselineWritingSystem : glossItemBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject ));
                 mText->mPhrases.last()->lastGlossItem()->connectToConcordance();
                 mText->mPhrases.last()->lastGlossItem()->setApprovalStatus(approvalStatus);
 
@@ -158,6 +164,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 inWord = false;
                 interpretationId = -1;
                 approvalStatus = GlossItem::Unapproved;
+                glossItemBaselineWritingSystem = WritingSystem();
             }
             else if(name == "phrase")
             {

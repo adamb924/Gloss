@@ -123,6 +123,10 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
     else
         stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "false" );
 
+    if( glossItem->baselineWritingSystem() != mText->baselineWritingSystem() )
+    {
+        stream->writeAttribute("http://www.adambaker.org/gloss.php", "baseline-writing-system", glossItem->baselineWritingSystem().flexString() );
+    }
 
     TextBitHashIterator textIter(*glossItem->textForms());
 
