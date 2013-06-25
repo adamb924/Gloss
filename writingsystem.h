@@ -19,7 +19,6 @@ class WritingSystem
 {
 public:
     WritingSystem();
-    WritingSystem(const WritingSystem & other);
     WritingSystem(const qlonglong id, const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize);
 
     qlonglong id() const;
@@ -43,8 +42,8 @@ public:
     bool isValid() const;
 
 private:
-    QString mName, mAbbreviation, mFlexString, mKeyboardCommand, mFontFamily;
     qlonglong mId;
+    QString mName, mAbbreviation, mFlexString, mKeyboardCommand, mFontFamily;
     int mFontSize;
     Qt::LayoutDirection mLayoutDirection;
 };

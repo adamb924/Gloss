@@ -1,39 +1,12 @@
 #include "writingsystem.h"
 
-WritingSystem::WritingSystem()
+WritingSystem::WritingSystem() : mId(-1), mName(""), mAbbreviation(""), mFlexString(""), mKeyboardCommand(""), mFontFamily(""), mFontSize(0), mLayoutDirection(Qt::LeftToRight)
 {
-    mId = -1;
-    mName = "";
-    mAbbreviation = "";
-    mFlexString = "";
-    mKeyboardCommand = "";
-    mLayoutDirection = Qt::LeftToRight;
-    mFontFamily = "";
-    mFontSize = 0;
-}
-
-WritingSystem::WritingSystem(const WritingSystem & other)
-{
-    mId = other.mId;
-    mName = other.mName;
-    mAbbreviation = other.mAbbreviation;
-    mFlexString = other.mFlexString;
-    mKeyboardCommand = other.mKeyboardCommand;
-    mLayoutDirection = other.mLayoutDirection;
-    mFontFamily = other.mFontFamily;
-    mFontSize = other.mFontSize;
 }
 
 WritingSystem::WritingSystem(const qlonglong id, const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize)
+     : mId(id), mName(name), mAbbreviation(abbreviation), mFlexString(flexString), mKeyboardCommand(keyboardCommand), mFontFamily(fontFamily), mFontSize(fontSize), mLayoutDirection(layoutDirection)
 {
-    mId = id;
-    mName = name;
-    mAbbreviation = abbreviation;
-    mFlexString = flexString;
-    mKeyboardCommand = keyboardCommand;
-    mLayoutDirection = layoutDirection;
-    mFontFamily = fontFamily;
-    mFontSize = fontSize;
 }
 
 QString WritingSystem::keyboardCommand() const

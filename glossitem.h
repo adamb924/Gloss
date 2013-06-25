@@ -184,9 +184,9 @@ private:
     TextBitHash mTextForms;
     TextBitHash mGlosses;
 
-    Project *mProject;
-    DatabaseAdapter *mDbAdapter;
-    Concordance *mConcordance;
+    Project * mProject;
+    DatabaseAdapter * mDbAdapter;
+    Concordance * mConcordance;
 
     CandidateNumber mCandidateNumber;
     ApprovalStatus mApprovalStatus;
