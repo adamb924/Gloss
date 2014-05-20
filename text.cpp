@@ -344,11 +344,6 @@ QString Text::baselineTextForLine( int i )
     return mPhrases.at(i)->equivalentBaselineLineText();
 }
 
-Sound* Text::sound()
-{
-    return mSound;
-}
-
 void Text::setSound(const QUrl & filename)
 {
     if( mSound != 0 )
@@ -356,7 +351,7 @@ void Text::setSound(const QUrl & filename)
 
     mAudioFileURL = filename;
 
-    if( !mAudioFileURL.isEmpty() )
+    if( QFileInfo::exists(mAudioFileURL.path()) )
         mSound = new Sound(filename);
 }
 
@@ -372,8 +367,10 @@ bool Text::playSoundForLine( int lineNumber )
         QMessageBox::warning(0, tr("Error"), tr("This phrase does not have a valid annotation (%1, %2).").arg(mPhrases.at(lineNumber)->annotation()->start()).arg(mPhrases.at(lineNumber)->annotation()->end()) );
         return false;
     }
-
-    return mSound->playSegment( mPhrases.at(lineNumber)->annotation()->start() , mPhrases.at(lineNumber)->annotation()->end() );
+    if( mSound != 0 )
+        return mSound->playSegment( mPhrases.at(lineNumber)->annotation()->start() , mPhrases.at(lineNumber)->annotation()->end() );
+    else
+        return false;
 }
 
 FlexTextReader::Result Text::readResult() const

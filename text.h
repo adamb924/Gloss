@@ -81,7 +81,6 @@ public:
     void setBaselineTextForLine( int i, const QString & text );
     QString baselineTextForLine( int i );
 
-    Sound* sound();
     void setSound(const QUrl & filename);
 
     //! \brief Plays the sound for the given 0-indexed line number, or returns an error.

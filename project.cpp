@@ -815,8 +815,11 @@ void Project::playLine(const QString & textName, int lineNumber)
         int startTime = elements.at(1).toInt();
         int endTime = elements.at(2).toInt();
 
-        Sound *sound = new Sound( QUrl::fromEncoded(audioPath.toUtf8()) );
-        sound->playSegment( startTime, endTime );
+        if( QFileInfo::exists(audioPath) )
+        {
+            Sound *sound = new Sound( QUrl::fromEncoded(audioPath.toUtf8()) );
+            sound->playSegment( startTime, endTime );
+        }
     }
 }
 
