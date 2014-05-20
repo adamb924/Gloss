@@ -187,7 +187,7 @@ bool FlexTextReader::setBaselineWritingSystemFromFile(const QString & filePath )
 {
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("FlexTextReader::setBaselineWritingSystemFromFile" ));
-    query.bindVariable("path", QVariant(QUrl(filePath).path(QUrl::FullyEncoded)));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(filePath).path(QUrl::FullyEncoded)));
     query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
                    "declare variable $path external; "
                    "for $x in doc($path)/document/interlinear-text/languages/language[@abg:is-baseline='true'] "

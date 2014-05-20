@@ -278,7 +278,7 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("Text::mergeEaf"));
 
-    query.bindVariable("path", QVariant(QUrl(filename).path(QUrl::FullyEncoded)));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(filename).path(QUrl::FullyEncoded)));
     query.setQuery( "declare variable $path external; "
                     "declare variable $settings-array := doc($path)/ANNOTATION_DOCUMENT/TIME_ORDER/TIME_SLOT; "
                     "for $phrase in doc($path)/ANNOTATION_DOCUMENT/TIER/ANNOTATION/ALIGNABLE_ANNOTATION "
@@ -303,7 +303,7 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     }
 
     // read the audio path
-    query.bindVariable("path", QVariant(QUrl(filename).path(QUrl::FullyEncoded)));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(filename).path(QUrl::FullyEncoded)));
     query.setQuery( "string(doc($path)/ANNOTATION_DOCUMENT/HEADER/MEDIA_DESCRIPTOR/@MEDIA_URL)" );
 
     QString audioPath;

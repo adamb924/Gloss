@@ -430,7 +430,7 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
     {
         QStringList result;
         QXmlQuery query(QXmlQuery::XQuery10);
-        query.bindVariable("path", QVariant(QUrl(filepath).path(QUrl::FullyEncoded)));
+        query.bindVariable("path", QVariant(QUrl::fromLocalFile(filepath).path(QUrl::FullyEncoded)));
         QString queryString = "declare variable $tier-id external; "
             "declare variable $path external; "
                               "for $x in doc($path)/ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "

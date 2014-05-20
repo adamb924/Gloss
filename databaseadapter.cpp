@@ -760,7 +760,7 @@ QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(con
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::writingSystemListFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -1114,7 +1114,8 @@ void DatabaseAdapter::languageSettingsFromConfigurationFile()
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::metalanguageFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
 
     query.setQuery("string(doc($path)/gloss-configuration/meta-language/@lang)");
     query.evaluateTo(&result);
@@ -1142,7 +1143,7 @@ void DatabaseAdapter::annotationTypesFromConfigurationFile()
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::annotationTypesFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
     query.setQuery("declare variable $path external; "
                    "for $x in doc($path)/gloss-configuration/annotations/annotation "
                    "return string-join( ($x/@name, $x/@mark , $x/@lang ) , ',') ");
@@ -1360,7 +1361,7 @@ void DatabaseAdapter::createIndex( const QString & tableName, const QString & qu
         QStringList result;
         QXmlQuery query(QXmlQuery::XQuery10);
         query.setMessageHandler(new MessageHandler("DatabaseAdapter::createIndex"));
-        query.bindVariable("path", QVariant(QUrl(path).path(QUrl::FullyEncoded)));
+        query.bindVariable("path", QVariant(QUrl::fromLocalFile(path).path(QUrl::FullyEncoded)));
         query.setQuery(queryString);
         query.evaluateTo(&result);
 
