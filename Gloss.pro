@@ -186,3 +186,5 @@ LIBS += -L./ \
     -liconv
 
 RESOURCES +=
+
+QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter

@@ -14,6 +14,7 @@
 #include <Qt>
 #include <QString>
 #include <QHash>
+#include <QtDebug>
 
 class WritingSystem
 {
@@ -48,10 +49,7 @@ private:
     Qt::LayoutDirection mLayoutDirection;
 };
 
-
-inline uint qHash(const WritingSystem & key)
-{
-    return qHash(key.flexString());
-}
+uint qHash(const WritingSystem & key);
+QDebug operator<<(QDebug dbg, const WritingSystem &key);
 
 #endif // WRITINGSYSTEM_H

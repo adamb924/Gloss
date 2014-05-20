@@ -91,3 +91,17 @@ bool WritingSystem::isValid() const
 {
     return mId != -1;
 }
+
+uint qHash(const WritingSystem & key)
+{
+    return qHash(key.flexString());
+}
+
+QDebug operator<<(QDebug dbg, const WritingSystem &key)
+{
+    if( key.isNull() )
+        dbg.nospace() << "WritingSystem(null)";
+    else
+        dbg.nospace() << "WritingSystem(" << key.name() << ", " << key.flexString() << key.abbreviation() << ", " <<  key.keyboardCommand() << ", " << key.fontFamily() << key.fontSize() << ")";
+    return dbg.maybeSpace();
+}
