@@ -12,6 +12,8 @@ SearchForm::SearchForm(const DatabaseAdapter *dbAdapter, QWidget *parent) :
     connect(ui->wsComboBox, SIGNAL(writingSystemSelected(WritingSystem)), ui->searchLineEdit, SLOT(setWritingSystem(WritingSystem)) );
     ui->wsComboBox->setWritingSystems( dbAdapter->writingSystems() );
 
+    // TODO: make use of ui->searchLineEdit
+
     ui->interpretationIdLineEdit->setValidator( new QIntValidator(1, 0xffffff, this) );
     ui->textFormLineEdit->setValidator( new QIntValidator(1, 0xffffff, this) );
     ui->glossLineEdit->setValidator( new QIntValidator(1, 0xffffff, this) );
