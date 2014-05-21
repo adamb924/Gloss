@@ -349,10 +349,10 @@ void Text::setSound(const QUrl & filename)
     if( mSound != 0 )
         delete mSound;
 
-    mAudioFileURL = filename;
+    mAudioFileURL = QUrl::fromLocalFile( mProject->mediaPath(filename.toLocalFile()) );
 
-    if( QFileInfo::exists(mAudioFileURL.path()) )
-        mSound = new Sound(filename);
+    if( QFileInfo::exists(mAudioFileURL.toLocalFile()) )
+        mSound = new Sound(mAudioFileURL);
 }
 
 bool Text::playSoundForLine( int lineNumber )

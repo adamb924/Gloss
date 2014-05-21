@@ -16,6 +16,7 @@
 #include <QDesktopServices>
 #include <QProgressDialog>
 #include <QAction>
+#include <QFileDialog>
 
 #include "messagehandler.h"
 #include "xsltproc.h"
@@ -27,6 +28,7 @@ Project::Project(MainWindow * mainWindow)
     mMainWindow = mainWindow;
     mDatabaseFilename = "sqlite3-database.db";
     mDbAdapter = 0;
+    mOverrideMediaPath = false;
 }
 
 Project::~Project()
@@ -811,13 +813,13 @@ void Project::playLine(const QString & textName, int lineNumber)
     if( query.evaluateTo(&result) )
     {
         QStringList elements = result.split(",");
-        QString audioPath = elements.at(0);
+        QString audioPath = mediaPath(elements.at(0));
         int startTime = elements.at(1).toInt();
         int endTime = elements.at(2).toInt();
 
         if( QFileInfo::exists(audioPath) )
         {
-            Sound *sound = new Sound( QUrl::fromEncoded(audioPath.toUtf8()) );
+            Sound *sound = new Sound( QUrl::fromEncoded( audioPath.toUtf8() ) );
             sound->playSegment( startTime, endTime );
         }
     }
@@ -884,12 +886,23 @@ void Project::parseConfigurationFile()
             {
                 mViews.last()->setShowBaselineTextTab(true);
             }
+            else if( name == "media-folder" )
+            {
+                if( stream.attributes().hasAttribute("override-paths") && stream.attributes().value("override-paths").toString() == "true" )
+                {
+                    mOverrideMediaPath = true;
+                }
+                mMediaPath = QUrl(stream.readElementText()).toLocalFile();
+            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement && name == "tab" )
         {
             inTab = false;
         }
     }
+
+    maybeUpdateMediaPath();
+
     mMainWindow->refreshViews();
     file->close();
 }
@@ -955,5 +968,34 @@ void Project::baselineSearchReplace(const TextBit &search , const TextBit &repla
     {
         iter.next();
         iter.value()->baselineSearchReplace( search, replace );
+    }
+}
+
+QString Project::mediaPath(const QString &path) const
+{
+    if( mOverrideMediaPath )
+    {
+        QFileInfo info(path);
+        return mMediaPath.absoluteFilePath(info.fileName());
+    }
+    else
+    {
+        return path;
+    }
+}
+
+void Project::maybeUpdateMediaPath()
+{
+    if( !mMediaPath.exists() )
+    {
+        if( QMessageBox::Yes == QMessageBox::question(0,tr("Update directory?"),tr("The media directory specified in the project (%1) does not exist. Would you like to choose a new directory?").arg(mMediaPath.absolutePath())) )
+        {
+            QFileDialog dlg;
+            dlg.setFileMode(QFileDialog::Directory);
+            if(dlg.exec())
+            {
+                mMediaPath = dlg.directory();
+            }
+        }
     }
 }

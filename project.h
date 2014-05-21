@@ -11,6 +11,7 @@
 #include <QSet>
 #include <QString>
 #include <QPair>
+#include <QDir>
 
 #include "writingsystem.h"
 #include "text.h"
@@ -104,6 +105,9 @@ public:
 
     void baselineSearchReplace( const TextBit & search , const TextBit & replace );
 
+    //! \brief Returns a path to the filename, changing the path to the project's default media path, if the project is configured that way.
+    QString mediaPath(const QString & path) const;
+
 public slots:
     void setInterlinearView(QAction * action);
     void setQuickView(QAction * action);
@@ -112,6 +116,10 @@ private:
     DatabaseAdapter *mDbAdapter;
     QString mDatabaseFilename;
     QString mDatabasePath;
+    QDir mMediaPath;
+    bool mOverrideMediaPath;
+
+    void maybeUpdateMediaPath();
 
     Project::MemoryMode mMemoryMode;
 
