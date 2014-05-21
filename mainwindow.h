@@ -19,6 +19,7 @@ class TextDisplayWidget;
 class QStandardItemModel;
 class InterlinearChunkEditor;
 class Text;
+class TextBit;
 
 namespace Ui {
     class MainWindow;
@@ -65,6 +66,17 @@ public slots:
     void searchForGlossById(qlonglong id);
     void searchForLexicalEntryById(qlonglong id);
     void searchForAllomorphById(qlonglong id);
+    void searchForText(const TextBit & bit);
+    void searchForSubstring(const TextBit & bit);
+
+private slots:
+    void searchGlossItems();
+    void substringSearchGlossItems();
+    void searchForInterpretationById();
+    void searchForTextFormById();
+    void searchForGlossById();
+    void searchForLexicalEntryById();
+    void searchForAllomorphById();
 
 private slots:
     void rebuildIndex();
@@ -94,15 +106,6 @@ private slots:
     void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText);
     void importEaf();
     bool importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText);
-
-    void searchGlossItems();
-    void substringSearchGlossItems();
-
-    void searchForInterpretationById();
-    void searchForTextFormById();
-    void searchForGlossById();
-    void searchForLexicalEntryById();
-    void searchForAllomorphById();
 
 
     void focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci );

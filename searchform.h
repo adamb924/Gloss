@@ -8,6 +8,7 @@ class SearchForm;
 }
 
 class DatabaseAdapter;
+class TextBit;
 
 class SearchForm : public QWidget
 {
@@ -23,6 +24,11 @@ signals:
     void searchForGlossById(qlonglong id);
     void searchForLexicalEntryById(qlonglong id);
     void searchForAllomorphById(qlonglong id);
+    void searchForText(const TextBit & bit);
+    void searchForSubstring(const TextBit & bit);
+
+public slots:
+    void setXmlTextWarning(bool relevant);
 
 private slots:
     void interpretationId();
@@ -30,6 +36,7 @@ private slots:
     void glossId();
     void lexicalEntryId();
     void allomorphId();
+    void text();
 
 private:
     Ui::SearchForm *ui;

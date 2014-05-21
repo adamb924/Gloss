@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>184</width>
-    <height>364</height>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,6 +34,16 @@
      </property>
      <property name="tristate">
       <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="xmlTextWarning">
+     <property name="text">
+      <string>&lt;i&gt;Please note that you are searching files instead of the database. By default, text data is not stored in the .flextext files. If you are uncertain what this means, uncheck &quot;Search files instead of index&quot; in the &quot;Search&quot; menu. Otherwise, you may want to run &quot;Set text XML from database&quot; from the &quot;Database menu.&quot;&lt;/i&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

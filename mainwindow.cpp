@@ -767,6 +767,52 @@ void MainWindow::searchForAllomorphById(qlonglong id)
     createSearchResultDock(model, tr("Allomorph ID: %1").arg(id));
 }
 
+void MainWindow::searchForText(const TextBit & bit)
+{
+    if( ui->actionSearch_files_instead_of_index->isChecked() )
+    {
+        // Do the search of the texts
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[words/descendant::item[@lang='%1' and text()='%2']] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::item[@lang='%1' and text()='%2'] ) ) "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return   string-join( ($line-number, $count) , ',') ").arg(bit.writingSystem().flexString()).arg(bit.text());
+
+        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        createSearchResultDock(model, tr("Containing exact string '%1'").arg(bit.text()) );
+    }
+    else
+    {
+        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForText(bit) );
+        createSearchResultDock(model, tr("Containing exact string '%1'").arg(bit.text()));
+    }
+}
+
+void MainWindow::searchForSubstring(const TextBit & bit)
+{
+    if( ui->actionSearch_files_instead_of_index->isChecked() )
+    {
+        // Do the search of the texts
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[words/descendant::item[@lang='%1' and contains( text(), '%2') ]] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::word[@lang='%1' and contains( text(), '%2') ] ) ) "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return   string-join( ($line-number, $count) , ',') ").arg(bit.writingSystem().flexString()).arg(bit.text());
+
+        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        createSearchResultDock(model, tr("Containing substring '%1'").arg(bit.text()));
+    }
+    else
+    {
+        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForSubstring(bit) );
+        createSearchResultDock(model, tr("Containing substring '%1'").arg(bit.text()));
+    }
+}
+
 void MainWindow::rebuildIndex()
 {
     mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
@@ -1384,12 +1430,16 @@ void MainWindow::toggleSearchDock()
         delete mSearchDock;
 
     SearchForm * searchForm = new SearchForm(mProject->dbAdapter(), this);
+    searchForm->setXmlTextWarning( ui->actionSearch_files_instead_of_index->isChecked() );
 
     connect( searchForm, SIGNAL(searchForInterpretationById(qlonglong)), this, SLOT(searchForInterpretationById(qlonglong)) );
     connect( searchForm, SIGNAL(searchForTextFormById(qlonglong)), this, SLOT(searchForTextFormById(qlonglong)) );
     connect( searchForm, SIGNAL(searchForGlossById(qlonglong)), this, SLOT(searchForGlossById(qlonglong)) );
     connect( searchForm, SIGNAL(searchForLexicalEntryById(qlonglong)), this, SLOT(searchForLexicalEntryById(qlonglong)) );
     connect( searchForm, SIGNAL(searchForAllomorphById(qlonglong)), this, SLOT(searchForAllomorphById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForText(TextBit)), this, SLOT(searchForText(TextBit)) );
+    connect( searchForm, SIGNAL(searchForSubstring(TextBit)), this, SLOT(searchForSubstring(TextBit)) );
+    connect( ui->actionSearch_files_instead_of_index, SIGNAL(toggled(bool)), searchForm, SLOT(setXmlTextWarning(bool)) );
 
     mSearchDock = new QDockWidget(tr("Search"), this);
     mSearchDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);

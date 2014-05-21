@@ -1496,6 +1496,36 @@ QSqlQuery DatabaseAdapter::searchIndexForAllomorph( qlonglong id ) const
     return q;
 }
 
+QSqlQuery DatabaseAdapter::searchIndexForText(const TextBit &bit) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select TextName,LineNumber,count(Id) from "
+               "(select TextName,LineNumber,Id from TextFormIndex where Id in (select _id from TextForms where WritingSystem=? and Form=?) "
+               "union "
+               "select TextName,LineNumber,Id from GlossIndex where Id in (select _id from Glosses where WritingSystem=? and Form=?)) "
+               "group by TextName,LineNumber order by TextName asc,LineNumber asc;");
+    q.addBindValue(bit.writingSystem().id());
+    q.addBindValue(bit.text());
+    q.addBindValue(bit.writingSystem().id());
+    q.addBindValue(bit.text());
+    q.exec();
+    return q;
+}
+
+QSqlQuery DatabaseAdapter::searchIndexForSubstring(const TextBit &bit) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( QString("select TextName,LineNumber,count(Id) from "
+               "(select TextName,LineNumber,Id from TextFormIndex where Id in (select _id from TextForms where WritingSystem=? and Form like '%%1%') "
+               "union "
+               "select TextName,LineNumber,Id from GlossIndex where Id in (select _id from Glosses where WritingSystem=? and Form like '%%2%')) "
+               "group by TextName,LineNumber order by TextName asc,LineNumber asc;").arg(bit.text()).arg(bit.text()) );
+    q.addBindValue(bit.writingSystem().id());
+    q.addBindValue(bit.writingSystem().id());
+    q.exec();
+    return q;
+}
+
 int DatabaseAdapter::removeUnusedMorphologicalAnalysisMembers() const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
