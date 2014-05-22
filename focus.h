@@ -19,7 +19,10 @@ public:
     Focus();
     Focus(Type t, qlonglong i);
 
+    //! \brief Return the type (Focus::Type) of the object.
     Focus::Type type() const;
+
+    //! \brief Return the index that is being focused. The interpretation of index() will depend on type().
     qlonglong index() const;
 
 private:

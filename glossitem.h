@@ -122,7 +122,6 @@ public:
 
     //! \brief Connects various signals of the object to the project's Concordance object
     void connectToConcordance();
-    // TODO this is so awkward to have to call each time I create a new object. I wonder what the better way to to it is.
 
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
@@ -143,6 +142,7 @@ signals:
     //! \brief Emitted whenever a gloss changes
     void glossChanged(const TextBit & gloss);
 
+    //! \brief Emitted whenever the baseline text changes
     void baselineTextChanged(const TextBit & textForm);
 
     //! \brief Emitted when the morphological analysis for \a textFormId changes

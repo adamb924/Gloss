@@ -15,8 +15,13 @@ public:
     AnnotationType();
     AnnotationType(const QString & label, const QString & mark, const WritingSystem & ws);
 
+    //! \brief Return the WritingSystem of the annotation
     WritingSystem writingSystem() const;
+
+    //! \brief Return the label (i.e., the text) of the annotation
     QString label() const;
+
+    //! \brief Return the mark of the annotation (e.g., an asterisk)
     QString mark() const;
 
 private:

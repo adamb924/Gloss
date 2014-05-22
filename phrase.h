@@ -2,6 +2,8 @@
   \class Phrase
   \ingroup Data
   \brief A data class holding a list of GlossItem objects, as well as a hash map with phrase-level glosses.
+
+  A Phrase object corresponds to a &lt;phrase&gt; element in a .flextext file.
 */
 
 #ifndef PHRASE_H
