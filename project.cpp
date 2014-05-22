@@ -50,44 +50,14 @@ bool Project::create(QString filename)
         mDbAdapter = 0;
     }
 
-    if(maybeDelete(tempDir))
-    {
-        mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
-        mDbAdapter = new DatabaseAdapter(mDatabasePath);
-        mDbAdapter->createTables();
-        return true;
-    }
-    else
-    {
-        mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
-        mDbAdapter = new DatabaseAdapter(mDatabasePath);
-        return false;
-    }
-}
+    mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
+    mDbAdapter = new DatabaseAdapter(mDatabasePath);
+    mDbAdapter->createTables();
 
-bool Project::maybeDelete(QDir tempDir)
-{
-    QStringList files;
-    files = tempDir.entryList(QStringList("*"), QDir::Files | QDir::NoSymLinks);
-    if( files.count() > 0 )
-    {
-        if( QMessageBox::Yes == QMessageBox::question( 0, tr("Overwrite files"), tr("The temporary directory %1 has files in it. If a project has not closed recently, these files could contain important data. Click 'Yes' to save this data from being overwritten. Otherwise click 'No' and the files will be deleted.").arg(tempDir.absolutePath()), QMessageBox::Yes | QMessageBox::No , QMessageBox::Yes ) )
-        {
-            return false;
-        }
-        else
-        {
-            for(int i=0; i<files.count(); i++)
-            {
-                QFile::remove(files.at(i));
-            }
-            return true;
-        }
-    }
-    else
-    {
-        return true;
-    }
+    //! @todo Project creation tasks:
+    //! @todo Initiate writing systems
+    //! @todo Create configuration.xml
+    //! @todo Save zip file for the first time
 }
 
 bool Project::readFromFile(QString filename)

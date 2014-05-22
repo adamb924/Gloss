@@ -135,7 +135,6 @@ private:
     QString mProjectPath;
 
     void readTextPaths();
-    bool maybeDelete(QDir tempDir);
 
     void loadAllTextsIntoMemory();
 
