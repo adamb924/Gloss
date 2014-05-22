@@ -1,4 +1,4 @@
-#include "searchquerymodel.h"
+#include "xquerymodel.h"
 
 #include <QSet>
 #include <QFileInfo>
@@ -9,7 +9,7 @@
 
 #include "messagehandler.h"
 
-SearchQueryModel::SearchQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus ) : mQuery(queryString), mFocus(focus), QStandardItemModel( parent )
+XQueryModel::XQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus ) : mQuery(queryString), mFocus(focus), QStandardItemModel( parent )
 {
     QStandardItem *parentItem = invisibleRootItem();
 
@@ -30,11 +30,11 @@ SearchQueryModel::SearchQueryModel( const QString & queryString, const QSet<QStr
     }
 }
 
-bool SearchQueryModel::query( QStandardItem *parentItem, const QString & filename )
+bool XQueryModel::query( QStandardItem *parentItem, const QString & filename )
 {
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    query.setMessageHandler(new MessageHandler("SearchQueryModel::query",this));
+    query.setMessageHandler(new MessageHandler("XQueryModel::query",this));
     query.bindVariable("path", QVariant(QUrl::fromLocalFile(filename).path(QUrl::FullyEncoded)));
     query.setQuery(mQuery);
     query.evaluateTo(&result);

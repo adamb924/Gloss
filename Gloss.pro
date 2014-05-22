@@ -33,7 +33,7 @@ SOURCES += main.cpp\
     mergetranslationdialog.cpp \
     xsltproc.cpp \
     generictextinputdialog.cpp \
-    searchquerymodel.cpp \
+    xquerymodel.cpp \
     xqueryinputdialog.cpp \
     databasequerydialog.cpp \
     immutablelabel.cpp \
@@ -102,7 +102,7 @@ HEADERS  += mainwindow.h \
     mergetranslationdialog.h \
     xsltproc.h \
     generictextinputdialog.h \
-    searchquerymodel.h \
+    xquerymodel.h \
     xqueryinputdialog.h \
     databasequerydialog.h \
     immutablelabel.h \

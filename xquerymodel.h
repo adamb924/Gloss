@@ -1,22 +1,22 @@
 /*!
-  \class SearchQueryModel
+  \class XQueryModel
   \ingroup GUIModel
   \ingroup Search
   \brief A model class for performing XQuery searches. This is used in MainWindow in conjunction with SearchQueryView.
 */
 
-#ifndef SEARCHQUERYMODEL_H
-#define SEARCHQUERYMODEL_H
+#ifndef XQUERYMODEL_H
+#define XQUERYMODEL_H
 
 #include <QStandardItemModel>
 #include "focus.h"
 
 class QXmlResultItems;
 
-class SearchQueryModel : public QStandardItemModel
+class XQueryModel : public QStandardItemModel
 {
 public:
-    SearchQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus = QList<Focus>() );
+    XQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus = QList<Focus>() );
 
 private:
     QString mQuery;

@@ -10,7 +10,7 @@
 #include "writingsystemsdialog.h"
 #include "mergetranslationdialog.h"
 #include "generictextinputdialog.h"
-#include "searchquerymodel.h"
+#include "xquerymodel.h"
 #include "xqueryinputdialog.h"
 #include "databasequerydialog.h"
 #include "indexsearchmodel.h"
@@ -635,7 +635,7 @@ void MainWindow::searchGlossItems()
                                 "let $count := string( count( $x/descendant::item[@lang='%1' and text()='%2'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
         createSearchResultDock(model, tr("Containing exact string '%1'").arg(dialog.text()) );
     }
 }
@@ -655,7 +655,7 @@ void MainWindow::searchForInterpretationById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word[@abg:id='%1'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(id);
-        model = new SearchQueryModel(query, mProject->textPaths(), this, foci);
+        model = new XQueryModel(query, mProject->textPaths(), this, foci);
     }
     else
     {
@@ -684,7 +684,7 @@ void MainWindow::searchForTextFormById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='txt'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(id);
-        model = new SearchQueryModel(query, mProject->textPaths(), this, foci);
+        model = new XQueryModel(query, mProject->textPaths(), this, foci);
     }
     else
     {
@@ -714,7 +714,7 @@ void MainWindow::searchForGlossById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='gls'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') " ).arg(id);
-        model = new SearchQueryModel(query, mProject->textPaths(), this, foci);
+        model = new XQueryModel(query, mProject->textPaths(), this, foci);
     }
     else
     {
@@ -778,7 +778,7 @@ void MainWindow::searchForText(const TextBit & bit)
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(bit.writingSystem().flexString()).arg(bit.text());
 
-        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
         createSearchResultDock(model, tr("Containing exact string '%1'").arg(bit.text()) );
     }
     else
@@ -801,7 +801,7 @@ void MainWindow::searchForSubstring(const TextBit & bit)
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(bit.writingSystem().flexString()).arg(bit.text());
 
-        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
         createSearchResultDock(model, tr("Containing substring '%1'").arg(bit.text()));
     }
     else
@@ -871,7 +871,7 @@ void MainWindow::substringSearchGlossItems()
                                 "let $count := string( count( $x/descendant::word[@lang='%1' and contains( text(), '%2') ] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
         createSearchResultDock(model, tr("Items containing substring '%1'").arg(dialog.text()));
     }
 }
@@ -1023,7 +1023,7 @@ void MainWindow::rawXQuery()
     dialog.setWindowTitle(tr("Perform a raw XQuery on all texts"));
     if( dialog.exec() == QDialog::Accepted )
     {
-        SearchQueryModel *model = new SearchQueryModel(dialog.query(), mProject->textPaths(), this);
+        XQueryModel *model = new XQueryModel(dialog.query(), mProject->textPaths(), this);
         createSearchResultDock(model, tr("Raw XQuery"));
     }
 }
@@ -1246,7 +1246,7 @@ void MainWindow::findApprovedLines()
                             "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[count(words/word/@abg:approval-status='false')=0] "
                             "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
-    SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+    XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
     createSearchResultDock(model, tr("Approved lines") );
 }
 
@@ -1257,7 +1257,7 @@ void MainWindow::findUnapprovedLines()
                             "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
                             "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
-    SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+    XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
     createSearchResultDock(model, tr("Unapproved lines") );
 }
 
