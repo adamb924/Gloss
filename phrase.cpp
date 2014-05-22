@@ -141,7 +141,7 @@ void Phrase::removeGlossItem( GlossItem *glossItem )
 {
     if( mGlossItems.count() == 1)
     {
-        if( QMessageBox::Yes == QMessageBox::question(0, tr("Remove phrase?"), tr("This is the last gloss item on the line. Would you like to remove the entire phrase? (If you click no, nothing will happen.)"), QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) );
+        if( QMessageBox::Yes == QMessageBox::question(0, tr("Remove phrase?"), tr("This is the last gloss item on the line. Would you like to remove the entire phrase? (If you click no, nothing will happen.)"), QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) )
         {
             emit requestRemovePhrase(this);
         }
