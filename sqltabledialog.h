@@ -1,3 +1,10 @@
+/*!
+  \class SqlQueryWriter
+  \ingroup GUI
+  \ingroup RawAccess
+  \brief This dialog provides a quick, editable view of a SQL table. It is used in MainWindow.
+*/
+
 #ifndef SQLTABLEDIALOG_H
 #define SQLTABLEDIALOG_H
 

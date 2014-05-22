@@ -18,6 +18,8 @@
  \defgroup LexiconEdit Classes for editing the lexicon.
 
  \defgroup Search Classes for performing searches.
+
+ \defgroup IO Classes for input/output functions.
  */
 
 #include <QtWidgets/QApplication>

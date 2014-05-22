@@ -9,11 +9,8 @@
 
 #include "messagehandler.h"
 
-SearchQueryModel::SearchQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus ) : QStandardItemModel( parent )
+SearchQueryModel::SearchQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus ) : mQuery(queryString), mFocus(focus), QStandardItemModel( parent )
 {
-    mQuery = queryString;
-    mFocus = focus;
-
     QStandardItem *parentItem = invisibleRootItem();
 
     QStringList paths( QList<QString>::fromSet(*textPaths) );

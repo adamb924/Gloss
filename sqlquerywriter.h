@@ -1,3 +1,9 @@
+/*!
+  \class SqlQueryWriter
+  \ingroup IO
+  \brief This class writes the results of an executed QSqlQuery to a CSV-formatted file.
+*/
+
 #ifndef SQLQUERYWRITER_H
 #define SQLQUERYWRITER_H
 

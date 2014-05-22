@@ -1,6 +1,7 @@
 /*!
   \class AllomorphModel
   \ingroup GUIModel
+  \ingroup LexiconEdit
   \brief This class is a model for displaying the allomorphs of a lexical entry. Currently it is only used by LexiconEdit.
 */
 

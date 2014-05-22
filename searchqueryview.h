@@ -2,7 +2,7 @@
   \class SearchQueryView
   \ingroup GUI
   \ingroup Search
-  \brief A QTreeView subclass for displaying search results (typically from a SearchQueryModel). It provides a context menu, so that users can right-click on search results and perform various actions on the line of text (e.g., displaying it, playing its sound).
+  \brief A QTreeView subclass for displaying search results (typically from a SearchQueryModel or an IndexSearchModel). It provides a context menu, so that users can right-click on search results and perform various actions on the line of text (e.g., displaying it, playing its sound).
 */
 
 #ifndef SEARCHQUERYVIEW_H

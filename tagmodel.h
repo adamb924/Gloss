@@ -1,3 +1,10 @@
+/*!
+  \class TagModel
+  \ingroup GUIModel
+  \ingroup LexiconEdit
+  \brief This class provides a model for tags associated with a lexical entry. It is instantiated in LexiconEdit.
+*/
+
 #ifndef TAGMODEL_H
 #define TAGMODEL_H
 

@@ -1,3 +1,10 @@
+/*!
+  \class SearchQueryModel
+  \ingroup GUIModel
+  \ingroup Search
+  \brief A model class for performing XQuery searches. This is used in MainWindow in conjunction with SearchQueryView.
+*/
+
 #ifndef SEARCHQUERYMODEL_H
 #define SEARCHQUERYMODEL_H
 

@@ -1,3 +1,9 @@
+/*!
+  \class WritingSystemCombo
+  \ingroup GUI
+  \brief This is a QComboBox subclass for selecting a WritingSystem.
+*/
+
 #ifndef WRITINGSYSTEMCOMBO_H
 #define WRITINGSYSTEMCOMBO_H
 
