@@ -35,13 +35,13 @@ void WritingSystemsDialog::setupTable()
     mModel->setTable("WritingSystems");
     mModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
     mModel->select();
-    mModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
-    mModel->setHeaderData(1, Qt::Horizontal, tr("Abbreviation"));
-    mModel->setHeaderData(2, Qt::Horizontal, tr("Flex String"));
-    mModel->setHeaderData(3, Qt::Horizontal, tr("Keyboard Switch File"));
-    mModel->setHeaderData(4, Qt::Horizontal, tr("Text Direction"));
-    mModel->setHeaderData(5, Qt::Horizontal, tr("Font Family"));
-    mModel->setHeaderData(6, Qt::Horizontal, tr("Font Size"));
+    mModel->setHeaderData(1, Qt::Horizontal, tr("Name"));
+    mModel->setHeaderData(2, Qt::Horizontal, tr("Abbreviation"));
+    mModel->setHeaderData(3, Qt::Horizontal, tr("Flex String"));
+    mModel->setHeaderData(4, Qt::Horizontal, tr("Keyboard Switch File"));
+    mModel->setHeaderData(5, Qt::Horizontal, tr("Text Direction"));
+    mModel->setHeaderData(6, Qt::Horizontal, tr("Font Family"));
+    mModel->setHeaderData(7, Qt::Horizontal, tr("Font Size"));
 
     ui->tableView->setModel(mModel);
     ui->tableView->hideColumn(0); // don't show the ID

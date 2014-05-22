@@ -1,7 +1,7 @@
 /*!
   \class WritingSystemsDialog
   \ingroup GUI
-  \brief This provides an interface for editing the writing systems of a project. It's currently very buggy, and should not be used.
+  \brief This provides an interface for editing the writing systems of a project.
 */
 
 #ifndef WRITINGSYSTEMSDIALOG_H
