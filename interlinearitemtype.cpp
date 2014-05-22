@@ -65,3 +65,30 @@ WritingSystem InterlinearItemType::writingSystem() const
 {
     return mWritingSystem;
 }
+
+QDebug operator<<(QDebug dbg, const InterlinearItemType &type)
+{
+    switch(type.type())
+    {
+    case InterlinearItemType::ImmutableText:
+        dbg.nospace() << "InterlinearItemType(ImmutableText)";
+        break;
+    case InterlinearItemType::ImmutableGloss:
+        dbg.nospace() << "InterlinearItemType(ImmutableGloss)";
+        break;
+    case InterlinearItemType::Text:
+        dbg.nospace() << "InterlinearItemType(Text)";
+        break;
+    case InterlinearItemType::Gloss:
+        dbg.nospace() << "InterlinearItemType(Gloss)";
+        break;
+    case InterlinearItemType::Analysis:
+        dbg.nospace() << "InterlinearItemType(Analysis)";
+        break;
+    case InterlinearItemType::Null:
+    default:
+        dbg.nospace() << "InterlinearItemType(Null)";
+        break;
+    };
+    return dbg.maybeSpace();
+}

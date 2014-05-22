@@ -14,14 +14,17 @@
 #include "xqueryinputdialog.h"
 #include "databasequerydialog.h"
 #include "replacedialog.h"
-#include "singlephraseeditdialog.h"
-#include "choosetextlinedialog.h"
 #include "indexsearchmodel.h"
 #include "lexiconedit.h"
 #include "sqltabledialog.h"
 #include "focus.h"
+#include "view.h"
+#include "interlinearchunkeditor.h"
+#include "baselinesearchreplacedialog.h"
+#include "opentextdialog.h"
+#include "searchform.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtSql>
 #include <QStringList>
 
@@ -31,12 +34,17 @@
 #include "messagehandler.h"
 #include "searchqueryview.h"
 #include "mergeeafdialog.h"
+#include "annotationform.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow)
 {
     mProject = 0;
+    mInterlinearViewMenu = 0;
+    mQuickViewMenu = 0;
+    mSearchDock = 0;
+    mAnnotationDock = 0;
 
     ui->setupUi(this);
 
@@ -84,9 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionApproved_lines, SIGNAL(triggered()), this, SLOT(findApprovedLines()));
 
     connect(ui->actionClose_and_save_open_texts, SIGNAL(triggered()), this, SLOT(closeOpenTexts()));
-
-    connect(ui->actionOpen_text_line, SIGNAL(triggered()), this, SLOT(openTextLine()) );
-    connect(ui->actionOpen_text_line_with_context, SIGNAL(triggered()), this, SLOT(openTextLineWithContext()));
+    connect(ui->actionSave_open_texts, SIGNAL(triggered()), this, SLOT(saveOpenTexts()));
 
     connect(ui->actionEdit_lexicon, SIGNAL(triggered()), this, SLOT(editLexicon()) );
 
@@ -95,12 +101,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionLexical_entry_by_id, SIGNAL(triggered()), this, SLOT(searchForLexicalEntryById()) );
     connect( ui->actionAllomorph_by_id, SIGNAL(triggered()), this, SLOT(searchForAllomorphById()) );
 
+    connect( ui->actionBaseline_text_search_and_replace, SIGNAL(triggered()), this, SLOT(baselineSearchAndReplace()));
+
+    connect( ui->actionSearch_dock, SIGNAL(triggered()), this, SLOT(toggleSearchDock()));
+    connect( ui->actionAnnotation_dock, SIGNAL(triggered()), this, SLOT(annotationDock()));
+
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
 
     setProjectActionsEnabled(false);
 
     addTableMenuItems();
+    addMemoryModeMenuItems();
 }
 
 MainWindow::~MainWindow()
@@ -125,6 +137,39 @@ void MainWindow::addTableMenuItems()
         group->addAction(action);
         connect(group,SIGNAL(triggered(QAction*)),this,SLOT(sqlTableView(QAction*)));
     }
+}
+
+void MainWindow::addMemoryModeMenuItems()
+{
+    QActionGroup *group = new QActionGroup(this);
+    QAction *action;
+
+    QMenu *menu = new QMenu(tr("Memory mode"), ui->menuProject);
+
+//    enum MemoryMode { OneAtATime, AccumulateSlowly, GreedyFast };
+
+    action = new QAction(tr("One-at-a-time"), menu );
+    action->setData(Project::OneAtATime);
+    action->setCheckable(true);
+    action->setChecked(true);
+    menu->addAction(action);
+    group->addAction(action);
+
+    action = new QAction(tr("Accumulate slowly"), menu );
+    action->setData(Project::AccumulateSlowly);
+    action->setCheckable(true);
+    menu->addAction(action);
+    group->addAction(action);
+
+    action = new QAction(tr("Greedy / Fast"), menu );
+    action->setData(Project::GreedyFast);
+    action->setCheckable(true);
+    menu->addAction(action);
+    group->addAction(action);
+
+    connect( group, SIGNAL(triggered(QAction*)), this, SLOT(setMemoryMode(QAction*)) );
+
+    ui->menuProject->addMenu(menu);
 }
 
 void MainWindow::newProject()
@@ -244,7 +289,7 @@ void MainWindow::addBlankText()
     if( dialog.exec() == QDialog::Accepted )
     {
         Text *text = mProject->newText(dialog.name(), dialog.writingSystem());
-        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
+        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
         ui->mdiArea->addSubWindow(subWindow);
         subWindow->show();
     }
@@ -314,7 +359,7 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         Text *text = mProject->newText(name, ws, content );
         if( openText )
         {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -340,7 +385,14 @@ void MainWindow::importEaf()
 
                 if( files.count() == 1 )
                 {
-                    importEaf( files.first(), tierId, ws , true );
+                    if ( importEaf( files.first(), tierId, ws , true ) )
+                    {
+                        QMessageBox::information(this, tr("Eaf file imported"), tr("%1 has been successfully imported").arg(files.first()));
+                    }
+                    else
+                    {
+                        QMessageBox::information(this, tr("Error"), tr("There was an error importing %1.").arg(files.first()));
+                    }
                 }
                 else
                 {
@@ -378,23 +430,36 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
     {
         QStringList result;
         QXmlQuery query(QXmlQuery::XQuery10);
-        if(!query.setFocus(QUrl(filepath)))
-            return false;
-
+        query.bindVariable("path", QVariant(QUrl::fromLocalFile(filepath).path(QUrl::FullyEncoded)));
         QString queryString = "declare variable $tier-id external; "
-                              "for $x in /ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "
+            "declare variable $path external; "
+                              "for $x in doc($path)/ANNOTATION_DOCUMENT/TIER[@TIER_ID=$tier-id]/ANNOTATION/ALIGNABLE_ANNOTATION/ANNOTATION_VALUE "
                               "return string( $x/text() )";
 
         query.bindVariable("tier-id", QXmlItem(tierId) );
-        query.setMessageHandler(new MessageHandler());
+        query.setMessageHandler(new MessageHandler("MainWindow::importEaf"));
         query.setQuery(queryString);
         query.evaluateTo(&result);
 
         Text *text = mProject->newText(name, ws, result.join("\n") );
+
         text->mergeEaf(filepath);
+
+        Text::MergeEafResult mergeResult = text->mergeEaf( filepath );
+        switch(mergeResult)
+        {
+        case Text::Success:
+            break;
+        case Text::MergeEafWrongNumberOfAnnotations:
+            QMessageBox::information(0, tr("Failure!"), tr("The import of %1 has failed because the number of annotations is wrong (in the merge stage).").arg( filepath ));
+        default:
+            QMessageBox::information(0, tr("Failure!"), tr("The merge into %1 has failed.").arg( filepath ));
+            break;
+        }
+
         if( openText )
         {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, QList<Focus>(), this);
+            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -415,7 +480,7 @@ void MainWindow::importFlexText()
     {
         if( QFile::exists(dialog.filename()) )
         {
-            mProject->textFromFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
+            mProject->importFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
             Text *text = mProject->texts()->value( Text::textNameFromPath(dialog.filename()) );
             if(text != 0)
                 openText(text->name());
@@ -433,19 +498,31 @@ void MainWindow::sqlTableView( QAction * action )
 
 void MainWindow::setProjectActionsEnabled(bool enabled)
 {
+    ui->actionSave_Project->setEnabled(enabled);
+    ui->actionSave_Project_As->setEnabled(enabled);
+    ui->actionClose_Project->setEnabled(enabled);
+    ui->actionClose_project_without_saving->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuData->actions() )
+        action->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuSearch->actions() )
+        action->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuProject->actions() )
+        action->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuGuts->actions() )
+        action->setEnabled(enabled);
+
+    foreach(QAction * action , ui->menuReports->actions() )
+        action->setEnabled(enabled);
+
     ui->menuData->setEnabled(enabled);
     ui->menuGuts->setEnabled(enabled);
     ui->menuProject->setEnabled(enabled);
     ui->menuSearch->setEnabled(enabled);
     ui->menuReports->setEnabled(enabled);
-    ui->actionAdd_text->setEnabled(enabled);
-    ui->actionImport_FlexText->setEnabled(enabled);
-    ui->actionSave_Project->setEnabled(enabled);
-    ui->actionClose_Project->setEnabled(enabled);
-    ui->actionWriting_systems->setEnabled(enabled);
-    ui->actionClose_project_without_saving->setEnabled(enabled);
-    ui->actionSearch_gloss_items->setEnabled(enabled);
-    ui->actionEdit_lexicon->setEnabled(enabled);
 }
 
 void MainWindow::openText()
@@ -455,10 +532,21 @@ void MainWindow::openText()
         QMessageBox::information(this, tr("No texts"), tr("The project has no texts to open."));
         return;
     }
-    bool ok;
-    QString whichText = QInputDialog::getItem( this, tr("Select text"), tr("Select the text to open"), mProject->textNames(), 0, false, &ok );
-    if( ok )
-        openText(whichText);
+
+    OpenTextDialog dialog(mProject->textNames(), this);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        if( dialog.linesPerScreen() == -1 )
+        {
+            openText( dialog.textName() );
+        }
+        else
+        {
+            InterlinearChunkEditor * ice = openTextInChunks( dialog.textName(), dialog.linesPerScreen() );
+            if( ice != 0 && dialog.goToLine() > dialog.linesPerScreen() )
+                ice->moveToLine( dialog.goToLine() );
+        }
+    }
 }
 
 TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Focus> & foci)
@@ -471,7 +559,7 @@ TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Fo
         text = mProject->texts()->value(textName, 0);
         if( text != 0 )
         {
-            subWindow = new TextDisplayWidget(text, mProject, foci, this);
+            subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), foci, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -543,7 +631,8 @@ void MainWindow::searchGlossItems()
     {
         // Do the search of the texts
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::item[@lang='%1' and text()='%2'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -562,7 +651,8 @@ void MainWindow::searchForInterpretationById(qlonglong id)
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word[@abg:id='%1']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::word[@abg:id='%1'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -590,7 +680,8 @@ void MainWindow::searchForTextFormById(qlonglong id)
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='txt'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -619,7 +710,8 @@ void MainWindow::searchForGlossById(qlonglong id)
     if( ui->actionSearch_files_instead_of_index->isChecked() )
     {
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='gls']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='gls'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -641,25 +733,20 @@ void MainWindow::searchForGlossById(qlonglong id)
 
 void MainWindow::searchForLexicalEntryById(qlonglong id)
 {
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
     if( !mProject->dbAdapter()->textIndicesExist() )
     {
         if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("Searching for lexical entries requires the index to be buildt. This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
             return;
         mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
     }
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
 
     QList<Focus> foci;
     QSetIterator<qlonglong> iter( mProject->dbAdapter()->lexicalEntryTextFormIds( id ) );
     while( iter.hasNext() )
         foci << Focus( Focus::TextForm , iter.next() );
 
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
     QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForLexicalEntry( id ), foci );
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
     createSearchResultDock(model, tr("Lexical Entry ID: %1").arg(id));
-    qDebug() << QDateTime::currentDateTime ().toString(Qt::ISODate);
 }
 
 void MainWindow::searchForAllomorphById(qlonglong id)
@@ -678,6 +765,52 @@ void MainWindow::searchForAllomorphById(qlonglong id)
 
     QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForAllomorph( id ), foci );
     createSearchResultDock(model, tr("Allomorph ID: %1").arg(id));
+}
+
+void MainWindow::searchForText(const TextBit & bit)
+{
+    if( ui->actionSearch_files_instead_of_index->isChecked() )
+    {
+        // Do the search of the texts
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[words/descendant::item[@lang='%1' and text()='%2']] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::item[@lang='%1' and text()='%2'] ) ) "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return   string-join( ($line-number, $count) , ',') ").arg(bit.writingSystem().flexString()).arg(bit.text());
+
+        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        createSearchResultDock(model, tr("Containing exact string '%1'").arg(bit.text()) );
+    }
+    else
+    {
+        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForText(bit) );
+        createSearchResultDock(model, tr("Containing exact string '%1'").arg(bit.text()));
+    }
+}
+
+void MainWindow::searchForSubstring(const TextBit & bit)
+{
+    if( ui->actionSearch_files_instead_of_index->isChecked() )
+    {
+        // Do the search of the texts
+        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[words/descendant::item[@lang='%1' and contains( text(), '%2') ]] "
+                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
+                                "let $count := string( count( $x/descendant::word[@lang='%1' and contains( text(), '%2') ] ) ) "
+                                "order by number($x/item[@type='segnum']/text()) "
+                                "return   string-join( ($line-number, $count) , ',') ").arg(bit.writingSystem().flexString()).arg(bit.text());
+
+        SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
+        createSearchResultDock(model, tr("Containing substring '%1'").arg(bit.text()));
+    }
+    else
+    {
+        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForSubstring(bit) );
+        createSearchResultDock(model, tr("Containing substring '%1'").arg(bit.text()));
+    }
 }
 
 void MainWindow::rebuildIndex()
@@ -734,7 +867,8 @@ void MainWindow::substringSearchGlossItems()
     {
         // Do the search of the texts
         QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] "
+                                "declare variable $path external; "
+                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
                                 "let $count := string( count( $x/descendant::word[@lang='%1' and contains( text(), '%2') ] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
@@ -768,6 +902,8 @@ void MainWindow::createSearchResultDock(QStandardItemModel * model, const QStrin
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dock->setWidget(intermediateWidget);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
+
+    connect(mProject, SIGNAL(destroyed()), dock, SLOT(close()));
 }
 
 void MainWindow::focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci )
@@ -777,17 +913,34 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
     while(iter.hasNext())
     {
         QMdiSubWindow* w = iter.next();
-        TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
-        if( w->windowTitle() == textName && tdw != 0 )
+        if( w->windowTitle() == textName )
         {
-            tdw->focusGlossLine( lineNumber );
-            return;
+            ui->mdiArea->setActiveSubWindow(w);
+            TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
+            if( tdw != 0 )
+            {
+                tdw->focusGlossLine( lineNumber );
+                tdw->setFocus(foci);
+                return;
+            }
+            InterlinearChunkEditor * ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
+            if( ice != 0 )
+            {
+                ice->moveToLine( lineNumber );
+                ice->setFocus(foci);
+                return;
+            }
         }
+
+
     }
     // at this point the window must not exist
-    TextDisplayWidget* tdw = openText(textName, foci);
-    if( tdw != 0 && lineNumber != -1 )
-        tdw->focusGlossLine(lineNumber);
+    InterlinearChunkEditor * ice = openTextInChunks( textName, 3 );
+    if( ice != 0 )
+    {
+        ice->moveToLine( lineNumber  && lineNumber > 3 );
+        ice->setFocus(foci);
+    }
 }
 
 void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
@@ -831,9 +984,9 @@ void MainWindow::editLine( const QString & textName , int lineNumber, const QLis
     QList<int> lines;
     lines << lineNumber;
 
-    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, foci);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, lines, foci, 0);
+    subWindow->resize(850,250);
+    subWindow->show();
 }
 
 void MainWindow::editLineWithContext( const QString & textName , int lineNumber, const QList<Focus> & foci )
@@ -860,9 +1013,9 @@ void MainWindow::editLineWithContext( const QString & textName , int lineNumber,
     if( lineNumber < text->phrases()->count()-1 )
         lines << lineNumber+1;
 
-    SinglePhraseEditDialog *dialog = new SinglePhraseEditDialog(lines, mProject, text, foci);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, lines, foci, 0);
+    subWindow->resize(850,250);
+    subWindow->show();
 }
 
 void MainWindow::rawXQuery()
@@ -1090,6 +1243,8 @@ void MainWindow::createCountReport(const QString & typeString)
 
 void MainWindow::searchAndReplace()
 {
+    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from MainWindow::searchAndReplace(), but the code to be fixed is in ReplaceDialog."));
+/*
     ReplaceDialog dialog(mProject->dbAdapter(), this);
     if( dialog.exec() == QDialog::Accepted )
     {
@@ -1098,12 +1253,14 @@ void MainWindow::searchAndReplace()
         mProject->applyXslTransformationToTexts( QDir::current().absoluteFilePath("search-replace.xsl"), parameters );
         QMessageBox::information(this, tr("Gloss"), tr("The search-and-replace operation has been completed.") );
     }
+*/
 }
 
 void MainWindow::findApprovedLines()
 {
     QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[count(words/word/@abg:approval-status='false')=0] "
+                            "declare variable $path external; "
+                            "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[count(words/word/@abg:approval-status='false')=0] "
                             "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
     SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
@@ -1113,7 +1270,8 @@ void MainWindow::findApprovedLines()
 void MainWindow::findUnapprovedLines()
 {
     QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                            "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
+                            "declare variable $path external; "
+                            "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[exists(words/word/@abg:approval-status='false')] "
                             "order by number($x/item[@type='segnum']/text()) "
                             "return string( $x/item[@type='segnum']/text() )");
     SearchQueryModel *model = new SearchQueryModel(query, mProject->textPaths(), this);
@@ -1126,18 +1284,9 @@ void MainWindow::closeOpenTexts()
     mProject->closeOpenTexts( textsWithOpenWindows() );
 }
 
-void MainWindow::openTextLine()
+void MainWindow::saveOpenTexts()
 {
-    ChooseTextLineDialog dialog(mProject->textNames(), this);
-    if( dialog.exec() == QDialog::Accepted )
-        editLine( dialog.textName() , dialog.lineNumber(), QList<Focus>() );
-}
-
-void MainWindow::openTextLineWithContext()
-{
-    ChooseTextLineDialog dialog(mProject->textNames(), this);
-    if( dialog.exec() == QDialog::Accepted )
-        editLineWithContext( dialog.textName() , dialog.lineNumber(), QList<Focus>() );
+    mProject->saveOpenTexts();
 }
 
 QStringList MainWindow::textsWithOpenWindows()
@@ -1153,4 +1302,188 @@ void MainWindow::editLexicon()
     LexiconEdit *edit = new LexiconEdit( mProject->dbAdapter(), this );
     connect( edit, SIGNAL(textFormIdSearch(qlonglong)), this, SLOT(searchForTextFormById(qlonglong)) );
     edit->show();
+}
+
+void MainWindow::refreshViews()
+{
+    if( mInterlinearViewMenu != 0 )
+        delete mInterlinearViewMenu;
+    mInterlinearViewMenu = new QMenu(tr("View"));
+
+    QActionGroup * views = new QActionGroup(this);
+
+    for(int i=0; i<mProject->views()->count(); i++)
+    {
+        QAction *act = mInterlinearViewMenu->addAction( mProject->views()->at(i)->name() );
+        act->setCheckable(true);
+        act->setData( i );
+        views->addAction(act);
+    }
+    connect( views, SIGNAL(triggered(QAction*)), mProject, SLOT(setInterlinearView(QAction*)) );
+
+    if( mQuickViewMenu != 0 )
+        delete mQuickViewMenu;
+    mQuickViewMenu = new QMenu(tr("Quick View"));
+
+    QActionGroup * interlinearViews = new QActionGroup(this);
+
+    for(int i=0; i<mProject->views()->count(); i++)
+    {
+        QAction *act = mQuickViewMenu->addAction( mProject->views()->at(i)->name() );
+        act->setCheckable(true);
+        act->setData( i );
+        interlinearViews->addAction(act);
+    }
+    connect( interlinearViews, SIGNAL(triggered(QAction*)), mProject, SLOT(setQuickView(QAction*)) );
+
+    if( mInterlinearViewMenu->actions().count() > 0 )
+    {
+        mInterlinearViewMenu->actions().first()->setChecked(true);
+        mProject->setInterlinearView(mInterlinearViewMenu->actions().first());
+    }
+
+    if( mQuickViewMenu->actions().count() > 0 )
+    {
+        mQuickViewMenu->actions().first()->setChecked(true);
+        mProject->setQuickView(mInterlinearViewMenu->actions().first());
+    }
+
+    ui->menuProject->addMenu(mInterlinearViewMenu);
+    ui->menuProject->addMenu(mQuickViewMenu);
+}
+
+InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, int linesPerScreen)
+{
+    Text *text;
+    InterlinearChunkEditor * subWindow = 0;
+    switch( mProject->openText(textName) )
+    {
+    case Project::Success:
+        text = mProject->texts()->value(textName, 0);
+        if( text != 0 )
+        {
+            subWindow = new InterlinearChunkEditor(text, mProject, View::Full, linesPerScreen, this);
+            ui->mdiArea->addSubWindow(subWindow);
+            subWindow->show();
+        }
+        return subWindow;
+        break;
+    case Project::FileNotFound:
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. The filename %2 could not be found.").arg(textName).arg(mProject->filepathFromName(textName)));
+        return 0;
+        break;
+    case Project::XmlReadError:
+    default:
+        QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. There was a problem reading the XML.").arg(textName));
+        return 0;
+        break;
+    }
+}
+
+void MainWindow::setMemoryMode( QAction * action )
+{
+    if( mProject == 0 )
+        return;
+    mProject->setMemoryMode( (Project::MemoryMode)action->data().toInt() );
+}
+
+void MainWindow::baselineSearchAndReplace()
+{
+    if( mProject->memoryMode() != Project::GreedyFast )
+    {
+        int result = QMessageBox::question(this, tr("Gloss"), tr("This feature really only makes sense in Greedy/Fast memory mode. Do you want to switch to that? (Note that it will likely take some time to open all of your texts.)"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes );
+        switch( result )
+        {
+        case QMessageBox::Yes:
+            mProject->setMemoryMode( Project::GreedyFast );
+            break;
+        case QMessageBox::No:
+            break;
+        case QMessageBox::Cancel:
+        default:
+            return;
+            break;
+        }
+    }
+
+    QHashIterator<QString,Text*> iter( *mProject->texts() );
+    if( iter.hasNext() )
+    {
+        iter.next();
+
+        BaselineSearchReplaceDialog dialog(mProject->dbAdapter(), iter.value()->baselineWritingSystem(), this);
+        if( dialog.exec() == QDialog::Accepted )
+        {
+            mProject->baselineSearchReplace( dialog.searchString() , dialog.replaceString() );
+            QMessageBox::information(this, tr("Complete"), tr("The search-and-replace option is complete."));
+        }
+    }
+    else
+    {
+        QMessageBox::information(this, tr("Complete"), tr("There were no open texts on which to perform the operation."));
+    }
+}
+
+void MainWindow::toggleSearchDock()
+{
+    if( mSearchDock != 0 )
+        delete mSearchDock;
+
+    SearchForm * searchForm = new SearchForm(mProject->dbAdapter(), this);
+    searchForm->setXmlTextWarning( ui->actionSearch_files_instead_of_index->isChecked() );
+
+    connect( searchForm, SIGNAL(searchForInterpretationById(qlonglong)), this, SLOT(searchForInterpretationById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForTextFormById(qlonglong)), this, SLOT(searchForTextFormById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForGlossById(qlonglong)), this, SLOT(searchForGlossById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForLexicalEntryById(qlonglong)), this, SLOT(searchForLexicalEntryById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForAllomorphById(qlonglong)), this, SLOT(searchForAllomorphById(qlonglong)) );
+    connect( searchForm, SIGNAL(searchForText(TextBit)), this, SLOT(searchForText(TextBit)) );
+    connect( searchForm, SIGNAL(searchForSubstring(TextBit)), this, SLOT(searchForSubstring(TextBit)) );
+    connect( ui->actionSearch_files_instead_of_index, SIGNAL(toggled(bool)), searchForm, SLOT(setXmlTextWarning(bool)) );
+
+    mSearchDock = new QDockWidget(tr("Search"), this);
+    mSearchDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mSearchDock->setWidget(searchForm);
+    addDockWidget(Qt::RightDockWidgetArea, mSearchDock);
+
+    connect(mProject, SIGNAL(destroyed()), mSearchDock, SLOT(close()));
+}
+
+void MainWindow::annotationDock()
+{
+    if( mAnnotationDock != 0 )
+        delete mAnnotationDock;
+
+    Text * text = textOfCurrentSubWindow();
+    if( text == 0 )
+        return;
+
+    AnnotationForm * annotationForm = new AnnotationForm(text, mProject->dbAdapter(), this);
+
+    mAnnotationDock = new QDockWidget(text->name(), this);
+    mAnnotationDock->setWidget(annotationForm);
+    addDockWidget(Qt::BottomDockWidgetArea, mAnnotationDock);
+
+    connect( annotationForm, SIGNAL(focusTextPosition(QString,int,QList<Focus>)), this, SLOT(focusTextPosition(QString,int,QList<Focus>)));
+    connect( text, SIGNAL(destroyed()), mAnnotationDock, SLOT(close()) );
+}
+
+Text * MainWindow::textOfCurrentSubWindow()
+{
+    QMdiSubWindow * w = ui->mdiArea->activeSubWindow();
+    if( w == 0 )
+        return 0;
+
+    TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
+    if( tdw != 0 )
+    {
+        return tdw->text();
+    }
+
+    InterlinearChunkEditor * ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
+    if( ice != 0 )
+    {
+        return ice->text();
+    }
+    return 0;
 }

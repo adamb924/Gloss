@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>559</width>
+    <width>654</width>
     <height>43</height>
    </rect>
   </property>
@@ -39,15 +39,28 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="morphemeType"/>
+      <widget class="QComboBox" name="morphemeType">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QComboBox" name="candidatesCombo">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>236</width>
+         <height>0</height>
+        </size>
        </property>
       </widget>
      </item>

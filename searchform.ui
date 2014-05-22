@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SearchForm</class>
+ <widget class="QWidget" name="SearchForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>184</width>
+    <height>551</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Search for text...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="WritingSystemCombo" name="wsComboBox"/>
+   </item>
+   <item>
+    <widget class="LingEdit" name="searchLineEdit"/>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="substringSearchCheckbox">
+     <property name="text">
+      <string>Substring search</string>
+     </property>
+     <property name="tristate">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="xmlTextWarning">
+     <property name="text">
+      <string>&lt;i&gt;Please note that you are searching files instead of the database. By default, text data is not stored in the .flextext files. If you are uncertain what this means, uncheck &quot;Search files instead of index&quot; in the &quot;Search&quot; menu. Otherwise, you may want to run &quot;Set text XML from database&quot; from the &quot;Database menu.&quot;&lt;/i&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Search by id...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,1">
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <item>
+      <widget class="QLineEdit" name="interpretationIdLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>5</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Interpretation ID</string>
+       </property>
+       <property name="inputMask">
+        <string/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>Interpretation ID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="interpretationButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QLineEdit" name="textFormLineEdit">
+       <property name="toolTip">
+        <string>Text Form ID</string>
+       </property>
+       <property name="placeholderText">
+        <string>Text Form ID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="textFormButton">
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLineEdit" name="glossLineEdit">
+       <property name="toolTip">
+        <string>Gloss ID</string>
+       </property>
+       <property name="placeholderText">
+        <string>Gloss ID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="glossButton">
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLineEdit" name="lexicalEntryLineEdit">
+       <property name="toolTip">
+        <string>Lexical Entry ID</string>
+       </property>
+       <property name="placeholderText">
+        <string>Lexical Entry ID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="lexicalEntryButton">
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QLineEdit" name="allmorphLineEdit">
+       <property name="toolTip">
+        <string>Allomorph ID</string>
+       </property>
+       <property name="placeholderText">
+        <string>Allomorph ID</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="allomorphButton">
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LingEdit</class>
+   <extends>QLineEdit</extends>
+   <header>lingedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WritingSystemCombo</class>
+   <extends>QComboBox</extends>
+   <header>writingsystemcombo.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>interpretationIdLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>interpretationButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>77</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>161</x>
+     <y>150</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lexicalEntryLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>lexicalEntryButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>242</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>161</x>
+     <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>glossLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>glossButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>161</x>
+     <y>212</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>textFormLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>textFormButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>161</x>
+     <y>181</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>allmorphLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>allomorphButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>76</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>161</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

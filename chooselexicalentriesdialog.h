@@ -25,7 +25,7 @@ public:
     //! \brief \a parseString must have the id of the textForm with which the morphological analysis is associated
     ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
-    MorphologicalAnalysis morphologicalAnalysis() const;
+    MorphologicalAnalysis * morphologicalAnalysis() const;
 
 signals:
     void resegment();
@@ -33,9 +33,9 @@ signals:
 public slots:
 
 private:
-    const DatabaseAdapter *mDbAdapter;
+    const DatabaseAdapter * mDbAdapter;
     TextBit mParseString;
-    MorphologicalAnalysis mAnalysis;
+    MorphologicalAnalysis * mAnalysis;
     QList<LexicalEntryForm*> mEntries;
     QDialogButtonBox *mButtonBox;
     QPushButton * mOk;

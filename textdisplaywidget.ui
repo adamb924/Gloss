@@ -10,43 +10,38 @@
     <height>354</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>1</horstretch>
+    <verstretch>1</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>TabWidget</string>
   </property>
   <property name="currentIndex">
-   <number>2</number>
+   <number>0</number>
   </property>
   <widget class="QWidget" name="baselineTab">
    <attribute name="title">
     <string>Baseline</string>
    </attribute>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>3</number>
+    </property>
+    <property name="topMargin">
+     <number>3</number>
+    </property>
+    <property name="rightMargin">
+     <number>3</number>
+    </property>
+    <property name="bottomMargin">
      <number>3</number>
     </property>
     <item>
      <widget class="LingTextEdit" name="baselineTextEdit"/>
     </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="glossTab">
-   <attribute name="title">
-    <string>Gloss</string>
-   </attribute>
-   <layout class="QVBoxLayout">
-    <property name="margin">
-     <number>3</number>
-    </property>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="morphologyTab">
-   <attribute name="title">
-    <string>Morphology</string>
-   </attribute>
-   <layout class="QVBoxLayout" name="verticalLayout_3">
-    <property name="margin">
-     <number>3</number>
-    </property>
    </layout>
   </widget>
  </widget>

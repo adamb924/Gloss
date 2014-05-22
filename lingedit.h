@@ -27,11 +27,15 @@ public:
 
     void matchTextAlignmentTo( Qt::LayoutDirection target );
 
+    void setFontSize(int fontSize);
+
 private:
     TextBit mTextBit;
 
     void focusInEvent ( QFocusEvent * e );
 //    void focusOutEvent ( QFocusEvent * e );
+
+    int mOverrideFontSize;
 
     void refreshStyle();
 

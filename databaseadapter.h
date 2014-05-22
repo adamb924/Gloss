@@ -15,6 +15,7 @@
 #include "textbit.h"
 #include "interlinearitemtype.h"
 #include "allomorph.h"
+#include "annotationtype.h"
 
 class WritingSystem;
 class MorphologicalAnalysis;
@@ -62,6 +63,9 @@ public:
     //! \brief Returns true if a the specified TextBit could belong to more than one Interpretation in the database, otherwise false.
     bool hasMultipleCandidateInterpretations(const TextBit & bit) const;
 
+    //! \brief Creates a new interpretation and returns the database index of the Interpreation
+    qlonglong newInterpretation();
+
     //! \brief Creates a new interpretation of the baseline TextBit \a bit and returns the database index of the Interpreation
     qlonglong newInterpretation( const TextBit & bit );
 
@@ -87,10 +91,10 @@ public:
     TextBitHash guessInterpretationTextForms(qlonglong id) const;
 
     //! \brief Returns a TextBit with the data from the \a row of Glosses, or an empty TextBit if none exists
-    TextBit glossFromId(qlonglong id) const;
+    TextBit glossFromId(qlonglong glossId) const;
 
     //! \brief Returns a TextBit with the data from the \a row of TextForms, or an empty TextBit if none exists
-    TextBit textFormFromId(qlonglong id) const;
+    TextBit textFormFromId(qlonglong textFormId) const;
 
     qlonglong textFormId(const TextBit & bit, qlonglong interpretationId);
     qlonglong glossId(const TextBit & bit, qlonglong interpretationId);
@@ -130,29 +134,24 @@ public:
 
     void parseConfigurationFile(const QString & filename);
 
-    //! \brief Returns a list of types of interlinear text lines (InterlinearItemType objects) for the gloss tab.
-    QList<InterlinearItemType> glossInterlinearLines() const;
-
-    //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects) for the gloss tab.
-    QList<InterlinearItemType> glossPhrasalGlossLines() const;
-
-    //! \brief Returns a list of types of interlinear text lines (InterlinearItemType objects) for the analysis tab.
-    QList<InterlinearItemType> analysisInterlinearLines() const;
-
-    //! \brief Returns a list of phrasal gloss lines (InterlinearItemType objects) for the analysis tab.
-    QList<InterlinearItemType> analysisPhrasalGlossLines() const;
-
     //! \brief Returns the meta analysis language
     WritingSystem metaLanguage() const;
+    WritingSystem defaultGlossLanguage() const;
+    WritingSystem defaultTextFormLanguage() const;
 
     QList<WritingSystem> lexicalEntryCitationFormFields() const;
     QList<WritingSystem> lexicalEntryGlossFields() const;
 
     //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, which are possible lexical entries for the given form.
-    QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit ) const;
+    QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit, const QString & morphologicalType ) const;
+
+    //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, which are possible lexical entries for the given form.
+    QSet<Allomorph::Type> getPossibleMorphologicalTypes( const TextBit & bit ) const;
+
+    Allomorph::Type lexicalEntryMorphologicalType( qlonglong lexicalEntryId ) const;
 
     //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, treating \a bit as a search function.
-    QHash<qlonglong,QString> searchLexicalEntries( const TextBit & bit ) const;
+    void searchLexicalEntries( const TextBit & bit , QHash<qlonglong,QString> * first , QHash<qlonglong,QString> * second ) const;
 
     //! \brief Returns a one-line summary of the lexical entry
     QString lexicalEntrySummary( qlonglong lexicalEntryId ) const;
@@ -160,11 +159,15 @@ public:
     qlonglong addLexicalEntry( const QString & grammaticalInfo, Allomorph::Type type, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const;
     qlonglong addAllomorph( const TextBit & bit , qlonglong lexicalEntryId ) const;
 
+    bool hasMorphologicalAnalysis( qlonglong textFormId ) const;
+
     //! \brief Adds the specified morphological analysis to the database. Any existing morphological analysis associated with the text form is deleted. The
-    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis ) const;
+    void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis * morphologicalAnalysis ) const;
 
     //! \brief Returns the morphological analysis associated with the given TextForm id. The analysis is empty if none is found in the database.
-    MorphologicalAnalysis morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const;
+    MorphologicalAnalysis * morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const;
+
+    void clearMorphologicalAnalysis( qlonglong textFormId ) const;
 
     //! \brief Returns true if the specified text form has a morphological analysis, otherwise false
     bool textFormHasMorphologicalAnalysis( qlonglong textFormId ) const;
@@ -204,6 +207,8 @@ public:
     QSqlQuery searchIndexForInterpretation( qlonglong id ) const;
     QSqlQuery searchIndexForLexicalEntry( qlonglong id ) const;
     QSqlQuery searchIndexForAllomorph( qlonglong id ) const;
+    QSqlQuery searchIndexForText( const TextBit & bit ) const;
+    QSqlQuery searchIndexForSubstring( const TextBit & bit ) const;
     QSet<qlonglong> lexicalEntryTextFormIds( qlonglong id ) const;
     QSet<qlonglong> allomorphTextFormIds( qlonglong id ) const;
 
@@ -222,6 +227,16 @@ public:
 
     QString guessGloss( const QString & hint , const WritingSystem & ws );
 
+    QList<AnnotationType> annotationTypes() const;
+    AnnotationType annotationType(const QString & label) const;
+
+    qlonglong lexicalEntryIdFromAllomorph(qlonglong allomorphId) const;
+
+    QString guessLexicalEntryCitationForm( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
+    QStringList suggestLexicalEntryCitationForms( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
+    QString guessLexicalEntryGloss( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
+    QStringList suggestLexicalEntryGlosses( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
+
 private:
     QString mFilename;
 
@@ -230,19 +245,18 @@ private:
     QHash<qlonglong, WritingSystem> mWritingSystemByRowId;
     QHash<QString, WritingSystem> mWritingSystemByFlexString;
 
-    QList<InterlinearItemType> interlinearItemsFromConfigurationFile(const QString & queryString) const;
     QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
-    void metalanguageFromConfigurationFile();
+    void languageSettingsFromConfigurationFile();
+    void annotationTypesFromConfigurationFile();
 
-    QList<InterlinearItemType> mGlossInterlinearLines;
-    QList<InterlinearItemType> mGlossPhrasalGlossLines;
-    QList<InterlinearItemType> mAnalysisInterlinearLines;
-    QList<InterlinearItemType> mAnalysisPhrasalGlossLines;
+    QList<AnnotationType> mAnnotationTypes;
 
     QList<WritingSystem> mLexicalEntryCitationForms;
     QList<WritingSystem> mLexicalEntryGlosses;
 
     WritingSystem mMetaLanguage;
+    WritingSystem mDefaultTextFormLanguage;
+    WritingSystem mDefaultGlossLanguage;
 
     QString mConfigurationXmlPath;
 
@@ -257,7 +271,9 @@ public slots:
 
     void updateLexicalEntryCitationForm( const TextBit & bit ) const;
     void updateLexicalEntryGloss( const TextBit & bit ) const;
-
+    void updateLexicalEntryType( qlonglong lexicalEntryId , const QString & allomorphType ) const;
+    void updateLexicalEntryCitationForm( qlonglong lexicalEntryId, const TextBit & bit ) const;
+    void updateLexicalEntryGloss( qlonglong lexicalEntryId, const TextBit & bit ) const;
 };
 
 #endif // DATABASEADAPTER_H

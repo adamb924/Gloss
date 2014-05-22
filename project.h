@@ -11,10 +11,12 @@
 #include <QSet>
 #include <QString>
 #include <QPair>
+#include <QDir>
 
 #include "writingsystem.h"
 #include "text.h"
 #include "concordance.h"
+#include "view.h"
 
 class InterlinearItemType;
 class TextBit;
@@ -22,6 +24,7 @@ class DatabaseAdapter;
 class QUrl;
 class QProgressDialog;
 class MainWindow;
+class QAction;
 
 typedef QPair<qlonglong,qlonglong> LongLongPair;
 
@@ -29,10 +32,11 @@ class Project : public QObject
 {
     Q_OBJECT
 public:
-    Project(const MainWindow * mainWindow);
+    Project(MainWindow *mainWindow);
     ~Project();
 
     enum OpenResult { Success, FileNotFound, XmlReadError };
+    enum MemoryMode { OneAtATime, AccumulateSlowly, GreedyFast };
 
     bool create(QString filename);
     bool readFromFile(QString filename);
@@ -53,7 +57,7 @@ public:
     void deleteText(QString textName);
 
     Text* newText(const QString & name, const WritingSystem & ws, const QString &content = QString() );
-    Text* textFromFlexText(const QString & filePath, const WritingSystem & ws);
+    Text* importFlexText(const QString & filePath, const WritingSystem & ws);
     Text* textFromFlexText(const QString & filePath);
 
     //! \brief Returns a list of text names, sorted alphabetically.
@@ -66,8 +70,10 @@ public:
     QHash<QString,Text*>* texts();
 
     OpenResult openText(const QString & name);
+    OpenResult openTextFromPath(const QString & path);
 
     QString filepathFromName(const QString & name) const;
+    QString nameFromFilepath(const QString & path) const;
 
     QString doDatabaseCleanup();
     int removeUnusedInterpretations();
@@ -88,14 +94,41 @@ public:
 
     void playLine(const QString & textName, int lineNumber);
 
+    const QList<View *> *views() const;
+
+    void parseConfigurationFile();
+
+    const View * view(const View::Type type) const;
+
+    Project::MemoryMode memoryMode() const;
+    void setMemoryMode( Project::MemoryMode mode );
+
+    void baselineSearchReplace( const TextBit & search , const TextBit & replace );
+
+    //! \brief Returns a path to the filename, changing the path to the project's default media path, if the project is configured that way.
+    QString mediaPath(const QString & path) const;
+
 public slots:
+    void setInterlinearView(QAction * action);
+    void setQuickView(QAction * action);
 
 private:
     DatabaseAdapter *mDbAdapter;
     QString mDatabaseFilename;
     QString mDatabasePath;
+    QDir mMediaPath;
+    bool mOverrideMediaPath;
 
-    const MainWindow *mMainWindow;
+    void maybeUpdateMediaPath();
+
+    Project::MemoryMode mMemoryMode;
+
+    View * mCurrentInterlinearView;
+    View * mCurrentQuickView;
+
+    QList<View*> mViews;
+
+    MainWindow *mMainWindow;
 
     Concordance mConcordance;
 
@@ -103,6 +136,8 @@ private:
 
     void readTextPaths();
     bool maybeDelete(QDir tempDir);
+
+    void loadAllTextsIntoMemory();
 
     //! \brief Get all interpretation ids in use in this project
     QSet<qlonglong> getAllInterpretationIds();

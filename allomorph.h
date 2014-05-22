@@ -3,14 +3,16 @@
 
 #include "textbit.h"
 
+#include <QRegExp>
+
 class Allomorph
 {
 public:
     enum Type { Stem,Prefix,Suffix,Infix,BoundStem,Proclitic,Enclitic,Simulfix,Suprafix,Null };
 
     Allomorph();
-    Allomorph(qlonglong id, const TextBit & bit);
-    Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses );
+    Allomorph(qlonglong id, const TextBit & bit, Type type );
+    Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type );
     Allomorph(const Allomorph & other);
     Allomorph& operator=(const Allomorph & other);
 
@@ -65,6 +67,30 @@ public:
         }
     }
 
+    static Type getType(QString t)
+    {
+        if( t == "Stem" )
+            return Stem;
+        else if( t == "Prefix" )
+            return Prefix;
+        else if( t == "Suffix" )
+            return Suffix;
+        else if( t == "Infix" )
+            return Infix;
+        else if( t == "Bound Stem" )
+            return BoundStem;
+        else if( t == "Proclitic" )
+            return Proclitic;
+        else if( t == "Enclitic" )
+            return Enclitic;
+        else if( t == "Simulfix" )
+            return Simulfix;
+        else if( t == "Suprafix" )
+            return Suprafix;
+        else
+            return Null;
+    }
+
     static QString getTypeFormatTextString( const QString & text, Type t )
     {
         switch(t)
@@ -73,10 +99,10 @@ public:
             return text;
             break;
         case Prefix:
-            return "-" + text;
+            return text + "-";
             break;
         case Suffix:
-            return text + "-";
+            return "-" + text;
             break;
         case Infix:
             return "-" + text + "-";
@@ -85,10 +111,10 @@ public:
             return "*" + text;
             break;
         case Proclitic:
-            return "=" + text;
+            return text + "=";
             break;
         case Enclitic:
-            return text + "=";
+            return "=" + text;
             break;
         case Simulfix:
             return "=" + text + "=";
@@ -103,10 +129,50 @@ public:
         return text;
     }
 
-private:
-    void setTypeFromString( const QString & string );
-    QString stripPunctuation( const QString & string ) const;
 
+    static Type typeFromFormattedString(const QString & string)
+    {
+        QRegExp rePrefix("^[^-].*-$");
+        QRegExp reSuffix("^-.*[^-]$");
+        QRegExp reInfix("^-.*-$");
+        QRegExp reBoundStem("^\\*.*$");
+        QRegExp reProclitic("^[^=].*={1,2}$");
+        QRegExp reEnclitic("^={1,2}.*[^=]$");
+        QRegExp reSimulfix("^={1,2}.*={1,2}$");
+        QRegExp reSuprafix("^~.*~$");
+
+        if( rePrefix.exactMatch( string ) )
+            return Allomorph::Prefix;
+        else if( reSuffix.exactMatch( string ) )
+            return Allomorph::Suffix;
+        else if( reInfix.exactMatch( string ) )
+            return Allomorph::Infix;
+        else if( reBoundStem.exactMatch( string ) )
+            return Allomorph::BoundStem;
+        else if( reProclitic.exactMatch( string ) )
+            return Allomorph::Proclitic;
+        else if( reEnclitic.exactMatch( string ) )
+            return Allomorph::Enclitic;
+        else if( reSimulfix.exactMatch( string ) )
+            return Allomorph::Simulfix;
+        else if( reSuprafix.exactMatch( string ) )
+            return Allomorph::Suprafix;
+        else
+            return Allomorph::Stem;
+    }
+
+    static QString stripPunctuation( const QString & string )
+    {
+        QString s = string;
+        s.replace("=","");
+        s.replace("~","");
+        s.replace("=","");
+        s.replace("*","");
+        s.replace("-","");
+        return s;
+    }
+
+private:
     Type mType;
     TextBit mTextBit;
     qlonglong mId;

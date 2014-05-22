@@ -10,13 +10,16 @@
 #include "generictextinputdialog.h"
 #include "mainwindow.h"
 #include "dealwithspacesdialog.h"
+#include "annotationmarkwidget.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtDebug>
 #include <QActionGroup>
 
-WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, QWidget *parent) : QWidget(parent)
+WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, QWidget *parent) : QFrame(parent)
 {
+    setObjectName("WordDisplayWidget");
+
     mDbAdapter = dbAdapter;
     mGlossItem = item;
     mConcordance = mGlossItem->concordance();
@@ -28,17 +31,7 @@ WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, 
 
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
 
-    // Why would these be here?
-    // because I can't put them in the GlossItem constructor, so this is the next best thing (after some kind of secondary initialization method)
-    // http://www.qtcentre.org/threads/9479-connect-in-constructor
-    // http://www.parashift.com/c++-faq-lite/link-errs-static-data-mems.html
     connect( mGlossItem, SIGNAL(fieldsChanged()), this, SLOT(fillData()), Qt::UniqueConnection );
-    connect( mGlossItem, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)), Qt::UniqueConnection);
-    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)), Qt::UniqueConnection);
-    connect( mGlossItem, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)), Qt::UniqueConnection);
-    connect( mGlossItem, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)), Qt::UniqueConnection);
-    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)), Qt::UniqueConnection);
-
     connect( this, SIGNAL(requestInterpretationSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForInterpretationById(qlonglong) ));
     connect( this, SIGNAL(requestTextFormSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForTextFormById(qlonglong) ));
     connect( this, SIGNAL(requestGlossSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForGlossById(qlonglong) ));
@@ -54,8 +47,25 @@ WordDisplayWidget::~WordDisplayWidget()
 
 void WordDisplayWidget::setupLayout()
 {
-    mLayout = new QVBoxLayout(this);
-    setLayout(mLayout);
+    QHBoxLayout *hLayout = new QHBoxLayout;
+
+    mAnnotationMarks = new AnnotationMarkWidget( mDbAdapter->annotationTypes() , mGlossItem );
+    connect( mAnnotationMarks, SIGNAL(annotationActivated(QString)), this, SLOT(annotationMarkActivated(QString)) );
+
+    QVBoxLayout *vLayout = new QVBoxLayout;
+
+    if( mGlossLines.first().writingSystem().layoutDirection() == Qt::LeftToRight )
+    {
+        hLayout->addWidget(mAnnotationMarks);
+        hLayout->addLayout(vLayout);
+    }
+    else
+    {
+        hLayout->addLayout(vLayout);
+        hLayout->addWidget(mAnnotationMarks);
+    }
+
+    setLayout(hLayout);
 
     mTextFormEdits.clear();
     mGlossEdits.clear();
@@ -72,23 +82,23 @@ void WordDisplayWidget::setupLayout()
         {
         case InterlinearItemType::ImmutableText:
             immutableLabel = addImmutableTextFormLine( mGlossLines.at(i) , i == 0 );
-            mLayout->addWidget(immutableLabel);
+            vLayout->addWidget(immutableLabel);
             break;
         case InterlinearItemType::ImmutableGloss:
             immutableLabel = addImmutableGlossLine( mGlossLines.at(i) , i == 0 );
-            mLayout->addWidget(immutableLabel);
+            vLayout->addWidget(immutableLabel);
             break;
         case InterlinearItemType::Text:
             lineWidget = addTextFormLine( mGlossLines.at(i) );
-            mLayout->addWidget(lineWidget);
+            vLayout->addWidget(lineWidget);
             break;
         case InterlinearItemType::Gloss:
             lineWidget = addGlossLine( mGlossLines.at(i) );
-            mLayout->addWidget(lineWidget);
+            vLayout->addWidget(lineWidget);
             break;
         case InterlinearItemType::Analysis:
             analysisWidget = addAnalysisWidget( mGlossLines.at(i) );
-            mLayout->addWidget(analysisWidget);
+            vLayout->addWidget(analysisWidget);
             break;
         case InterlinearItemType::Null:
             break;
@@ -133,6 +143,12 @@ void WordDisplayWidget::setupShortcuts()
     leftGlossItem->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( leftGlossItem, SIGNAL(triggered()), this, SLOT(leftGlossItem()) );
     addAction(leftGlossItem);
+
+    QAction *playSound = new QAction(this);
+    playSound->setShortcut( QKeySequence("Ctrl+Shift+Q") );
+    playSound->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( playSound, SIGNAL(triggered()), this, SLOT(playSound()) );
+    addAction(playSound);
 }
 
 LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine )
@@ -143,11 +159,6 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     edit->setMaximumWidth(100);
 
     mGlossEdits.insert(glossLine.writingSystem(), edit);
-
-    // update the concordance
-    mConcordance->updateGlossLingEditConcordance( edit, gloss.id() );
-    connect(edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromLingEditConcordance(QObject*)));
-    connect(edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mConcordance, SLOT(updateGlossLingEditConcordance(TextBit,LingEdit*)));
 
     // update the gloss item
     connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setGloss(TextBit)) );
@@ -164,11 +175,6 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
 
     mTextFormEdits.insert(glossLine.writingSystem(), edit);
 
-    // update the concordance
-    mConcordance->updateTextFormLingEditConcordance( edit, textForm.id() );
-    connect( edit, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromLingEditConcordance(QObject*)));
-    connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mConcordance, SLOT(updateTextFormLingEditConcordance(TextBit,LingEdit*)));
-
     // update the gloss item
     connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setTextForm(TextBit)) );
 
@@ -180,7 +186,6 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
     TextBit bit = mGlossItem->textForm( glossLine.writingSystem() );
 
     ImmutableLabel *immutableLabel = new ImmutableLabel( bit, technicolor , this);
-    immutableLabel->setAlignment( mGlossLines.first().writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
     immutableLabel->setCandidateNumber(mGlossItem->candidateNumber());
     immutableLabel->setApprovalStatus(mGlossItem->approvalStatus());
 
@@ -188,9 +193,6 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
-
-    mConcordance->updateTextForImmutableLabelConcordance( immutableLabel, bit.id() );
-    connect( immutableLabel, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeTextFormFromImmutableLabelConcordance(QObject*)));
 
     return immutableLabel;
 }
@@ -206,9 +208,6 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
 
     mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
 
-    mConcordance->updateGlossImmutableLabelConcordance( immutableLabel, bit.id() );
-    connect( immutableLabel, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossFromImmutableLabelConcordance(QObject*)));
-
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
 
@@ -220,8 +219,8 @@ AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType 
     AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mDbAdapter, this);
     mAnalysisWidgets.insert( glossLine.writingSystem(), analysisWidget );
 
-    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), analysisWidget, SLOT(setupLayout()));
-    connect( analysisWidget, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis)) );
+    connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis*)), analysisWidget, SLOT(setupLayout()));
+    connect( analysisWidget, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis*)) );
     connect( analysisWidget, SIGNAL(requestAlternateInterpretation()), this, SLOT(duplicateInterpretation()) );
 
     return analysisWidget;
@@ -229,54 +228,58 @@ AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType 
 
 void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
+    QMenu *menu = new QMenu(this);
 
-    menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
-    menu.addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
-    menu.addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
-    menu.addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
-    menu.addAction(tr("Remove"), this, SLOT(removeGlossItem()));
+    menu->addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
+    menu->addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
+    menu->addAction(tr("Match following to this interpretation"), this, SLOT(matchFollowingTextFormsToThis()));
+    menu->addAction(tr("Edit baseline text of matching following"), this, SLOT(editBaselineTextMatchingFollowing()));
 
-    menu.addSeparator();
+    menu->addAction(tr("Edit Text Form %1 (%2)").arg( mGlossItem->baselineText().id() ).arg( mGlossItem->baselineText().text() ), this, SLOT(editBaselineTextForm()));
+
+    menu->addSeparator();
+    menu->addAction(tr("Merge with next"), this, SLOT(mergeWithNext()));
+    menu->addAction(tr("Merge with previous"), this, SLOT(mergeWithPrevious()));
+    menu->addAction(tr("Remove"), this, SLOT(removeGlossItem()));
+
+    menu->addSeparator();
 
     // Approved button
-    QAction *approved = new QAction(tr("Approved"),&menu);
+    QAction *approved = new QAction(tr("Approved"),menu);
     approved->setCheckable(true);
     approved->setChecked(mGlossItem->approvalStatus() == GlossItem::Approved );
-    QActionGroup *gApproved = new QActionGroup(&menu);
+    QActionGroup *gApproved = new QActionGroup(menu);
     gApproved->addAction(approved);
-    menu.addAction(approved);
+    menu->addAction(approved);
     connect( gApproved, SIGNAL(triggered(QAction*)) , mGlossItem, SLOT(toggleApproval()) );
 
-    addInterpretationSubmenu(&menu);
+    addInterpretationSubmenu(menu);
 
 
     for(int i=0; i<mGlossLines.count(); i++)
     {
         switch( mGlossLines.at(i).type() )
         {
-        case InterlinearItemType::ImmutableText:
-        case InterlinearItemType::ImmutableGloss:
-            break;
         case InterlinearItemType::Text:
-            addTextFormSubmenu( &menu , mGlossLines.at(i).writingSystem() );
+        case InterlinearItemType::ImmutableText:
+            addTextFormSubmenu( menu , mGlossLines.at(i).writingSystem() );
             break;
         case InterlinearItemType::Gloss:
-            addGlossSubmenu( &menu , mGlossLines.at(i).writingSystem() );
+        case InterlinearItemType::ImmutableGloss:
+            addGlossSubmenu( menu , mGlossLines.at(i).writingSystem() );
             break;
         case InterlinearItemType::Analysis:
-            break;
         case InterlinearItemType::Null:
             break;
         }
     }
 
-    menu.addSeparator();
+    menu->addSeparator();
 
-    menu.addAction(tr("Database report"), this, SLOT(displayDatabaseReport()) );
-    addSearchSubmenu(&menu);
+    menu->addAction(tr("Database report"), this, SLOT(displayDatabaseReport()) );
+    addSearchSubmenu(menu);
 
-    menu.exec(event->globalPos());
+    menu->exec(event->globalPos());
 }
 
 void WordDisplayWidget::addInterpretationSubmenu(QMenu *menu )
@@ -305,6 +308,7 @@ void WordDisplayWidget::addInterpretationSubmenu(QMenu *menu )
     }
 
     submenu->addAction(tr("New interpretation..."),this,SLOT(newInterpretation()));
+    submenu->addAction(tr("Duplicate interpretation"),this,SLOT(duplicateInterpretation()));
 
     menu->addMenu(submenu);
 }
@@ -331,6 +335,13 @@ void WordDisplayWidget::addTextFormSubmenu(QMenu *menu, const WritingSystem & wr
         }
         connect( gTextForms , SIGNAL(triggered(QAction*)) , this , SLOT(selectDifferentTextForm(QAction*)) );
         submenu->addSeparator();
+
+        QActionGroup *oneOffgroup = new QActionGroup(menu);
+        QAction *action = new QAction(tr("Match following text forms to this"),menu);
+        action->setData( writingSystem.id() );
+        oneOffgroup->addAction(action);
+        connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(changeFollowingToMatchTextForm(QAction*)) );
+        submenu->addAction(action);
     }
 
     // Text forms
@@ -366,6 +377,13 @@ void WordDisplayWidget::addGlossSubmenu(QMenu *menu, const WritingSystem & writi
         }
         connect( gGlosses, SIGNAL(triggered(QAction*)), this, SLOT(selectDifferentGloss(QAction*)) );
         submenu->addSeparator();
+
+        QActionGroup *oneOffgroup = new QActionGroup(menu);
+        QAction *action = new QAction(tr("Match following glosses to this"),menu);
+        action->setData( writingSystem.id() );
+        oneOffgroup->addAction(action);
+        connect( oneOffgroup, SIGNAL(triggered(QAction*)), this, SLOT(changeFollowingToMatchGloss(QAction*)) );
+        submenu->addAction(action);
     }
 
     // Glosses
@@ -447,14 +465,18 @@ void WordDisplayWidget::duplicateInterpretation()
     {
         iter.next();
         if( iter.key() != mGlossItem->baselineWritingSystem() )
-            mGlossItem->setTextForm( iter.value() );
+        {
+            qlonglong newId = mDbAdapter->newTextForm(id, iter.value() );
+            mGlossItem->setTextForm( mDbAdapter->textFormFromId(newId) );
+        }
     }
 
     iter = TextBitHashIterator(glosses);
     while( iter.hasNext() )
     {
         iter.next();
-        mGlossItem->setGloss( iter.value() );
+        qlonglong newId = mDbAdapter->newGloss( id, iter.value() );
+        mGlossItem->setGloss( mDbAdapter->glossFromId(newId) );
     }
 
     fillData();
@@ -532,6 +554,7 @@ void WordDisplayWidget::newGloss(QAction *action)
     newGloss(ws);
 }
 
+
 void WordDisplayWidget::newTextForm(QAction *action)
 {
     qlonglong wsId = action->data().toLongLong();
@@ -560,7 +583,7 @@ void WordDisplayWidget::fillData()
                 mImmutableLines[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
                 break;
             case InterlinearItemType::Analysis:
-                // TODO how does one fill the data here? what does this function even do?
+                mAnalysisWidgets[mGlossLines.at(i).writingSystem()]->setupLayout();
                 break;
             case InterlinearItemType::Null:
                 break;
@@ -680,14 +703,14 @@ void WordDisplayWidget::editBaselineText()
 
 void WordDisplayWidget::editBaselineText(const QString & text)
 {
-    if( text.contains(QRegExp("\\s+")) )
+    if( text.contains(QRegExp("[ ]+")) )
     {
         DealWithSpacesDialog dealDialog(this);
         dealDialog.exec();
         if( dealDialog.choice() == DealWithSpacesDialog::SplitWord )
         {
             QList<TextBit> bits;
-            QStringList portions = text.split(QRegExp("\\s+"));
+            QStringList portions = text.split(QRegExp("[ ]+"));
             for(int i=0; i<portions.count(); i++)
                 bits << TextBit( portions.at(i), mGlossItem->baselineWritingSystem() );
             emit splitWidget( mGlossItem , bits  );
@@ -789,17 +812,17 @@ void WordDisplayWidget::removeGlossItem()
 void WordDisplayWidget::setFocused(bool isFocused)
 {
     if( isFocused )
-        setStyleSheet("background-color: #FFFFCC;");
+        setStyleSheet("WordDisplayWidget { border: 1px solid red; }");
     else
-        setStyleSheet("background-color: #FFFFFF;");
+        setStyleSheet("WordDisplayWidget { border: none; }");
 }
 
 void WordDisplayWidget::keyPressEvent ( QKeyEvent * event )
 {
     int key = event->key();
-    if( key >= 0x01000030 && key <= 0x01000052 )
+    if( key >= Qt::Key_F1 && key <= Qt::Key_F35 )
     {
-        key -= 0x01000030; // now F1 is zero, F2 is one, etc.
+        key -= Qt::Key_F1; // now F1 is zero, F2 is one, etc.
 
         if( key < mGlossLines.count() )
         {
@@ -817,6 +840,10 @@ void WordDisplayWidget::keyPressEvent ( QKeyEvent * event )
             }
         }
     }
+    else
+      {
+        QWidget::keyPressEvent(event);
+      }
 }
 
 void WordDisplayWidget::cycleInterpretation()
@@ -915,3 +942,57 @@ void WordDisplayWidget::leftGlossItem()
     emit requestRightGlossItem(this);
 }
 
+void WordDisplayWidget::playSound()
+{
+    emit requestPlaySound(this);
+}
+
+void WordDisplayWidget::matchFollowingTextFormsToThis()
+{
+    emit requestSetFollowingInterpretations( mGlossItem );
+}
+
+void WordDisplayWidget::editBaselineTextMatchingFollowing()
+{
+    QString oldText = mGlossItem->baselineText().text();
+    editBaselineText();
+    emit requestReplaceFollowing( mGlossItem, oldText );
+}
+
+void WordDisplayWidget::editBaselineTextForm()
+{
+    GenericTextInputDialog dialog( mGlossItem->baselineText() , this );
+    dialog.setWindowTitle(tr("Edit Text Form %1").arg( mGlossItem->baselineText().id() ));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mDbAdapter->updateTextForm( dialog.textBit() );
+        mGlossItem->setTextFormText( dialog.textBit() );
+    }
+}
+
+void WordDisplayWidget::annotationMarkActivated( const QString & key )
+{
+    TextBit annotation = mGlossItem->getAnnotation( key );
+    if( annotation.text().isEmpty() )
+        annotation.setWritingSystem( mDbAdapter->annotationType(key).writingSystem() );
+    if( annotation.writingSystem().isNull() )
+        return;
+
+    GenericTextInputDialog dialog(annotation, this);
+    dialog.setWindowTitle(key);
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mGlossItem->setAnnotation( key , dialog.textBit() );
+        mAnnotationMarks->setupLayout();
+    }
+}
+
+void WordDisplayWidget::changeFollowingToMatchTextForm(QAction *action)
+{
+    emit requestSetFollowingTextForms( mGlossItem , mDbAdapter->writingSystem( action->data().toLongLong() ) );
+}
+
+void WordDisplayWidget::changeFollowingToMatchGloss(QAction *action)
+{
+    emit requestSetFollowingGlosses( mGlossItem , mDbAdapter->writingSystem( action->data().toLongLong() ) );
+}

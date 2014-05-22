@@ -10,20 +10,18 @@ Allomorph::Allomorph()
     mTextBit = TextBit();
 }
 
-Allomorph::Allomorph(qlonglong id, const TextBit & bit)
+Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type )
 {
-    mType = Null;
+    mType = type;
     mId = id;
     mTextBit = bit;
-    setTypeFromString(mTextBit.text());
 }
 
-Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses )
+Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type )
 {
-    mType = Null;
+    mType = type;
     mId = id;
     mTextBit = bit;
-    setTypeFromString(mTextBit.text());
     mGlosses = glosses;
 }
 
@@ -48,38 +46,6 @@ bool Allomorph::operator==(const Allomorph & other) const
 {
     return mType == other.mType && mTextBit == other.mTextBit && mId == other.mId && mGlosses == other.mGlosses;
 }
-
-void Allomorph::setTypeFromString(const QString & string)
-{
-    QRegExp rePrefix("^[^-].*-$");
-    QRegExp reSuffix("^-.*[^-]$");
-    QRegExp reInfix("^-.*-$");
-    QRegExp reBoundStem("^\\*.*$");
-    QRegExp reProclitic("^[^=].*=$");
-    QRegExp reEnclitic("^=.*[^=]$");
-    QRegExp reSimulfix("^=.*=$");
-    QRegExp reSuprafix("^~.*~$");
-
-    if( rePrefix.exactMatch( string ) )
-        mType = Allomorph::Prefix;
-    else if( reSuffix.exactMatch( string ) )
-        mType = Allomorph::Suffix;
-    else if( reInfix.exactMatch( string ) )
-        mType = Allomorph::Infix;
-    else if( reBoundStem.exactMatch( string ) )
-        mType = Allomorph::BoundStem;
-    else if( reProclitic.exactMatch( string ) )
-        mType = Allomorph::Proclitic;
-    else if( reEnclitic.exactMatch( string ) )
-        mType = Allomorph::Enclitic;
-    else if( reSimulfix.exactMatch( string ) )
-        mType = Allomorph::Simulfix;
-    else if( reSuprafix.exactMatch( string ) )
-        mType = Allomorph::Suprafix;
-    else
-        mType = Allomorph::Stem;
-}
-
 
 QString Allomorph::typeFormattedString() const
 {
@@ -146,19 +112,7 @@ bool Allomorph::isClitic() const
     return mType == Allomorph::Proclitic || mType == Allomorph::Enclitic;
 }
 
-QString Allomorph::stripPunctuation( const QString & string ) const
-{
-    QString s = string;
-    s.replace("=","");
-    s.replace("~","");
-    s.replace("=","");
-    s.replace("*","");
-    s.replace("-","");
-    return s;
-}
-
 void Allomorph::setType( Type t )
 {
-    mTextBit.setText( getTypeFormatTextString( text(), t ) );
     mType = t;
 }

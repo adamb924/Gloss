@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>445</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,13 +15,39 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QComboBox" name="writingSystemCombo"/>
+    <widget class="WritingSystemCombo" name="writingSystemCombo"/>
    </item>
    <item>
-    <widget class="LingEdit" name="textEdit"/>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="LingEdit" name="textEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="searchButton">
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QListView" name="listView"/>
+   </item>
+   <item>
+    <widget class="QListView" name="lowerListView"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -30,6 +56,9 @@
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -41,7 +70,20 @@
    <extends>QLineEdit</extends>
    <header>lingedit.h</header>
   </customwidget>
+  <customwidget>
+   <class>WritingSystemCombo</class>
+   <extends>QComboBox</extends>
+   <header>writingsystemcombo.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>textEdit</tabstop>
+  <tabstop>lowerListView</tabstop>
+  <tabstop>writingSystemCombo</tabstop>
+  <tabstop>searchButton</tabstop>
+  <tabstop>buttonBox</tabstop>
+  <tabstop>listView</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

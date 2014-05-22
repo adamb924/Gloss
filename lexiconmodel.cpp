@@ -4,22 +4,26 @@
 #include <QSqlQuery>
 
 #include "databaseadapter.h"
+#include "alltagsmodel.h"
 
-LexiconModel::LexiconModel(const DatabaseAdapter * dbAdapter, QObject *parent) :
+LexiconModel::LexiconModel(const AllTagsModel * allTags, const DatabaseAdapter * dbAdapter, QObject *parent) :
     QSqlQueryModel(parent)
 {
     mDbAdapter = dbAdapter;
     mGlossFields= mDbAdapter->lexicalEntryGlossFields();
     mCitationFormFields = mDbAdapter->lexicalEntryCitationFormFields();
 
-    mQueryString = buildQueryString();
+    mAllTags = allTags;
 
     refreshQuery();
 }
 
 void LexiconModel::refreshQuery()
 {
+    mQueryString = buildQueryString();
     setQuery(mQueryString , QSqlDatabase::database( mDbAdapter->dbFilename() ) );
+    if( canFetchMore() )
+        fetchMore();
 }
 
 QString LexiconModel::buildQueryString()
@@ -27,6 +31,29 @@ QString LexiconModel::buildQueryString()
     QStringList selectStatements;
     QStringList joins;
     QStringList onStatement;
+
+    QStringList positiveTags = mAllTags->positiveTags();
+    QStringList negativeTags = mAllTags->negativeTags();
+
+    QString negative = "select _id as LexicalEntryId from LexicalEntry where _id not in ( select LexicalEntryId from LexicalEntryTags where TagId in ( select _id from GrammaticalTags where Tag in ('" + negativeTags.join("','") + "') ) )";
+    QString positive = QString("select LexicalEntryId from ( select LexicalEntryId,count(TagId) as Count from LexicalEntryTags where TagId in ( select _id from GrammaticalTags where Tag in ('%1') ) group by LexicalEntryId ) where Count =%2").arg(positiveTags.join("','")).arg(positiveTags.count());
+
+    if( positiveTags.isEmpty() && negativeTags.isEmpty() )
+    {
+        joins << "(select _id as LexicalEntryId from LexicalEntry ) as TagFilter";
+    }
+    else if( positiveTags.isEmpty() && ! negativeTags.isEmpty() )
+    {
+        joins << "( " + negative + " ) as TagFilter";
+    }
+    else if( ! positiveTags.isEmpty() && negativeTags.isEmpty() )
+    {
+        joins << "( " + positive + " ) as TagFilter";
+    }
+    else
+    {
+        joins << "( " + negative + " intersect " + positive + " ) as TagFilter";
+    }
 
     QListIterator<WritingSystem> cIter(mCitationFormFields);
     while( cIter.hasNext() )
@@ -67,19 +94,25 @@ QString LexiconModel::buildQueryString()
             onStatement << glossTable(wsId) + ".LexicalEntryId and " + glossTable(wsId) + ".LexicalEntryId";
     }
 
+    // add the morpheme type
+    selectStatements << "MorphologicalCategory as 'Type'";
+    mEditable << true;
+    joins << "( select _id as LexicalEntryId, MorphologicalCategory from LexicalEntry ) as MC ";
+    onStatement << "MC.LexicalEntryId and MC.LexicalEntryId";
+
     // add the allomorph count
     selectStatements << "AC as '# Allomorphs'";
     mEditable << false;
-
     joins << "( select LexicalEntryId, count(_id) as AC from Allomorph group by LexicalEntryId ) as AllomorphCount ";
     onStatement << "AllomorphCount.LexicalEntryId and AllomorphCount.LexicalEntryId";
 
     // add the text form count
     selectStatements << "TF as '# Text Forms'";
     mEditable << false;
-
     joins << "( select LexicalEntryId, count( distinct TextFormId ) as TF from MorphologicalAnalysisMembers,Allomorph where MorphologicalAnalysisMembers.AllomorphId=Allomorph._id group by LexicalEntryId ) as TextFormCount ";
     onStatement << "TextFormCount.LexicalEntryId and TextFormCount.LexicalEntryId";
+
+    onStatement << "TagFilter.LexicalEntryId and TagFilter.LexicalEntryId";
 
     return "select " + selectStatements.join(",") + " from " + joins.join(" inner join ") + " on " + onStatement.join("=");
 }
@@ -117,13 +150,10 @@ bool LexiconModel::setData(const QModelIndex &modelIndex,
 {
     if (modelIndex.isValid() && role == Qt::EditRole)
     {
-        Type type;
-        int i;
-        typeFromColumn( modelIndex.column() , type , i );
-
-
+        // the database index can be the _id of different tables. And it has to be declared out here because of how switches work.
         qlonglong databaseIndex = -1;
-        switch( type )
+
+        switch( typeFromColumn( modelIndex.column() ) )
         {
         case LexiconModel::CitationForm:
             databaseIndex = index( modelIndex.row(), modelIndex.column() - 1 ).data().toLongLong();
@@ -135,31 +165,48 @@ bool LexiconModel::setData(const QModelIndex &modelIndex,
             clear();
             mDbAdapter->updateLexicalEntryGloss( TextBit( value.toString(), WritingSystem(), databaseIndex ) );
             break;
+        case LexiconModel::MorphologicalType:
+            databaseIndex = lexicalEntryId( modelIndex );
+            clear();
+            if( Allomorph::getType( value.toString() ) != Allomorph::Null )
+                mDbAdapter->updateLexicalEntryType( databaseIndex , value.toString() );
+            break;
         case LexiconModel::Other:
             break;
         }
-//        emit dataChanged(modelIndex, modelIndex);
         refreshQuery();
         return true;
     }
     return false;
 }
 
-void LexiconModel::typeFromColumn( const int col, Type & type , int & index )
+LexiconModel::Type LexiconModel::typeFromColumn(int col)
 {
     if( col < 1 + 2*mCitationFormFields.count() )
     {
-        type = LexiconModel::CitationForm;
-        index = (col - 1)/2;
+        return LexiconModel::CitationForm;
     }
     else if ( col < 1 + 2 * (mCitationFormFields.count() + mGlossFields.count() ) )
     {
-        type = LexiconModel::Gloss;
-        index = (col - mCitationFormFields.count() - 1) / 2;
+        return LexiconModel::Gloss;
+    }
+    else if ( col == 1 + 2 * (mCitationFormFields.count() + mGlossFields.count() ) )
+    {
+        return LexiconModel::MorphologicalType;
     }
     else
     {
-        type = LexiconModel::Other;
-        index = -1;
+        return LexiconModel::Other;
     }
+}
+
+WritingSystem LexiconModel::writingSystemFromColumn(int col)
+{
+    int visibleColumn = (col-1)/2; // actually, the index of the visible column, after the Id column
+    if( visibleColumn < mCitationFormFields.count() )
+        return mCitationFormFields.at(visibleColumn);
+    visibleColumn -= mCitationFormFields.count();
+    if( visibleColumn < mGlossFields.count() )
+        return mGlossFields.at(visibleColumn);
+    return WritingSystem();
 }

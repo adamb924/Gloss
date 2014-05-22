@@ -7,7 +7,7 @@
 #ifndef WORDDISPLAYWIDGET_H
 #define WORDDISPLAYWIDGET_H
 
-#include <QWidget>
+#include <QFrame>
 #include <QString>
 #include <QList>
 #include <QHash>
@@ -24,8 +24,9 @@ class TextBit;
 class ImmutableLabel;
 class AnalysisWidget;
 class Concordance;
+class AnnotationMarkWidget;
 
-class WordDisplayWidget : public QWidget
+class WordDisplayWidget : public QFrame
 {
     Q_OBJECT
 
@@ -44,6 +45,7 @@ private:
     GlossItem *mGlossItem;
     Concordance *mConcordance;
     Qt::Alignment mAlignment;
+    AnnotationMarkWidget *mAnnotationMarks;
 
     void setupShortcuts();
 
@@ -65,8 +67,6 @@ private:
     ImmutableLabel* addImmutableTextFormLine( const InterlinearItemType & glossLine, bool technicolor );
     ImmutableLabel* addImmutableGlossLine( const InterlinearItemType & glossLine, bool technicolor );
     AnalysisWidget* addAnalysisWidget( const InterlinearItemType & glossLine );
-
-    QVBoxLayout *mLayout;
 
     QLabel *mBaselineWordLabel;
     QList<InterlinearItemType> mGlossLines;
@@ -95,8 +95,18 @@ signals:
     void requestApproveLine( WordDisplayWidget * wdw );
     void requestLeftGlossItem( WordDisplayWidget * wdw );
     void requestRightGlossItem( WordDisplayWidget * wdw );
+    void requestPlaySound( WordDisplayWidget * wdw );
+
+    void requestSetFollowingInterpretations( GlossItem *glossItem );
+    void requestReplaceFollowing( GlossItem *glossItem, const QString & searchFor );
+
+    void requestSetFollowingTextForms( GlossItem *glossItem , const WritingSystem & ws );
+    void requestSetFollowingGlosses( GlossItem *glossItem , const WritingSystem & ws );
 
 private slots:
+    void annotationMarkActivated( const QString & key );
+
+    void playSound();
     void approveLine();
     void rightGlossItem();
     void leftGlossItem();
@@ -116,6 +126,9 @@ private slots:
 
     void newGloss(const WritingSystem & ws);
     void newTextForm(const WritingSystem & ws);
+
+    void changeFollowingToMatchTextForm(QAction *action);
+    void changeFollowingToMatchGloss(QAction *action);
 
     void copyGlossFromBaseline(QAction *action);
     void copyGlossFromBaseline(const WritingSystem & ws);
@@ -137,6 +150,11 @@ private slots:
     void splitIntoMultipleWords();
     void mergeWithNext();
     void mergeWithPrevious();
+
+    void matchFollowingTextFormsToThis();
+    void editBaselineTextMatchingFollowing();
+
+    void editBaselineTextForm();
 };
 
 #endif // WORDDISPLAYWIDGET_H

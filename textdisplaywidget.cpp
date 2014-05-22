@@ -1,75 +1,109 @@
 #include "textdisplaywidget.h"
-#include "ui_textdisplaywidget.h"
 
 #include "databaseadapter.h"
 #include "text.h"
 #include "interlineardisplaywidget.h"
+#include "lingtextedit.h"
 
 #include <QCloseEvent>
 #include <QLabel>
+#include <QMessageBox>
 
-TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, const QList<Focus> & foci, QWidget *parent) :
-    QTabWidget(parent),
-    ui(new Ui::TextDisplayWidget)
+TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci, QWidget *parent) :
+    QTabWidget(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
     mText = text;
     mProject = project;
+    const View *view = mProject->view(type);
 
-    ui->setupUi(this);
+    if( view == 0 )
+    {
+        QMessageBox::critical(this, tr("Error"), tr("There is no valid view available. Something is likely wrong with your configuration.xml file."));
+    }
+
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
-    ui->baselineTextEdit->setWritingSystem(text->baselineWritingSystem());
-    ui->baselineTextEdit->setPlainText( text->baselineText() );
+    if( view->showBaselineTextTab() )
+        setupBaselineTab();
 
-    mGloss = new InterlinearDisplayWidget(mProject->dbAdapter()->glossInterlinearLines(), mProject->dbAdapter()->glossPhrasalGlossLines(), mText, mProject, this);
-    mGloss->setFocus(foci);
-    mGloss->setLayoutFromText();
-    ui->glossTab->layout()->addWidget(mGloss);
+    for(int i=0; i<view->tabs()->count(); i++)
+    {
+        // TODO really these should just be stored as pointers. This will waste memory; I'm just doing it to have it done with for now.
+        Tab * tab = new Tab( view->tabs()->at(i) );
+        InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( tab, mText, mProject, this);
+        idw->setFocus(foci);
+        idw->setLines(lines);
 
-    // text update connections
-    connect( text, SIGNAL(baselineTextChanged(QString)), mGloss, SLOT(setLayoutFromText()));
+        connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()) );
+        connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
+        if( view->showBaselineTextTab() )
+            connect( mBaselineTextEdit, SIGNAL(lineNumberChanged(int)), idw, SLOT(scrollToLine(int)) );
+        connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
+        if( view->showBaselineTextTab() )
+            connect( idw, SIGNAL(lineNumberChanged(int)), mBaselineTextEdit, SLOT(setLineNumber(int)) );
+        // the above is a bit odd because I'm not sure whether the order is important
 
-    // line number connections
-    connect( ui->baselineTextEdit, SIGNAL(lineNumberChanged(int)), mGloss, SLOT(scrollToLine(int)) );
-    connect( mGloss, SIGNAL(lineNumberChanged(int)), ui->baselineTextEdit, SLOT(setLineNumber(int)) );
+        mIdwTabs << idw;
+        addTab( idw, tab->name() );
+    }
 
-    mAnalysis = new InterlinearDisplayWidget(mProject->dbAdapter()->analysisInterlinearLines(), mProject->dbAdapter()->analysisPhrasalGlossLines(), mText, mProject, this);
-    mAnalysis->setFocus(foci);
-    mAnalysis->setLayoutFromText();
-    ui->morphologyTab->layout()->addWidget(mAnalysis);
-
-    connect( text, SIGNAL(baselineTextChanged(QString)), ui->baselineTextEdit, SLOT(setPlainText(QString)) );
-    connect( text, SIGNAL(glossItemsChanged()), mAnalysis, SLOT(setLayoutFromText()));
-
-    // line update connections
-    connect( text, SIGNAL(phraseRefreshNeeded(int)), mGloss, SLOT(requestLineRefresh(int)) );
-    connect( text, SIGNAL(phraseRefreshNeeded(int)), mAnalysis, SLOT(requestLineRefresh(int)));
+    if( count() == 1 )
+        tabBar()->hide();
 
     setWindowTitle(mText->name());
 }
 
 TextDisplayWidget::~TextDisplayWidget()
 {
-    mProject->closeText(mText);
-    delete ui;
+    if( mProject->memoryMode() == Project::OneAtATime )
+        mProject->closeText(mText);
+}
+
+void TextDisplayWidget::setupBaselineTab()
+{
+    mBaselineTextEdit = new LingTextEdit(this);
+    mBaselineTextEdit->setWritingSystem( mText->baselineWritingSystem());
+    mBaselineTextEdit->setPlainText( mText->baselineText() );
+    connect( mText, SIGNAL(baselineTextChanged(QString)), mBaselineTextEdit, SLOT(setPlainText(QString)) );
+    addTab( mBaselineTextEdit, tr("Baseline") );
 }
 
 void TextDisplayWidget::tabChanged(int i)
 {
-    if( i != 0 )
-        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
+//    if( i != 0 )
+//        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
 }
 
 void TextDisplayWidget::closeEvent(QCloseEvent *event)
 {
-    mText->saveText(false);
+    saveText();
     event->accept();
 }
 
 void TextDisplayWidget::focusGlossLine(int line)
 {
-    setCurrentWidget( ui->glossTab );
-    mGloss->scrollToLine(line);
+}
+
+void TextDisplayWidget::setLines(const QList<int> & lines)
+{
+    for(int i=0; i<mIdwTabs.count(); i++)
+        mIdwTabs.at(i)->setLines(lines);
+}
+
+void TextDisplayWidget::saveText()
+{
+    mText->saveText(false);
+}
+
+Text * TextDisplayWidget::text()
+{
+    return mText;
+}
+
+void TextDisplayWidget::setFocus( const QList<Focus> & foci )
+{
+    for(int i=0; i<mIdwTabs.count(); i++)
+        mIdwTabs.at(i)->setFocus(foci);
 }

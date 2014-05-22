@@ -1,39 +1,12 @@
 #include "writingsystem.h"
 
-WritingSystem::WritingSystem()
+WritingSystem::WritingSystem() : mId(-1), mName(""), mAbbreviation(""), mFlexString(""), mKeyboardCommand(""), mFontFamily(""), mFontSize(0), mLayoutDirection(Qt::LeftToRight)
 {
-    mId = 0;
-    mName = "";
-    mAbbreviation = "";
-    mFlexString = "";
-    mKeyboardCommand = "";
-    mLayoutDirection = Qt::LeftToRight;
-    mFontFamily = "";
-    mFontSize = 0;
-}
-
-WritingSystem::WritingSystem(const WritingSystem & other)
-{
-    mId = other.mId;
-    mName = other.mName;
-    mAbbreviation = other.mAbbreviation;
-    mFlexString = other.mFlexString;
-    mKeyboardCommand = other.mKeyboardCommand;
-    mLayoutDirection = other.mLayoutDirection;
-    mFontFamily = other.mFontFamily;
-    mFontSize = other.mFontSize;
 }
 
 WritingSystem::WritingSystem(const qlonglong id, const QString & name, const QString & abbreviation, const QString & flexString, const QString & keyboardCommand, Qt::LayoutDirection layoutDirection, QString fontFamily, int fontSize)
+     : mId(id), mName(name), mAbbreviation(abbreviation), mFlexString(flexString), mKeyboardCommand(keyboardCommand), mFontFamily(fontFamily), mFontSize(fontSize), mLayoutDirection(layoutDirection)
 {
-    mId = id;
-    mName = name;
-    mAbbreviation = abbreviation;
-    mFlexString = flexString;
-    mKeyboardCommand = keyboardCommand;
-    mLayoutDirection = layoutDirection;
-    mFontFamily = fontFamily;
-    mFontSize = fontSize;
 }
 
 QString WritingSystem::keyboardCommand() const
@@ -107,4 +80,28 @@ WritingSystem& WritingSystem::operator=(const WritingSystem & other)
     mFontFamily = other.mFontFamily;
     mFontSize = other.mFontSize;
     return *this;
+}
+
+bool WritingSystem::isNull() const
+{
+    return mId == -1;
+}
+
+bool WritingSystem::isValid() const
+{
+    return mId != -1;
+}
+
+uint qHash(const WritingSystem & key)
+{
+    return qHash(key.flexString());
+}
+
+QDebug operator<<(QDebug dbg, const WritingSystem &key)
+{
+    if( key.isNull() )
+        dbg.nospace() << "WritingSystem(null)";
+    else
+        dbg.nospace() << "WritingSystem(" << key.id() << ", " << key.name() << ", " << key.flexString() << key.abbreviation() << ", " <<  key.keyboardCommand() << ", " << key.fontFamily() << ", " << key.fontSize() << ")";
+    return dbg.maybeSpace();
 }

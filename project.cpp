@@ -15,15 +15,20 @@
 #include <QXmlQuery>
 #include <QDesktopServices>
 #include <QProgressDialog>
+#include <QAction>
+#include <QFileDialog>
 
 #include "messagehandler.h"
 #include "xsltproc.h"
+#include "mainwindow.h"
+#include "flextextimporter.h"
 
-Project::Project(const MainWindow * mainWindow)
+Project::Project(MainWindow * mainWindow)
 {
     mMainWindow = mainWindow;
     mDatabaseFilename = "sqlite3-database.db";
     mDbAdapter = 0;
+    mOverrideMediaPath = false;
 }
 
 Project::~Project()
@@ -31,6 +36,7 @@ Project::~Project()
     if( mDbAdapter != 0 )
         delete mDbAdapter;
     qDeleteAll(mTexts);
+    qDeleteAll(mViews);
 }
 
 bool Project::create(QString filename)
@@ -135,6 +141,7 @@ bool Project::readFromFile(QString filename)
         }
         else
         {
+            parseConfigurationFile();
             mDbAdapter->parseConfigurationFile( tempDir.absoluteFilePath("configuration.xml") );
         }
     }
@@ -206,9 +213,20 @@ QString Project::filepathFromName(const QString & name) const
     return getTempDir().absoluteFilePath( QString("%1.flextext").arg(name) );
 }
 
-Text* Project::textFromFlexText(const QString & filePath,  const WritingSystem & ws)
+QString Project::nameFromFilepath(const QString & path) const
 {
-    Text *text = new Text(filePath,ws,this);
+    return QFileInfo(path).baseName();
+}
+
+Text* Project::importFlexText(const QString & filePath,  const WritingSystem & ws)
+{
+    QFileInfo info(filePath);
+
+    Text *text = new Text(ws,info.baseName(),this);
+
+    FlexTextImporter importer(text);
+    importer.readFile(filePath);
+
     if(text->isValid())
     {
         text->saveText(false);
@@ -239,16 +257,16 @@ Text* Project::textFromFlexText(const QString & filePath)
     {
         switch( text->readResult() )
         {
-        case Text::FlexTextReadSuccess:
+        case FlexTextReader::FlexTextReadSuccess:
             QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened, but no error was reported.").arg(text->name()));
             break;
-        case Text::FlexTextReadBaselineNotFound:
+        case FlexTextReader::FlexTextReadBaselineNotFound:
             QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because the baseline text could not be read.").arg(text->name()));
             break;
-        case Text::FlexTextReadXmlReadError:
+        case FlexTextReader::FlexTextReadXmlReadError:
             QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because of a low-level XML reading error. ").arg(text->name()));
             break;
-        case Text::FlexTextReadNoAttempt:
+        case FlexTextReader::FlexTextReadNoAttempt:
             QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because no attempt was made to open it. (Figure that one out!)").arg(text->name()));
             break;
         }
@@ -341,14 +359,16 @@ QHash<QString,Text*>* Project::texts()
 
 Project::OpenResult Project::openText(const QString & name)
 {
-    // if the text is already available
-    if( mTexts.contains(name) )
-        return Project::Success;
+    return openTextFromPath( filepathFromName(name) );
+}
 
-    QString filePath = filepathFromName(name);
-    if( QFile::exists( filePath ) )
+Project::OpenResult Project::openTextFromPath(const QString & path)
+{
+    if( mTexts.contains( nameFromFilepath(path) ) )
+        return Project::Success;
+    if( QFile::exists( path ) )
     {
-        textFromFlexText( filePath );
+        textFromFlexText( path );
         return Project::Success;
     }
     else
@@ -471,7 +491,7 @@ QSet<qlonglong> Project::getAllInterpretationIds()
     QSet<qlonglong> ids;
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word return string( $x/@abg:id )" ) );
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word return string( $x/@abg:id )" ) );
     return ids;
 }
 
@@ -480,7 +500,7 @@ QSet<qlonglong> Project::getAllGlossIds()
     QSet<qlonglong> ids;
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls'] return string( $x/@abg:id )" ) );
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls'] return string( $x/@abg:id )" ) );
     return ids;
 }
 
@@ -489,7 +509,7 @@ QSet<qlonglong> Project::getAllTextFormIds()
     QSet<qlonglong> ids;
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt'] return string( $x/@abg:id )" ) );
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt'] return string( $x/@abg:id )" ) );
     return ids;
 }
 
@@ -499,10 +519,8 @@ QSet<qlonglong> Project::getSetOfNumbersFromTextQuery(const QString & filepath, 
     QXmlResultItems result;
 
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return ids;
-
-    query.setMessageHandler(new MessageHandler(this));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(filepath).path(QUrl::FullyEncoded)));
+    query.setMessageHandler(new MessageHandler("Project::getSetOfNumbersFromTextQuery", this));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -552,7 +570,7 @@ bool Project::countItemsInTexts(const QString & filename, const QString & typeSt
 
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.append( getListOfNumbersFromXQuery( iter.next(), QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='%1'] return string( $x/@abg:id )").arg(typeString) ) );
+        ids.append( getListOfNumbersFromXQuery( iter.next(), QString("declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='%1'] return string( $x/@abg:id )").arg(typeString) ) );
 
     QSet<qlonglong> set = ids.toSet();
     QSetIterator<qlonglong> setIter(set);
@@ -578,10 +596,8 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
     QXmlResultItems result;
 
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return list;
-
-    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(filepath).path(QUrl::FullyEncoded)));
+    query.setMessageHandler(new MessageHandler("Project::getListOfNumbersFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -595,6 +611,9 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
 
 bool Project::interpretationUsageReport(const QString & filename)
 {
+    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::interpretationUsageReport()."));
+    return false;
+/*
     QStringList instances;
     QStringList settings;
 
@@ -607,10 +626,14 @@ bool Project::interpretationUsageReport(const QString & filename)
         instances.append( getInterpretationUsage( iter.next(), settings.join(",") ) );
 
     return outputInterpretationUsageReport( filename, instances );
+*/
 }
 
 bool Project::outputInterpretationUsageReport(const QString & filename, const QStringList & instances )
 {
+    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::outputInterpretationUsageReport()."));
+    return false;
+/*
     QList<InterlinearItemType> lineTypes = mDbAdapter->glossInterlinearLines();
     QSet<QString> set = instances.toSet();
 
@@ -658,27 +681,28 @@ bool Project::outputInterpretationUsageReport(const QString & filename, const QS
     out.close();
 
     return true;
+    */
 }
 
 QStringList Project::getInterpretationUsage(const QString & filepath, const QString & encodedSettings)
 {
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return result;
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(filepath).path(QUrl::FullyEncoded)));
 
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+        "declare variable $path external; "
                           "declare variable $settings external; "
                           "declare variable $settings-array := tokenize($settings,',' ); "
                           "declare function local:writing-system( $x as xs:string ) as xs:string { substring-after($x,'=') }; "
                           "declare function local:line-type( $x as xs:string ) as xs:string { substring-before($x,'=') } ;"
                           "declare function local:get-item( $x as element(word), $writing-system as xs:string, $type as xs:string ) as xs:string { if( $x/item[@lang=$writing-system and @type=$type] ) then string( $x/item[@lang=$writing-system and @type=$type]/@abg:id ) else string(-1) }; "
-                          "for $word in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
+                          "for $word in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
                           "let $myset := for $setting in $settings-array return local:get-item( $word , local:writing-system($setting) , local:line-type($setting) )"
                           "return string-join( (string( $word/@abg:id ), $myset) , ',')";
 
     query.bindVariable("settings", QXmlItem(encodedSettings) );
-    query.setMessageHandler(new MessageHandler());
+    query.setMessageHandler(new MessageHandler("Project::getInterpretationUsage"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
 
@@ -691,10 +715,8 @@ QList<LongLongPair> Project::getPairedNumbersFromXQuery(const QString & filepath
 
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return pairs;
-
-    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(filepath).path(QUrl::FullyEncoded)));
+    query.setMessageHandler(new MessageHandler("Project::getPairedNumbersFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
 
@@ -712,10 +734,8 @@ QStringList Project::getStringListFromXQuery(const QString & filepath, const QSt
 {
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl(filepath)))
-        return result;
-
-    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(filepath).path(QUrl::FullyEncoded)));
+    query.setMessageHandler(new MessageHandler("Project::getStringListFromXQuery"));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     return result;
@@ -774,27 +794,208 @@ void Project::playLine(const QString & textName, int lineNumber)
 {
     QString textPath = filepathFromName(textName);
 
+    if( ! QFileInfo(textPath).exists() )
+        return;
+
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( textPath )))
-        return;
-    query.setMessageHandler(new MessageHandler());
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(textPath).path(QUrl::FullyEncoded)));
+    query.setMessageHandler(new MessageHandler("Project::playLine"));
     query.bindVariable("line", QXmlItem(lineNumber) );
     query.setQuery("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
+                   "declare variable $path external; "
                    "declare variable $line external; "
-                   "declare variable $audio-file := /document/interlinear-text/@abg:audio-file; "
-                   "declare variable $start := /document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-start; "
-                   "declare variable $end := /document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-end; "
+                   "declare variable $audio-file := doc($path)/document/interlinear-text/@abg:audio-file; "
+                   "declare variable $start := doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-start; "
+                   "declare variable $end := doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/item[@type='segnum' and text()=$line]/../@abg:annotation-end; "
                    "string-join( ( $audio-file , $start, $end ) , ',') ");
 
     if( query.evaluateTo(&result) )
     {
         QStringList elements = result.split(",");
-        QString audioPath = elements.at(0);
+        QString audioPath = mediaPath(elements.at(0));
         int startTime = elements.at(1).toInt();
         int endTime = elements.at(2).toInt();
 
-        Sound *sound = new Sound( QUrl::fromEncoded(audioPath.toUtf8()) );
-        sound->playSegment( startTime, endTime );
+        if( QFileInfo::exists(audioPath) )
+        {
+            Sound *sound = new Sound( QUrl::fromEncoded( audioPath.toUtf8() ) );
+            sound->playSegment( startTime, endTime );
+        }
+    }
+}
+
+const QList<View*>* Project::views() const
+{
+    return &mViews;
+}
+
+void Project::parseConfigurationFile()
+{
+    QFile *file = new QFile( getTempDir().absoluteFilePath("configuration.xml") );
+    file->open(QFile::ReadOnly);
+    QXmlStreamReader stream(file);
+
+    bool inTab = false;
+    WritingSystem itemTypeWs;
+
+    while (!stream.atEnd())
+    {
+        stream.readNext();
+        QString name = stream.name().toString();
+        if( stream.tokenType() == QXmlStreamReader::StartElement )
+        {
+            if( name == "view" )
+            {
+                mViews << new View( stream.attributes().value("name").toString() );
+            }
+            else if( name == "tab" )
+            {
+                inTab = true;
+                mViews.last()->tabs()->append( Tab( stream.attributes().value("name").toString() ) );
+            }
+            else if( name == "item-type" )
+            {
+                inTab = true;
+                if( stream.attributes().hasAttribute("baseline-writing-system") )
+                {
+                    itemTypeWs = mDbAdapter->writingSystem( stream.attributes().value("baseline-writing-system").toString() );
+                }
+                else
+                {
+                    itemTypeWs = WritingSystem();
+                }
+            }
+            else if( name == "interlinear-line" && inTab )
+            {
+                QString type = stream.attributes().value("type").toString();
+                QString lang = stream.attributes().value("lang").toString();
+                InterlinearItemType iit( type, mDbAdapter->writingSystem(lang) );
+                if( itemTypeWs.isValid() )
+                {
+                    mViews.last()->tabs()->last().addInterlinearLineType( itemTypeWs, iit );
+                }
+            }
+            else if( name == "phrasal-gloss" && inTab )
+            {
+                QString lang = stream.attributes().value("lang").toString();
+                InterlinearItemType iit( InterlinearItemType::Gloss , mDbAdapter->writingSystem(lang) );
+                mViews.last()->tabs()->last().addPhrasalGlossType( iit );
+            }
+            else if( name == "baseline-text" )
+            {
+                mViews.last()->setShowBaselineTextTab(true);
+            }
+            else if( name == "media-folder" )
+            {
+                if( stream.attributes().hasAttribute("override-paths") && stream.attributes().value("override-paths").toString() == "true" )
+                {
+                    mOverrideMediaPath = true;
+                }
+                mMediaPath = QUrl(stream.readElementText()).toLocalFile();
+            }
+        }
+        else if( stream.tokenType() == QXmlStreamReader::EndElement && name == "tab" )
+        {
+            inTab = false;
+        }
+    }
+
+    maybeUpdateMediaPath();
+
+    mMainWindow->refreshViews();
+    file->close();
+}
+
+const View * Project::view(const View::Type type) const
+{
+    if( type == View::Full )
+        return mCurrentInterlinearView;
+    else
+        return mCurrentQuickView;
+}
+
+void Project::setInterlinearView(QAction * action)
+{
+    int index = action->data().toInt();
+    if( index >= 0 && index < mViews.count() )
+        mCurrentInterlinearView = mViews.at(index);
+}
+
+void Project::setQuickView(QAction * action)
+{
+    int index = action->data().toInt();
+    if( index >= 0 && index < mViews.count() )
+        mCurrentQuickView = mViews.at(index);
+}
+
+Project::MemoryMode Project::memoryMode() const
+{
+    return mMemoryMode;
+}
+
+void Project::setMemoryMode( Project::MemoryMode mode )
+{
+    mMemoryMode = mode;
+
+    if( mMemoryMode == Project::GreedyFast )
+        loadAllTextsIntoMemory();
+}
+
+void Project::loadAllTextsIntoMemory()
+{
+    QProgressDialog progress(tr("Opening texts..."), QString(tr("Cancel")), 0, mTextPaths.count(), 0);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setValue( progress.value() + 1 );
+
+    int i=0;
+
+    QSetIterator<QString> iter(mTextPaths);
+    while( iter.hasNext() )
+    {
+        openTextFromPath( iter.next() );
+        progress.setValue(i++);
+        if (progress.wasCanceled())
+            break;
+    }
+    progress.setValue(mTextPaths.count());
+}
+
+void Project::baselineSearchReplace(const TextBit &search , const TextBit &replace )
+{
+    QMutableHashIterator<QString,Text*> iter(mTexts);
+    while( iter.hasNext() )
+    {
+        iter.next();
+        iter.value()->baselineSearchReplace( search, replace );
+    }
+}
+
+QString Project::mediaPath(const QString &path) const
+{
+    if( mOverrideMediaPath )
+    {
+        QFileInfo info(path);
+        return mMediaPath.absoluteFilePath(info.fileName());
+    }
+    else
+    {
+        return path;
+    }
+}
+
+void Project::maybeUpdateMediaPath()
+{
+    if( !mMediaPath.exists() )
+    {
+        if( QMessageBox::Yes == QMessageBox::question(0,tr("Update directory?"),tr("The media directory specified in the project (%1) does not exist. Would you like to choose a new directory?").arg(mMediaPath.absolutePath())) )
+        {
+            QFileDialog dlg;
+            dlg.setFileMode(QFileDialog::Directory);
+            if(dlg.exec())
+            {
+                mMediaPath = dlg.directory();
+            }
+        }
     }
 }

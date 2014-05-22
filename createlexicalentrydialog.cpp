@@ -10,6 +10,28 @@
 #include "glossitem.h"
 #include "textbit.h"
 
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::CreateLexicalEntryDialog)
+{
+    mDbAdapter = dbAdapter;
+    mAllomorph = 0;
+    mGlossItem = glossItem;
+    mIsMonomorphemic = false;
+    mLexicalEntryId = lexicalEntryId;
+
+    ui->setupUi(this);
+    fillData();
+
+    ui->grammaticalInformation->setWritingSystem( dbAdapter->metaLanguage() );
+
+    connect(this, SIGNAL(accepted()), this, SLOT(changeLexicalEntry()));
+
+    ui->linkToOther->hide();
+
+    setWindowTitle(tr("Edit lexical entry"));
+}
+
 CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog)
@@ -19,7 +41,7 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, 
     mGlossItem = glossItem;
     mIsMonomorphemic = isMonomorphemic;
 
-    mId = -1;
+    mLexicalEntryId = -1;
 
     ui->setupUi(this);
     fillData();
@@ -41,10 +63,18 @@ CreateLexicalEntryDialog::~CreateLexicalEntryDialog()
 
 qlonglong CreateLexicalEntryDialog::lexicalEntryId() const
 {
-    return mId;
+    return mLexicalEntryId;
 }
 
 void CreateLexicalEntryDialog::fillData()
+{
+    if( mLexicalEntryId == -1 )
+        guessAppropriateValues();
+    else
+        fillFromDatabase();
+}
+
+void CreateLexicalEntryDialog::guessAppropriateValues()
 {
     QList<WritingSystem> glosses = mDbAdapter->lexicalEntryGlossFields();
     foreach( WritingSystem ws , glosses )
@@ -68,8 +98,35 @@ void CreateLexicalEntryDialog::fillData()
         else if ( mIsMonomorphemic )
             edit->setText( mGlossItem->textForms()->value(ws).text() );
     }
+}
 
-    // TODO read the grammatical tags from the database
+void CreateLexicalEntryDialog::fillFromDatabase()
+{
+    QList<WritingSystem> glosses = mDbAdapter->lexicalEntryGlossFields();
+    TextBitHash glossValues = mDbAdapter->lexicalEntryGlossFormsForId(mLexicalEntryId);
+
+    foreach( WritingSystem ws , glosses )
+    {
+        LingEdit *edit = new LingEdit( TextBit("", ws) );
+        ui->glossLayout->addWidget(edit);
+        mGlossEdits << edit;
+        edit->setText( glossValues.value( ws ).text() );
+    }
+
+    QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationFormFields();
+    TextBitHash citationFormValues = mDbAdapter->lexicalEntryCitationFormsForId(mLexicalEntryId);
+
+    foreach( WritingSystem ws , citationForms )
+    {
+        LingEdit *edit = new LingEdit( TextBit("", ws) );
+        ui->citationFormLayout->addWidget(edit);
+        mCitationFormEdits << edit;
+
+        edit->setText( citationFormValues.value(ws).text() );
+    }
+
+    QStringList tags = mDbAdapter->grammaticalTags(mLexicalEntryId);
+    ui->grammaticalInformation->setText( tags.join(' ') );
 }
 
 void CreateLexicalEntryDialog::createLexicalEntry()
@@ -83,7 +140,18 @@ void CreateLexicalEntryDialog::createLexicalEntry()
     for(int i=0; i<mCitationFormEdits.count(); i++)
         citationForms << mCitationFormEdits.at(i)->textBit();
 
-    mId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), mAllomorph->type(), glosses, citationForms, grammaticalTags() );
+    mLexicalEntryId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), mAllomorph->type(), glosses, citationForms, grammaticalTags() );
+}
+
+void CreateLexicalEntryDialog::changeLexicalEntry()
+{
+    for(int i=0; i<mGlossEdits.count(); i++)
+        mDbAdapter->updateLexicalEntryGloss( mLexicalEntryId , mGlossEdits.at(i)->textBit() );
+
+    for(int i=0; i<mCitationFormEdits.count(); i++)
+        mDbAdapter->updateLexicalEntryCitationForm( mLexicalEntryId , mCitationFormEdits.at(i)->textBit() );
+
+    mDbAdapter->setTagsForLexicalEntry( mLexicalEntryId , grammaticalTags() );
 }
 
 TextBitHash CreateLexicalEntryDialog::glosses() const

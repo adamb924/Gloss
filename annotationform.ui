@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SinglePhraseEditDialog</class>
- <widget class="QDialog" name="SinglePhraseEditDialog">
+ <class>AnnotationForm</class>
+ <widget class="QWidget" name="AnnotationForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>854</width>
-    <height>258</height>
+    <width>667</width>
+    <height>171</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QVBoxLayout" name="layout"/>
+    <widget class="QComboBox" name="comboBox"/>
+   </item>
+   <item>
+    <widget class="QListView" name="listView"/>
    </item>
   </layout>
  </widget>

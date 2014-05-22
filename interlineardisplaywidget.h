@@ -23,14 +23,16 @@ class WordDisplayWidget;
 class GlossItem;
 class Phrase;
 class Focus;
+class Tab;
 
+#include "annotationmarkwidget.h"
 #include "interlinearitemtype.h"
 
 class InterlinearDisplayWidget : public QScrollArea
 {
     Q_OBJECT
 public:
-    InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent = 0);
+    InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
 
@@ -60,6 +62,7 @@ private slots:
     void editLine(int lineNumber);
 
     void approveAll( WordDisplayWidget * wdw );
+    void playSound( WordDisplayWidget * wdw );
     void leftGlossItem( WordDisplayWidget * wdw );
     void rightGlossItem( WordDisplayWidget * wdw );
 
@@ -71,6 +74,7 @@ protected:
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
+    QSpacerItem * mBottomSpacing;
 
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
     void addWordWidgets( int i , QLayout * flowLayout );
@@ -81,26 +85,28 @@ protected:
     QHash<int, InterlinearLineLabel*> mLineLabels;
     QList<int> mLines;
     QList<Focus> mFoci;
+    QSet<int> mLineRefreshRequests;
 
     // WordDisplayWidget objects, keyed to line number
-    QMultiHash<int, QWidget*> mWordDisplayWidgets;
+    QMultiHash<int, WordDisplayWidget*> mWordDisplayWidgets;
+    QMultiHash<int, QWidget*> mPhrasalGlossWidgets;
 
     QLayout* addLine(int lineNumber);
 
     QVBoxLayout *mLayout;
 
-    QList<InterlinearItemType> mInterlinearDisplayLines;
+    const Tab * mTab;
     QList<InterlinearItemType> mPhrasalGlossLines;
 
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
-
-    QSet<int> mLineRefreshRequests;
 
     //! \brief Add the phrasal gloss lines for phrase \a i
     void addPhrasalGlossLines( int i );
 
     //! \brief Add a line label for phrase \a i
     void addLineLabel( int i , QLayout * flowLayout  );
+
+    void maybeFocus(WordDisplayWidget * wdw);
 };
 
 #endif // INTERLINEARDISPLAYWIDGET_H

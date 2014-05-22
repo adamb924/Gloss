@@ -1,7 +1,7 @@
 #include "analysiswidget.h"
 #include "createanalysisdialog.h"
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "glossitem.h"
 #include "chooselexicalentriesdialog.h"
@@ -10,7 +10,7 @@
 #include "immutablelabel.h"
 #include "lexicalentrysearchdialog.h"
 
-AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent) :
+AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent) :
         QWidget(parent)
 {
     mGlossItem = glossItem;
@@ -26,7 +26,7 @@ AnalysisWidget::AnalysisWidget(const GlossItem *glossItem, const WritingSystem &
 
 void AnalysisWidget::setupLayout()
 {
-    if( mGlossItem->morphologicalAnalysis(mWritingSystem).isEmpty() )
+    if( mGlossItem->morphologicalAnalysis(mWritingSystem)->isEmpty() )
         createUninitializedLayout();
     else
         createInitializedLayout( mGlossItem->morphologicalAnalysis(mWritingSystem) );
@@ -50,28 +50,60 @@ void AnalysisWidget::createUninitializedLayout()
     connect(analyze, SIGNAL(clicked()), this, SLOT(enterAnalysis()));
 }
 
-void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis & analysis)
+void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analysis)
 {
     clearWidgetsFromLayout();
 
-    mLayout->addWidget( new ImmutableLabel( TextBit( analysis.baselineSummary() , mWritingSystem ) , false, this ) );
+    mLayout->addWidget( new ImmutableLabel( TextBit( analysis->baselineSummary() , mWritingSystem ) , false, this ) );
 
     QList<WritingSystem> glossLines = mDbAdapter->lexicalEntryGlossFields();
     for(int i=0; i<glossLines.count(); i++)
-        mLayout->addWidget( new ImmutableLabel( TextBit( analysis.glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
+        mLayout->addWidget( new ImmutableLabel( TextBit( analysis->glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
 }
 
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu(this);
-    menu.addAction(tr("Monomorphemic"), this, SLOT(createMonomorphemicLexicalEntry()));
-    menu.addAction(tr("Polymorphemic"), this, SLOT(enterAnalysis()));
+    QMenu * menu = new QMenu(this);
+    menu->addAction(tr("Create monomorphemic analysis"), this, SLOT(createMonomorphemicLexicalEntry()));
+    menu->addAction(tr("Create polymorphemic analysis"), this, SLOT(enterAnalysis()));
 
-    menu.addSeparator();
-    QAction * duplicate = menu.addAction(tr("Duplicate interpretation"), this, SIGNAL(requestAlternateInterpretation()));
+    menu->addSeparator();
+    QAction * duplicate = menu->addAction(tr("Duplicate interpretation"), this, SIGNAL(requestAlternateInterpretation()));
     connect( duplicate, SIGNAL(triggered()), this, SLOT(enterAnalysis()));
 
-    menu.exec(event->globalPos());
+    MorphologicalAnalysis * analysis = mGlossItem->morphologicalAnalysis(mWritingSystem);
+    if( !analysis->isEmpty() )
+    {
+        menu->addSeparator();
+        AllomorphIterator iter = analysis->allomorphIterator();
+        QActionGroup * group = new QActionGroup(this);
+        while(iter.hasNext())
+        {
+            Allomorph allomorph = iter.next();
+            QAction * action = new QAction(tr("Edit %1").arg( allomorph.text() ), this);
+            action->setData( allomorph.id() );
+            menu->addAction(action);
+            group->addAction(action);
+        }
+        connect( group, SIGNAL(triggered(QAction*)) , this, SLOT(editLexicalEntry(QAction*)) );
+    }
+
+    menu->exec(event->globalPos());
+}
+
+void AnalysisWidget::editLexicalEntry(QAction * action)
+{
+    qlonglong allomorphId = action->data().toLongLong();
+    qlonglong lexicalEntryId = mDbAdapter->lexicalEntryIdFromAllomorph(allomorphId);
+
+    if( lexicalEntryId == -1 )
+    {
+        qWarning() << "No lexical id for that allomorph";
+        return;
+    }
+
+    CreateLexicalEntryDialog dialog( lexicalEntryId, mGlossItem, mDbAdapter, this);
+    dialog.exec();
 }
 
 void AnalysisWidget::enterAnalysis()
@@ -95,7 +127,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
 
     lexicalEntryId = selectCandidateLexicalEntry();
 
-    Allomorph allomorph( -1, textBit() );
+    Allomorph allomorph( -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
     if( lexicalEntryId == -1 )
     {
         CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mDbAdapter, this);
@@ -109,8 +141,8 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
         allomorph = mDbAdapter->allomorphFromId(allomorphId);
 
-        MorphologicalAnalysis analysis( textBit() );
-        analysis.addAllomorph( allomorph );
+        MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textBit() );
+        analysis->addAllomorph( allomorph );
         mDbAdapter->setMorphologicalAnalysis( textBit().id(), analysis );
 
         createInitializedLayout( analysis );
@@ -122,7 +154,7 @@ qlonglong AnalysisWidget::selectCandidateLexicalEntry()
 {
     QStringList candidateItems;
     QList<qlonglong> indices;
-    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( textBit() );
+    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( textBit() , Allomorph::getTypeString(Allomorph::Stem) );
 
     if(candidates.isEmpty())
         return -1;
@@ -163,8 +195,8 @@ void AnalysisWidget::linkToOther()
         if( lexicalEntryId != -1 )
         {
             qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
-            MorphologicalAnalysis monomorphemic( textBit() );
-            monomorphemic.addAllomorph( mDbAdapter->allomorphFromId(allomorphId) );
+            MorphologicalAnalysis * monomorphemic = new MorphologicalAnalysis( textBit() );
+            monomorphemic->addAllomorph( mDbAdapter->allomorphFromId(allomorphId) );
             emit morphologicalAnalysisChanged( monomorphemic );
         }
     }

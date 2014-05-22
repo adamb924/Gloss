@@ -12,15 +12,35 @@ LexicalEntrySearchDialog::LexicalEntrySearchDialog(const DatabaseAdapter * dbAda
     ui->setupUi(this);
     mDbAdapter = dbAdapter;
 
+    mLexicalEntryId = -1;
+
     mWritingSystems = dbAdapter->writingSystems();
 
-    mModel = new QStandardItemModel;
-    ui->listView->setModel(mModel);
+    mFirstModel = new QStandardItemModel(this);
+    ui->listView->setModel(mFirstModel);
+
+    mSecondModel = new QStandardItemModel(this);
+    ui->lowerListView->setModel(mSecondModel);
+
+    ui->writingSystemCombo->setWritingSystems(dbAdapter->writingSystems());
+    ui->writingSystemCombo->setCurrentWritingSystem(dbAdapter->defaultGlossLanguage());
 
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeCurrentWritingSystem(int)));
-    connect(ui->textEdit, SIGNAL(textChanged(QString)), this, SLOT(fillCandidates(QString)));
+    connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(fillCandidates()));
 
-    fillWritingSystems();
+    connect(ui->searchButton, SIGNAL(clicked()), this, SLOT(fillCandidates()));
+
+    connect(ui->listView, SIGNAL(activated(QModelIndex)), this, SLOT(activated(QModelIndex)));
+    connect(ui->lowerListView, SIGNAL(activated(QModelIndex)), this, SLOT(activated(QModelIndex)));
+
+    connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(activated(QModelIndex)));
+    connect(ui->lowerListView, SIGNAL(clicked(QModelIndex)), this, SLOT(activated(QModelIndex)));
+
+    connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
+    connect(ui->lowerListView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
+
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 LexicalEntrySearchDialog::~LexicalEntrySearchDialog()
@@ -30,30 +50,26 @@ LexicalEntrySearchDialog::~LexicalEntrySearchDialog()
 
 qlonglong LexicalEntrySearchDialog::lexicalEntryId() const
 {
-    if( ui->listView->model()->rowCount() > 0 )
-        return ui->listView->currentIndex().data(Qt::UserRole).toLongLong();
-    else
-        return -1;
+    return mLexicalEntryId;
 }
 
-void LexicalEntrySearchDialog::fillWritingSystems()
+void LexicalEntrySearchDialog::fillCandidates()
 {
-    for(int i=0; i<mWritingSystems.count(); i++)
-        ui->writingSystemCombo->addItem( tr("%1 (%2)").arg(mWritingSystems.at(i).name()).arg(mWritingSystems.at(i).flexString()), i );
-}
+    QString searchString = ui->textEdit->text();
 
-void LexicalEntrySearchDialog::fillCandidates( const QString & searchString )
-{
     if( searchString.length() < 1 )
     {
         ui->listView->setEnabled(false);
+        ui->lowerListView->setEnabled(false);
         return;
     }
 
-    mModel->clear();
-    QHash<qlonglong,QString> candidates = mDbAdapter->searchLexicalEntries( TextBit( searchString, mWritingSystem ) );
-    QHashIterator<qlonglong,QString> iter(candidates);
+    QHash<qlonglong,QString> upper, lower;
 
+    mDbAdapter->searchLexicalEntries( TextBit( searchString, ui->writingSystemCombo->currentWritingSystem() ) , &upper, &lower );
+
+    mFirstModel->clear();
+    QHashIterator<qlonglong,QString> iter(upper);
     while(iter.hasNext())
     {
         iter.next();
@@ -61,14 +77,33 @@ void LexicalEntrySearchDialog::fillCandidates( const QString & searchString )
         QStandardItem *item = new QStandardItem( iter.value() );
         item->setEditable(false);
         item->setData( iter.key(), Qt::UserRole );
-        mModel->appendRow(item);
+        mFirstModel->appendRow(item);
     }
+    mFirstModel->sort(0);
+
+    mSecondModel->clear();
+    iter = QHashIterator<qlonglong,QString>(lower);
+    while(iter.hasNext())
+    {
+        iter.next();
+
+        QStandardItem *item = new QStandardItem( iter.value() );
+        item->setEditable(false);
+        item->setData( iter.key(), Qt::UserRole );
+        mSecondModel->appendRow(item);
+    }
+    mSecondModel->sort(0);
 
     ui->listView->setEnabled(true);
+    ui->lowerListView->setEnabled(true);
 }
 
 void LexicalEntrySearchDialog::changeCurrentWritingSystem(int index)
 {
     ui->textEdit->setWritingSystem( mWritingSystems.at(index) );
-    mWritingSystem = mWritingSystems.at(index);
+}
+
+void LexicalEntrySearchDialog::activated(const QModelIndex & index)
+{
+    mLexicalEntryId = index.data(Qt::UserRole).toLongLong();
 }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ChooseTextLineDialog</class>
- <widget class="QDialog" name="ChooseTextLineDialog">
+ <class>EditWithSuggestionsDialog</class>
+ <widget class="QDialog" name="EditWithSuggestionsDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>174</width>
-    <height>93</height>
+    <width>364</width>
+    <height>288</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,10 +15,10 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QComboBox" name="comboBox"/>
+    <widget class="LingEdit" name="lineEdit"/>
    </item>
    <item>
-    <widget class="QSpinBox" name="spinBox"/>
+    <widget class="QListView" name="listView"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -32,12 +32,19 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LingEdit</class>
+   <extends>QLineEdit</extends>
+   <header>lingedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ChooseTextLineDialog</receiver>
+   <receiver>EditWithSuggestionsDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -53,7 +60,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ChooseTextLineDialog</receiver>
+   <receiver>EditWithSuggestionsDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

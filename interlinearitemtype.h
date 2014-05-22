@@ -34,5 +34,8 @@ private:
     WritingSystem mWritingSystem;
 };
 
+typedef QList<InterlinearItemType> InterlinearItemTypeList;
+
+QDebug operator<<(QDebug dbg, const InterlinearItemType &type);
 
 #endif // GLOSSLINE_H

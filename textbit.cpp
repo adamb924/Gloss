@@ -1,18 +1,12 @@
 #include "textbit.h"
 #include "writingsystem.h"
 
-TextBit::TextBit()
+TextBit::TextBit() : mText(""), mWritingSystem( WritingSystem() ), mId(-1)
 {
-    mId = -1;
-    mWritingSystem = WritingSystem();
-    mText = "";
 }
 
-TextBit::TextBit(const QString & text, const WritingSystem & ws, qlonglong id )
+TextBit::TextBit(const QString & text, const WritingSystem & ws, qlonglong id ) : mText(text), mWritingSystem(ws), mId(id)
 {
-    mText = text;
-    mWritingSystem = ws;
-    mId = id;
 }
 
 TextBit::TextBit(const TextBit & other)
@@ -28,6 +22,11 @@ TextBit& TextBit::operator=(const TextBit & other)
     mWritingSystem = other.mWritingSystem;
     mId = other.mId;
     return *this;
+}
+
+bool TextBit::operator==(qlonglong id) const
+{
+    return mId == id;
 }
 
 bool TextBit::operator==(const TextBit & other) const

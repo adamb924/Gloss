@@ -6,20 +6,11 @@ MorphologicalAnalysisModel::MorphologicalAnalysisModel(const DatabaseAdapter * d
         QSqlQueryModel(parent)
 {
     mDbAdapter = dbAdapter;
-
     mLexicalEntryId = -1;
-
-    // TODO HACK
-    mTextFormWs = mDbAdapter->writingSystem(5);
-    mGlossWs = mDbAdapter->writingSystem(3);
-
 }
 
 void MorphologicalAnalysisModel::setLexicalEntry( qlonglong lexicalEntryId )
 {
-    if( mLexicalEntryId == lexicalEntryId )
-        return;
-
     mLexicalEntryId = lexicalEntryId;
 
     QSqlQuery q(QSqlDatabase::database( mDbAdapter->dbFilename() ));

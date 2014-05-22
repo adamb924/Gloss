@@ -22,17 +22,17 @@ class AnalysisWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AnalysisWidget(const GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
 
 signals:
-    void morphologicalAnalysisChanged(const MorphologicalAnalysis & analysis);
+    void morphologicalAnalysisChanged(MorphologicalAnalysis * analysis);
     void requestAlternateInterpretation();
 
 public slots:
     void setupLayout();
 
 private:
-    const GlossItem *mGlossItem;
+    GlossItem *mGlossItem;
 
 
     WritingSystem mWritingSystem;
@@ -41,7 +41,7 @@ private:
 
     QVBoxLayout *mLayout;
 
-    void createInitializedLayout(const MorphologicalAnalysis & analysis);
+    void createInitializedLayout(const MorphologicalAnalysis * analysis);
     void createUninitializedLayout();
 
     void clearWidgetsFromLayout();
@@ -57,6 +57,7 @@ private slots:
     void enterAnalysis();
     void createMonomorphemicLexicalEntry();
     void linkToOther();
+    void editLexicalEntry(QAction * action);
 };
 
 #endif // ANALYSISWIDGET_H

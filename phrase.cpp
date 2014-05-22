@@ -2,6 +2,7 @@
 #include "glossitem.h"
 #include "project.h"
 #include "text.h"
+#include "generictextinputdialog.h"
 
 #include <QMessageBox>
 #include <QtDebug>
@@ -61,31 +62,13 @@ Annotation* Phrase::annotation()
     return & mAnnotation;
 }
 
-void Phrase::splitGlossInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo )
-{
-    GlossItem *one = connectGlossItem( new GlossItem( wordOne, mProject ) );
-    GlossItem *two = connectGlossItem( new GlossItem( wordTwo, mProject ) );
-
-    int index = mGlossItems.indexOf( glossItem );
-    if( index != -1 )
-    {
-        mGlossItems.at(index)->deleteLater();
-        mGlossItems.replace(index, two);
-        mGlossItems.insert( index , one );
-
-        mConcordance->removeGlossItemFromConcordance(glossItem);
-
-        emit requestGuiRefresh(this);
-        emit phraseChanged();
-    }
-}
-
 void Phrase::splitGloss( GlossItem *glossItem, const QList<TextBit> & bits )
 {
     int index = mGlossItems.indexOf( glossItem );
     if( index == -1 )
         return;
-    mConcordance->removeGlossItemFromConcordance(glossItem);
+
+    glossItem->deleteLater();
 
     mGlossItems.removeAt(index);
     for(int i=0; i<bits.count(); i++)
@@ -103,19 +86,27 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
     int index = mGlossItems.indexOf( glossItem );
     if( index == -1 || index >= glossItemCount() -1 )
         return;
-    TextBit newBit = TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
-    GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
-    mGlossItems.replace( index, newGlossItem );
 
-    GlossItem* toRemove = mGlossItems.takeAt( index+1 );
-    toRemove->deleteLater();
+    GenericTextInputDialog dialog( TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text() , glossItem->baselineWritingSystem() ) , 0);
+    dialog.setWindowTitle(tr("Edit the baseline text, if necessary. Any spaces will be converted to non-breaking spaces."));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        TextBit newBit = dialog.textBit();
 
-    // remove both old gloss items from the concordance
-    mConcordance->removeGlossItemFromConcordance( toRemove );
-    mConcordance->removeGlossItemFromConcordance( glossItem );
+        QString replacement = newBit.text();
+        replacement.replace(QChar(0x0020), QChar(0x00A0));
+        newBit.setText(replacement);
 
-    emit requestGuiRefresh(this);
-    emit phraseChanged();
+        GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
+        mGlossItems.replace( index, newGlossItem );
+
+        GlossItem* toRemove = mGlossItems.takeAt( index+1 );
+        toRemove->deleteLater();
+        glossItem->deleteLater();
+
+        emit requestGuiRefresh(this);
+        emit phraseChanged();
+    }
 }
 
 void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
@@ -123,20 +114,27 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     int index = mGlossItems.indexOf( glossItem );
     if( index <= 0 || index >= glossItemCount() )
         return;
-    TextBit newBit = TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text()  ,  glossItem->baselineWritingSystem() );
-    GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
 
-    mGlossItems.replace( index, newGlossItem );
+    GenericTextInputDialog dialog( TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text() , glossItem->baselineWritingSystem() ) , 0);
+    dialog.setWindowTitle(tr("Edit the baseline text, if necessary. Any spaces will be converted to non-breaking spaces."));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        TextBit newBit = dialog.textBit();
 
-    GlossItem* toRemove = mGlossItems.takeAt( index-1 );
-    toRemove->deleteLater();
+        QString replacement = newBit.text();
+        replacement.replace(QChar(0x0020), QChar(0x00A0));
+        newBit.setText(replacement);
 
-    // remove both old gloss items from the concordance
-    mConcordance->removeGlossItemFromConcordance( toRemove );
-    mConcordance->removeGlossItemFromConcordance( glossItem );
+        GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
+        mGlossItems.replace( index, newGlossItem );
 
-    emit requestGuiRefresh(this);
-    emit phraseChanged();
+        GlossItem* toRemove = mGlossItems.takeAt( index-1 );
+        toRemove->deleteLater();
+        glossItem->deleteLater();
+
+        emit requestGuiRefresh(this);
+        emit phraseChanged();
+    }
 }
 
 void Phrase::removeGlossItem( GlossItem *glossItem )
@@ -155,8 +153,7 @@ void Phrase::removeGlossItem( GlossItem *glossItem )
     if( index >= 0 && index < glossItemCount() )
     {
         mGlossItems.removeAt(index);
-        mConcordance->removeGlossItemFromConcordance( toRemove );
-        delete toRemove;
+        toRemove->deleteLater();
 
         emit requestGuiRefresh(this);
         emit phraseChanged();
@@ -187,6 +184,7 @@ void Phrase::clearGlossItems()
 
 GlossItem* Phrase::connectGlossItem(GlossItem * item)
 {
+    item->connectToConcordance();
     connect( item, SIGNAL(baselineTextChanged(TextBit)), this, SIGNAL(phraseChanged()) );
     connect( item, SIGNAL(fieldsChanged()), mText, SLOT(markAsChanged()) );
     connect( item, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), mText, SLOT(markAsChanged()) );
@@ -206,4 +204,9 @@ GlossItem* Phrase::lastGlossItem()
 const QList<GlossItem*>* Phrase::glossItems() const
 {
     return &mGlossItems;
+}
+
+int Phrase::indexOfGlossItem(GlossItem * item) const
+{
+    return mGlossItems.indexOf(item);
 }

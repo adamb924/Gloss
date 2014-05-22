@@ -25,15 +25,16 @@ public:
 private:
     Ui::LexicalEntrySearchDialog *ui;
     const DatabaseAdapter * mDbAdapter;
-    WritingSystem mWritingSystem;
 
     QList<WritingSystem> mWritingSystems;
-    void fillWritingSystems();
-    QStandardItemModel *mModel;
+    QStandardItemModel *mFirstModel;
+    QStandardItemModel *mSecondModel;
+    qlonglong mLexicalEntryId;
 
 private slots:
-    void fillCandidates( const QString & searchString );
+    void fillCandidates();
     void changeCurrentWritingSystem(int index);
+    void activated(const QModelIndex & index);
 };
 
 #endif // LEXICALENTRYSEARCHDIALOG_H

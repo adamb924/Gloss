@@ -3,7 +3,7 @@
 #include "databaseadapter.h"
 
 AllTagsModel::AllTagsModel(const DatabaseAdapter * dbAdapter, QWidget *parent) :
-    QStringListModel(parent)
+    QStandardItemModel(parent)
 {
     mDbAdapter = dbAdapter;
     refreshTags( );
@@ -12,23 +12,61 @@ AllTagsModel::AllTagsModel(const DatabaseAdapter * dbAdapter, QWidget *parent) :
 
 void AllTagsModel::refreshTags( )
 {
-    setStringList( mDbAdapter->availableGrammaticalTags() );
+    clear();
+
+    QStringList tags = mDbAdapter->availableGrammaticalTags();
+    for(int i=0; i<tags.count(); i++)
+    {
+        QStandardItem *item = new QStandardItem( tags.at(i) );
+        item->setEditable(true);
+        item->setCheckable(true);
+        item->setTristate(true);
+        item->setCheckState(Qt::PartiallyChecked);
+        invisibleRootItem()->appendRow(item);
+    }
 }
 
 bool AllTagsModel::removeRows ( int row, int count, const QModelIndex & parent )
 {
     mDbAdapter->removeTag( index( row, 0 , parent ).data().toString() );
-    bool retVal = QStringListModel::removeRows( row, count, parent );
-    return retVal;
-}
-
-Qt::ItemFlags AllTagsModel::flags ( const QModelIndex & index ) const
-{
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEditable;
+    return QStandardItemModel::removeRows( row, count, parent );
 }
 
 bool AllTagsModel::setData ( const QModelIndex & index, const QVariant & value, int role )
 {
-    mDbAdapter->renameTag( index.data().toString() , value.toString() );
-    return QStringListModel::setData( index, value, role );
+    QVariant myValue = value;
+    Qt::CheckState state = itemFromIndex(index)->checkState();
+
+    if( role == Qt::EditRole )
+    {
+        mDbAdapter->renameTag( index.data().toString() , value.toString() );
+    }
+    else if ( role == Qt::CheckStateRole )
+    {
+        if( state == Qt::Unchecked )
+            myValue = Qt::PartiallyChecked;
+        else if( value == Qt::PartiallyChecked )
+            myValue = Qt::Checked;
+        else if( value == Qt::PartiallyChecked )
+            myValue = Qt::Unchecked;
+    }
+    return QStandardItemModel::setData( index, myValue, role );
+}
+
+QStringList AllTagsModel::positiveTags() const
+{
+   QStringList tags;
+   for(int i=0; i<rowCount(); i++)
+       if( item(i)->checkState() == Qt::Checked )
+           tags << item(i)->data(Qt::DisplayRole).toString();
+   return tags;
+}
+
+QStringList AllTagsModel::negativeTags() const
+{
+    QStringList tags;
+    for(int i=0; i<rowCount(); i++)
+        if( item(i)->checkState() == Qt::Unchecked )
+            tags << item(i)->data(Qt::DisplayRole).toString();
+    return tags;
 }

@@ -15,7 +15,16 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
      <number>0</number>
     </property>
     <item>
@@ -29,7 +38,7 @@
      <x>0</x>
      <y>0</y>
      <width>531</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -49,8 +58,6 @@
      <string>Texts</string>
     </property>
     <addaction name="actionOpen_text"/>
-    <addaction name="actionOpen_text_line"/>
-    <addaction name="actionOpen_text_line_with_context"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_text"/>
     <addaction name="actionImport_FlexText"/>
@@ -66,6 +73,7 @@
     <addaction name="actionSearch_and_replace"/>
     <addaction name="separator"/>
     <addaction name="actionClose_and_save_open_texts"/>
+    <addaction name="actionSave_open_texts"/>
    </widget>
    <widget class="QMenu" name="menuGuts">
     <property name="title">
@@ -84,11 +92,15 @@
     </property>
     <addaction name="actionWriting_systems"/>
     <addaction name="actionDelete_text"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuSearch">
     <property name="title">
      <string>Search</string>
     </property>
+    <addaction name="actionSearch_dock"/>
+    <addaction name="actionAnnotation_dock"/>
+    <addaction name="separator"/>
     <addaction name="actionSearch_gloss_items"/>
     <addaction name="actionSubstring_search_gloss_items"/>
     <addaction name="actionRaw_XQuery"/>
@@ -104,6 +116,8 @@
     <addaction name="separator"/>
     <addaction name="actionUnapproved_lines"/>
     <addaction name="actionApproved_lines"/>
+    <addaction name="separator"/>
+    <addaction name="actionBaseline_text_search_and_replace"/>
    </widget>
    <widget class="QMenu" name="menuReports">
     <property name="title">
@@ -115,8 +129,8 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
-   <addaction name="menuProject"/>
    <addaction name="menuSearch"/>
+   <addaction name="menuProject"/>
    <addaction name="menuGuts"/>
    <addaction name="menuReports"/>
   </widget>
@@ -221,6 +235,9 @@
    <property name="text">
     <string>Search gloss items...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionFor_Text_Form">
    <property name="text">
@@ -230,6 +247,9 @@
   <action name="actionSubstring_search_gloss_items">
    <property name="text">
     <string>Substring-search gloss items...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionRaw_XQuery">
@@ -276,15 +296,24 @@
    <property name="text">
     <string>Text form by id...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionInterpreation_by_id">
    <property name="text">
     <string>Interpretation by id...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionGloss_by_id">
    <property name="text">
     <string>Gloss by id...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionSearch_and_replace">
@@ -359,15 +388,51 @@
    <property name="text">
     <string>Allomorph by id...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionLexical_entry_by_id">
    <property name="text">
     <string>Lexical entry by id...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionImport_EAF">
    <property name="text">
     <string>Import EAF...</string>
+   </property>
+  </action>
+  <action name="actionViews">
+   <property name="text">
+    <string>Views</string>
+   </property>
+  </action>
+  <action name="actionOpen_text_in_chunks">
+   <property name="text">
+    <string>Open text in chunks...</string>
+   </property>
+  </action>
+  <action name="actionSave_open_texts">
+   <property name="text">
+    <string>Save open texts</string>
+   </property>
+  </action>
+  <action name="actionBaseline_text_search_and_replace">
+   <property name="text">
+    <string>Baseline text search and replace...</string>
+   </property>
+  </action>
+  <action name="actionSearch_dock">
+   <property name="text">
+    <string>Search dock...</string>
+   </property>
+  </action>
+  <action name="actionAnnotation_dock">
+   <property name="text">
+    <string>Annotation dock...</string>
    </property>
   </action>
  </widget>

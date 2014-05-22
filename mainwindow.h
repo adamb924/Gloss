@@ -7,7 +7,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 #include "focus.h"
 
@@ -17,7 +17,9 @@ class WritingSystem;
 class QModelIndex;
 class TextDisplayWidget;
 class QStandardItemModel;
-
+class InterlinearChunkEditor;
+class Text;
+class TextBit;
 
 namespace Ui {
     class MainWindow;
@@ -31,12 +33,21 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void refreshViews();
+
 private:
     Ui::MainWindow *ui;
+
+    QDockWidget * mSearchDock;
+    QDockWidget * mAnnotationDock;
+
+    QMenu *mInterlinearViewMenu;
+    QMenu *mQuickViewMenu;
 
     Project *mProject;
 
     void addTableMenuItems();
+    void addMemoryModeMenuItems();
 
     void setProjectActionsEnabled(bool enabled);
 
@@ -55,6 +66,17 @@ public slots:
     void searchForGlossById(qlonglong id);
     void searchForLexicalEntryById(qlonglong id);
     void searchForAllomorphById(qlonglong id);
+    void searchForText(const TextBit & bit);
+    void searchForSubstring(const TextBit & bit);
+
+private slots:
+    void searchGlossItems();
+    void substringSearchGlossItems();
+    void searchForInterpretationById();
+    void searchForTextFormById();
+    void searchForGlossById();
+    void searchForLexicalEntryById();
+    void searchForAllomorphById();
 
 private slots:
     void rebuildIndex();
@@ -67,6 +89,8 @@ private slots:
     void openText();
     void deleteText();
     void mergeTranslations();
+
+    void toggleSearchDock();
 
     TextDisplayWidget* openText(const QString & textName, const QList<Focus> & foci = QList<Focus>() );
 
@@ -82,15 +106,6 @@ private slots:
     void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText);
     void importEaf();
     bool importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText);
-
-    void searchGlossItems();
-    void substringSearchGlossItems();
-
-    void searchForInterpretationById();
-    void searchForTextFormById();
-    void searchForGlossById();
-    void searchForLexicalEntryById();
-    void searchForAllomorphById();
 
 
     void focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci );
@@ -111,15 +126,22 @@ private slots:
     void createCountReport(const QString & typeString);
 
     void searchAndReplace();
+    void baselineSearchAndReplace();
 
     void findApprovedLines();
     void findUnapprovedLines();
 
     void closeOpenTexts();
-    void openTextLine();
-    void openTextLineWithContext();
+    void saveOpenTexts();
 
     void editLexicon();
+    void annotationDock();
+
+    InterlinearChunkEditor * openTextInChunks(const QString & textName, int linesPerScreen);
+
+    void setMemoryMode( QAction * action );
+
+    Text * textOfCurrentSubWindow();
 };
 
 #endif // MAINWINDOW_H

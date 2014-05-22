@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql xml xmlpatterns multimedia
+QT       += widgets sql xml xmlpatterns multimedia
 
 TARGET = Gloss
 TEMPLATE = app
@@ -29,7 +29,6 @@ SOURCES += main.cpp\
     messagehandler.cpp \
     lingtextedit.cpp \
     interlinearitemtype.cpp \
-    interpretationsearchdialog.cpp \
     writingsystemsdialog.cpp \
     mergetranslationdialog.cpp \
     xsltproc.cpp \
@@ -48,7 +47,6 @@ SOURCES += main.cpp\
     interlinearlinelabel.cpp \
     replacedialog.cpp \
     searchreplaceform.cpp \
-    singlephraseeditdialog.cpp \
     searchqueryview.cpp \
     mergeeafdialog.cpp \
     annotation.cpp \
@@ -56,10 +54,8 @@ SOURCES += main.cpp\
     concordance.cpp \
     flextextwriter.cpp \
     flextextreader.cpp \
-    choosetextlinedialog.cpp \
     lexicalentrysearchdialog.cpp \
     indexsearchmodel.cpp \
-    treeitem.cpp \
     lexiconedit.cpp \
     lexiconview.cpp \
     allomorphmodel.cpp \
@@ -71,7 +67,20 @@ SOURCES += main.cpp\
     lexiconmodel.cpp \
     sqlquerywriter.cpp \
     focus.cpp \
-    dealwithspacesdialog.cpp
+    dealwithspacesdialog.cpp \
+    tab.cpp \
+    view.cpp \
+    flextextimporter.cpp \
+    interlinearchunkeditor.cpp \
+    baselinesearchreplacedialog.cpp \
+    writingsystemcombo.cpp \
+    annotationmarkwidget.cpp \
+    annotationtype.cpp \
+    opentextdialog.cpp \
+    editwithsuggestionsdialog.cpp \
+    searchform.cpp \
+    annotationform.cpp \
+    annotationmodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -91,7 +100,6 @@ HEADERS  += mainwindow.h \
     lingtextedit.h \
     glossitem.h \
     interlinearitemtype.h \
-    interpretationsearchdialog.h \
     writingsystemsdialog.h \
     mergetranslationdialog.h \
     xsltproc.h \
@@ -110,7 +118,6 @@ HEADERS  += mainwindow.h \
     interlinearlinelabel.h \
     replacedialog.h \
     searchreplaceform.h \
-    singlephraseeditdialog.h \
     searchqueryview.h \
     mergeeafdialog.h \
     annotation.h \
@@ -118,10 +125,8 @@ HEADERS  += mainwindow.h \
     concordance.h \
     flextextwriter.h \
     flextextreader.h \
-    choosetextlinedialog.h \
     lexicalentrysearchdialog.h \
     indexsearchmodel.h \
-    treeitem.h \
     lexiconedit.h \
     lexiconview.h \
     allomorphmodel.h \
@@ -133,13 +138,24 @@ HEADERS  += mainwindow.h \
     lexiconmodel.h \
     sqlquerywriter.h \
     focus.h \
-    dealwithspacesdialog.h
+    dealwithspacesdialog.h \
+    tab.h \
+    view.h \
+    flextextimporter.h \
+    interlinearchunkeditor.h \
+    baselinesearchreplacedialog.h \
+    writingsystemcombo.h \
+    annotationmarkwidget.h \
+    annotationtype.h \
+    opentextdialog.h \
+    editwithsuggestionsdialog.h \
+    searchform.h \
+    annotationform.h \
+    annotationmodel.h
 
 FORMS    += mainwindow.ui \
-    textdisplaywidget.ui \
     newtextdialog.ui \
     importflextextdialog.ui \
-    interpretationsearchdialog.ui \
     writingsystemsdialog.ui \
     mergetranslationdialog.ui \
     generictextinputdialog.ui \
@@ -150,21 +166,25 @@ FORMS    += mainwindow.ui \
     createlexicalentrydialog.ui \
     replacedialog.ui \
     searchreplaceform.ui \
-    singlephraseeditdialog.ui \
     mergeeafdialog.ui \
-    choosetextlinedialog.ui \
     lexicalentrysearchdialog.ui \
     lexiconedit.ui \
     sqltabledialog.ui \
-    dealwithspacesdialog.ui
-
-LIBS += -L../quazip
-LIBS += -lquazip
+    dealwithspacesdialog.ui \
+    interlinearchunkeditor.ui \
+    baselinesearchreplacedialog.ui \
+    opentextdialog.ui \
+    editwithsuggestionsdialog.ui \
+    searchform.ui \
+    annotationform.ui
 
 LIBS += -L./ \
-    -lexslt \
+    -lquazip \
+    -llibexslt \
     -llibxslt \
     -llibxml2 \
     -liconv
 
 RESOURCES +=
+
+QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter

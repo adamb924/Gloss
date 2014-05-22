@@ -23,33 +23,53 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
     guessInterpretation();
 
     setCandidateNumberFromDatabase();
-
-    updateGlossItemConcordance();
 }
 
-GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, qlonglong id, Project *project, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent) : QObject(parent)
 {
     mBaselineWritingSystem = ws;
-
-    mTextForms = textForms;
-    mGlosses = glossForms;
-
     mProject = project;
     mDbAdapter = mProject->dbAdapter();
     mConcordance = mProject->concordance();
 
-    if( mId == -1 )
-        guessInterpretation();
-    else
-        setInterpretation(id, false); // false because we have text forms and glosses from the arguments of the constructor
+    mTextForms = textForms;
+    mGlosses = glossForms;
+
+    guessInterpretation();
+    setCandidateNumberFromDatabase();
+    updateGlossItemConcordance();
+}
+
+GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms, const QSet<qlonglong> & glossForms, qlonglong interpretationId, Project *project, QObject *parent ) : QObject(parent)
+{
+    mBaselineWritingSystem = ws;
+    mProject = project;
+    mDbAdapter = mProject->dbAdapter();
+    mConcordance = mProject->concordance();
+
+    mId = interpretationId;
+
+    QSetIterator<qlonglong> tfIter(textForms);
+    while(tfIter.hasNext())
+    {
+        TextBit form = mDbAdapter->textFormFromId( tfIter.next() );
+        mTextForms.insert( form.writingSystem() , form );
+    }
+
+    QSetIterator<qlonglong> gIter(glossForms);
+    while(gIter.hasNext())
+    {
+        TextBit gloss = mDbAdapter->glossFromId( gIter.next() );
+        mGlosses.insert( gloss.writingSystem() , gloss );
+    }
 
     setCandidateNumberFromDatabase();
-
     updateGlossItemConcordance();
 }
 
 GlossItem::~GlossItem()
 {
+    qDeleteAll(mMorphologicalAnalyses);
 }
 
 void GlossItem::resetBaselineText( const TextBit & baselineBit )
@@ -109,7 +129,6 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 
         loadMorphologicalAnalysesFromDatabase();
 
-        emit interpretationIdChanged(mId);
         emit fieldsChanged();
     }
     // TODO possibly update the concordance at this point
@@ -119,32 +138,68 @@ void GlossItem::setGloss(const TextBit & gloss)
 {
     if( mGlosses.value(gloss.writingSystem()) != gloss )
     {
+        mConcordance->removeGlossItemGlossIdPair(this, mGlosses.value(gloss.writingSystem()).id() );
+
         mDbAdapter->updateGloss(gloss);
         mGlosses.insert( gloss.writingSystem(), gloss );
+
+        mConcordance->updateGlossItemGlossConcordance( this, gloss.id() );
+
         emit fieldsChanged();
         emit glossChanged(gloss);
+    }
+}
+
+void GlossItem::setGlossText(const TextBit & gloss)
+{
+    if( mGlosses.value(gloss.writingSystem()).id() == gloss.id() )
+    {
+        if( mGlosses.value(gloss.writingSystem()).text() != gloss.text() )
+        {
+            mGlosses[gloss.writingSystem()].setText( gloss.text() );
+            emit glossChanged(gloss);
+            emit fieldsChanged();
+        }
     }
 }
 
 void GlossItem::setTextForm(const TextBit & textForm)
 {
     WritingSystem ws = textForm.writingSystem();
+
+    bool textUpdate = mTextForms.value(ws).id() == textForm.id() && mTextForms.value(ws).text() != textForm.text();
+
     if( mTextForms.value(ws) != textForm )
     {
+        mConcordance->removeGlossItemTextFormIdPair( this, mTextForms.value(ws).id() );
+
         mDbAdapter->updateTextForm(textForm);
         mTextForms.insert( ws , textForm );
 
-        updateGlossItemConcordance();
+        mConcordance->updateGlossItemTextFormConcordance( this, textForm.id() );
 
-        if( ws == mBaselineWritingSystem )
-        {
-            MorphologicalAnalysis newMa = mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() );
-            mMorphologicalAnalyses.insert( ws , newMa );
-        }
+        if( textUpdate )
+            mDbAdapter->clearMorphologicalAnalysis(textForm.id());
+
+        mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() ) );
 
         emit fieldsChanged();
         emit textFormChanged(textForm);
         emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( ws ) );
+    }
+}
+
+void GlossItem::setTextFormText(const TextBit & textForm)
+{
+    if( mTextForms.value(textForm.writingSystem()).id() == textForm.id() )
+    {
+        if( mTextForms.value(textForm.writingSystem()).text() != textForm.text() )
+        {
+            mTextForms[textForm.writingSystem()].setText(textForm.text());
+            mDbAdapter->clearMorphologicalAnalysis( textForm.id() );
+            emit textFormChanged(textForm);
+            emit fieldsChanged();
+        }
     }
 }
 
@@ -279,18 +334,21 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
     return mGlosses.value(ws);
 }
 
-MorphologicalAnalysis GlossItem::morphologicalAnalysis(const WritingSystem & ws) const
+MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws)
 {
-    return mMorphologicalAnalyses.value(ws, MorphologicalAnalysis(mTextForms.value(ws)) );
+    if( !mMorphologicalAnalyses.contains(ws) && mDbAdapter->hasMorphologicalAnalysis( mTextForms.value(ws).id() ) )
+        mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
+
+    return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
 }
 
-void GlossItem::setMorphologicalAnalysis( const MorphologicalAnalysis & analysis )
+void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
 {
-    if( !mMorphologicalAnalyses.contains(analysis.writingSystem()) || ( mMorphologicalAnalyses.contains(analysis.writingSystem()) && mMorphologicalAnalyses.value( analysis.writingSystem() ) != analysis ) )
+    if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) || ( mMorphologicalAnalyses.contains(analysis->writingSystem()) && *mMorphologicalAnalyses.value( analysis->writingSystem() ) != *analysis ) )
     {
-        mMorphologicalAnalyses.insert( analysis.writingSystem() , analysis);
+        mMorphologicalAnalyses.insert( analysis->writingSystem() , new MorphologicalAnalysis(*analysis) );
         emit fieldsChanged();
-        emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis.writingSystem() ) );
+        emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis->writingSystem() ) );
     }
 }
 
@@ -369,11 +427,11 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
 QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
     QList<WritingSystem> languages;
-    QHashIterator<WritingSystem,MorphologicalAnalysis> iter( mMorphologicalAnalyses );
+    QHashIterator<WritingSystem,MorphologicalAnalysis*> iter( mMorphologicalAnalyses );
     while(iter.hasNext())
     {
         iter.next();
-        if( !iter.value().isEmpty() )
+        if( !iter.value()->isEmpty() )
             languages << iter.key();
     }
     return languages;
@@ -386,13 +444,19 @@ Concordance* GlossItem::concordance()
 
 void GlossItem::updateGlossItemConcordance()
 {
-    // this is called five places
     mConcordance->removeGlossItemFromConcordance(this);
     TextBitHashIterator iter(mTextForms);
     while(iter.hasNext())
     {
         iter.next();
         mConcordance->updateGlossItemTextFormConcordance( this, iter.value().id() );
+    }
+
+    iter = TextBitHashIterator(mGlosses);
+    while(iter.hasNext())
+    {
+        iter.next();
+        mConcordance->updateGlossItemGlossConcordance( this, iter.value().id() );
     }
 }
 
@@ -427,5 +491,48 @@ bool GlossItem::matchesFocus( const Focus & focus ) const
                 return true;
         }
     }
+    else if ( focus.type() == Focus::GlossItem )
+    {
+        return (qlonglong)this == focus.index();
+    }
     return false;
+}
+
+TextBit GlossItem::getAnnotation( const QString & key ) const
+{
+    return mAnnotations.value(key, TextBit() );
+}
+
+void GlossItem::setAnnotation( const QString & key, const TextBit & annotation )
+{
+    mAnnotations.insert(key, annotation);
+    // this is sort of a cheap way to make sure the text is marked as changed
+    emit approvalStatusChanged(mApprovalStatus);
+}
+
+QHashIterator<QString,TextBit> GlossItem::annotations() const
+{
+    return QHashIterator<QString,TextBit>(mAnnotations);
+}
+
+bool GlossItem::hasAnnotations() const
+{
+    return mAnnotations.count() > 0;
+}
+
+bool GlossItem::hasAnnotation( const QString & key ) const
+{
+    if( mAnnotations.contains( key ) )
+        return ! mAnnotations.value(key).text().isEmpty();
+    else
+        return false;
+}
+
+void GlossItem::connectToConcordance()
+{
+    connect( this, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)), Qt::UniqueConnection);
+    connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)), Qt::UniqueConnection);
+    connect( this, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)), Qt::UniqueConnection);
+    connect( this, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)), Qt::UniqueConnection);
+    connect( this, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis*)), Qt::UniqueConnection);
 }

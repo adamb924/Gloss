@@ -123,6 +123,10 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
     else
         stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "false" );
 
+    if( glossItem->baselineWritingSystem() != mText->baselineWritingSystem() )
+    {
+        stream->writeAttribute("http://www.adambaker.org/gloss.php", "baseline-writing-system", glossItem->baselineWritingSystem().flexString() );
+    }
 
     TextBitHashIterator textIter(*glossItem->textForms());
 
@@ -149,6 +153,19 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
     if( mVerboseOutput )
         serializeMorphemes( glossItem, stream );
 
+    // custom annotations
+    QHashIterator<QString,TextBit> annIter = glossItem->annotations();
+    while ( annIter.hasNext() )
+    {
+        annIter.next();
+
+        stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation");
+        stream->writeAttribute("key", annIter.key() );
+        stream->writeAttribute("lang", annIter.value().writingSystem().flexString() );
+        stream->writeCharacters(annIter.value().text());
+        stream->writeEndElement();
+    }
+
     stream->writeEndElement(); // word
 
     return true;
@@ -159,13 +176,13 @@ bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem, QXmlStreamWriter *
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
     foreach( WritingSystem ws, analysisLanguages )
     {
-        const MorphologicalAnalysis analysis = glossItem->morphologicalAnalysis( ws );
-        if( ! analysis.isEmpty() )
+        const MorphologicalAnalysis * analysis = glossItem->morphologicalAnalysis( ws );
+        if( ! analysis->isEmpty() )
         {
             stream->writeStartElement("morphemes");
             stream->writeAttribute("http://www.adambaker.org/gloss.php", "lang", ws.flexString() );
 
-            AllomorphIterator iter = analysis.allomorphIterator();
+            AllomorphIterator iter = analysis->allomorphIterator();
             while(iter.hasNext())
                 serializeAllomorph( iter.next() , stream );
             stream->writeEndElement(); // morphemes

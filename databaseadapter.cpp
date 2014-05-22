@@ -15,6 +15,7 @@
 #include "morphologicalanalysis.h"
 #include "text.h"
 #include "project.h"
+#include "annotationtype.h"
 
 DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
         QObject(parent)
@@ -53,7 +54,7 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists Allomorph ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
-    if( !q.exec("create table if not exists LexicalEntry ( _id integer primary key autoincrement, GrammaticalInformation text );") )
+    if( !q.exec("create table if not exists LexicalEntry ( _id integer primary key autoincrement, GrammaticalInformation text, MorphologicalCategory text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
     if( !q.exec("create table if not exists LexicalEntryGloss ( _id integer primary key autoincrement, LexicalEntryId integer, WritingSystem integer, Form text );") )
@@ -116,7 +117,36 @@ bool DatabaseAdapter::hasMultipleCandidateInterpretations(const TextBit & bit) c
 QHash<qlonglong,QString> DatabaseAdapter::candidateInterpretationWithSummaries(const TextBit & bit) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select InterpretationId,group_concat(Form,', ') from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) ) group by InterpretationId;");
+//    q.prepare("select InterpretationId,group_concat(Form,', ') from ( select InterpretationId, Form from TextForms where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) union select InterpretationId, Form from Glosses where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) ) group by InterpretationId;");
+//    q.prepare("select InterpretationId,group_concat(Form,', ') from ( "
+//              "(select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) as A "
+//              "left join "
+//              "(select InterpretationId as IID, Form,WritingSystem from TextForms "
+//              "union "
+//              "select InterpretationId, Form,WritingSystem from Glosses "
+//              "union "
+//              "select InterpretationId, Form,WritingSystem from ( "
+//              "select InterpretationId,TextFormId,WritingSystem,group_concat(Form,'-') as Form from ( "
+//              "select InterpretationId,TextFormId,LexicalEntryGloss.WritingSystem as WritingSystem,LexicalEntryGloss.Form as Form from TextForms,MorphologicalAnalysisMembers,Allomorph,LexicalEntryGloss  "
+//              "on "
+//              "TextForms._id=MorphologicalAnalysisMembers.TextFormId and "
+//              "MorphologicalAnalysisMembers.AllomorphId = Allomorph._id and "
+//              "Allomorph.LexicalEntryId = LexicalEntryGloss.LexicalEntryId order by AllomorphOrder ) group by TextFormId,WritingSystem ) "
+//              ") as B "
+//              "on A.InterpretationId=B.IID "
+//              " ) group by InterpretationId; ");
+    q.prepare("select InterpretationId,group_concat(Form,', ') from ( "
+              "select InterpretationId, Form,WritingSystem,0 as TextFormId from TextForms where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) "
+              "union "
+              "select InterpretationId, Form,WritingSystem,0 as TextFormId from Glosses where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) "
+              "union "
+              "select InterpretationId,group_concat(Form,'-') as Form,WritingSystem,TextFormId from ( "
+              "select InterpretationId,TextFormId,LexicalEntryGloss.WritingSystem as WritingSystem,LexicalEntryGloss.Form as Form from TextForms,MorphologicalAnalysisMembers,Allomorph,LexicalEntryGloss  "
+              "on "
+              "TextForms._id=MorphologicalAnalysisMembers.TextFormId and "
+              "MorphologicalAnalysisMembers.AllomorphId = Allomorph._id and "
+              "Allomorph.LexicalEntryId = LexicalEntryGloss.LexicalEntryId where InterpretationId in (select InterpretationId from TextForms where Form=:Form and WritingSystem=:WritingSystem) order by AllomorphOrder ) group by TextFormId,WritingSystem "
+              " ) group by InterpretationId; ");
     q.bindValue(":Form", bit.text());
     q.bindValue(":WritingSystem", bit.writingSystem().id() );
 
@@ -215,8 +245,11 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit
 
 qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writingSystemId)
 {
+<<<<<<< HEAD
+=======
 //    qDebug() << "Inserting" << interpretationId << writingSystemId;
 
+>>>>>>> origin/Branch_fb62869deaf2e19ccc95dca5a7489f634fc5f927
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("insert into Glosses (InterpretationId,WritingSystem) values (:InterpretationId,:WritingSystem);");
     q.bindValue(":InterpretationId",interpretationId);
@@ -264,6 +297,14 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & 
         qWarning() << "DatabaseAdapter::newGloss" << q.lastError().text() << q.executedQuery();
         return -1;
     }
+}
+
+qlonglong DatabaseAdapter::newInterpretation()
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    if( !q.exec("insert into Interpretations (_id) select null;")  )
+        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.executedQuery();
+    return q.lastInsertId().toLongLong();
 }
 
 qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
@@ -387,6 +428,37 @@ void DatabaseAdapter::updateLexicalEntryGloss( const TextBit & bit ) const
         qWarning() << "DatabaseAdapter::updateLexicalEntryGloss" << q.lastError().text() << q.executedQuery();
 }
 
+void DatabaseAdapter::updateLexicalEntryType( qlonglong lexicalEntryId , const QString & allomorphType ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update LexicalEntry set MorphologicalCategory=:MorphologicalCategory where _id=:_id;");
+    q.bindValue(":MorphologicalCategory", allomorphType );
+    q.bindValue(":_id", lexicalEntryId );
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::updateLexicalEntryGloss" << q.lastError().text() << q.executedQuery();
+}
+
+void DatabaseAdapter::updateLexicalEntryCitationForm( qlonglong lexicalEntryId, const TextBit & bit ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update LexicalEntryCitationForm set Form=:Form where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem;");
+    q.bindValue(":Form", bit.text() );
+    q.bindValue(":LexicalEntryId", lexicalEntryId);
+    q.bindValue(":WritingSystem", bit.writingSystem().id() );
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::updateLexicalEntryCitationForm" << q.lastError().text() << q.executedQuery();
+}
+
+void DatabaseAdapter::updateLexicalEntryGloss( qlonglong lexicalEntryId, const TextBit & bit ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update LexicalEntryGloss set Form=:Form where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem;");
+    q.bindValue(":Form", bit.text() );
+    q.bindValue(":LexicalEntryId", lexicalEntryId);
+    q.bindValue(":WritingSystem", bit.writingSystem().id() );
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::updateLexicalEntryGloss" << q.lastError().text() << q.executedQuery();
+}
 
 TextBitHash DatabaseAdapter::guessInterpretationGlosses(qlonglong id) const
 {
@@ -414,12 +486,12 @@ TextBitHash DatabaseAdapter::guessInterpretationTextForms(qlonglong id) const
 
 WritingSystem DatabaseAdapter::writingSystem(const QString & flexString) const
 {
-    return mWritingSystemByFlexString.value(flexString);
+    return mWritingSystemByFlexString.value(flexString, WritingSystem() );
 }
 
 WritingSystem DatabaseAdapter::writingSystem(qlonglong id) const
 {
-    return mWritingSystemByRowId.value(id);
+    return mWritingSystemByRowId.value(id , WritingSystem() );
 }
 
 QList<WritingSystem> DatabaseAdapter::writingSystems() const
@@ -501,14 +573,14 @@ void DatabaseAdapter::close()
     QSqlDatabase::removeDatabase(mFilename);
 }
 
-TextBit DatabaseAdapter::glossFromId(qlonglong id) const
+TextBit DatabaseAdapter::glossFromId(qlonglong glossId) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select _id,Form,WritingSystem from Glosses where _id=:_id;");
-    q.bindValue(":_id", id);
+    q.bindValue(":_id", glossId);
     if( !q.exec() )
     {
-        qWarning() << "DatabaseAdapter::glossFromId" << id << q.lastError().text() << q.executedQuery();
+        qWarning() << "DatabaseAdapter::glossFromId" << glossId << q.lastError().text() << q.executedQuery();
         return TextBit();
     }
     if( q.next() )
@@ -517,14 +589,14 @@ TextBit DatabaseAdapter::glossFromId(qlonglong id) const
         return TextBit();
 }
 
-TextBit DatabaseAdapter::textFormFromId(qlonglong id) const
+TextBit DatabaseAdapter::textFormFromId(qlonglong textFormId) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select _id,Form,WritingSystem from TextForms where _id=:_id;");
-    q.bindValue(":_id", id);
+    q.bindValue(":_id", textFormId);
     if( !q.exec() )
     {
-        qWarning() << "DatabaseAdapter::textFormFromId" << id << q.lastError().text() << q.executedQuery();
+        qWarning() << "DatabaseAdapter::textFormFromId" << textFormId << q.lastError().text() << q.executedQuery();
         return TextBit();
     }
 
@@ -664,26 +736,6 @@ int DatabaseAdapter::removeTextForms( QSet<qlonglong> ids )
     return count;
 }
 
-QList<InterlinearItemType> DatabaseAdapter::glossInterlinearLines() const
-{
-    return mGlossInterlinearLines;
-}
-
-QList<InterlinearItemType> DatabaseAdapter::glossPhrasalGlossLines() const
-{
-    return mGlossPhrasalGlossLines;
-}
-
-QList<InterlinearItemType> DatabaseAdapter::analysisInterlinearLines() const
-{
-    return mAnalysisInterlinearLines;
-}
-
-QList<InterlinearItemType> DatabaseAdapter::analysisPhrasalGlossLines() const
-{
-    return mAnalysisPhrasalGlossLines;
-}
-
 QList<WritingSystem> DatabaseAdapter::lexicalEntryCitationFormFields() const
 {
     return mLexicalEntryCitationForms;
@@ -694,39 +746,15 @@ QList<WritingSystem> DatabaseAdapter::lexicalEntryGlossFields() const
     return mLexicalEntryGlosses;
 }
 
-QList<InterlinearItemType> DatabaseAdapter::interlinearItemsFromConfigurationFile(const QString & queryString) const
-{
-    QList<InterlinearItemType> items;
-    QXmlResultItems result;
-    QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
-        return items;
-    query.setMessageHandler(new MessageHandler());
-    query.setQuery(queryString);
-    query.evaluateTo(&result);
-    QXmlItem item(result.next());
-    while (!item.isNull())
-    {
-        QStringList values = item.toAtomicValue().toString().split(',');
-        items << InterlinearItemType( values.at(0) , writingSystem(values.at(1)) );
-        item = result.next();
-    }
-    return items;
-}
-
 void DatabaseAdapter::parseConfigurationFile(const QString & filename)
 {
     mConfigurationXmlPath = filename;
 
-    mGlossInterlinearLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/gloss-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
-    mGlossPhrasalGlossLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/gloss-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
-    mAnalysisInterlinearLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/analysis-tab/interlinear-line return string-join( (string($i/@type), string($i/@lang)) , ',') ");
-    mAnalysisPhrasalGlossLines = interlinearItemsFromConfigurationFile("for $i in /gloss-configuration/analysis-tab/phrasal-gloss return string-join( ('gloss', string($i/@lang)) , ',') ");
+    mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
+    mLexicalEntryGlosses = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
 
-    mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("for $i in /gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
-    mLexicalEntryGlosses = writingSystemListFromConfigurationFile("for $i in /gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
-
-    metalanguageFromConfigurationFile();
+    languageSettingsFromConfigurationFile();
+    annotationTypesFromConfigurationFile();
 }
 
 QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(const QString & queryString) const
@@ -734,9 +762,8 @@ QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(con
     QList<WritingSystem> items;
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
-        return items;
-    query.setMessageHandler(new MessageHandler());
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::writingSystemListFromConfigurationFile"));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -748,14 +775,15 @@ QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(con
     return items;
 }
 
-QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit ) const
+QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit , const QString & morphologicalType ) const
 {
     QHash<qlonglong,QString> candidates;
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select LexicalEntryId,_id from Allomorph where WritingSystem=:WritingSystem and Form=:Form;");
+    q.prepare("select LexicalEntryId,Allomorph._id from Allomorph,LexicalEntry on Allomorph.LexicalEntryId=LexicalEntry._id where WritingSystem=:WritingSystem and Form=:Form and LexicalEntry.MorphologicalCategory=:MorphologicalCategory;");
     q.bindValue(":WritingSystem", bit.writingSystem().id());
     q.bindValue(":Form", bit.text());
+    q.bindValue(":MorphologicalCategory", morphologicalType );
     if( q.exec() )
     {
         while( q.next() )
@@ -789,63 +817,85 @@ QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextB
     return candidates;
 }
 
-QHash<qlonglong,QString> DatabaseAdapter::searchLexicalEntries( const TextBit & bit ) const
+QSet<Allomorph::Type> DatabaseAdapter::getPossibleMorphologicalTypes( const TextBit & bit ) const
 {
-    QHash<qlonglong,QString> candidates;
+    QSet<Allomorph::Type> types;
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare( QString("select _id from LexicalEntry where _id in "
-                       "( select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%1%' union "
-                       "select LexicalEntryId from LexicalEntryGloss where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%' union "
-                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' union "
-                       " select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%2 and Form like '%%1%' and Form not like '%1%' "
-                       " );").arg( bit.text() ).arg(bit.writingSystem().id()) );
-
+    q.prepare("select distinct(LexicalEntry.MorphologicalCategory) from Allomorph,LexicalEntry on Allomorph.LexicalEntryId=LexicalEntry._id where WritingSystem=:WritingSystem and Form=:Form;");
+    q.bindValue(":WritingSystem", bit.writingSystem().id());
+    q.bindValue(":Form", bit.text());
     if( q.exec() )
     {
         while( q.next() )
         {
-            qlonglong lexicalEntryId = q.value(0).toLongLong();
-            candidates.insert( lexicalEntryId , lexicalEntrySummary(lexicalEntryId) );
+            types << Allomorph::getType( q.value(0).toString() );
         }
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::getPossibleMorphologicalTypes" << q.lastError().text() << q.executedQuery();
+    }
+    return types;
+}
+
+
+void DatabaseAdapter::searchLexicalEntries( const TextBit & bit, QHash<qlonglong,QString> * first , QHash<qlonglong,QString> * second  ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare(QString("select LexicalEntryId, Summary from "
+              "(select LexicalEntryId from LexicalEntryGloss where WritingSystem=%1 and Form like '%2%' union select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%1 and Form like '%2%') as A "
+              "left join "
+              "( select LexicalEntryId as LID, group_concat(Form,', ') as Summary from ( "
+              "select nullif(Form,'') as Form,LexicalEntryId,replace(WritingSystem,'%1','-1') as WritingSystem from LexicalEntryGloss union select nullif(Form,'') as Form,LexicalEntryId,replace(WritingSystem,'%1','-1') as WritingSystem from LexicalEntryCitationForm order by WritingSystem ) group by LexicalEntryId ) as B "
+              "on A.LexicalEntryId=B.LID;").arg(bit.writingSystem().id()).arg(bit.text()));
+
+    if( q.exec() )
+    {
+        while( q.next() )
+            first->insert( q.value(0).toLongLong() , q.value(1).toString() );
     }
     else
     {
         qWarning() << "DatabaseAdapter::searchLexicalEntries" << q.lastError().text() << q.executedQuery();
     }
-    return candidates;
+
+    q.prepare(QString("select LexicalEntryId, Summary from "
+              "(select LexicalEntryId from LexicalEntryGloss where WritingSystem=%1 and Form like '%%2%' and Form not like '%2%' union  select LexicalEntryId from LexicalEntryCitationForm where WritingSystem=%1 and Form like '%%2%' and Form not like '%2%') as A "
+              "left join "
+              "( select LexicalEntryId as LID, group_concat(Form,', ') as Summary from ( "
+              "select nullif(Form,'') as Form,LexicalEntryId from LexicalEntryGloss union select nullif(Form,'') as Form,LexicalEntryId from LexicalEntryCitationForm ) group by LexicalEntryId ) as B "
+              "on A.LexicalEntryId=B.LID;").arg(bit.writingSystem().id()).arg(bit.text()));
+
+    if( q.exec() )
+    {
+        while( q.next() )
+            second->insert( q.value(0).toLongLong() , q.value(1).toString() );
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::searchLexicalEntries" << q.lastError().text() << q.executedQuery();
+    }
 }
 
 QString DatabaseAdapter::lexicalEntrySummary( qlonglong lexicalEntryId ) const
 {
-    QStringList items;
-
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select Form from LexicalEntryGloss where LexicalEntryId=:LexicalEntryId;");
+    q.prepare("select group_concat(Form,', ') from (select Form from LexicalEntryGloss where LexicalEntryId=:LexicalEntryId union select Form from LexicalEntryCitationForm where LexicalEntryId=:LexicalEntryId);");
     q.bindValue(":LexicalEntryId", lexicalEntryId );
+
     if( q.exec() )
     {
-        while( q.next() )
-            items << q.value(0).toString();
+        if( q.next() )
+            return q.value(0).toString();
+        else
+            return "";
     }
     else
     {
         qWarning() << "DatabaseAdapter::lexicalEntrySummary" << q.lastError().text() << q.executedQuery() << lexicalEntryId;
+        return "";
     }
-
-    q.prepare("select Form from LexicalEntryCitationForm where LexicalEntryId=:LexicalEntryId;");
-    q.bindValue(":LexicalEntryId", lexicalEntryId );
-    if( q.exec() )
-    {
-        while( q.next() )
-            items << q.value(0).toString();
-    }
-    else
-    {
-        qWarning() << "DatabaseAdapter::LexicalEntryCitationForm" << q.lastError().text() << q.executedQuery() << lexicalEntryId;
-    }
-
-    return items.join(", ");
 }
 
 qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, Allomorph::Type type, const QList<TextBit> & glosses, const QList<TextBit> & citationForms, const QStringList & grammaticalTags ) const
@@ -858,8 +908,9 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, All
 
     try
     {
-        q.prepare("insert into LexicalEntry (GrammaticalInformation) values (:GrammaticalInformation);");
+        q.prepare("insert into LexicalEntry (GrammaticalInformation, MorphologicalCategory) values (:GrammaticalInformation, :MorphologicalCategory);");
         q.bindValue(":GrammaticalInformation",grammaticalInfo);
+        q.bindValue(":MorphologicalCategory", Allomorph::getTypeString(type) );
 
         if(!q.exec())
             throw -1;
@@ -899,7 +950,7 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, All
             if( ! q.exec() )
                 throw -1;
 
-            q.prepare("insert or ignore into LexicalEntryTags (LexicalEntryId,TagId) values select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;");
+            q.prepare("insert or ignore into LexicalEntryTags (LexicalEntryId,TagId) select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;");
             q.bindValue(":LexicalEntryId",lexicalEntryId);
             q.bindValue(":Tag",tag);
 
@@ -946,7 +997,24 @@ qlonglong DatabaseAdapter::addAllomorph( const TextBit & bit , qlonglong lexical
     }
 }
 
-void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis & morphologicalAnalysis ) const
+bool DatabaseAdapter::hasMorphologicalAnalysis( qlonglong textFormId ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id from MorphologicalAnalysisMembers where TextFormId=:TextFormId limit 1;");
+    q.bindValue(":TextFormId",textFormId);
+
+    if( q.exec() )
+    {
+        return q.next();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::hasMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+}
+
+void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis * morphologicalAnalysis ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId;");
@@ -955,7 +1023,7 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
 
     q.prepare("insert into MorphologicalAnalysisMembers (TextFormId,AllomorphId,AllomorphOrder) values (:TextFormId,:AllomorphId,:AllomorphOrder);");
 
-    AllomorphIterator iter = morphologicalAnalysis.allomorphIterator();
+    AllomorphIterator iter = morphologicalAnalysis->allomorphIterator();
     int position = 0;
     while( iter.hasNext() )
     {
@@ -968,21 +1036,33 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
     }
 }
 
-MorphologicalAnalysis DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const
+MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const
 {
     TextBit textForm = textFormFromId(textFormId);
-    MorphologicalAnalysis analysis( textForm );
+    MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textForm );
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select Allomorphid from MorphologicalAnalysisMembers where TextFormId=:TextFormId order by AllomorphOrder;");
+    q.prepare("select LexicalEntryId,Form,WritingSystem,LexicalEntry.MorphologicalCategory,Allomorph._id from MorphologicalAnalysisMembers,Allomorph,LexicalEntry on TextFormId=:TextFormId and MorphologicalAnalysisMembers.AllomorphId=Allomorph._id and Allomorph.LexicalEntryId=LexicalEntry._id;");
     q.bindValue(":TextFormId", textFormId);
     q.exec();
     while(q.next())
     {
-        qlonglong allomorphId = q.value(0).toLongLong();
-        analysis.addAllomorph( allomorphFromId( allomorphId ) );
+        qlonglong lexicalEntryId = q.value(0).toLongLong();
+        TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
+        TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
+        qlonglong allomorphId = q.value(4).toLongLong();
+        analysis->addAllomorph( Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) ) );
     }
     return analysis;
+}
+
+void DatabaseAdapter::clearMorphologicalAnalysis( qlonglong textFormId ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId;");
+    q.bindValue(":TextFormId", textFormId);
+    if( ! q.exec() )
+        qWarning() << "DatabaseAdapter::clearMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
 }
 
 bool DatabaseAdapter::textFormHasMorphologicalAnalysis( qlonglong textFormId ) const
@@ -1001,8 +1081,7 @@ bool DatabaseAdapter::textFormHasMorphologicalAnalysis( qlonglong textFormId ) c
 Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-
-    q.prepare("select LexicalEntryId,Form,WritingSystem from Allomorph where _id=:_id;");
+    q.prepare("select LexicalEntryId,Form,WritingSystem,LexicalEntry.MorphologicalCategory from Allomorph,LexicalEntry on LexicalEntryId=LexicalEntry._id where Allomorph._id=:_id;");
     q.bindValue(":_id", allomorphId);
     if( q.exec() )
     {
@@ -1011,7 +1090,7 @@ Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
             qlonglong lexicalEntryId = q.value(0).toLongLong();
             TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
             TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
-            return Allomorph(allomorphId, bit, glosses );
+            return Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) );
         }
     }
     qWarning() << "DatabaseAdapter::allomorphFromId"  << allomorphId << q.lastError().text() << q.executedQuery();
@@ -1023,16 +1102,76 @@ WritingSystem DatabaseAdapter::metaLanguage() const
     return mMetaLanguage;
 }
 
-void DatabaseAdapter::metalanguageFromConfigurationFile()
+WritingSystem DatabaseAdapter::defaultGlossLanguage() const
+{
+    return mDefaultGlossLanguage;
+}
+
+WritingSystem DatabaseAdapter::defaultTextFormLanguage() const
+{
+    return mDefaultTextFormLanguage;
+}
+
+void DatabaseAdapter::languageSettingsFromConfigurationFile()
 {
     QString result;
     QXmlQuery query(QXmlQuery::XQuery10);
-    if(!query.setFocus(QUrl( mConfigurationXmlPath )))
-        return;
-    query.setMessageHandler(new MessageHandler());
-    query.setQuery("for $i in /gloss-configuration/meta-language return string($i/@lang)");
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::metalanguageFromConfigurationFile"));
+
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+
+    query.setQuery("string(doc($path)/gloss-configuration/meta-language/@lang)");
     query.evaluateTo(&result);
     mMetaLanguage = writingSystem(result.trimmed());
+
+    query.setQuery("string(doc($path)/gloss-configuration/default-gloss-language/@lang)");
+    query.evaluateTo(&result);
+    mDefaultGlossLanguage = writingSystem(result.trimmed());
+
+    query.setQuery("string(doc($path)/gloss-configuration/default-text-form-language/@lang)");
+    query.evaluateTo(&result);
+    mDefaultTextFormLanguage = writingSystem(result.trimmed());
+
+    // in case anything's gone wrong...
+    if( mMetaLanguage.isNull() )
+        mMetaLanguage = mWritingSystems.first();
+    if( mDefaultGlossLanguage.isNull() )
+        mDefaultGlossLanguage = mWritingSystems.first();
+    if( mDefaultTextFormLanguage.isNull() )
+        mDefaultTextFormLanguage = mWritingSystems.first();
+}
+
+void DatabaseAdapter::annotationTypesFromConfigurationFile()
+{
+    QStringList result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::annotationTypesFromConfigurationFile"));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.setQuery("declare variable $path external; "
+                   "for $x in doc($path)/gloss-configuration/annotations/annotation "
+                   "return string-join( ($x/@name, $x/@mark , $x/@lang ) , ',') ");
+    query.evaluateTo(&result);
+
+    for(int i=0; i<result.count(); i++)
+    {
+        QStringList split = result.at(i).split(",");
+        if( split.count() != 3 )
+            continue;
+        mAnnotationTypes << AnnotationType(split.at(0),split.at(1), writingSystem(split.at(2)));
+    }
+}
+
+QList<AnnotationType> DatabaseAdapter::annotationTypes() const
+{
+    return mAnnotationTypes;
+}
+
+AnnotationType DatabaseAdapter::annotationType(const QString & label) const
+{
+    for(int i=0; i<mAnnotationTypes.count(); i++)
+        if( mAnnotationTypes.at(i).label() == label )
+            return mAnnotationTypes.at(i);
+    return AnnotationType();
 }
 
 TextBitHash DatabaseAdapter::lexicalItemGlosses(qlonglong lexicalEntryId) const
@@ -1068,7 +1207,7 @@ void DatabaseAdapter::loadWritingSystems()
         qWarning() << "DatabaseAdapter::loadWritingSystems" << q.lastError().text() << q.executedQuery();
     while( q.next() )
     {
-        WritingSystem ws(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), (Qt::LayoutDirection)q.value(5).toInt() , q.value(6).toString(), q.value(7).toInt() );
+        WritingSystem ws(q.value(0).toLongLong(), q.value(1).toString(), q.value(2).toString(), q.value(3).toString(), q.value(4).toString(), q.value(5).toInt() == 1 ? Qt::RightToLeft : Qt::LeftToRight , q.value(6).toString(), q.value(7).toInt() );
         mWritingSystems << ws;
         mWritingSystemByRowId.insert( q.value(0).toLongLong(), ws );
         mWritingSystemByFlexString.insert( q.value(3).toString(), ws );
@@ -1224,10 +1363,8 @@ void DatabaseAdapter::createIndex( const QString & tableName, const QString & qu
 
         QStringList result;
         QXmlQuery query(QXmlQuery::XQuery10);
-        if(!query.setFocus(QUrl(path)))
-            continue;
-
-        query.setMessageHandler(new MessageHandler());
+        query.setMessageHandler(new MessageHandler("DatabaseAdapter::createIndex"));
+        query.bindVariable("path", QVariant(QUrl::fromLocalFile(path).path(QUrl::FullyEncoded)));
         query.setQuery(queryString);
         query.evaluateTo(&result);
 
@@ -1249,7 +1386,8 @@ void DatabaseAdapter::createIndex( const QString & tableName, const QString & qu
 void DatabaseAdapter::createTextFormIndex( const QSet<QString> * filePaths ) const
 {
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt']  "
+            "declare variable $path external; "
+                           "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt']  "
                           "let $line-number := string( $x/../../../../phrase/item[@type='segnum']/text() ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "TextFormIndex" , queryString , filePaths );
@@ -1258,7 +1396,8 @@ void DatabaseAdapter::createTextFormIndex( const QSet<QString> * filePaths ) con
 void DatabaseAdapter::createGlossIndex( const QSet<QString> * filePaths ) const
 {
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls']  "
+            "declare variable $path external; "
+                           "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls']  "
                           "let $line-number := string( $x/../../../../phrase/item[@type='segnum']/text() ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "GlossIndex" , queryString , filePaths );
@@ -1267,7 +1406,8 @@ void DatabaseAdapter::createGlossIndex( const QSet<QString> * filePaths ) const
 void DatabaseAdapter::createInterpretationIndex( const QSet<QString> * filePaths ) const
 {
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                           "for $x in /document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
+            "declare variable $path external; "
+                           "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
                           "let $line-number := string( $x/../../../phrase/item[@type='segnum']/text() ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "InterpretationIndex" , queryString , filePaths );
@@ -1311,7 +1451,6 @@ QSqlQuery DatabaseAdapter::searchIndexForLexicalEntry( qlonglong id ) const
 
 QSet<qlonglong> DatabaseAdapter::lexicalEntryTextFormIds( qlonglong id ) const
 {
-    qDebug() << "Beginning" << QDateTime::currentDateTime ().toString(Qt::ISODate);
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare( "select TextFormIndex.Id from TextFormIndex,MorphologicalAnalysisMembers,Allomorph on TextFormId=Id and AllomorphId=Allomorph._id where LexicalEntryId=:Id;" );
     q.bindValue(":Id", id);
@@ -1323,14 +1462,10 @@ QSet<qlonglong> DatabaseAdapter::lexicalEntryTextFormIds( qlonglong id ) const
         return textFormIds;
     }
 
-    qDebug() << "Before while" << QDateTime::currentDateTime ().toString(Qt::ISODate);
-    int nResults = 0;
     while( q.next() )
     {
-        qDebug() << nResults++ << QDateTime::currentDateTime().toString(Qt::ISODate);
         q.value(0).toLongLong();
     }
-    qDebug() << "After while";
 
     return textFormIds;
 }
@@ -1364,6 +1499,36 @@ QSqlQuery DatabaseAdapter::searchIndexForAllomorph( qlonglong id ) const
     return q;
 }
 
+QSqlQuery DatabaseAdapter::searchIndexForText(const TextBit &bit) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select TextName,LineNumber,count(Id) from "
+               "(select TextName,LineNumber,Id from TextFormIndex where Id in (select _id from TextForms where WritingSystem=? and Form=?) "
+               "union "
+               "select TextName,LineNumber,Id from GlossIndex where Id in (select _id from Glosses where WritingSystem=? and Form=?)) "
+               "group by TextName,LineNumber order by TextName asc,LineNumber asc;");
+    q.addBindValue(bit.writingSystem().id());
+    q.addBindValue(bit.text());
+    q.addBindValue(bit.writingSystem().id());
+    q.addBindValue(bit.text());
+    q.exec();
+    return q;
+}
+
+QSqlQuery DatabaseAdapter::searchIndexForSubstring(const TextBit &bit) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( QString("select TextName,LineNumber,count(Id) from "
+               "(select TextName,LineNumber,Id from TextFormIndex where Id in (select _id from TextForms where WritingSystem=? and Form like '%%1%') "
+               "union "
+               "select TextName,LineNumber,Id from GlossIndex where Id in (select _id from Glosses where WritingSystem=? and Form like '%%2%')) "
+               "group by TextName,LineNumber order by TextName asc,LineNumber asc;").arg(bit.text()).arg(bit.text()) );
+    q.addBindValue(bit.writingSystem().id());
+    q.addBindValue(bit.writingSystem().id());
+    q.exec();
+    return q;
+}
+
 int DatabaseAdapter::removeUnusedMorphologicalAnalysisMembers() const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
@@ -1384,8 +1549,8 @@ int DatabaseAdapter::removeUnusedLexicalEntries() const
     q.exec("delete from LexicalEntry where _id not in (select LexicalEntryId from Allomorph);");
     int nLexEntriesDeleted = q.numRowsAffected();
     q.exec("delete from LexicalEntryGloss where LexicalEntryId not in (select _id from LexicalEntry);");
-    q.exec("delete from LexicalEntry where LexicalEntryIdCitationForm not in (select _id from LexicalEntry);");
-    q.exec("delete from LexicalEntry where LexicalEntryIdGrammaticalTags not in (select _id from LexicalEntry);");
+    q.exec("delete from LexicalEntryCitationForm where LexicalEntryId not in (select _id from LexicalEntry);");
+    q.exec("delete from LexicalEntryTags where LexicalEntryId not in (select _id from LexicalEntry);");
     return nLexEntriesDeleted;
 }
 
@@ -1411,10 +1576,18 @@ void DatabaseAdapter::setTagsForLexicalEntry( qlonglong lexicalEntryId, const QS
     q.bindValue(":LexicalEntryId", lexicalEntryId );
     q.exec();
 
+    q.prepare("insert or ignore into GrammaticalTags (Tag) values (:Tag);");
+    QStringListIterator iter(tags);
+    while( iter.hasNext() )
+    {
+        q.bindValue(":Tag", iter.next() );
+        q.exec();
+    }
+
     q.prepare( "insert into LexicalEntryTags (LexicalEntryId,TagId) select :LexicalEntryId,_id from GrammaticalTags where Tag=:Tag;" );
     q.bindValue(":LexicalEntryId", lexicalEntryId );
 
-    QStringListIterator iter(tags);
+    iter = QStringListIterator(tags);
     while(iter.hasNext())
     {
         q.bindValue(":Tag", iter.next() );
@@ -1498,4 +1671,97 @@ QString DatabaseAdapter::guessGloss( const QString & hint , const WritingSystem 
     if( q.next() )
         return q.value(0).toString();
     return QString();
+}
+
+qlonglong DatabaseAdapter::lexicalEntryIdFromAllomorph(qlonglong allomorphId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select LexicalEntryId from Allomorph where _id=:_id;" );
+    q.bindValue(":_id", allomorphId );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        return q.value(0).toLongLong();
+    return -1;
+}
+
+QString DatabaseAdapter::guessLexicalEntryCitationForm( qlonglong lexicalEntryId , const WritingSystem & ws ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select Form from TextForms where WritingSystem=:WritingSystem and InterpretationId in ( select InterpretationId from ( "
+               "select LexicalEntryId,Interpretations._id as InterpretationId,TextForms.Form,count(distinct AllomorphId) as Nmorphemes from "
+               "Allomorph,MorphologicalAnalysisMembers,TextForms,Interpretations on Allomorph._id=MorphologicalAnalysisMembers.AllomorphId and MorphologicalAnalysisMembers.TextFormId=TextForms._id and Interpretations._id=TextForms.InterpretationId "
+               "group by TextFormId ) where LexicalEntryId=:LexicalEntryId and Nmorphemes=1 );" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    q.bindValue(":WritingSystem", ws.id() );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        return q.value(0).toString();
+    else
+        return QString();
+}
+
+QStringList DatabaseAdapter::suggestLexicalEntryCitationForms( qlonglong lexicalEntryId , const WritingSystem & ws ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select Form from TextForms where WritingSystem=:WritingSystem and InterpretationId in ( "
+               "select InterpretationId from "
+               "Allomorph,MorphologicalAnalysisMembers,TextForms,Interpretations on Allomorph._id=MorphologicalAnalysisMembers.AllomorphId and MorphologicalAnalysisMembers.TextFormId=TextForms._id and Interpretations._id=TextForms.InterpretationId and LexicalEntryId=:LexicalEntryId);" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    q.bindValue(":WritingSystem", ws.id() );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    QStringList retVal;
+    while( q.next() )
+        retVal << q.value(0).toString();
+    return retVal;
+}
+
+QString DatabaseAdapter::guessLexicalEntryGloss( qlonglong lexicalEntryId , const WritingSystem & ws ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select Form from Glosses where WritingSystem=:WritingSystem and InterpretationId in ( select InterpretationId from ( "
+               "select LexicalEntryId,Interpretations._id as InterpretationId,TextForms.Form,count(distinct AllomorphId) as Nmorphemes from "
+               "Allomorph,MorphologicalAnalysisMembers,TextForms,Interpretations on Allomorph._id=MorphologicalAnalysisMembers.AllomorphId and MorphologicalAnalysisMembers.TextFormId=TextForms._id and Interpretations._id=TextForms.InterpretationId "
+               "group by TextFormId ) where LexicalEntryId=:LexicalEntryId and Nmorphemes=1 );" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    q.bindValue(":WritingSystem", ws.id() );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        return q.value(0).toString();
+    else
+        return QString();
+}
+
+QStringList DatabaseAdapter::suggestLexicalEntryGlosses( qlonglong lexicalEntryId , const WritingSystem & ws ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select Form from Glosses where WritingSystem=:WritingSystem and InterpretationId in ( "
+               "select InterpretationId from "
+               "Allomorph,MorphologicalAnalysisMembers,TextForms,Interpretations on Allomorph._id=MorphologicalAnalysisMembers.AllomorphId and MorphologicalAnalysisMembers.TextFormId=TextForms._id and Interpretations._id=TextForms.InterpretationId and LexicalEntryId=:LexicalEntryId);" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    q.bindValue(":WritingSystem", ws.id() );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    QStringList retVal;
+    while( q.next() )
+        retVal << q.value(0).toString();
+    return retVal;
+}
+
+Allomorph::Type DatabaseAdapter::lexicalEntryMorphologicalType( qlonglong lexicalEntryId ) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "select MorphologicalCategory from LexicalEntry where _id=:LexicalEntryId;" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        return Allomorph::getType(q.value(0).toString());
+    else
+        return Allomorph::Stem;
 }

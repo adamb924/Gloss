@@ -16,6 +16,7 @@
 #include "textbit.h"
 #include "glossitem.h"
 #include "phrase.h"
+#include "flextextreader.h"
 
 class WritingSystem;
 class Project;
@@ -32,6 +33,7 @@ class Text : public QObject
 
     friend class FlexTextReader;
     friend class FlexTextWriter;
+    friend class FlexTextImporter;
 
 public:
     enum MergeTranslationResult { Success, MergeStuckOldFileDeleted, MergeStuckOldFileStillThere, XslTranslationError };
@@ -70,9 +72,6 @@ public:
         return info.baseName();
     }
 
-    //! \brief Reads the given flextext file to set the baseline writing system for the text
-    bool setBaselineWritingSystemFromFile(const QString & filePath );
-
     //! \brief Returns true if the Text is valid, otherwise false. A Text can be invalid if there has been some error, for instance.
     bool isValid() const;
 
@@ -82,21 +81,27 @@ public:
     void setBaselineTextForLine( int i, const QString & text );
     QString baselineTextForLine( int i );
 
-    Sound* sound();
     void setSound(const QUrl & filename);
 
     //! \brief Plays the sound for the given 0-indexed line number, or returns an error.
     bool playSoundForLine( int lineNumber );
 
-    FlexTextReadResult readResult() const;
+    FlexTextReader::Result readResult() const;
+
+    void findGlossItemLocation(GlossItem *glossItem, int & line, int & position) const;
 
 public slots:
     void setBaselineFromGlossItems();
     void markAsChanged();
     void removeLine( int lineNumber );
+    void setFollowingInterpretations( GlossItem *glossItem );
+    void replaceFollowing(GlossItem *glossItem, const QString & searchFor );
+    void baselineSearchReplace( const TextBit & search , const TextBit & replace );
+    void matchFollowingTextForms(GlossItem *glossItem, const WritingSystem & ws );
+    void matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws );
 
 private:
-    FlexTextReadResult mReadResult;
+    FlexTextReader::Result mReadResult;
     bool mChanged;
 
     Sound *mSound;
@@ -112,14 +117,12 @@ private:
 
     QList<Phrase*> mPhrases;
 
+
     void clearGlossItems();
 
     void setGlossItemsFromBaseline();
 
     void setLineOfGlossItems(Phrase *phrase , const QString & line );
-
-    //! \brief Sets the text from the given file. Returns false if this fails.
-    Text::FlexTextReadResult readTextFromFlexText(QFile *file, bool baselineInfoFromFile = false);
 
 private slots:
     void requestGuiRefresh( Phrase * phrase );

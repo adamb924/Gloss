@@ -1,7 +1,7 @@
 #include "interlineardisplaywidget.h"
 
 #include <QtDebug>
-#include <QtGui>
+#include <QtWidgets>
 #include <QStringList>
 #include <QLayout>
 
@@ -15,14 +15,13 @@
 #include "interlinearlinelabel.h"
 #include "generictextinputdialog.h"
 #include "focus.h"
+#include "annotationmarkwidget.h"
+#include "tab.h"
 
-InterlinearDisplayWidget::InterlinearDisplayWidget(const QList<InterlinearItemType> & interlinearDisplayLines, const QList<InterlinearItemType> & phrasalGlossLines, Text *text, Project *project, QWidget *parent) :
-        QScrollArea(parent)
+InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
+    mTab(tab), mText(text), mProject(project), QScrollArea(parent)
 {
-    mText = text;
-    mProject = project;
-    mInterlinearDisplayLines = interlinearDisplayLines;
-    mPhrasalGlossLines = phrasalGlossLines;
+    mBottomSpacing = new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding);
 
     setLinesToDefault();
 
@@ -56,7 +55,7 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 
 QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
 {
-    FlowLayout *flowLayout = new FlowLayout( mInterlinearDisplayLines.first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
+    FlowLayout *flowLayout = new FlowLayout( mTab->interlinearLines().value( mText->baselineWritingSystem()).first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
     mLineLayouts.insert(lineNumber, flowLayout);
     mLayout->addLayout(flowLayout);
     return flowLayout;
@@ -64,12 +63,12 @@ QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
 
 void InterlinearDisplayWidget::saveText()
 {
-    mText->saveText(false);
+    mText->saveText(false, true);
 }
 
 void InterlinearDisplayWidget::saveTextVerbose()
 {
-    mText->saveText(true);
+    mText->saveText(true, true);
 }
 
 void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -111,12 +110,14 @@ void InterlinearDisplayWidget::scrollContentsBy ( int dx, int dy )
 
 void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
 {
-    for(int j=0; j<mPhrasalGlossLines.count(); j++)
+    for(int j=0; j< mTab->phrasalGlossLines().count(); j++)
     {
-        TextBit bit = mText->phrases()->at(i)->gloss( mPhrasalGlossLines.at(j).writingSystem() );
+        TextBit bit = mText->phrases()->at(i)->gloss( mTab->phrasalGlossLines().at(j).writingSystem() );
         LingEdit *edit = addPhrasalGlossLine( bit );
-        edit->matchTextAlignmentTo( mInterlinearDisplayLines.first().writingSystem().layoutDirection() );
+        edit->matchTextAlignmentTo( mTab->interlinearLines().value( mText->baselineWritingSystem()).first().writingSystem().layoutDirection() );
         connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
+
+        mPhrasalGlossWidgets.insert( i , edit );
     }
 }
 
@@ -165,21 +166,32 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             layout->removeWidget(lineLabel);
         }
 
-        QListIterator<QWidget*> iter =  QListIterator<QWidget*>( mWordDisplayWidgets.values(lineNumber) );
+        QListIterator<WordDisplayWidget*> iter( mWordDisplayWidgets.values(lineNumber) );
         while(iter.hasNext())
         {
-            QWidget *wdw = iter.next();
+            WordDisplayWidget *wdw = iter.next();
             layout->removeWidget(wdw);
             wdw->deleteLater();
             mWordDisplayWidgets.remove( lineNumber, wdw );
         }
-    }
+
+        QListIterator<QWidget*> phrasalIter( mPhrasalGlossWidgets.values(lineNumber) );
+        while(phrasalIter.hasNext())
+        {
+            QWidget *gloss = phrasalIter.next();
+            layout->removeWidget(gloss);
+            gloss->deleteLater();
+            mPhrasalGlossWidgets.remove( lineNumber, gloss );
+        }
+   }
 }
 
 void InterlinearDisplayWidget::setLayoutFromText()
 {
     if( mLines.isEmpty() )
         setLinesToDefault();
+
+    mLayout->removeItem(mBottomSpacing);
 
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mLines.count(), 0);
     progress.setWindowModality(Qt::WindowModal);
@@ -217,6 +229,8 @@ void InterlinearDisplayWidget::setLayoutFromText()
         mLineRefreshRequests.clear();
     }
     progress.setValue(mLines.count());
+
+    mLayout->addSpacerItem( mBottomSpacing );
 }
 
 void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
@@ -231,15 +245,8 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mInterlinearDisplayLines, mProject->dbAdapter(), this );
-    for(int i=0; i<mFoci.count(); i++)
-    {
-        if( item->matchesFocus( mFoci.at(i) ) )
-        {
-            wdw->setFocused(true);
-            break;
-        }
-    }
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mTab->interlinearLines().value(item->baselineWritingSystem()), mProject->dbAdapter(), this );
+    maybeFocus(wdw);
 
     connect( wdw, SIGNAL(splitWidget(GlossItem*,QList<TextBit>)), phrase, SLOT(splitGloss(GlossItem*,QList<TextBit>)) );
 
@@ -248,10 +255,30 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(requestRemoveGlossItem(GlossItem*)), phrase, SLOT(removeGlossItem(GlossItem*)));
 
     connect( wdw, SIGNAL(requestApproveLine(WordDisplayWidget*)), this, SLOT(approveAll(WordDisplayWidget*)) );
+    connect( wdw, SIGNAL(requestPlaySound(WordDisplayWidget*)), this, SLOT(playSound(WordDisplayWidget*)) );
     connect( wdw, SIGNAL(requestLeftGlossItem(WordDisplayWidget*)), this, SLOT(leftGlossItem(WordDisplayWidget*)));
     connect( wdw, SIGNAL(requestRightGlossItem(WordDisplayWidget*)), this, SLOT(rightGlossItem(WordDisplayWidget*)));
 
+    connect( wdw, SIGNAL(requestSetFollowingInterpretations(GlossItem*)), mText, SLOT(setFollowingInterpretations(GlossItem*)) );
+    connect( wdw, SIGNAL(requestReplaceFollowing(GlossItem*,QString)), mText, SLOT(replaceFollowing(GlossItem*,QString)) );
+    connect( wdw, SIGNAL(requestSetFollowingTextForms(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingTextForms(GlossItem*,WritingSystem)) );
+    connect( wdw, SIGNAL(requestSetFollowingGlosses(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingGlosses(GlossItem*,WritingSystem)) );
+
     return wdw;
+}
+
+void InterlinearDisplayWidget::maybeFocus(WordDisplayWidget * wdw)
+{
+    bool isFocused = false;
+    for(int i=0; i<mFoci.count(); i++)
+    {
+        if( wdw->glossItem()->matchesFocus( mFoci.at(i) ) )
+        {
+            isFocused = true;
+            break;
+        }
+    }
+    wdw->setFocused(isFocused);
 }
 
 void InterlinearDisplayWidget::setLinesToDefault()
@@ -263,7 +290,13 @@ void InterlinearDisplayWidget::setLinesToDefault()
 
 void InterlinearDisplayWidget::setLines( const QList<int> lines )
 {
+    for(int i=0; i<mLines.count(); i++)
+        clearWidgetsFromLine(mLines.at(i));
     mLines = lines;
+    qDeleteAll(mLineLayouts);
+    mLineLayouts.clear();
+    mLineLabels.clear();
+    setLayoutFromText();
 }
 
 void InterlinearDisplayWidget::requestLineRefresh( int line )
@@ -274,12 +307,22 @@ void InterlinearDisplayWidget::requestLineRefresh( int line )
 void InterlinearDisplayWidget::setFocus( const QList<Focus> & foci )
 {
     mFoci = foci;
+
+    QListIterator<WordDisplayWidget*> iter( mWordDisplayWidgets.values() );
+    while(iter.hasNext())
+        maybeFocus( iter.next() );
 }
 
 void InterlinearDisplayWidget::approveAll( WordDisplayWidget * wdw )
 {
     int lineNumber = mWordDisplayWidgets.key( wdw );
     approveAll(lineNumber);
+}
+
+void InterlinearDisplayWidget::playSound( WordDisplayWidget * wdw )
+{
+    int lineNumber = mWordDisplayWidgets.key( wdw );
+    playSound(lineNumber);
 }
 
 void InterlinearDisplayWidget::leftGlossItem( WordDisplayWidget * wdw )
