@@ -1,3 +1,9 @@
+/*!
+  \class Sound
+  \ingroup Data
+  \brief This is a class for handling audio files. After constructing a Sound object with a QUrl to the file, users can call playSegment() to play a portion of the file. Every Text element has a (possibly null) Sound member.
+*/
+
 #ifndef SOUND_H
 #define SOUND_H
 

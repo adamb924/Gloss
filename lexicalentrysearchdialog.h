@@ -1,6 +1,5 @@
 /*!
   \class LexicalEntrySearchDialog
-  \ingroup GUI
   \ingroup MorphologicalAnalysis
   \brief This is a widget for searching for a lexical item. The upper combo box lists lexical entries that begin with the search string, and the lower combo box a substring search.
 

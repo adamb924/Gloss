@@ -1,6 +1,6 @@
 /*!
   \class DatabaseAdapter
-  \ingroup Data
+  \ingroup IO
   \brief A database adapter to provide an interface to the SQLite database, and also some occasional XQuery calls.
 */
 

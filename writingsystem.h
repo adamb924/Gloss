@@ -1,6 +1,6 @@
 /*!
   \class WritingSystem
-  \ingroup DataStructures
+  \ingroup Data
   \brief A data class holding data about a writing system.
 
   The corresponding SQL table is WritingSystems.

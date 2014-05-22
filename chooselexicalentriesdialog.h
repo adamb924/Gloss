@@ -1,6 +1,5 @@
 /*!
   \class ChooseLexicalEntriesDialog
-  \ingroup GUI
   \ingroup MorphologicalAnalysis
   \brief A form for the user to choose (or create) lexical entries to go along with allomorphs. ChooseLexicalEntriesDialog will have one or more LexicalEntryForm objects, which provide the interface. ChooseLexicalEntriesDialog then commits those changes to the database upon acceptance.
 */

@@ -1,6 +1,6 @@
 /*!
   \class WordDisplayWidget
-  \ingroup GUI
+  \ingroup Interlinear
   \brief A widget for displaying a word in an InterlinearDisplayWidget. The corresponding data class is GlossItem. This contains lists of LingEdit, ImmutableLabel, and AnalysisWidget objects to be displayed.
 */
 

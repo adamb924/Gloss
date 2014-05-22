@@ -1,6 +1,6 @@
 /*!
   \class Phrase
-  \ingroup DataStructures
+  \ingroup Data
   \brief A data class holding a list of GlossItem objects, as well as a hash map with phrase-level glosses.
 */
 

@@ -1,3 +1,9 @@
+/*!
+  \class MorphologicalAnalysis
+  \ingroup Data
+  \brief This class represents a morphological analysis. Its most important member is a list of Allomorph objects. The class is widely used, but MorphologicalAnalysis objects are in particular members of GlossItem.
+*/
+
 #ifndef MORPHOLOGICALANALYSIS_H
 #define MORPHOLOGICALANALYSIS_H
 

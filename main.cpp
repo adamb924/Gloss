@@ -1,25 +1,23 @@
 /*!
- \defgroup GUI Graphical user interface classes
+ \defgroup Data Data classes
 
- \defgroup GUIModel Model classes that are used in producing graphical user interfaces.
+ \defgroup Interlinear Interlinear text display
 
- \defgroup Data Data interface classes
+ \defgroup MorphologicalAnalysis Creating morphological analyses
 
- \defgroup DataStructures Data structure classes
+ \defgroup LexiconEdit Editing the lexicon
 
- \defgroup Interlinear Classes pertaining to the interlinear text display
+ \defgroup GUI Other GUI classes
 
- \defgroup MorphologicalAnalysis Classes having to do the morphological analysis interface.
+ \defgroup GUIModel Model classes (that are used in producing graphical user interfaces)
 
- \defgroup RawAccess Classes providing the user with raw access to the database or to the XML.
+ \defgroup RawAccess Providing the user with raw access to the database or to the XML
 
- \defgroup TextImport Classes related to importing texts into the project.
+ \defgroup TextImport Importing texts (and merging data from external files) into the project
 
- \defgroup LexiconEdit Classes for editing the lexicon.
+ \defgroup Search Performing searches
 
- \defgroup Search Classes for performing searches.
-
- \defgroup IO Classes for input/output functions.
+ \defgroup IO Input/output functions
  */
 
 #include <QtWidgets/QApplication>

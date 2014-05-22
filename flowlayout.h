@@ -1,6 +1,5 @@
 /*!
   \class FlowLayout
-  \ingroup GUI
   \ingroup Interlinear
   \brief A QLayout subclass, providing a layout which arranges widgets as if it they were text. This is instantiated in InterlinearDisplayWidget.
 

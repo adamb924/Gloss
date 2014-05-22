@@ -1,3 +1,10 @@
+/*!
+  \class MergeTranslationDialog
+  \ingroup GUI
+  \ingroup TextImport
+  \brief This is a dialog for users who want to merge the translations from a .flextext file into a text. The user selects the text from a combo box, a file on the computer, and a writing system. As a convenience the dialog checks whether the base filenames are the same. The actual merge is carried out in MainWindow and Text. The associated interface is mergeeafdialog.ui.
+*/
+
 #ifndef MERGETRANSLATIONDIALOG_H
 #define MERGETRANSLATIONDIALOG_H
 

@@ -1,6 +1,5 @@
 /*!
   \class InterlinearLineLabel
-  \ingroup GUI
   \ingroup Interlinear
   \brief This is a QLabel subclass for displaying the line numbers in an interlinear text. It adds double-click sensitivity and a context menu. It is instantiated in InterlinearDisplayWidget.
 */

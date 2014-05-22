@@ -1,6 +1,6 @@
 /*!
   \class FlexTextWriter
-  \ingroup Data
+  \ingroup IO
   \brief This object writes the data in a Text object to a .flextext file. Instantiated in Text.
 */
 

@@ -1,6 +1,6 @@
 /*!
   \class MessageHandler
-  \ingroup Data
+  \ingroup Search
   \brief A message handler that sends error message output to qWarning(). Currently this is used only with QXmlQuery.
 */
 

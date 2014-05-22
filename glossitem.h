@@ -1,7 +1,6 @@
 /*!
   \class GlossItem
-  \ingroup DataStructures
-  \ingroup Interlinear
+  \ingroup Data
   \brief A data class representing a gloss item in an interlinear text. This consists of an id (the _id field of the Interpretations SQL table), hashes of text and gloss lines, and a pointer to the TextBit of the baseline text.
 
   Each GlossItem is associated with a row from the Interpretations SQL table (mId corresponds _id). The other data values are not necessarily predictable from this information, however, since there can be many-to-one relationships between text forms or glosses and interpretations, however.

@@ -1,6 +1,5 @@
 /*!
   \class InterlinearChunkEditor
-  \ingroup GUI
   \ingroup Interlinear
   \brief This in a widget for displaying a portion of an interlinear text, allowing the user to view a few lines at a time (which is helpful for efficiency). This is the lightweight version of TextDisplayWidget.
 */

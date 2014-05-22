@@ -1,6 +1,5 @@
 /*!
   \class EditWithSuggestionsDialog
-  \ingroup GUI
   \ingroup LexiconEdit
   \brief This is a generic form that prompts the user with an edit box and a list of suggested strings to select. See editwithsuggestionsdialog.ui.
 

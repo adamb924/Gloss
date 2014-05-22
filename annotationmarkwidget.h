@@ -8,7 +8,7 @@ class GlossItem;
 
 /*!
   \class Mark
-  \ingroup GUI
+  \ingroup Interlinear
   \brief This is subclassed QLabel, which emits a signal when it is double-clicked. It is used in AnnotationMarkWidget.
 */
 
@@ -28,7 +28,7 @@ protected:
 
 /*!
   \class AnnotationMarkWidget
-  \ingroup GUI
+  \ingroup Interlinear
   \brief This GUI widget contains one or more Mark objects. It receives signals from the Mark objects and emits signals indicating which mark was activated, and for which GlossItem.
 */
 

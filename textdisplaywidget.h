@@ -1,6 +1,6 @@
 /*!
   \class TextDisplayWidget
-  \ingroup GUI
+      \ingroup Interlinear
   \brief A QTabWidget subclass, containing various tabs of type InterlinearDisplayWidget. This can be instantiated for an QMdiSubWindow in MainWindow, or within InterlinearChunkEditor. The layout is textdisplaywidget.ui.
 */
 

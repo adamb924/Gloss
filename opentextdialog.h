@@ -1,3 +1,9 @@
+/*!
+  \class OpenTextDialog
+  \ingroup GUI
+  \brief A dialog for opening one of the interlinear texts of the project.
+*/
+
 #ifndef OPENTEXTDIALOG_H
 #define OPENTEXTDIALOG_H
 

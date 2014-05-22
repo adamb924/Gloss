@@ -1,6 +1,6 @@
 /*!
   \class InterlinearDisplayWidget
-  \ingroup GUI
+  \ingroup Interlinear
   \brief A widget for an interlinear text display. The widget's layout is populated with a series of FlowLayout layouts corresponding to phrases.
 */
 

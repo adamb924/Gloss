@@ -1,6 +1,5 @@
 /*!
   \class LexiconEdit
-  \ingroup GUI
   \ingroup Lexicon
   \brief This is a form for editing the lexicon. Beginning on the left and moving clockwise, this consists of a:
    - LexiconView (associated with a LexiconModel)

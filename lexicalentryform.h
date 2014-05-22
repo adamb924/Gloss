@@ -1,6 +1,6 @@
 /*!
   \class LexicalEntryForm
-  \ingroup GUI
+  \ingroup MorphologicalAnalysis
   \brief A (piece of a) form for choosing a lexical entry for a particular allomorph. Every ChooseLexicalEntriesDialog has one or more of these.
 
   The associated form is lexicalentryform.ui

@@ -1,6 +1,7 @@
 /*!
   \class LingEdit
   \ingroup GUI
+  \ingroup Interlinear
   \brief A QLineEdit subclass. It has an extra signal compared to QLineEdit. It also implements focusInEvent(QFocusEvent*) so that when the widget receives focus, the current writing system is changed.
 */
 

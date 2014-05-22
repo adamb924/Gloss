@@ -1,6 +1,6 @@
 /*!
   \class FlexTextReader
-  \ingroup Data
+  \ingroup IO
   \brief This class reads a .flextext file and puts the data into a Text object. Instantiated in Text. This class reads in .flextext files that Gloss created, as opposed to FlexTextImporter, which reads external .flextext files and adds their text elements to the database.
 */
 
