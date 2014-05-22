@@ -302,7 +302,7 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
             continue;
         qlonglong start = tokens.at(0).toLongLong();
         qlonglong end = tokens.at(1).toLongLong();
-        mPhrases.at(i)->setAnnotation(Interval(start, end));
+        mPhrases.at(i)->setInterval(Interval(start, end));
     }
 
     // read the audio path
@@ -365,13 +365,13 @@ bool Text::playSoundForLine( int lineNumber )
         QMessageBox::warning(0, tr("Error"), tr("This text has no associated sound file.") );
         return false;
     }
-    if( !mPhrases.at(lineNumber)->annotation()->isValid() )
+    if( !mPhrases.at(lineNumber)->interval()->isValid() )
     {
-        QMessageBox::warning(0, tr("Error"), tr("This phrase does not have a valid annotation (%1, %2).").arg(mPhrases.at(lineNumber)->annotation()->start()).arg(mPhrases.at(lineNumber)->annotation()->end()) );
+        QMessageBox::warning(0, tr("Error"), tr("This phrase does not have a valid annotation (%1, %2).").arg(mPhrases.at(lineNumber)->interval()->start()).arg(mPhrases.at(lineNumber)->interval()->end()) );
         return false;
     }
     if( mSound != 0 )
-        return mSound->playSegment( mPhrases.at(lineNumber)->annotation()->start() , mPhrases.at(lineNumber)->annotation()->end() );
+        return mSound->playSegment( mPhrases.at(lineNumber)->interval()->start() , mPhrases.at(lineNumber)->interval()->end() );
     else
         return false;
 }

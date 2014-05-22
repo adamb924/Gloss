@@ -37,8 +37,8 @@ public:
     //! \brief Returns a text string that is the
     QString equivalentBaselineLineText() const;
 
-    void setAnnotation( const Interval & annotation );
-    Interval* annotation();
+    void setInterval( const Interval & interval );
+    Interval* interval();
 
     int glossItemCount() const;
     const GlossItem* glossItemAt(int index) const;

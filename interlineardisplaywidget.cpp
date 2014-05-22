@@ -43,7 +43,7 @@ InterlinearDisplayWidget::~InterlinearDisplayWidget()
 
 void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 {
-    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), mText->phrases()->at(i)->annotation()->isValid(), mText->phrases()->at(i)->annotation()->summaryString(), this);
+    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), mText->phrases()->at(i)->interval()->isValid(), mText->phrases()->at(i)->interval()->summaryString(), this);
     connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
     connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));

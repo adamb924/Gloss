@@ -56,7 +56,7 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
                 {
                     qlonglong start = attr.value("http://www.adambaker.org/gloss.php","annotation-start").toString().toLongLong();
                     qlonglong end = attr.value("http://www.adambaker.org/gloss.php","annotation-end").toString().toLongLong();
-                    mText->mPhrases.last()->setAnnotation( Interval(start, end) );
+                    mText->mPhrases.last()->setInterval( Interval(start, end) );
                 }
             }
             else if ( name == "item" )

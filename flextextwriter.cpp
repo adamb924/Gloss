@@ -71,10 +71,10 @@ bool FlexTextWriter::serializeInterlinearText(QXmlStreamWriter *stream) const
         stream->writeStartElement("phrases");
         stream->writeStartElement("phrase");
 
-        if( !phrase->annotation()->isNull() )
+        if( !phrase->interval()->isNull() )
         {
-            stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-start", QString("%1").arg(phrase->annotation()->start()) );
-            stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-end", QString("%1").arg(phrase->annotation()->end()) );
+            stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-start", QString("%1").arg(phrase->interval()->start()) );
+            stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-end", QString("%1").arg(phrase->interval()->end()) );
         }
 
         serializeItem("segnum", mText->mDbAdapter->metaLanguage(), QString("%1").arg(count) , stream );
