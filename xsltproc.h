@@ -1,3 +1,8 @@
+/*!
+  \class Xsltproc
+  \brief An interface class for performing XSL transformations with libxslt.
+*/
+
 #ifndef XSLTPROC_H
 #define XSLTPROC_H
 
@@ -13,7 +18,7 @@ public:
     Xsltproc();
     ~Xsltproc();
 
-    enum ReturnValue { Success, InvalidStylesheet, InvalidXmlFile, GenericFailure };
+    enum ReturnValue { Success, InvalidStylesheet, InvalidXmlFile, CouldNotOpenOutput, GenericFailure };
 
     void setStyleSheet(const QString & filename);
     void setXmlFilename(const QString & filename);
@@ -23,11 +28,13 @@ public:
     Xsltproc::ReturnValue execute();
 
 private:
+    void freeResources();
+
     QString mStyleSheetFilename;
     QString mXmlFilename;
     QString mErrorFilename;
     QString mOutputFilename;
-    QHash<QString,QString> mParameters;
+    char **mParams;
 
     bool mErrorRedirect;
 
