@@ -88,21 +88,19 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
         return;
 
     GenericTextInputDialog dialog( TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text() , glossItem->baselineWritingSystem() ) , 0);
-    dialog.setWindowTitle(tr("Edit the baseline text, if necessary. Any spaces will be converted to non-breaking spaces."));
+    dialog.setWindowTitle(tr("Edit the baseline text, if necessary"));
     if( dialog.exec() == QDialog::Accepted )
     {
         TextBit newBit = dialog.textBit();
-
-        QString replacement = newBit.text();
-        replacement.replace(QChar(0x0020), QChar(0x00A0));
-        newBit.setText(replacement);
-
         GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
         mGlossItems.replace( index, newGlossItem );
 
         GlossItem* toRemove = mGlossItems.takeAt( index+1 );
         toRemove->deleteLater();
-        glossItem->deleteLater();
+
+        // remove both old gloss items from the concordance
+        mConcordance->removeGlossItemFromConcordance( toRemove );
+        mConcordance->removeGlossItemFromConcordance( glossItem );
 
         emit requestGuiRefresh(this);
         emit phraseChanged();
@@ -115,26 +113,26 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     if( index <= 0 || index >= glossItemCount() )
         return;
 
-    GenericTextInputDialog dialog( TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text() , glossItem->baselineWritingSystem() ) , 0);
-    dialog.setWindowTitle(tr("Edit the baseline text, if necessary. Any spaces will be converted to non-breaking spaces."));
-    if( dialog.exec() == QDialog::Accepted )
-    {
-        TextBit newBit = dialog.textBit();
+//    bool ok;
+//    QString newText = glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text();
+//    newText = QInputDialog::getText(0, tr("Merge gloss"), tr("Edit the text if necessary"), QLineEdit::Normal, newText, &ok );
+//    if(!ok)
+//        return;
 
-        QString replacement = newBit.text();
-        replacement.replace(QChar(0x0020), QChar(0x00A0));
-        newBit.setText(replacement);
+//    TextBit newBit = TextBit( newText,  glossItem->baselineWritingSystem() );
+//    GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
 
-        GlossItem *newGlossItem = connectGlossItem( new GlossItem( newBit, mProject ) );
-        mGlossItems.replace( index, newGlossItem );
+//    mGlossItems.replace( index, newGlossItem );
 
-        GlossItem* toRemove = mGlossItems.takeAt( index-1 );
-        toRemove->deleteLater();
-        glossItem->deleteLater();
+//    GlossItem* toRemove = mGlossItems.takeAt( index-1 );
+//    toRemove->deleteLater();
 
-        emit requestGuiRefresh(this);
-        emit phraseChanged();
-    }
+//    // remove both old gloss items from the concordance
+//    mConcordance->removeGlossItemFromConcordance( toRemove );
+//    mConcordance->removeGlossItemFromConcordance( glossItem );
+
+//    emit requestGuiRefresh(this);
+//    emit phraseChanged();
 }
 
 void Phrase::removeGlossItem( GlossItem *glossItem )
