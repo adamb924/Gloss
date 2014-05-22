@@ -13,7 +13,6 @@
 #include "searchquerymodel.h"
 #include "xqueryinputdialog.h"
 #include "databasequerydialog.h"
-#include "replacedialog.h"
 #include "indexsearchmodel.h"
 #include "lexiconedit.h"
 #include "sqltabledialog.h"

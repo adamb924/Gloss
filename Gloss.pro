@@ -45,8 +45,6 @@ SOURCES += main.cpp\
     chooselexicalentriesdialog.cpp \
     morphologicalanalysis.cpp \
     interlinearlinelabel.cpp \
-    replacedialog.cpp \
-    searchreplaceform.cpp \
     searchqueryview.cpp \
     mergeeafdialog.cpp \
     annotation.cpp \
@@ -116,8 +114,6 @@ HEADERS  += mainwindow.h \
     chooselexicalentriesdialog.h \
     morphologicalanalysis.h \
     interlinearlinelabel.h \
-    replacedialog.h \
-    searchreplaceform.h \
     searchqueryview.h \
     mergeeafdialog.h \
     annotation.h \
@@ -165,7 +161,6 @@ FORMS    += mainwindow.ui \
     lexicalentryform.ui \
     createlexicalentrydialog.ui \
     replacedialog.ui \
-    searchreplaceform.ui \
     mergeeafdialog.ui \
     lexicalentrysearchdialog.ui \
     lexiconedit.ui \
@@ -187,9 +182,5 @@ LIBS += -L./ \
 
 RESOURCES +=
 
-#QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
-#QMAKE_CFLAGS_WARN_ON -= -Wunused-parameter
-
-QMAKE_CXXFLAGS += -Wnounused-parameter
-QMAKE_CFLAGS += -Wnounused-parameter
-
+QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
+QMAKE_CFLAGS_WARN_OFF -= -Wunused-parameter
