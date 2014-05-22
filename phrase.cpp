@@ -52,12 +52,12 @@ QString Phrase::equivalentBaselineLineText() const
     return text.trimmed();
 }
 
-void Phrase::setAnnotation( const Annotation & annotation )
+void Phrase::setAnnotation( const Interval & annotation )
 {
     mAnnotation = annotation;
 }
 
-Annotation* Phrase::annotation()
+Interval* Phrase::annotation()
 {
     return & mAnnotation;
 }

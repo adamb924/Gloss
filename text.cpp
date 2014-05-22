@@ -302,7 +302,7 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
             continue;
         qlonglong start = tokens.at(0).toLongLong();
         qlonglong end = tokens.at(1).toLongLong();
-        mPhrases.at(i)->setAnnotation(Annotation(start, end));
+        mPhrases.at(i)->setAnnotation(Interval(start, end));
     }
 
     // read the audio path

@@ -12,7 +12,7 @@
 #include <QObject>
 #include "glossitem.h"
 #include "textbit.h"
-#include "annotation.h"
+#include "interval.h"
 
 class DatabaseAdapter;
 class Project;
@@ -35,8 +35,8 @@ public:
     //! \brief Returns a text string that is the
     QString equivalentBaselineLineText() const;
 
-    void setAnnotation( const Annotation & annotation );
-    Annotation* annotation();
+    void setAnnotation( const Interval & annotation );
+    Interval* annotation();
 
     int glossItemCount() const;
     const GlossItem* glossItemAt(int index) const;
@@ -70,7 +70,7 @@ private:
     Project *mProject;
     DatabaseAdapter *mDbAdapter;
     Concordance *mConcordance;
-    Annotation mAnnotation;
+    Interval mAnnotation;
     TextBitHash mGlosses;
 };
 

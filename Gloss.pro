@@ -46,7 +46,6 @@ SOURCES += main.cpp\
     interlinearlinelabel.cpp \
     searchqueryview.cpp \
     mergeeafdialog.cpp \
-    annotation.cpp \
     sound.cpp \
     concordance.cpp \
     flextextwriter.cpp \
@@ -77,7 +76,8 @@ SOURCES += main.cpp\
     editwithsuggestionsdialog.cpp \
     searchform.cpp \
     annotationform.cpp \
-    annotationmodel.cpp
+    annotationmodel.cpp \
+    interval.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -114,7 +114,6 @@ HEADERS  += mainwindow.h \
     interlinearlinelabel.h \
     searchqueryview.h \
     mergeeafdialog.h \
-    annotation.h \
     sound.h \
     concordance.h \
     flextextwriter.h \
@@ -145,7 +144,8 @@ HEADERS  += mainwindow.h \
     editwithsuggestionsdialog.h \
     searchform.h \
     annotationform.h \
-    annotationmodel.h
+    annotationmodel.h \
+    interval.h
 
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
