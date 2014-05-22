@@ -27,7 +27,6 @@ SOURCES += main.cpp\
     glossitem.cpp \
     phrase.cpp \
     messagehandler.cpp \
-    lingtextedit.cpp \
     interlinearitemtype.cpp \
     writingsystemsdialog.cpp \
     mergetranslationdialog.cpp \
@@ -95,7 +94,6 @@ HEADERS  += mainwindow.h \
     text.h \
     phrase.h \
     messagehandler.h \
-    lingtextedit.h \
     glossitem.h \
     interlinearitemtype.h \
     writingsystemsdialog.h \

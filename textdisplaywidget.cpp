@@ -3,7 +3,6 @@
 #include "databaseadapter.h"
 #include "text.h"
 #include "interlineardisplaywidget.h"
-#include "lingtextedit.h"
 
 #include <QCloseEvent>
 #include <QLabel>

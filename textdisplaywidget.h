@@ -13,7 +13,6 @@
 #include "text.h"
 
 class InterlinearDisplayWidget;
-class LingTextEdit;
 
 #include "focus.h"
 #include "view.h"
@@ -35,7 +34,6 @@ public:
 private:
     Project *mProject;
     Text *mText;
-    LingTextEdit * mBaselineTextEdit;
     QList<InterlinearDisplayWidget*> mIdwTabs;
 
 protected:
