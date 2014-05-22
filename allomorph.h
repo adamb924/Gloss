@@ -2,6 +2,8 @@
   \class Allomorph
   \ingroup Data
   \brief This class represents an allomorph. Typically Allomorph objects would be contained within a MorphologicalAnalysis object.
+
+  An Allomorph object corresponds to one row of the Allomorph SQL table.
 */
 
 #ifndef ALLOMORPH_H
@@ -24,27 +26,49 @@ public:
 
     bool operator==(const Allomorph & other) const;
 
+    //! \brief Returns the type of the allomorph as Allomorph::Type
     Type type() const;
+
+    //! \brief Returns the type of the allomorph as a string
     QString typeString() const;
 
+    //! \brief Returns the text of the allomorph (without punctuation indicators)
     QString text() const;
+
+    //! \brief Returns the text of the allomorph, punctuation indicators indicating what kind of allomorph it is
     QString typeFormattedString() const;
 
+    //! \brief Returns the text of the allomorph as a TextBit (including punctuation indicators)
     TextBit textBit() const;
+
+    //! \brief Returns the WritingSystem of the allomorph
     WritingSystem writingSystem() const;
 
+    //! \brief Returns true if the allomorph is a stem, otherwise false
     bool isStem() const;
+
+    //! \brief Returns true if the allomorph is a clitic, otherwise false
     bool isClitic() const;
 
+    //! \brief Return the gloss of the allomorph in WritingSystem \a ws
     TextBit gloss(const WritingSystem & ws) const;
+
+    //! \brief Set all glosses of the allomorph to \a glosses. All existing glosses are lost
     void setGlosses(const TextBitHash & glosses);
+
+    //! \brief Returns the a list of WritingSystem objects for which the allomorph has glosses
     QList<WritingSystem> glossLanguages() const;
 
+    //! \brief Returns the id of the allomorph
     qlonglong id() const;
+
+    //! \brief Set the id of the allomorph to \a id
     void setId(qlonglong id);
 
+    //! \brief Set the type of the allomorph to \a t
     void setType( Type t );
 
+    //! \brief Returns the type string for \a t
     static QString getTypeString(Type t)
     {
         switch(t)
@@ -73,6 +97,7 @@ public:
         }
     }
 
+    //! \brief Returns the Type, given its string represenation \a t
     static Type getType(QString t)
     {
         if( t == "Stem" )
@@ -97,6 +122,7 @@ public:
             return Null;
     }
 
+    //! \brief Returns a string representation of \a text, as if it were an allomorph of type \a t
     static QString getTypeFormatTextString( const QString & text, Type t )
     {
         switch(t)
@@ -135,7 +161,7 @@ public:
         return text;
     }
 
-
+    //! \brief Returns the Type of an allomorph, given the string representation \a string
     static Type typeFromFormattedString(const QString & string)
     {
         QRegExp rePrefix("^[^-].*-$");
@@ -167,6 +193,7 @@ public:
             return Allomorph::Stem;
     }
 
+    //! \brief Returns \a string with punctuation stripped out
     static QString stripPunctuation( const QString & string )
     {
         QString s = string;
