@@ -1,3 +1,10 @@
+/*!
+  \class CreateLexicalEntryDialog
+  \ingroup GUI
+  \ingroup MorphologicalAnalysis
+  \brief A form for creating a lexical entry in the database. See createlexicalentrydialog.ui. It is instantiated both in LexicalEntryForm and AnalysisWidget.
+*/
+
 #ifndef CREATELEXICALENTRYDIALOG_H
 #define CREATELEXICALENTRYDIALOG_H
 

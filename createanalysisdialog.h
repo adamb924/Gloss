@@ -1,3 +1,11 @@
+/*!
+  \class CreateAnalysisDialog
+  \ingroup GUI
+  \ingroup MorphologicalAnalysis
+  \brief This class provides the form in which users type in a text-based morphological analysis (see createanalysisdialog.ui). It's instantiated in AnalysisWidget.
+*/
+
+
 #ifndef CREATEANALYSISDIALOG_H
 #define CREATEANALYSISDIALOG_H
 

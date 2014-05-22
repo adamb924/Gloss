@@ -1,3 +1,10 @@
+/*!
+  \class DatabaseQueryDialog
+  \ingroup GUI
+  \ingroup RawAccess
+  \brief This class provides a form for the user to do SQL queries on the database, and to save the results. See databasequerydialog.ui.
+*/
+
 #ifndef DATABASEQUERYDIALOG_H
 #define DATABASEQUERYDIALOG_H
 

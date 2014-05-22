@@ -1,3 +1,9 @@
+/*!
+  \class Allomorph
+  \ingroup Data
+  \brief This class represents an allomorph. Typically Allomorph objects would be contained within a MorphologicalAnalysis object.
+*/
+
 #ifndef ALLOMORPH_H
 #define ALLOMORPH_H
 

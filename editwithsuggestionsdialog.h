@@ -1,3 +1,12 @@
+/*!
+  \class EditWithSuggestionsDialog
+  \ingroup GUI
+  \ingroup LexiconEdit
+  \brief This is a generic form that prompts the user with an edit box and a list of suggested strings to select. See editwithsuggestionsdialog.ui.
+
+  Although it could be reused, this is currently only instantated in LexiconEdit.
+*/
+
 #ifndef EDITWITHSUGGESTIONSDIALOG_H
 #define EDITWITHSUGGESTIONSDIALOG_H
 

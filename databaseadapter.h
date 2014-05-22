@@ -1,7 +1,7 @@
 /*!
   \class DatabaseAdapter
   \ingroup Data
-  \brief A database adapter to provide an interface to the SQLite database.
+  \brief A database adapter to provide an interface to the SQLite database, and also some occasional XQuery calls.
 */
 
 #ifndef DATABASEADAPTER_H

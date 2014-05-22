@@ -1,3 +1,9 @@
+/*!
+  \class GenericTextInputDialog
+  \ingroup GUI
+  \brief This generic form allows users to enter text for a particular WritingSystem. See generictextinputdialog.ui.
+*/
+
 #ifndef GENERICTEXTINPUTDIALOG_H
 #define GENERICTEXTINPUTDIALOG_H
 

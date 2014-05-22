@@ -6,6 +6,12 @@
 #include "annotationtype.h"
 class GlossItem;
 
+/*!
+  \class Mark
+  \ingroup GUI
+  \brief This is subclassed QLabel, which emits a signal when it is double-clicked. It is used in AnnotationMarkWidget.
+*/
+
 class Mark : public QLabel
 {
     Q_OBJECT
@@ -19,6 +25,12 @@ protected:
         emit doubleClicked( this );
     }
 };
+
+/*!
+  \class AnnotationMarkWidget
+  \ingroup GUI
+  \brief This GUI widget contains one or more Mark objects. It receives signals from the Mark objects and emits signals indicating which mark was activated, and for which GlossItem.
+*/
 
 class AnnotationMarkWidget : public QWidget
 {

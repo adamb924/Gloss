@@ -86,7 +86,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionCounts_of_glosses, SIGNAL(triggered()), this, SLOT(countGlosses()));
     connect(ui->actionCounts_of_text_forms, SIGNAL(triggered()), this, SLOT(countTextForms()));
-    connect(ui->actionSearch_and_replace, SIGNAL(triggered()), this, SLOT(searchAndReplace()));
 
     connect(ui->actionUnapproved_lines, SIGNAL(triggered()), this, SLOT(findUnapprovedLines()));
     connect(ui->actionApproved_lines, SIGNAL(triggered()), this, SLOT(findApprovedLines()));
@@ -104,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionBaseline_text_search_and_replace, SIGNAL(triggered()), this, SLOT(baselineSearchAndReplace()));
 
     connect( ui->actionSearch_dock, SIGNAL(triggered()), this, SLOT(toggleSearchDock()));
-    connect( ui->actionAnnotation_dock, SIGNAL(triggered()), this, SLOT(annotationDock()));
+    connect( ui->actionAnnotation_dock, SIGNAL(triggered()), this, SLOT(toggleAnnotationDock()));
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -1241,21 +1240,6 @@ void MainWindow::createCountReport(const QString & typeString)
     }
 }
 
-void MainWindow::searchAndReplace()
-{
-    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from MainWindow::searchAndReplace(), but the code to be fixed is in ReplaceDialog."));
-/*
-    ReplaceDialog dialog(mProject->dbAdapter(), this);
-    if( dialog.exec() == QDialog::Accepted )
-    {
-        QHash<QString,QString> parameters;
-        parameters.insert( "transformation-schema" , dialog.xmlFilePath() );
-        mProject->applyXslTransformationToTexts( QDir::current().absoluteFilePath("search-replace.xsl"), parameters );
-        QMessageBox::information(this, tr("Gloss"), tr("The search-and-replace operation has been completed.") );
-    }
-*/
-}
-
 void MainWindow::findApprovedLines()
 {
     QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
@@ -1449,7 +1433,7 @@ void MainWindow::toggleSearchDock()
     connect(mProject, SIGNAL(destroyed()), mSearchDock, SLOT(close()));
 }
 
-void MainWindow::annotationDock()
+void MainWindow::toggleAnnotationDock()
 {
     if( mAnnotationDock != 0 )
         delete mAnnotationDock;

@@ -1,3 +1,12 @@
+/*!
+  \class ImmutableLabel
+  \ingroup GUI
+  \ingroup Interlinear
+  \brief This QLabel subclass renders the specified TextBit as suggested by the font specifications in the associated WritingSystem. It is used mainly by WordDisplayWidget, but also by AnalysisWidget.
+
+  The class also has various options to control its display, which are used by WordDisplayWidget.
+*/
+
 #ifndef IMMUTABLELABEL_H
 #define IMMUTABLELABEL_H
 

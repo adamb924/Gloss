@@ -1,3 +1,9 @@
+/*!
+  \class AllomorphModel
+  \ingroup GUIModel
+  \brief This class is a model for displaying the allomorphs of a lexical entry. Currently it is only used by LexiconEdit.
+*/
+
 #ifndef ALLOMORPHMODEL_H
 #define ALLOMORPHMODEL_H
 

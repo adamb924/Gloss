@@ -1,3 +1,9 @@
+/*!
+  \class AnnotationType
+  \ingroup Data
+  \brief This class describes a type of annotation to a text (i.e., a note to the text, not an audio file annotation).
+*/
+
 #ifndef ANNOTATIONTYPE_H
 #define ANNOTATIONTYPE_H
 

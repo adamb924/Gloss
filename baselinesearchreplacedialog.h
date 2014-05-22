@@ -1,3 +1,9 @@
+/*!
+  \class BaselineSearchReplaceDialog
+  \ingroup GUI
+  \brief This class provides a form for doing a search-and-replace operation (with TextBit objects instead of normal strings). It is currently instantiated in MainWindow.
+*/
+
 #ifndef BASELINESEARCHREPLACEDIALOG_H
 #define BASELINESEARCHREPLACEDIALOG_H
 

@@ -1,7 +1,7 @@
 /*!
   \class InterlinearDisplayWidget
   \ingroup GUI
-  \brief A widget for an interlinear text display. The widget's layout is populated with a series of FlowLayout layouts corresponding to phrases. The widget also keeps a concordance of LingEdit objects, to update their fields when the values are changed.
+  \brief A widget for an interlinear text display. The widget's layout is populated with a series of FlowLayout layouts corresponding to phrases.
 */
 
 #ifndef INTERLINEARDISPLAYWIDGET_H
@@ -67,6 +67,7 @@ private slots:
     void rightGlossItem( WordDisplayWidget * wdw );
 
 protected:
+    const Tab * mTab;
     Text *mText;
     Project *mProject;
     int mCurrentLine;
@@ -95,7 +96,6 @@ protected:
 
     QVBoxLayout *mLayout;
 
-    const Tab * mTab;
     QList<InterlinearItemType> mPhrasalGlossLines;
 
     LingEdit* addPhrasalGlossLine(  const TextBit & gloss );

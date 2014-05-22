@@ -1,3 +1,10 @@
+/*!
+  \class Focus
+  \ingroup Data
+  \ingroup Interlinear
+  \brief This class represents focused items in an interlinear text display. In displaying a line of interlinear text following a search, for instance, it can be helpful for a particular object to be focused (i.e., highlighted visually) for the user.
+*/
+
 #ifndef FOCUS_H
 #define FOCUS_H
 

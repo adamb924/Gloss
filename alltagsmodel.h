@@ -1,3 +1,9 @@
+/*!
+  \class AllTagsModel
+  \ingroup GUIModel
+  \brief This class is a model for displaying grammatical tags associated with a lexical entry. Currently it is only used by LexiconEdit.
+*/
+
 #ifndef ALLTAGSMODEL_H
 #define ALLTAGSMODEL_H
 

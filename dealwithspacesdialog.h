@@ -1,3 +1,10 @@
+/*!
+  \class DealWithSpacesDialog
+  \ingroup GUI
+  \ingroup TextImport
+  \brief A form in which the user selects how to interpret spaces in the imported text. See dealwithspacesdialog.ui. Instantiated in WordDisplayWidget.
+*/
+
 #ifndef DEALWITHSPACESDIALOG_H
 #define DEALWITHSPACESDIALOG_H
 

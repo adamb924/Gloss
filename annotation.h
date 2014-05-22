@@ -1,3 +1,9 @@
+/*!
+  \class Annotation
+  \ingroup Data
+  \brief This is a data class for representing the annotation on a section of audio file.
+*/
+
 #ifndef ANNOTATION_H
 #define ANNOTATION_H
 

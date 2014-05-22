@@ -1,3 +1,9 @@
+/*!
+  \class AnnotationForm
+  \ingroup GUI
+  \brief This is a form for displaying text annotations (i.e, those indicated by superscripts in the interlinear display). The associated model is AnnotationModel. Currently it is used by MainWindow and placed in a dock.
+*/
+
 #ifndef ANNOTATIONFORM_H
 #define ANNOTATIONFORM_H
 

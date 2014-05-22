@@ -1,6 +1,7 @@
 /*!
   \class InterlinearItemType
   \ingroup GUI
+  \ingroup Interlinear
   \brief A data class representing a line of a gloss: the type of the line (LineType: Text, Gloss), and the writing system of the line.
 */
 

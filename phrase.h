@@ -56,7 +56,7 @@ signals:
     void requestGuiRefresh(Phrase * phrase);
 
 public slots:
-    //! \brief Adds or updates the phrase-level gloss to \a bit. The gloss to be added or updated is indicated by the WritingSystem of \bit.
+    //! \brief Adds or updates the phrase-level gloss to \a bit. The gloss to be added or updated is indicated by the WritingSystem of \a bit.
     void setPhrasalGloss( const TextBit & bit );
 
     void splitGloss( GlossItem *glossItem, const QList<TextBit> & bits );

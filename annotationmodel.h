@@ -1,3 +1,9 @@
+/*!
+  \class AnnotationModel
+  \ingroup GUIModel
+  \brief This class is a model for displaying the annotations of a text. It is used in AnnotationForm.
+*/
+
 #ifndef ANNOTATIONMODEL_H
 #define ANNOTATIONMODEL_H
 

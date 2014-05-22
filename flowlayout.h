@@ -1,7 +1,10 @@
 /*!
   \class FlowLayout
   \ingroup GUI
-  \brief A QLayout subclass, providing a layout which arranges widgets as if it they were text. This is Qt example code, modified to allow the layout to add widgets in left-to-right order.
+  \ingroup Interlinear
+  \brief A QLayout subclass, providing a layout which arranges widgets as if it they were text. This is instantiated in InterlinearDisplayWidget.
+
+  This is Qt example code, modified to allow the layout to add widgets in left-to-right order.
 
   This is under the BSD license. I removed the header because it was interfering with my Doxygen comments.
 */

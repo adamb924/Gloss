@@ -1,3 +1,9 @@
+/*!
+  \class FlexTextWriter
+  \ingroup Data
+  \brief This object writes the data in a Text object to a .flextext file. Instantiated in Text.
+*/
+
 #ifndef FLEXTEXTWRITER_H
 #define FLEXTEXTWRITER_H
 
@@ -35,10 +41,10 @@ private:
     //! \brief Serialize the languages.
     bool serializeLanguages(QXmlStreamWriter *stream) const;
 
-    //! \brief Write an <item> to the text stream, with specified attributes and text content
+    //! \brief Write an &lt;item&gt; to the text stream, with specified attributes and text content
     void serializeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream, qlonglong id = -1) const;
 
-    //! \brief Write an <item> to the text stream, with specified attributes and text content
+    //! \brief Write an &lt;item&gt; to the text stream, with specified attributes and text content
     void serializeItemNonVerbose(const QString & type, const WritingSystem & ws, QXmlStreamWriter *stream, qlonglong id = -1) const;
 
 };

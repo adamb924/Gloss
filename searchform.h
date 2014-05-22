@@ -1,3 +1,10 @@
+/*!
+  \class SearchForm
+  \ingroup GUI
+  \ingroup Search
+  \brief A form to allow the user to search for text, or indices of the various types. Instantiated in MainWindow, where it is placed in a dock.
+*/
+
 #ifndef SEARCHFORM_H
 #define SEARCHFORM_H
 

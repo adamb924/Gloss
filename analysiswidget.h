@@ -1,7 +1,8 @@
 /*!
   \class AnalysisWidget
   \ingroup GUI
-  \brief This is a widget for displaying a morphological analysis (and associated interface items). It is intended to be used in an WordDisplayWidget.
+  \ingroup Interlinear
+  \brief This is a widget for displaying a morphological analysis (and associated interface items) within the interlinear display (i.e., parallel to LingEdit and LingTextEdit objects). It is instantiated in WordDisplayWidget.
 */
 
 #ifndef ANALYSISWIDGET_H
