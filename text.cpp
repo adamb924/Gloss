@@ -238,6 +238,9 @@ Text::MergeTranslationResult Text::mergeTranslation(const QString & filename, co
     case Xsltproc::InvalidXmlFile:
         QMessageBox::critical(0, tr("Error"), tr("The flextext file %1 is invalid.").arg(currentPath) );
         return XslTranslationError;
+    case Xsltproc::CouldNotOpenOutput:
+        QMessageBox::critical(0, tr("Error"), tr("The file %1 could not be opened.").arg(tempOutputPath) );
+        return XslTranslationError;
     case Xsltproc::GenericFailure:
         if( errorInfo.size() > 0 )
             QDesktopServices::openUrl(QUrl(errorOutputPath, QUrl::TolerantMode));
