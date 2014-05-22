@@ -187,4 +187,9 @@ LIBS += -L./ \
 
 RESOURCES +=
 
-QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
+#QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
+#QMAKE_CFLAGS_WARN_ON -= -Wunused-parameter
+
+QMAKE_CXXFLAGS += -Wnounused-parameter
+QMAKE_CFLAGS += -Wnounused-parameter
+
