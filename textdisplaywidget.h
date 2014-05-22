@@ -38,9 +38,6 @@ private:
     LingTextEdit * mBaselineTextEdit;
     QList<InterlinearDisplayWidget*> mIdwTabs;
 
-    void setupBaselineTab();
-
-
 protected:
     void closeEvent(QCloseEvent *event);
 

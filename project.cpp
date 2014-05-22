@@ -882,10 +882,6 @@ void Project::parseConfigurationFile()
                 InterlinearItemType iit( InterlinearItemType::Gloss , mDbAdapter->writingSystem(lang) );
                 mViews.last()->tabs()->last().addPhrasalGlossType( iit );
             }
-            else if( name == "baseline-text" )
-            {
-                mViews.last()->setShowBaselineTextTab(true);
-            }
             else if( name == "media-folder" )
             {
                 if( stream.attributes().hasAttribute("override-paths") && stream.attributes().value("override-paths").toString() == "true" )

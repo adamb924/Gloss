@@ -25,9 +25,6 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
 
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 
-    if( view->showBaselineTextTab() )
-        setupBaselineTab();
-
     for(int i=0; i<view->tabs()->count(); i++)
     {
         // TODO really these should just be stored as pointers. This will waste memory; I'm just doing it to have it done with for now.
@@ -38,12 +35,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
 
         connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()) );
         connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
-        if( view->showBaselineTextTab() )
-            connect( mBaselineTextEdit, SIGNAL(lineNumberChanged(int)), idw, SLOT(scrollToLine(int)) );
         connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
-        if( view->showBaselineTextTab() )
-            connect( idw, SIGNAL(lineNumberChanged(int)), mBaselineTextEdit, SLOT(setLineNumber(int)) );
-        // the above is a bit odd because I'm not sure whether the order is important
 
         mIdwTabs << idw;
         addTab( idw, tab->name() );
@@ -59,15 +51,6 @@ TextDisplayWidget::~TextDisplayWidget()
 {
     if( mProject->memoryMode() == Project::OneAtATime )
         mProject->closeText(mText);
-}
-
-void TextDisplayWidget::setupBaselineTab()
-{
-    mBaselineTextEdit = new LingTextEdit(this);
-    mBaselineTextEdit->setWritingSystem( mText->baselineWritingSystem());
-    mBaselineTextEdit->setPlainText( mText->baselineText() );
-    connect( mText, SIGNAL(baselineTextChanged(QString)), mBaselineTextEdit, SLOT(setPlainText(QString)) );
-    addTab( mBaselineTextEdit, tr("Baseline") );
 }
 
 void TextDisplayWidget::tabChanged(int i)
