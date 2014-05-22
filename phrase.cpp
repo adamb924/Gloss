@@ -167,7 +167,6 @@ int Phrase::glossItemCount() const
 
 const GlossItem* Phrase::glossItemAt(int index) const
 {
-    mGlossItems.at(index);
     return mGlossItems.at(index);
 }
 

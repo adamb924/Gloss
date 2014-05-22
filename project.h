@@ -139,24 +139,25 @@ private:
 
     void loadAllTextsIntoMemory();
 
-    //! \brief Get all interpretation ids in use in this project
+    //! \brief Returns a set of interpretation ids in use in this project
     QSet<qlonglong> getAllInterpretationIds();
 
-    //! \brief Get all interpretation ids in use in the specified file path
+    //! \brief Returns a set of interpretation ids in use in the specified file path
     QSet<qlonglong> getSetOfNumbersFromTextQuery(const QString & filepath, const QString & queryString);
 
-    //! \brief Get all gloss ids in use in this project
+    //! \brief Returns a set of gloss ids in use in this project
     QSet<qlonglong> getAllGlossIds();
 
-    //! \brief Get all text form ids in use in this project
+    //! \brief Returns a set of text form ids in use in this project
     QSet<qlonglong> getAllTextFormIds();
 
+    //! \brief Returns the temporary directory for the project
     QString tempDirName() const;
 
     //! \brief Paths of all texts in the temp directory
     QSet<QString> mTextPaths;
 
-    //! \brief A hash containing all "opened" texts, keyed by name
+    //! \brief Returns a hash containing all "opened" texts, keyed by name
     QHash<QString,Text*> mTexts;
 
 public:
