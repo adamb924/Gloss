@@ -2,7 +2,7 @@
   \class AllTagsModel
   \ingroup GUIModel
   \ingroup LexiconEdit
-  \brief This class is a model for displaying grammatical tags associated with a lexical entry. Currently it is only used by LexiconEdit.
+  \brief This class is a model for displaying all of the grammatical tags in a project. Currently it is only used by LexiconEdit.
 */
 
 #ifndef ALLTAGSMODEL_H

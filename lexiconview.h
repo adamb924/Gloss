@@ -1,3 +1,10 @@
+/*!
+  \class LexiconView
+  \ingroup GUI
+  \ingroup Lexicon
+  \brief This is a view for displaying the lexical items of the project (with a LexiconModel). It is subclassed in order to keep track of selections and edits. It is used in LexiconEdit.
+*/
+
 #ifndef LEXICONVIEW_H
 #define LEXICONVIEW_H
 

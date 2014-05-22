@@ -1,3 +1,10 @@
+/*!
+  \class LexiconModel
+  \ingroup GUIModel
+  \ingroup Lexicon
+  \brief This is a QSqlQueryModel subclass for displaying the lexical entries in a project. It is subclassed in order to make the data editable. It is used in LexiconEdit.
+*/
+
 #ifndef LEXICONMODEL_H
 #define LEXICONMODEL_H
 

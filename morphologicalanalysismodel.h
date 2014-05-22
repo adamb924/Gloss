@@ -1,3 +1,10 @@
+/*!
+  \class MorphologicalAnalysisModel
+  \ingroup GUIModel
+  \ingroup LexiconEdit
+  \brief This class provides a model for displaying the morphological analyses associated with a particular lexical item. It is instantiated in LexiconEdit.
+*/
+
 #ifndef MORPHOLOGICALANALYSISMODEL_H
 #define MORPHOLOGICALANALYSISMODEL_H
 

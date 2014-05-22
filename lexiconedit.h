@@ -1,3 +1,17 @@
+/*!
+  \class LexiconEdit
+  \ingroup GUI
+  \ingroup Lexicon
+  \brief This is a form for editing the lexicon. Beginning on the left and moving clockwise, this consists of a:
+   - LexiconView (associated with a LexiconModel)
+   - QTableView (associate with an AllomorphModel)
+   - QTableView (associate with a MorphologicalAnalysisModel)
+   - Two TagView objects (the left associated with a TagModel, the right associated with an AllTagsModel)
+
+  The associated form is lexiconedit.ui.
+*/
+
+
 #ifndef LEXICONEDIT_H
 #define LEXICONEDIT_H
 
