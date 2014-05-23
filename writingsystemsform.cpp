@@ -1,12 +1,12 @@
-#include "writingsystemsdialog.h"
-#include "ui_writingsystemsdialog.h"
+#include "writingsystemsform.h"
+#include "ui_writingsystemsform.h"
 
 #include <QSqlTableModel>
 #include "databaseadapter.h"
 
-WritingSystemsDialog::WritingSystemsDialog(DatabaseAdapter *dbAdapter, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::WritingSystemsDialog)
+WritingSystemsForm::WritingSystemsForm(DatabaseAdapter *dbAdapter, QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::WritingSystemsForm)
 {
     ui->setupUi(this);
 
@@ -18,19 +18,19 @@ WritingSystemsDialog::WritingSystemsDialog(DatabaseAdapter *dbAdapter, QWidget *
     setWindowTitle("Writing Systems");
 
     connect( ui->submit, SIGNAL(clicked()), mModel, SLOT(submitAll()));
-    connect( ui->revert, SIGNAL(clicked()), mModel, SLOT(revertAll()));
-    connect( ui->dismiss, SIGNAL(clicked()), this, SLOT(accept()) );
+    connect( ui->submit, SIGNAL(clicked()), this, SIGNAL(accept()) );
+    connect( ui->dismiss, SIGNAL(clicked()), this, SIGNAL(accept()) );
     connect( ui->insertRow, SIGNAL(clicked()), this, SLOT(insert()));
     connect( ui->deleteRow, SIGNAL(clicked()), this, SLOT(remove()));
 }
 
-WritingSystemsDialog::~WritingSystemsDialog()
+WritingSystemsForm::~WritingSystemsForm()
 {
     delete mModel;
     delete ui;
 }
 
-void WritingSystemsDialog::setupTable()
+void WritingSystemsForm::setupTable()
 {
     mModel->setTable("WritingSystems");
     mModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -47,12 +47,12 @@ void WritingSystemsDialog::setupTable()
     ui->tableView->hideColumn(0); // don't show the ID
 }
 
-void WritingSystemsDialog::insert()
+void WritingSystemsForm::insert()
 {
     mModel->insertRow(0);
 }
 
-void WritingSystemsDialog::remove()
+void WritingSystemsForm::remove()
 {
     mModel->removeRow( ui->tableView->selectionModel()->selection().indexes().first().row() );
 }

@@ -7,7 +7,7 @@
 #include "newtextdialog.h"
 #include "importflextextdialog.h"
 #include "writingsystem.h"
-#include "writingsystemsdialog.h"
+#include "writingsystemsform.h"
 #include "mergetranslationdialog.h"
 #include "generictextinputdialog.h"
 #include "xquerymodel.h"
@@ -574,8 +574,14 @@ TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Fo
 
 void MainWindow::writingSystems()
 {
-    WritingSystemsDialog dialog(mProject->dbAdapter(), this);
-    dialog.exec();
+    QDialog *dialog = new QDialog;
+    QVBoxLayout *layout = new QVBoxLayout;
+    WritingSystemsForm * wsWidget = new WritingSystemsForm(mProject->dbAdapter(), this);
+    connect( wsWidget, SIGNAL(accept()), dialog, SLOT(accept()) );
+    layout->addWidget(wsWidget);
+    dialog->setLayout(layout);
+    dialog->exec();
+    delete dialog;
 }
 
 void MainWindow::deleteText()

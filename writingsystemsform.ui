@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WritingSystemsDialog</class>
- <widget class="QDialog" name="WritingSystemsDialog">
+ <class>WritingSystemsForm</class>
+ <widget class="QWidget" name="WritingSystemsForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -64,26 +64,6 @@
       <widget class="QPushButton" name="dismiss">
        <property name="text">
         <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="revert">
-       <property name="text">
-        <string>Remove changes</string>
        </property>
       </widget>
      </item>

@@ -28,7 +28,6 @@ SOURCES += main.cpp\
     phrase.cpp \
     messagehandler.cpp \
     interlinearitemtype.cpp \
-    writingsystemsdialog.cpp \
     mergetranslationdialog.cpp \
     xsltproc.cpp \
     generictextinputdialog.cpp \
@@ -77,7 +76,8 @@ SOURCES += main.cpp\
     searchform.cpp \
     annotationform.cpp \
     annotationmodel.cpp \
-    interval.cpp
+    interval.cpp \
+    writingsystemsform.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -96,7 +96,6 @@ HEADERS  += mainwindow.h \
     messagehandler.h \
     glossitem.h \
     interlinearitemtype.h \
-    writingsystemsdialog.h \
     mergetranslationdialog.h \
     xsltproc.h \
     generictextinputdialog.h \
@@ -145,12 +144,12 @@ HEADERS  += mainwindow.h \
     searchform.h \
     annotationform.h \
     annotationmodel.h \
-    interval.h
+    interval.h \
+    writingsystemsform.h
 
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
     importflextextdialog.ui \
-    writingsystemsdialog.ui \
     mergetranslationdialog.ui \
     generictextinputdialog.ui \
     xqueryinputdialog.ui \
@@ -169,7 +168,8 @@ FORMS    += mainwindow.ui \
     opentextdialog.ui \
     editwithsuggestionsdialog.ui \
     searchform.ui \
-    annotationform.ui
+    annotationform.ui \
+    writingsystemsform.ui
 
 LIBS += -L./ \
     -lquazip \
