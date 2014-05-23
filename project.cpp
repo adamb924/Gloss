@@ -54,6 +54,11 @@ bool Project::create(QString filename)
     mDbAdapter = new DatabaseAdapter(mDatabasePath);
     mDbAdapter->createTables();
 
+    // Display writing systems form
+    writingSystems();
+
+    // Now check for what is what...
+
     //! @todo Project creation tasks:
     //! @todo Initiate writing systems
     //! @todo Create configuration.xml
