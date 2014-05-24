@@ -55,13 +55,6 @@ bool Project::create(QString filename)
     mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
     mDbAdapter = new DatabaseAdapter(mDatabasePath);
     mDbAdapter->createTables();
-
-    // Now check for what is what...
-
-    //! @todo Project creation tasks:
-    //! @todo Initiate writing systems
-    //! @todo Create configuration.xml
-    //! @todo Save zip file for the first time
 }
 
 bool Project::readFromFile(QString filename)
@@ -257,6 +250,7 @@ Text* Project::textFromFlexText(const QString & filePath)
 bool Project::save()
 {
     saveOpenTexts();
+    serializeConfigurationXml();
 
     // indebted to: http://stackoverflow.com/questions/2598117/zipping-a-folder-file-using-qt
     QuaZip zip(mProjectPath);
@@ -1109,4 +1103,107 @@ WritingSystem Project::defaultGlossLanguage() const
 WritingSystem Project::defaultTextFormLanguage() const
 {
     return mDefaultTextFormLanguage;
+}
+
+void Project::serializeConfigurationXml()
+{
+    QFile *file = new QFile( mConfigurationXmlPath);
+    file->open(QFile::WriteOnly);
+    QXmlStreamWriter stream(file);
+    stream.setAutoFormatting(true);
+
+    stream.writeStartDocument();
+    stream.writeStartElement("gloss-configuration");
+
+    stream.writeEmptyElement("meta-language");
+    stream.writeAttribute("lang", metaLanguage().flexString() );
+
+    stream.writeEmptyElement("default-text-form-language");
+    stream.writeAttribute("lang", defaultTextFormLanguage().flexString() );
+
+    stream.writeEmptyElement("default-gloss-language");
+    stream.writeAttribute("lang", defaultGlossLanguage().flexString() );
+
+    stream.writeStartElement("media-folder");
+    stream.writeAttribute("override-paths", mOverrideMediaPath ? "true" : "false" );
+    stream.writeCharacters( QUrl::fromLocalFile( mMediaPath.absolutePath() ).toString() + "/");
+    stream.writeEndElement(); // media-folder
+
+    stream.writeStartElement("views");
+    for(int i=0; i<mViews.count(); i++)
+    {
+        View * view = mViews.at(i);
+
+        stream.writeStartElement("view");
+        stream.writeAttribute("name",view->name());
+
+        for(int j=0; j<view->tabs()->count(); j++)
+        {
+            Tab * tab = view->tabs()->at(j);
+
+            stream.writeStartElement("tab");
+            stream.writeAttribute("name", tab->name() );
+
+            for(int k=0; k < tab->interlinearLines().keys().count(); k++)
+            {
+                WritingSystem ws = tab->interlinearLines().keys().at(k);
+
+                stream.writeStartElement("item-type");
+                stream.writeAttribute("baseline-writing-system", ws.flexString() );
+
+                for(int l=0; l < tab->interlinearLines().value(ws)->count(); l++)
+                {
+                    InterlinearItemType type = tab->interlinearLines().value(ws)->at(l);
+
+                    stream.writeEmptyElement("interlinear-line");
+                    stream.writeAttribute("type", type.typeXmlString() );
+                    stream.writeAttribute("lang",type.writingSystem().flexString());
+                }
+
+                stream.writeEndElement(); // item-type
+            }
+
+            for( int k=0; k < tab->phrasalGlossLines()->count(); k++ )
+            {
+                stream.writeEmptyElement("phrasal-gloss");
+                stream.writeAttribute("lang", tab->phrasalGlossLines()->at(k).writingSystem().flexString() );
+            }
+
+            stream.writeEndElement(); // tab
+        }
+
+        stream.writeEndElement(); // view
+    }
+    stream.writeEndElement(); // views
+
+    stream.writeStartElement("annotations");
+    for(int i=0; i < mAnnotationTypes.count(); i++ )
+    {
+        stream.writeEmptyElement("annotation");
+        stream.writeAttribute("name", mAnnotationTypes.at(i).label() );
+        stream.writeAttribute("mark", mAnnotationTypes.at(i).mark() );
+        stream.writeAttribute("lang", mAnnotationTypes.at(i).writingSystem().flexString() );
+    }
+    stream.writeEndElement(); // annotations
+
+    stream.writeStartElement("lexical-entry-citation-forms");
+    for(int i=0; i < mLexicalEntryCitationForms.count(); i++ )
+    {
+        stream.writeEmptyElement("citation-form");
+        stream.writeAttribute("lang", mLexicalEntryCitationForms.at(i).flexString() );
+    }
+    stream.writeEndElement(); // lexical-entry-citation-forms
+
+    stream.writeStartElement("lexical-entry-glosses");
+    for(int i=0; i < mLexicalEntryGlosses.count(); i++ )
+    {
+        stream.writeEmptyElement("gloss");
+        stream.writeAttribute("lang", mLexicalEntryGlosses.at(i).flexString() );
+    }
+    stream.writeEndElement(); // lexical-entry-glosses
+
+    stream.writeEndElement(); // gloss-configuration
+
+    mMainWindow->refreshViews();
+    file->close();
 }

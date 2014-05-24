@@ -126,6 +126,8 @@ public:
     WritingSystem defaultGlossLanguage() const;
     WritingSystem defaultTextFormLanguage() const;
 
+    void serializeConfigurationXml();
+
 public slots:
     void setInterlinearView(QAction * action);
     void setQuickView(QAction * action);

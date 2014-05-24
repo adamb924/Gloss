@@ -28,6 +28,7 @@ public:
     void setWritingSystem(const WritingSystem & ws);
     LineType type() const;
     QString typeString() const;
+    QString typeXmlString() const;
     WritingSystem writingSystem() const;
 
 private:

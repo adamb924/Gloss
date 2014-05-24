@@ -187,11 +187,9 @@ void MainWindow::newProject()
         mProject = new Project(this);
         mProject->create(filename);
 
-        // Display writing systems form
+        projectOptions();
         writingSystems();
-
-        ViewConfigurationDialog dialog(mProject, this);
-        dialog.exec();
+        viewConfigurationDialog();
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
         setProjectActionsEnabled(true);

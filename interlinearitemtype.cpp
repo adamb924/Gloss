@@ -87,6 +87,32 @@ QString InterlinearItemType::typeString() const
     };
 }
 
+QString InterlinearItemType::typeXmlString() const
+{
+    switch(mType)
+    {
+    case InterlinearItemType::ImmutableText:
+        return QObject::tr("immutable-text");
+        break;
+    case InterlinearItemType::ImmutableGloss:
+        return QObject::tr("immutable-gloss");
+        break;
+    case InterlinearItemType::Text:
+        return QObject::tr("text");
+        break;
+    case InterlinearItemType::Gloss:
+        return QObject::tr("gloss");
+        break;
+    case InterlinearItemType::Analysis:
+        return QObject::tr("analysis");
+        break;
+    case InterlinearItemType::Null:
+    default:
+        return QObject::tr("(Null)");
+        break;
+    };
+}
+
 WritingSystem InterlinearItemType::writingSystem() const
 {
     return mWritingSystem;
