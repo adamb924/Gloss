@@ -93,6 +93,7 @@
     <addaction name="actionWriting_systems"/>
     <addaction name="actionDelete_text"/>
     <addaction name="separator"/>
+    <addaction name="actionOptions"/>
    </widget>
    <widget class="QMenu" name="menuSearch">
     <property name="title">
@@ -445,6 +446,11 @@
   <action name="actionConfigure_views">
    <property name="text">
     <string>Configure views...</string>
+   </property>
+  </action>
+  <action name="actionOptions">
+   <property name="text">
+    <string>Options...</string>
    </property>
   </action>
  </widget>

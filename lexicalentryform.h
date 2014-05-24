@@ -21,13 +21,14 @@ namespace Ui {
 
 class DatabaseAdapter;
 class GlossItem;
+class Project;
 
 class LexicalEntryForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter,  QWidget *parent = 0);
+    LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const Project *project,  QWidget *parent = 0);
     ~LexicalEntryForm();
 
     qlonglong id() const;
@@ -37,6 +38,7 @@ private:
     Ui::LexicalEntryForm *ui;
     Allomorph mAllomorph;
     const DatabaseAdapter *mDbAdapter;
+    const Project *mProject;
     const GlossItem *mGlossItem;
     QSet<Allomorph::Type> mTypes;
 

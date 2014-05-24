@@ -16,7 +16,8 @@
 #include <QtDebug>
 #include <QActionGroup>
 
-WordDisplayWidget::WordDisplayWidget( GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, QWidget *parent) : QFrame(parent)
+WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, const Project * project, QWidget *parent) :
+    mProject(project), QFrame(parent)
 {
     setObjectName("WordDisplayWidget");
 
@@ -49,7 +50,7 @@ void WordDisplayWidget::setupLayout()
 {
     QHBoxLayout *hLayout = new QHBoxLayout;
 
-    mAnnotationMarks = new AnnotationMarkWidget( mDbAdapter->annotationTypes() , mGlossItem );
+    mAnnotationMarks = new AnnotationMarkWidget( *(mProject->annotationTypes()) , mGlossItem );
     connect( mAnnotationMarks, SIGNAL(annotationActivated(QString)), this, SLOT(annotationMarkActivated(QString)) );
 
     QVBoxLayout *vLayout = new QVBoxLayout;
@@ -216,7 +217,7 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
 
 AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType & glossLine )
 {
-    AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mDbAdapter, this);
+    AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mProject, this);
     mAnalysisWidgets.insert( glossLine.writingSystem(), analysisWidget );
 
     connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis*)), analysisWidget, SLOT(setupLayout()));
@@ -974,7 +975,7 @@ void WordDisplayWidget::annotationMarkActivated( const QString & key )
 {
     TextBit annotation = mGlossItem->getAnnotation( key );
     if( annotation.text().isEmpty() )
-        annotation.setWritingSystem( mDbAdapter->annotationType(key).writingSystem() );
+        annotation.setWritingSystem( mProject->annotationType(key).writingSystem() );
     if( annotation.writingSystem().isNull() )
         return;
 

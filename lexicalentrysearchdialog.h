@@ -19,6 +19,7 @@ namespace Ui {
 
 class DatabaseAdapter;
 class QStandardItemModel;
+class Project;
 
 #include "writingsystem.h"
 
@@ -27,13 +28,14 @@ class LexicalEntrySearchDialog : public QDialog
     Q_OBJECT
 
 public:
-    LexicalEntrySearchDialog(const DatabaseAdapter * dbAdapter, QWidget *parent = 0);
+    LexicalEntrySearchDialog(const Project * project, QWidget *parent = 0);
     ~LexicalEntrySearchDialog();
 
     qlonglong lexicalEntryId() const;
 
 private:
     Ui::LexicalEntrySearchDialog *ui;
+    const Project * mProject;
     const DatabaseAdapter * mDbAdapter;
 
     QList<WritingSystem> mWritingSystems;

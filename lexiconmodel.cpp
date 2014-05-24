@@ -5,13 +5,14 @@
 
 #include "databaseadapter.h"
 #include "alltagsmodel.h"
+#include "project.h"
 
-LexiconModel::LexiconModel(const AllTagsModel * allTags, const DatabaseAdapter * dbAdapter, QObject *parent) :
-    QSqlQueryModel(parent)
+LexiconModel::LexiconModel(const AllTagsModel * allTags, const Project * project, QObject *parent) :
+    mProject(project), QSqlQueryModel(parent)
 {
-    mDbAdapter = dbAdapter;
-    mGlossFields= mDbAdapter->lexicalEntryGlossFields();
-    mCitationFormFields = mDbAdapter->lexicalEntryCitationFormFields();
+    mDbAdapter = mProject->dbAdapter();
+    mGlossFields= *(mProject->lexicalEntryGlossFields());
+    mCitationFormFields = *(mProject->lexicalEntryCitationFormFields());
 
     mAllTags = allTags;
 

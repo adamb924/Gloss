@@ -10,26 +10,27 @@
 #include "writingsystemcombo.h"
 #include "databaseadapter.h"
 #include "editwithsuggestionsdialog.h"
+#include "project.h"
 
 #include <QSortFilterProxyModel>
 
-LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * mainWnd, QWidget *parent) :
-    QMainWindow(parent),
+LexiconEdit::LexiconEdit(const Project * project, QWidget *parent) :
+    mProject(project), QMainWindow(parent),
     ui(new Ui::LexiconEdit)
 {
     ui->setupUi(this);
 
-    mDbAdapter = dbAdapter;
+    mDbAdapter = mProject->dbAdapter();
 
-    AllTagsModel *allTags = new AllTagsModel( dbAdapter , this );
+    AllTagsModel *allTags = new AllTagsModel( mDbAdapter , this );
     ui->allTags->setModel(allTags);
     ui->allTags->setDragEnabled(true);
 
-    TagModel *lexicalEntryTags = new TagModel( dbAdapter , this );
+    TagModel *lexicalEntryTags = new TagModel( mDbAdapter , this );
     ui->lexicalEntryTags->setModel(lexicalEntryTags);
     ui->lexicalEntryTags->setDragDropMode(QAbstractItemView::DropOnly);
 
-    mLexiconModel = new LexiconModel( allTags , dbAdapter , this );
+    mLexiconModel = new LexiconModel( allTags , mProject , this );
     mLexiconProxyModel = new QSortFilterProxyModel(this);
     mLexiconProxyModel->setSourceModel( mLexiconModel );
     mLexiconProxyModel->setFilterKeyColumn(-1);
@@ -45,7 +46,7 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     ui->allomorphTable->setSortingEnabled(true);
     ui->analysisTable->setSortingEnabled(true);
 
-    AllomorphModel *allomorphModel = new AllomorphModel( dbAdapter , this );
+    AllomorphModel *allomorphModel = new AllomorphModel( mDbAdapter , this );
     QSortFilterProxyModel * allomorphProxyModel = new QSortFilterProxyModel(this);
     allomorphProxyModel->setSourceModel( allomorphModel );
     allomorphProxyModel->setFilterKeyColumn(-1);
@@ -54,16 +55,16 @@ LexiconEdit::LexiconEdit(const DatabaseAdapter * dbAdapter, const MainWindow * m
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), allomorphModel, SLOT(setLexicalEntry(qlonglong)) );
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), ui->allomorphTable, SLOT(resizeColumnsToContents()) );
 
-    MorphologicalAnalysisModel *analysisModel = new MorphologicalAnalysisModel( dbAdapter , this );
+    MorphologicalAnalysisModel *analysisModel = new MorphologicalAnalysisModel( mDbAdapter , this );
 
     connect( ui->glossWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setGlossWritingSystem(WritingSystem)) );
     connect( ui->textWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setTextFormWritingSystem(WritingSystem)) );
 
-    ui->glossWSCombo->setWritingSystems( dbAdapter->writingSystems() );
-    ui->textWSCombo->setWritingSystems( dbAdapter->writingSystems() );
+    ui->glossWSCombo->setWritingSystems( mDbAdapter->writingSystems() );
+    ui->textWSCombo->setWritingSystems( mDbAdapter->writingSystems() );
 
-    ui->glossWSCombo->setCurrentWritingSystem( dbAdapter->defaultGlossLanguage() );
-    ui->textWSCombo->setCurrentWritingSystem( dbAdapter->defaultTextFormLanguage() );
+    ui->glossWSCombo->setCurrentWritingSystem( mProject->defaultGlossLanguage() );
+    ui->textWSCombo->setCurrentWritingSystem( mProject->defaultTextFormLanguage() );
 
     QSortFilterProxyModel * analysisProxyModel = new QSortFilterProxyModel(this);
     analysisProxyModel->setSourceModel( analysisModel );

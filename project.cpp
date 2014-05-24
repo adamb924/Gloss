@@ -22,6 +22,8 @@
 #include "xsltproc.h"
 #include "mainwindow.h"
 #include "flextextimporter.h"
+#include "annotationtype.h"
+#include "writingsystem.h"
 
 Project::Project(MainWindow * mainWindow)
 {
@@ -114,7 +116,6 @@ bool Project::readFromFile(QString filename)
         else
         {
             parseConfigurationFile();
-            mDbAdapter->parseConfigurationFile( tempDir.absoluteFilePath("configuration.xml") );
         }
     }
     else
@@ -126,6 +127,11 @@ bool Project::readFromFile(QString filename)
 }
 
 DatabaseAdapter* Project::dbAdapter()
+{
+    return mDbAdapter;
+}
+
+const DatabaseAdapter *Project::dbAdapter() const
 {
     return mDbAdapter;
 }
@@ -809,7 +815,8 @@ QList<View*> *Project::views()
 
 void Project::parseConfigurationFile()
 {
-    QFile *file = new QFile( getTempDir().absoluteFilePath("configuration.xml") );
+    mConfigurationXmlPath = getTempDir().absoluteFilePath("configuration.xml");
+    QFile *file = new QFile( mConfigurationXmlPath );
     file->open(QFile::ReadOnly);
     QXmlStreamReader stream(file);
 
@@ -873,6 +880,12 @@ void Project::parseConfigurationFile()
             inTab = false;
         }
     }
+
+    mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
+    mLexicalEntryGlosses = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
+
+    languageSettingsFromConfigurationFile();
+    annotationTypesFromConfigurationFile();
 
     maybeUpdateMediaPath();
 
@@ -957,6 +970,11 @@ QString Project::mediaPath(const QString &path) const
     }
 }
 
+QString Project::mediaFolder() const
+{
+    return mMediaPath.path();
+}
+
 void Project::maybeUpdateMediaPath()
 {
     if( !mMediaPath.exists() )
@@ -971,4 +989,124 @@ void Project::maybeUpdateMediaPath()
             }
         }
     }
+}
+
+QList<WritingSystem> * Project::lexicalEntryCitationFormFields()
+{
+    return &mLexicalEntryCitationForms;
+}
+
+const QList<WritingSystem> *Project::lexicalEntryCitationFormFields() const
+{
+    return &mLexicalEntryCitationForms;
+}
+
+QList<WritingSystem> * Project::lexicalEntryGlossFields()
+{
+    return &mLexicalEntryGlosses;
+}
+
+const QList<WritingSystem> *Project::lexicalEntryGlossFields() const
+{
+    return &mLexicalEntryCitationForms;
+}
+
+QList<WritingSystem> Project::writingSystemListFromConfigurationFile(const QString & queryString) const
+{
+    QList<WritingSystem> items;
+    QXmlResultItems result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::writingSystemListFromConfigurationFile"));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.setQuery(queryString);
+    query.evaluateTo(&result);
+    QXmlItem item(result.next());
+    while (!item.isNull())
+    {
+        items << mDbAdapter->writingSystem(item.toAtomicValue().toString());
+        item = result.next();
+    }
+    return items;
+}
+
+void Project::languageSettingsFromConfigurationFile()
+{
+    QString result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::metalanguageFromConfigurationFile"));
+
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+
+    query.setQuery("string(doc($path)/gloss-configuration/meta-language/@lang)");
+    query.evaluateTo(&result);
+    mMetaLanguage = mDbAdapter->writingSystem(result.trimmed());
+
+    query.setQuery("string(doc($path)/gloss-configuration/default-gloss-language/@lang)");
+    query.evaluateTo(&result);
+    mDefaultGlossLanguage = mDbAdapter->writingSystem(result.trimmed());
+
+    query.setQuery("string(doc($path)/gloss-configuration/default-text-form-language/@lang)");
+    query.evaluateTo(&result);
+    mDefaultTextFormLanguage = mDbAdapter->writingSystem(result.trimmed());
+
+    // in case anything's gone wrong...
+    if( mMetaLanguage.isNull() )
+        mMetaLanguage = mDbAdapter->writingSystems().first();
+    if( mDefaultGlossLanguage.isNull() )
+        mDefaultGlossLanguage = mDbAdapter->writingSystems().first();
+    if( mDefaultTextFormLanguage.isNull() )
+        mDefaultTextFormLanguage = mDbAdapter->writingSystems().first();
+}
+
+void Project::annotationTypesFromConfigurationFile()
+{
+    QStringList result;
+    QXmlQuery query(QXmlQuery::XQuery10);
+    query.setMessageHandler(new MessageHandler("DatabaseAdapter::annotationTypesFromConfigurationFile"));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.setQuery("declare variable $path external; "
+                   "for $x in doc($path)/gloss-configuration/annotations/annotation "
+                   "return string-join( ($x/@name, $x/@mark , $x/@lang ) , ',') ");
+    query.evaluateTo(&result);
+
+    for(int i=0; i<result.count(); i++)
+    {
+        QStringList split = result.at(i).split(",");
+        if( split.count() != 3 )
+            continue;
+        mAnnotationTypes << AnnotationType(split.at(0),split.at(1), mDbAdapter->writingSystem(split.at(2)));
+    }
+}
+
+const QList<AnnotationType>* Project::annotationTypes() const
+{
+    return &mAnnotationTypes;
+}
+
+QList<AnnotationType>* Project::annotationTypes()
+{
+    return &mAnnotationTypes;
+}
+
+AnnotationType Project::annotationType(const QString & label) const
+{
+    for(int i=0; i<mAnnotationTypes.count(); i++)
+        if( mAnnotationTypes.at(i).label() == label )
+            return mAnnotationTypes.at(i);
+    return AnnotationType();
+}
+
+WritingSystem Project::metaLanguage() const
+{
+    return mMetaLanguage;
+}
+
+WritingSystem Project::defaultGlossLanguage() const
+{
+    return mDefaultGlossLanguage;
+}
+
+WritingSystem Project::defaultTextFormLanguage() const
+{
+    return mDefaultTextFormLanguage;
 }

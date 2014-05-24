@@ -31,7 +31,7 @@ class WordDisplayWidget : public QFrame
     Q_OBJECT
 
 public:
-    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, const Project * project, QWidget *parent = 0);
     ~WordDisplayWidget();
 
     QHash<qlonglong, LingEdit*> textFormEdits() const;
@@ -78,6 +78,7 @@ private:
     void mouseDoubleClickEvent ( QMouseEvent * event );
 
     DatabaseAdapter *mDbAdapter;
+    const Project * mProject;
 
 signals:
     void splitWidgetInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );

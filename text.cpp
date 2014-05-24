@@ -132,6 +132,11 @@ void Text::setBaselineText(const QString & text)
     }
 }
 
+const Project *Text::project() const
+{
+    return mProject;
+}
+
 QList<Phrase*>* Text::phrases()
 {
     return &mPhrases;

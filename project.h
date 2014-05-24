@@ -25,6 +25,7 @@ class QUrl;
 class QProgressDialog;
 class MainWindow;
 class QAction;
+class AnnotationType;
 
 typedef QPair<qlonglong,qlonglong> LongLongPair;
 
@@ -42,6 +43,7 @@ public:
     bool readFromFile(QString filename);
 
     DatabaseAdapter* dbAdapter();
+    const DatabaseAdapter* dbAdapter() const;
 
     QString projectPath() const;
 
@@ -97,7 +99,6 @@ public:
     const QList<View *> *views() const;
     QList<View*> *views();
 
-    void parseConfigurationFile();
 
     const View * view(const View::Type type) const;
 
@@ -109,6 +110,22 @@ public:
     //! \brief Returns a path to the filename, changing the path to the project's default media path, if the project is configured that way.
     QString mediaPath(const QString & path) const;
 
+    QString mediaFolder() const;
+
+    QList<WritingSystem>* lexicalEntryCitationFormFields();
+    const QList<WritingSystem>* lexicalEntryCitationFormFields() const;
+    QList<WritingSystem>* lexicalEntryGlossFields();
+    const QList<WritingSystem>* lexicalEntryGlossFields() const;
+
+    QList<AnnotationType>* annotationTypes();
+    const QList<AnnotationType>* annotationTypes() const;
+    AnnotationType annotationType(const QString & label) const;
+
+    //! \brief Returns the meta analysis language
+    WritingSystem metaLanguage() const;
+    WritingSystem defaultGlossLanguage() const;
+    WritingSystem defaultTextFormLanguage() const;
+
 public slots:
     void setInterlinearView(QAction * action);
     void setQuickView(QAction * action);
@@ -119,6 +136,19 @@ private:
     QString mDatabasePath;
     QDir mMediaPath;
     bool mOverrideMediaPath;
+
+    QList<AnnotationType> mAnnotationTypes;
+    QList<WritingSystem> mLexicalEntryCitationForms;
+    QList<WritingSystem> mLexicalEntryGlosses;
+    WritingSystem mMetaLanguage;
+    WritingSystem mDefaultTextFormLanguage;
+    WritingSystem mDefaultGlossLanguage;
+    QString mConfigurationXmlPath;
+
+    void parseConfigurationFile();
+    QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
+    void languageSettingsFromConfigurationFile();
+    void annotationTypesFromConfigurationFile();
 
     void maybeUpdateMediaPath();
 

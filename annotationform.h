@@ -13,6 +13,7 @@
 class Text;
 class DatabaseAdapter;
 class AnnotationModel;
+class Project;
 
 namespace Ui {
 class AnnotationForm;
@@ -23,7 +24,7 @@ class AnnotationForm : public QWidget
     Q_OBJECT
 
 public:
-    AnnotationForm(Text * text, const DatabaseAdapter * dbAdapter, QWidget *parent = 0);
+    AnnotationForm(Text * text, const Project * project, QWidget *parent = 0);
     ~AnnotationForm();
 
 signals:
@@ -32,6 +33,7 @@ signals:
 private:
     Ui::AnnotationForm *ui;
     Text * mText;
+    const Project * mProject;
     const DatabaseAdapter * mDbAdapter;
     AnnotationModel * mAnnotationModel;
 

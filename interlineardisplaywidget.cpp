@@ -245,7 +245,7 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, *mTab->interlinearLines().value(item->baselineWritingSystem()), mProject->dbAdapter(), this );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, *mTab->interlinearLines().value(item->baselineWritingSystem()), mProject->dbAdapter(), mProject, this );
     maybeFocus(wdw);
 
     connect( wdw, SIGNAL(splitWidget(GlossItem*,QList<TextBit>)), phrase, SLOT(splitGloss(GlossItem*,QList<TextBit>)) );

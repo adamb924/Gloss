@@ -12,6 +12,7 @@
 
 class DatabaseAdapter;
 class AllTagsModel;
+class Project;
 
 #include "writingsystem.h"
 
@@ -21,7 +22,7 @@ class LexiconModel : public QSqlQueryModel
 public:
     enum Type { Gloss, CitationForm, MorphologicalType, Other };
 
-    LexiconModel(const AllTagsModel * allTags, const DatabaseAdapter * dbAdapter, QObject *parent = 0);
+    LexiconModel(const AllTagsModel * allTags, const Project *project, QObject *parent = 0);
 
     Type typeFromColumn(int col);
     WritingSystem writingSystemFromColumn(int col);
@@ -46,6 +47,7 @@ private:
 
     QString mQueryString;
     const DatabaseAdapter * mDbAdapter;
+    const Project * mProject;
     const AllTagsModel * mAllTags;
     QList<WritingSystem> mGlossFields;
     QList<WritingSystem> mCitationFormFields;

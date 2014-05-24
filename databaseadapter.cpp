@@ -734,45 +734,6 @@ int DatabaseAdapter::removeTextForms( QSet<qlonglong> ids )
     return count;
 }
 
-QList<WritingSystem> DatabaseAdapter::lexicalEntryCitationFormFields() const
-{
-    return mLexicalEntryCitationForms;
-}
-
-QList<WritingSystem> DatabaseAdapter::lexicalEntryGlossFields() const
-{
-    return mLexicalEntryGlosses;
-}
-
-void DatabaseAdapter::parseConfigurationFile(const QString & filename)
-{
-    mConfigurationXmlPath = filename;
-
-    mLexicalEntryCitationForms = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-citation-forms/citation-form return string($i/@lang)");
-    mLexicalEntryGlosses = writingSystemListFromConfigurationFile("declare variable $path external; for $i in doc($path)/gloss-configuration/lexical-entry-glosses/gloss return string($i/@lang)");
-
-    languageSettingsFromConfigurationFile();
-    annotationTypesFromConfigurationFile();
-}
-
-QList<WritingSystem> DatabaseAdapter::writingSystemListFromConfigurationFile(const QString & queryString) const
-{
-    QList<WritingSystem> items;
-    QXmlResultItems result;
-    QXmlQuery query(QXmlQuery::XQuery10);
-    query.setMessageHandler(new MessageHandler("DatabaseAdapter::writingSystemListFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
-    query.setQuery(queryString);
-    query.evaluateTo(&result);
-    QXmlItem item(result.next());
-    while (!item.isNull())
-    {
-        items << writingSystem(item.toAtomicValue().toString());
-        item = result.next();
-    }
-    return items;
-}
-
 QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit , const QString & morphologicalType ) const
 {
     QHash<qlonglong,QString> candidates;
@@ -1093,83 +1054,6 @@ Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
     }
     qWarning() << "DatabaseAdapter::allomorphFromId"  << allomorphId << q.lastError().text() << q.executedQuery();
     return Allomorph();
-}
-
-WritingSystem DatabaseAdapter::metaLanguage() const
-{
-    return mMetaLanguage;
-}
-
-WritingSystem DatabaseAdapter::defaultGlossLanguage() const
-{
-    return mDefaultGlossLanguage;
-}
-
-WritingSystem DatabaseAdapter::defaultTextFormLanguage() const
-{
-    return mDefaultTextFormLanguage;
-}
-
-void DatabaseAdapter::languageSettingsFromConfigurationFile()
-{
-    QString result;
-    QXmlQuery query(QXmlQuery::XQuery10);
-    query.setMessageHandler(new MessageHandler("DatabaseAdapter::metalanguageFromConfigurationFile"));
-
-    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
-
-    query.setQuery("string(doc($path)/gloss-configuration/meta-language/@lang)");
-    query.evaluateTo(&result);
-    mMetaLanguage = writingSystem(result.trimmed());
-
-    query.setQuery("string(doc($path)/gloss-configuration/default-gloss-language/@lang)");
-    query.evaluateTo(&result);
-    mDefaultGlossLanguage = writingSystem(result.trimmed());
-
-    query.setQuery("string(doc($path)/gloss-configuration/default-text-form-language/@lang)");
-    query.evaluateTo(&result);
-    mDefaultTextFormLanguage = writingSystem(result.trimmed());
-
-    // in case anything's gone wrong...
-    if( mMetaLanguage.isNull() )
-        mMetaLanguage = mWritingSystems.first();
-    if( mDefaultGlossLanguage.isNull() )
-        mDefaultGlossLanguage = mWritingSystems.first();
-    if( mDefaultTextFormLanguage.isNull() )
-        mDefaultTextFormLanguage = mWritingSystems.first();
-}
-
-void DatabaseAdapter::annotationTypesFromConfigurationFile()
-{
-    QStringList result;
-    QXmlQuery query(QXmlQuery::XQuery10);
-    query.setMessageHandler(new MessageHandler("DatabaseAdapter::annotationTypesFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
-    query.setQuery("declare variable $path external; "
-                   "for $x in doc($path)/gloss-configuration/annotations/annotation "
-                   "return string-join( ($x/@name, $x/@mark , $x/@lang ) , ',') ");
-    query.evaluateTo(&result);
-
-    for(int i=0; i<result.count(); i++)
-    {
-        QStringList split = result.at(i).split(",");
-        if( split.count() != 3 )
-            continue;
-        mAnnotationTypes << AnnotationType(split.at(0),split.at(1), writingSystem(split.at(2)));
-    }
-}
-
-QList<AnnotationType> DatabaseAdapter::annotationTypes() const
-{
-    return mAnnotationTypes;
-}
-
-AnnotationType DatabaseAdapter::annotationType(const QString & label) const
-{
-    for(int i=0; i<mAnnotationTypes.count(); i++)
-        if( mAnnotationTypes.at(i).label() == label )
-            return mAnnotationTypes.at(i);
-    return AnnotationType();
 }
 
 TextBitHash DatabaseAdapter::lexicalItemGlosses(qlonglong lexicalEntryId) const

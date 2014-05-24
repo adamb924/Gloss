@@ -84,7 +84,11 @@ SOURCES += main.cpp\
     itemsmodel.cpp \
     phrasalglossesmodel.cpp \
     writingsystemdialog.cpp \
-    itemeditdialog.cpp
+    itemeditdialog.cpp \
+    projectoptionsdialog.cpp \
+    writingsystemlistmodel.cpp \
+    annotationeditordialog.cpp \
+    annotationtypelistmodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -159,7 +163,11 @@ HEADERS  += mainwindow.h \
     itemsmodel.h \
     phrasalglossesmodel.h \
     writingsystemdialog.h \
-    itemeditdialog.h
+    itemeditdialog.h \
+    projectoptionsdialog.h \
+    writingsystemlistmodel.h \
+    annotationeditordialog.h \
+    annotationtypelistmodel.h
 
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
@@ -186,7 +194,9 @@ FORMS    += mainwindow.ui \
     writingsystemsform.ui \
     viewconfigurationdialog.ui \
     writingsystemdialog.ui \
-    itemeditdialog.ui
+    itemeditdialog.ui \
+    projectoptionsdialog.ui \
+    annotationeditordialog.ui
 
 LIBS += -L./ \
     -lquazip \

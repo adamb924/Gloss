@@ -15,6 +15,7 @@
 class DatabaseAdapter;
 class GlossItem;
 class QDialogButtonBox;
+class Project;
 
 #include "morphologicalanalysis.h"
 
@@ -23,7 +24,7 @@ class ChooseLexicalEntriesDialog : public QDialog
     Q_OBJECT
 public:
     //! \brief \a parseString must have the id of the textForm with which the morphological analysis is associated
-    ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const Project *project, QWidget *parent = 0);
 
     MorphologicalAnalysis * morphologicalAnalysis() const;
 
@@ -34,6 +35,7 @@ public slots:
 
 private:
     const DatabaseAdapter * mDbAdapter;
+    const Project * mProject;
     TextBit mParseString;
     MorphologicalAnalysis * mAnalysis;
     QList<LexicalEntryForm*> mEntries;

@@ -9,13 +9,14 @@
 #include "databaseadapter.h"
 #include "immutablelabel.h"
 #include "lexicalentrysearchdialog.h"
+#include "project.h"
 
-AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent) :
-        QWidget(parent)
+AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const Project *project, QWidget *parent) :
+        mProject(project), QWidget(parent)
 {
     mGlossItem = glossItem;
     mWritingSystem = analysisWs;
-    mDbAdapter = dbAdapter;
+    mDbAdapter = mProject->dbAdapter();
 
     mLayout = new QVBoxLayout;
     mLayout->setSpacing(0);
@@ -56,9 +57,9 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analy
 
     mLayout->addWidget( new ImmutableLabel( TextBit( analysis->baselineSummary() , mWritingSystem ) , false, this ) );
 
-    QList<WritingSystem> glossLines = mDbAdapter->lexicalEntryGlossFields();
-    for(int i=0; i<glossLines.count(); i++)
-        mLayout->addWidget( new ImmutableLabel( TextBit( analysis->glossSummary(glossLines.at(i)), mWritingSystem ), false, this ) );
+    const QList<WritingSystem> *glossLines = mProject->lexicalEntryGlossFields();
+    for(int i=0; i<glossLines->count(); i++)
+        mLayout->addWidget( new ImmutableLabel( TextBit( analysis->glossSummary(glossLines->at(i)), mWritingSystem ), false, this ) );
 }
 
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -102,7 +103,7 @@ void AnalysisWidget::editLexicalEntry(QAction * action)
         return;
     }
 
-    CreateLexicalEntryDialog dialog( lexicalEntryId, mGlossItem, mDbAdapter, this);
+    CreateLexicalEntryDialog dialog( lexicalEntryId, mGlossItem, mProject, this);
     dialog.exec();
 }
 
@@ -111,7 +112,7 @@ void AnalysisWidget::enterAnalysis()
     CreateAnalysisDialog dialog( textBit() );
     if( dialog.exec() == QDialog::Accepted )
     {
-        ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), textBit().writingSystem(), textBit().id() ), mGlossItem,  mDbAdapter , this);
+        ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), textBit().writingSystem(), textBit().id() ), mGlossItem,  mProject , this);
         connect( &leDialog, SIGNAL(rejected()), this, SLOT(enterAnalysis()) );
         if( leDialog.exec() == QDialog::Accepted )
         {
@@ -130,7 +131,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
     Allomorph allomorph( -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
     if( lexicalEntryId == -1 )
     {
-        CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mDbAdapter, this);
+        CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mProject, this);
         connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
         if( dialog.exec() == QDialog::Accepted )
             lexicalEntryId = dialog.lexicalEntryId();
@@ -188,7 +189,7 @@ void AnalysisWidget::clearWidgetsFromLayout()
 
 void AnalysisWidget::linkToOther()
 {
-    LexicalEntrySearchDialog dialog(mDbAdapter, this);
+    LexicalEntrySearchDialog dialog(mProject    , this);
     if( dialog.exec() == QDialog::Accepted )
     {
         qlonglong lexicalEntryId = dialog.lexicalEntryId();

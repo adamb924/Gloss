@@ -2,19 +2,20 @@
 #include "ui_lexicalentrysearchdialog.h"
 
 #include "databaseadapter.h"
+#include "project.h"
 
 #include <QStandardItemModel>
 
-LexicalEntrySearchDialog::LexicalEntrySearchDialog(const DatabaseAdapter * dbAdapter, QWidget *parent) :
-    QDialog(parent),
+LexicalEntrySearchDialog::LexicalEntrySearchDialog(const Project *project, QWidget *parent) :
+    mProject(project), QDialog(parent),
     ui(new Ui::LexicalEntrySearchDialog)
 {
     ui->setupUi(this);
-    mDbAdapter = dbAdapter;
+    mDbAdapter = mProject->dbAdapter();
 
     mLexicalEntryId = -1;
 
-    mWritingSystems = dbAdapter->writingSystems();
+    mWritingSystems = mDbAdapter->writingSystems();
 
     mFirstModel = new QStandardItemModel(this);
     ui->listView->setModel(mFirstModel);
@@ -22,8 +23,8 @@ LexicalEntrySearchDialog::LexicalEntrySearchDialog(const DatabaseAdapter * dbAda
     mSecondModel = new QStandardItemModel(this);
     ui->lowerListView->setModel(mSecondModel);
 
-    ui->writingSystemCombo->setWritingSystems(dbAdapter->writingSystems());
-    ui->writingSystemCombo->setCurrentWritingSystem(dbAdapter->defaultGlossLanguage());
+    ui->writingSystemCombo->setWritingSystems(mDbAdapter->writingSystems());
+    ui->writingSystemCombo->setCurrentWritingSystem(mProject->defaultGlossLanguage());
 
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeCurrentWritingSystem(int)));
     connect(ui->writingSystemCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(fillCandidates()));

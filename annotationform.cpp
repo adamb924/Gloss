@@ -7,24 +7,25 @@
 #include "databaseadapter.h"
 #include "annotationtype.h"
 #include "annotationmodel.h"
+#include "project.h"
 
-AnnotationForm::AnnotationForm(Text *text, const DatabaseAdapter *dbAdapter, QWidget *parent) :
-    QWidget(parent),
+AnnotationForm::AnnotationForm(Text *text, const Project *project, QWidget *parent) :
+    mProject(project), QWidget(parent),
     ui(new Ui::AnnotationForm)
 {
     ui->setupUi(this);
 
     mText = text;
-    mDbAdapter = dbAdapter;
+    mDbAdapter = mProject->dbAdapter();
 
-    QList<AnnotationType> annotationTypes = mDbAdapter->annotationTypes();
-    for(int i=0; i<annotationTypes.count(); i++ )
+    const QList<AnnotationType> *annotationTypes = mProject->annotationTypes();
+    for(int i=0; i<annotationTypes->count(); i++ )
     {
-        ui->comboBox->addItem( annotationTypes.at(i).label() );
+        ui->comboBox->addItem( annotationTypes->at(i).label() );
     }
 
 
-    mAnnotationModel = new AnnotationModel(text, annotationTypes.first().label() );
+    mAnnotationModel = new AnnotationModel(text, annotationTypes->first().label() );
     connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), mAnnotationModel, SLOT(setAnnotationType(QString)) );
     ui->listView->setModel(mAnnotationModel);
     ui->listView->setEditTriggers(QAbstractItemView::SelectedClicked);

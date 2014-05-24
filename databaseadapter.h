@@ -132,16 +132,6 @@ public:
         return string.replace( "'" , "''");
     }
 
-    void parseConfigurationFile(const QString & filename);
-
-    //! \brief Returns the meta analysis language
-    WritingSystem metaLanguage() const;
-    WritingSystem defaultGlossLanguage() const;
-    WritingSystem defaultTextFormLanguage() const;
-
-    QList<WritingSystem> lexicalEntryCitationFormFields() const;
-    QList<WritingSystem> lexicalEntryGlossFields() const;
-
     //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, which are possible lexical entries for the given form.
     QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit, const QString & morphologicalType ) const;
 
@@ -227,9 +217,6 @@ public:
 
     QString guessGloss( const QString & hint , const WritingSystem & ws );
 
-    QList<AnnotationType> annotationTypes() const;
-    AnnotationType annotationType(const QString & label) const;
-
     qlonglong lexicalEntryIdFromAllomorph(qlonglong allomorphId) const;
 
     QString guessLexicalEntryCitationForm( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
@@ -244,21 +231,6 @@ private:
     QList<WritingSystem> mWritingSystems;
     QHash<qlonglong, WritingSystem> mWritingSystemByRowId;
     QHash<QString, WritingSystem> mWritingSystemByFlexString;
-
-    QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
-    void languageSettingsFromConfigurationFile();
-    void annotationTypesFromConfigurationFile();
-
-    QList<AnnotationType> mAnnotationTypes;
-
-    QList<WritingSystem> mLexicalEntryCitationForms;
-    QList<WritingSystem> mLexicalEntryGlosses;
-
-    WritingSystem mMetaLanguage;
-    WritingSystem mDefaultTextFormLanguage;
-    WritingSystem mDefaultGlossLanguage;
-
-    QString mConfigurationXmlPath;
 
 signals:
 

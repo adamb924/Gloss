@@ -16,6 +16,7 @@
 class DatabaseAdapter;
 class QVBoxLayout;
 class MorphologicalAnalysis;
+class Project;
 
 #include "writingsystem.h"
 
@@ -23,7 +24,7 @@ class AnalysisWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const Project *project, QWidget *parent = 0);
 
 signals:
     void morphologicalAnalysisChanged(MorphologicalAnalysis * analysis);
@@ -39,6 +40,7 @@ private:
     WritingSystem mWritingSystem;
 
     const DatabaseAdapter *mDbAdapter;
+    const Project *mProject;
 
     QVBoxLayout *mLayout;
 

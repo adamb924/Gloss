@@ -5,14 +5,15 @@
 #include "allomorph.h"
 #include "databaseadapter.h"
 #include "glossitem.h"
+#include "project.h"
 
 #include <QtWidgets>
 #include <QtDebug>
 
-ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
-    QDialog(parent)
+ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const Project *project, QWidget *parent) :
+    mProject(project), QDialog(parent)
 {
-    mDbAdapter = dbAdapter;
+    mDbAdapter = mProject->dbAdapter();
     mParseString = parseString;
     mGlossItem = glossItem;
     mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem() );
@@ -62,7 +63,7 @@ void ChooseLexicalEntriesDialog::setupLayout()
     AllomorphIterator iter = mAnalysis->allomorphIterator();
     while(iter.hasNext())
     {
-        LexicalEntryForm *form = new LexicalEntryForm( iter.next(), mGlossItem, mDbAdapter, this );
+        LexicalEntryForm *form = new LexicalEntryForm( iter.next(), mGlossItem, mProject, this );
         connect(form, SIGNAL(entryChanged()), this, SLOT(setAcceptable()) );
 
         layout->addWidget(form);

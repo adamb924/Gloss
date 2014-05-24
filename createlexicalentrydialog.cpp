@@ -9,12 +9,13 @@
 #include "lingedit.h"
 #include "glossitem.h"
 #include "textbit.h"
+#include "project.h"
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
-    QDialog(parent),
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, const GlossItem *glossItem, const Project *project, QWidget *parent) :
+    mProject(project), QDialog(parent),
     ui(new Ui::CreateLexicalEntryDialog)
 {
-    mDbAdapter = dbAdapter;
+    mDbAdapter = mProject->dbAdapter();
     mAllomorph = 0;
     mGlossItem = glossItem;
     mIsMonomorphemic = false;
@@ -23,7 +24,7 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, con
     ui->setupUi(this);
     fillData();
 
-    ui->grammaticalInformation->setWritingSystem( dbAdapter->metaLanguage() );
+    ui->grammaticalInformation->setWritingSystem( mProject->metaLanguage() );
 
     connect(this, SIGNAL(accepted()), this, SLOT(changeLexicalEntry()));
 
@@ -32,11 +33,11 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, con
     setWindowTitle(tr("Edit lexical entry"));
 }
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter, QWidget *parent) :
-        QDialog(parent),
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent) :
+        mProject(project), QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog)
 {
-    mDbAdapter = dbAdapter;
+    mDbAdapter = mProject->dbAdapter();
     mAllomorph = allomorph;
     mGlossItem = glossItem;
     mIsMonomorphemic = isMonomorphemic;
@@ -46,7 +47,7 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, 
     ui->setupUi(this);
     fillData();
 
-    ui->grammaticalInformation->setWritingSystem( dbAdapter->metaLanguage() );
+    ui->grammaticalInformation->setWritingSystem( mProject->metaLanguage() );
 
     connect(this, SIGNAL(accepted()), this, SLOT(createLexicalEntry()));
 
@@ -76,7 +77,7 @@ void CreateLexicalEntryDialog::fillData()
 
 void CreateLexicalEntryDialog::guessAppropriateValues()
 {
-    QList<WritingSystem> glosses = mDbAdapter->lexicalEntryGlossFields();
+    QList<WritingSystem> glosses = *( mProject->lexicalEntryGlossFields() );
     foreach( WritingSystem ws , glosses )
     {
         LingEdit *edit = new LingEdit( TextBit("", ws) );
@@ -86,7 +87,7 @@ void CreateLexicalEntryDialog::guessAppropriateValues()
             edit->setText( mGlossItem->glosses()->value(ws).text() );
     }
 
-    QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationFormFields();
+    QList<WritingSystem> citationForms =  *(mProject->lexicalEntryCitationFormFields());
     foreach( WritingSystem ws , citationForms )
     {
         LingEdit *edit = new LingEdit( TextBit("", ws) );
@@ -102,7 +103,7 @@ void CreateLexicalEntryDialog::guessAppropriateValues()
 
 void CreateLexicalEntryDialog::fillFromDatabase()
 {
-    QList<WritingSystem> glosses = mDbAdapter->lexicalEntryGlossFields();
+    QList<WritingSystem> glosses = *(mProject->lexicalEntryGlossFields());
     TextBitHash glossValues = mDbAdapter->lexicalEntryGlossFormsForId(mLexicalEntryId);
 
     foreach( WritingSystem ws , glosses )
@@ -113,7 +114,7 @@ void CreateLexicalEntryDialog::fillFromDatabase()
         edit->setText( glossValues.value( ws ).text() );
     }
 
-    QList<WritingSystem> citationForms = mDbAdapter->lexicalEntryCitationFormFields();
+    QList<WritingSystem> citationForms = *(mProject->lexicalEntryCitationFormFields());
     TextBitHash citationFormValues = mDbAdapter->lexicalEntryCitationFormsForId(mLexicalEntryId);
 
     foreach( WritingSystem ws , citationForms )

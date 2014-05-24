@@ -5,6 +5,7 @@
 #include "glossitem.h"
 #include "allomorph.h"
 #include "databaseadapter.h"
+#include "project.h"
 
 #include <QFile>
 #include <QXmlStreamWriter>
@@ -44,15 +45,15 @@ bool FlexTextWriter::serializeInterlinearText(QXmlStreamWriter *stream) const
 {
     stream->writeStartElement("interlinear-text");
 
-    stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mText->mDbAdapter->metaLanguage().flexString() );
+    stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mText->project()->metaLanguage().flexString() );
 
     if( !mText->mAudioFileURL.isEmpty() )
         stream->writeAttribute("http://www.adambaker.org/gloss.php","audio-file", mText->mAudioFileURL.toString() );
 
     if( !mText->mName.isEmpty() )
-        serializeItem( "title" , mText->mDbAdapter->metaLanguage() , mText->mName , stream );
+        serializeItem( "title" , mText->project()->metaLanguage() , mText->mName , stream );
     if( !mText->mComment.isEmpty() )
-        serializeItem( "comment" , mText->mDbAdapter->metaLanguage() , mText->mComment , stream );
+        serializeItem( "comment" , mText->project()->metaLanguage() , mText->mComment , stream );
 
     stream->writeStartElement("paragraphs");
 
@@ -77,7 +78,7 @@ bool FlexTextWriter::serializeInterlinearText(QXmlStreamWriter *stream) const
             stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-end", QString("%1").arg(phrase->interval()->end()) );
         }
 
-        serializeItem("segnum", mText->mDbAdapter->metaLanguage(), QString("%1").arg(count) , stream );
+        serializeItem("segnum", mText->project()->metaLanguage(), QString("%1").arg(count) , stream );
 
         stream->writeStartElement("words");
         for(int i=0; i<phrase->glossItemCount(); i++ )

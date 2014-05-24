@@ -23,6 +23,7 @@
 #include "opentextdialog.h"
 #include "searchform.h"
 #include "viewconfigurationdialog.h"
+#include "projectoptionsdialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -106,6 +107,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionAnnotation_dock, SIGNAL(triggered()), this, SLOT(toggleAnnotationDock()));
 
     connect( ui->actionConfigure_views, SIGNAL(triggered()), this, SLOT(viewConfigurationDialog()) );
+
+    connect( ui->actionOptions, SIGNAL(triggered()), this, SLOT(projectOptions()) );
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -592,6 +595,16 @@ void MainWindow::writingSystems()
     dialog->setLayout(layout);
     dialog->exec();
     delete dialog;
+}
+
+void MainWindow::projectOptions()
+{
+    ProjectOptionsDialog dialog(mProject, this);
+    dialog.exec();
+    if( QDialog::Accepted == dialog.result() )
+    {
+        //! @todo Logic here
+    }
 }
 
 void MainWindow::deleteText()
@@ -1304,7 +1317,7 @@ QStringList MainWindow::textsWithOpenWindows()
 
 void MainWindow::editLexicon()
 {
-    LexiconEdit *edit = new LexiconEdit( mProject->dbAdapter(), this );
+    LexiconEdit *edit = new LexiconEdit( mProject, this );
     connect( edit, SIGNAL(textFormIdSearch(qlonglong)), this, SLOT(searchForTextFormById(qlonglong)) );
     edit->show();
 }
@@ -1463,7 +1476,7 @@ void MainWindow::toggleAnnotationDock()
     if( text == 0 )
         return;
 
-    AnnotationForm * annotationForm = new AnnotationForm(text, mProject->dbAdapter(), this);
+    AnnotationForm * annotationForm = new AnnotationForm(text, mProject, this);
 
     mAnnotationDock = new QDockWidget(text->name(), this);
     mAnnotationDock->setWidget(annotationForm);

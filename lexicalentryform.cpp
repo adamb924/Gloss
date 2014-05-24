@@ -4,14 +4,15 @@
 #include "databaseadapter.h"
 #include "createlexicalentrydialog.h"
 #include "lexicalentrysearchdialog.h"
+#include "project.h"
 
-LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const DatabaseAdapter *dbAdapter,  QWidget *parent) :
-        QWidget(parent),
+LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const Project *project,  QWidget *parent) :
+        mProject(project), QWidget(parent),
         ui(new Ui::LexicalEntryForm)
 {
     ui->setupUi(this);
     mAllomorph = allomorph;
-    mDbAdapter = dbAdapter;
+    mDbAdapter = mProject->dbAdapter();
     mGlossItem = glossItem;
 
     // the available types are whatever is available in the database, plus whatever the user entered
@@ -75,7 +76,7 @@ void LexicalEntryForm::fillTypes()
 
 void LexicalEntryForm::newLexicalEntry()
 {
-    CreateLexicalEntryDialog dialog(&mAllomorph, false, mGlossItem, mDbAdapter, this);
+    CreateLexicalEntryDialog dialog(&mAllomorph, false, mGlossItem, mProject, this);
     connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
     if( dialog.exec() == QDialog::Accepted )
     {
@@ -91,7 +92,7 @@ void LexicalEntryForm::newLexicalEntry()
 
 void LexicalEntryForm::linkToOther()
 {
-    LexicalEntrySearchDialog dialog(mDbAdapter, this);
+    LexicalEntrySearchDialog dialog(mProject, this);
     if( dialog.exec() == QDialog::Accepted )
     {
         qlonglong lexicalEntryId = dialog.lexicalEntryId();

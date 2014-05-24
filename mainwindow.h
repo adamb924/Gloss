@@ -77,6 +77,7 @@ private slots:
     void closeProjectWithoutSaving();
     void projectClose();
     void writingSystems();
+    void projectOptions();
 
     ///@}
 

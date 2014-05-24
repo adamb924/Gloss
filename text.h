@@ -58,6 +58,8 @@ public:
     QString baselineText() const;
     void setBaselineText(const QString & text);
 
+    const Project * project() const;
+
     QList<Phrase*>* phrases();
 
     void saveText(bool verboseOutput, bool saveAnyway = false);

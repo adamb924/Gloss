@@ -17,6 +17,7 @@ public:
     ~WritingSystemDialog();
 
     WritingSystem writingSystem() const;
+    void setCurrentWritingSystem(const WritingSystem & ws);
 
 private:
     Ui::WritingSystemDialog *ui;

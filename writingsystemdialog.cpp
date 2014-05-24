@@ -18,3 +18,8 @@ WritingSystem WritingSystemDialog::writingSystem() const
 {
     return ui->comboBox->currentWritingSystem();
 }
+
+void WritingSystemDialog::setCurrentWritingSystem(const WritingSystem &ws)
+{
+    ui->comboBox->setCurrentWritingSystem(ws);
+}
