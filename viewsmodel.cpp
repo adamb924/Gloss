@@ -38,6 +38,20 @@ Qt::ItemFlags ViewsModel::flags(const QModelIndex &index) const
     return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren | Qt::ItemIsDropEnabled | Qt::ItemIsDragEnabled;
 }
 
+void ViewsModel::addView(const QString &name)
+{
+    QAbstractListModel::beginInsertRows(QModelIndex(), mProject->views()->count(), mProject->views()->count() );
+    mProject->views()->append( new View(name) );
+    QAbstractListModel::endInsertRows();
+}
+
+void ViewsModel::removeView(const QModelIndex &index)
+{
+    QAbstractListModel::beginRemoveRows(QModelIndex(), index.row(), index.row());
+    mProject->views()->removeAt(index.row());
+    QAbstractListModel::endRemoveRows();
+}
+
 void ViewsModel::moveUp(int index)
 {
     if( index > 0 )

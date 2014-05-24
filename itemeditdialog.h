@@ -20,6 +20,9 @@ public:
 
     InterlinearItemType type() const;
     void setType(InterlinearItemType type);
+
+    WritingSystem writingSystem() const;
+    void setWritingSystem(const WritingSystem & ws, bool enabled = true);
 private:
     Ui::ItemEditDialog *ui;
 };

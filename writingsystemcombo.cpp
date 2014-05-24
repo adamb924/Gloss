@@ -17,7 +17,11 @@ void WritingSystemCombo::setWritingSystems(const QList<WritingSystem> & writingS
 
 void WritingSystemCombo::setCurrentWritingSystem(const WritingSystem & ws)
 {
-    setCurrentIndex( mWritingSystems.indexOf(ws) );
+    int index = mWritingSystems.indexOf(ws);
+    if( index > -1 )
+    {
+        setCurrentIndex( index );
+    }
 }
 
 void WritingSystemCombo::indexChanged( int index )

@@ -7,13 +7,30 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>154</height>
+    <height>216</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>For baseline text...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="WritingSystemCombo" name="baselineCombo"/>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QLabel" name="label">
      <property name="text">

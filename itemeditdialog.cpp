@@ -9,6 +9,8 @@ ItemEditDialog::ItemEditDialog(const QList<WritingSystem> & writingSystems, QWid
 {
     ui->setupUi(this);
 
+    ui->baselineCombo->setWritingSystems(writingSystems);
+
     ui->itemTypeCombo->addItem( tr("Immutable Text") , InterlinearItemType::ImmutableText );
     ui->itemTypeCombo->addItem( tr("Immutable Gloss") , InterlinearItemType::ImmutableGloss );
     ui->itemTypeCombo->addItem( tr("Text") , InterlinearItemType::Text );
@@ -38,4 +40,15 @@ void ItemEditDialog::setType(InterlinearItemType type)
         }
     }
     ui->writingSystemCombo->setCurrentWritingSystem(type.writingSystem());
+}
+
+WritingSystem ItemEditDialog::writingSystem() const
+{
+    return ui->baselineCombo->currentWritingSystem();
+}
+
+void ItemEditDialog::setWritingSystem(const WritingSystem &ws, bool enabled)
+{
+    ui->baselineCombo->setCurrentWritingSystem(ws);
+    ui->baselineCombo->setEnabled(enabled);
 }

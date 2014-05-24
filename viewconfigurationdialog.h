@@ -25,6 +25,7 @@ public:
     explicit ViewConfigurationDialog(Project * project, QWidget *parent = 0);
     ~ViewConfigurationDialog();
 
+    void populateWritingSystemCombo();
 private slots:
     void addView();
     void removeView();

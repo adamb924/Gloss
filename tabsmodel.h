@@ -20,6 +20,9 @@ public:
     void moveUp(int index);
     void moveDown(int index);
 
+    void addTab(const QString & name);
+    void removeTab(const QModelIndex & index);
+
 private:
     View * mView;
 

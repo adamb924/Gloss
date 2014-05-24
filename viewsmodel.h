@@ -17,6 +17,9 @@ public:
     bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
     Qt::ItemFlags flags(const QModelIndex & index) const;
 
+    void addView(const QString & name);
+    void removeView(const QModelIndex & index);
+
     void moveUp(int index);
     void moveDown(int index);
 

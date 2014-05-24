@@ -3,6 +3,7 @@
 
 #include <QtDebug>
 #include <QItemSelection>
+#include <QInputDialog>
 
 #include "project.h"
 #include "view.h"
@@ -22,12 +23,6 @@ ViewConfigurationDialog::ViewConfigurationDialog(Project *project, QWidget *pare
     ui(new Ui::ViewConfigurationDialog)
 {
     ui->setupUi(this);
-
-//    ui->viewView->setDragDropMode( QAbstractItemView::InternalMove  );
-    ui->viewView->setDragDropMode( QAbstractItemView::DragDrop );
-    ui->viewView->setDragEnabled(true);
-    ui->viewView->setAcceptDrops(true);
-    ui->viewView->setDropIndicatorShown(true);
 
     mViewModel = new ViewsModel(mProject);
     ui->viewView->setModel( mViewModel );
@@ -73,32 +68,55 @@ ViewConfigurationDialog::~ViewConfigurationDialog()
 
 void ViewConfigurationDialog::addView()
 {
-    mViewModel->insertRow( mViewModel->rowCount() );
+    bool ok;
+    QString	name = QInputDialog::getText(this, tr("New view name"), tr("Enter a name for the view"), QLineEdit::Normal, QString(), &ok );
+    if(ok)
+    {
+        mViewModel->addView( name );
+    }
 }
 
 void ViewConfigurationDialog::removeView()
 {
-    qDebug() << ui->viewView->selectionModel()->selectedRows().count();
+    if( ui->viewView->selectionModel()->selectedIndexes().count() > 0 )
+    {
+        mViewModel->removeView( ui->viewView->selectionModel()->selectedIndexes().first() );
+    }
 }
 
 void ViewConfigurationDialog::addTab()
 {
-
+    if( mTabsModel != 0 )
+    {
+        bool ok;
+        QString	name = QInputDialog::getText(this, tr("New tab name"), tr("Enter a name for the tab"), QLineEdit::Normal, QString(), &ok );
+        if(ok)
+        {
+            mTabsModel->addTab( name );
+        }
+    }
 }
 
 void ViewConfigurationDialog::removeTab()
 {
-
+    if( mTabsModel != 0 && ui->tabView->selectionModel()->selectedIndexes().count() > 0 )
+    {
+        mTabsModel->removeTab( ui->tabView->selectionModel()->selectedIndexes().first() );
+    }
 }
 
 void ViewConfigurationDialog::addItem()
 {
     if( mTab == 0 ) return;
+
     ItemEditDialog dialog(mProject->dbAdapter()->writingSystems(), this);
+    dialog.setWritingSystem( currentWritingSystem(), true );
     dialog.exec();
     if( dialog.result() == QDialog::Accepted )
     {
-        mItemsModel->addItem( dialog.type(), currentWritingSystem() );
+        mItemsModel->addItem( dialog.type(), dialog.writingSystem() );
+        populateWritingSystemCombo();
+        ui->itemWritingSystemsCombo->setCurrentText( dialog.writingSystem().name() );
     }
 }
 
@@ -142,6 +160,24 @@ void ViewConfigurationDialog::viewChanged(const QItemSelection &selected, const 
     }
 }
 
+void ViewConfigurationDialog::populateWritingSystemCombo()
+{
+    ui->itemWritingSystemsCombo->clear();
+    QList<WritingSystem> availableWS = mTab->interlinearLines().keys();
+    for(int i=0; i<availableWS.count(); i++)
+    {
+        ui->itemWritingSystemsCombo->addItem( availableWS.at(i).name() );
+    }
+
+    WritingSystem currentWS = currentWritingSystem();
+    if( mItemsModel != 0 )
+    {
+        delete mItemsModel;
+    }
+    mItemsModel = new ItemsModel(mTab,currentWS);
+    ui->itemView->setModel(mItemsModel);
+}
+
 void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     if( ! selected.indexes().isEmpty() &&  !ui->viewView->selectionModel()->selectedRows().isEmpty() && mView != 0 )
@@ -149,20 +185,7 @@ void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const Q
         int currentTab = selected.indexes().first().row();
         mTab = mView->tabs()->at(currentTab);
 
-        ui->itemWritingSystemsCombo->clear();
-        QList<WritingSystem> availableWS = mTab->interlinearLines().keys();
-        for(int i=0; i<availableWS.count(); i++)
-        {
-            ui->itemWritingSystemsCombo->addItem( availableWS.at(i).name() );
-        }
-
-        WritingSystem currentWS = currentWritingSystem();
-        if( mItemsModel != 0 )
-        {
-            delete mItemsModel;
-        }
-        mItemsModel = new ItemsModel(mTab,currentWS);
-        ui->itemView->setModel(mItemsModel);
+        populateWritingSystemCombo();
 
 
         if( mPhrasalGlossesModel != 0 )
@@ -172,7 +195,6 @@ void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const Q
         mPhrasalGlossesModel = new PhrasalGlossesModel(mTab);
         ui->phrasalGlossView->setModel(mPhrasalGlossesModel);
 
-        // @todo connections here
     }
 }
 
@@ -185,7 +207,6 @@ void ViewConfigurationDialog::indexLanguageChanged(int index)
     }
     mItemsModel = new ItemsModel(mTab,currentWS);
     ui->itemView->setModel(mItemsModel);
-    // @todo connections here
 }
 
 void ViewConfigurationDialog::editPhrasalGloss(const QModelIndex &index)
@@ -202,6 +223,7 @@ void ViewConfigurationDialog::editItem(const QModelIndex &index)
 {
     if( mTab == 0 ) return;
     ItemEditDialog dialog(mProject->dbAdapter()->writingSystems(), this);
+    dialog.setWritingSystem( currentWritingSystem(), false );
     dialog.setType( mTab->interlinearLines().value( currentWritingSystem() )->at( index.row() ) );
     dialog.exec();
     if( dialog.result() == QDialog::Accepted )

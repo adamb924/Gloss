@@ -55,3 +55,17 @@ void TabsModel::moveDown(int index)
         QAbstractItemModel::endMoveRows();
     }
 }
+
+void TabsModel::addTab(const QString &name)
+{
+    QAbstractListModel::beginInsertRows(QModelIndex(), mView->tabs()->count(), mView->tabs()->count() );
+    mView->tabs()->append(new Tab(name));
+    QAbstractListModel::endInsertRows();
+}
+
+void TabsModel::removeTab(const QModelIndex &index)
+{
+    QAbstractListModel::beginRemoveRows(QModelIndex(), index.row(), index.row());
+    mView->tabs()->removeAt(index.row());
+    QAbstractListModel::endRemoveRows();
+}

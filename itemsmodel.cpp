@@ -8,7 +8,14 @@ ItemsModel::ItemsModel(Tab *tab, WritingSystem &ws, QObject *parent) :
 
 void ItemsModel::addItem(InterlinearItemType type, const WritingSystem & ws)
 {
-    QAbstractListModel::beginInsertRows(QModelIndex(), mTab->interlinearLines().value(ws)->count(), mTab->interlinearLines().value(ws)->count() );
+    if( mTab->interlinearLines().keys().contains(ws) )
+    {
+        QAbstractListModel::beginInsertRows(QModelIndex(), mTab->interlinearLines().value(ws)->count(), mTab->interlinearLines().value(ws)->count() );
+    }
+    else
+    {
+        QAbstractListModel::beginInsertRows(QModelIndex(), 0 , 0 );
+    }
     mTab->addInterlinearLineType(ws, type);
     QAbstractListModel::endInsertRows();
 }
@@ -33,7 +40,14 @@ int ItemsModel::columnCount(const QModelIndex &parent) const
 
 int ItemsModel::rowCount(const QModelIndex &parent) const
 {
-    return mTab->interlinearLines().value(mWritingSystem)->count();
+    if( mTab->interlinearLines().keys().contains( mWritingSystem ) )
+    {
+        return mTab->interlinearLines().value(mWritingSystem)->count();
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 QVariant ItemsModel::data(const QModelIndex &index, int role) const
