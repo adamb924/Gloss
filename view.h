@@ -17,14 +17,17 @@ public:
     enum Type { Full, Quick };
 
     View(const QString & name);
+    ~View();
 
     QString name() const;
-    const QList<Tab> * tabs() const;
-    QList<Tab> * tabs();
+    const QList<Tab*> * tabs() const;
+    QList<Tab*> * tabs();
+
+    void setName(const QString & name);
 
 private:
     QString mName;
-    QList<Tab> mTabs;
+    QList<Tab*> mTabs;
 };
 
 #endif // VIEW_H

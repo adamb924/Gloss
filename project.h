@@ -95,6 +95,7 @@ public:
     void playLine(const QString & textName, int lineNumber);
 
     const QList<View *> *views() const;
+    QList<View*> *views();
 
     void parseConfigurationFile();
 

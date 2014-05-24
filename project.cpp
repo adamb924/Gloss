@@ -54,9 +54,6 @@ bool Project::create(QString filename)
     mDbAdapter = new DatabaseAdapter(mDatabasePath);
     mDbAdapter->createTables();
 
-    // Display writing systems form
-    writingSystems();
-
     // Now check for what is what...
 
     //! @todo Project creation tasks:
@@ -805,6 +802,11 @@ const QList<View*>* Project::views() const
     return &mViews;
 }
 
+QList<View*> *Project::views()
+{
+    return &mViews;
+}
+
 void Project::parseConfigurationFile()
 {
     QFile *file = new QFile( getTempDir().absoluteFilePath("configuration.xml") );
@@ -827,7 +829,7 @@ void Project::parseConfigurationFile()
             else if( name == "tab" )
             {
                 inTab = true;
-                mViews.last()->tabs()->append( Tab( stream.attributes().value("name").toString() ) );
+                mViews.last()->tabs()->append( new Tab( stream.attributes().value("name").toString() ) );
             }
             else if( name == "item-type" )
             {
@@ -848,14 +850,14 @@ void Project::parseConfigurationFile()
                 InterlinearItemType iit( type, mDbAdapter->writingSystem(lang) );
                 if( itemTypeWs.isValid() )
                 {
-                    mViews.last()->tabs()->last().addInterlinearLineType( itemTypeWs, iit );
+                    mViews.last()->tabs()->last()->addInterlinearLineType( itemTypeWs, iit );
                 }
             }
             else if( name == "phrasal-gloss" && inTab )
             {
                 QString lang = stream.attributes().value("lang").toString();
                 InterlinearItemType iit( InterlinearItemType::Gloss , mDbAdapter->writingSystem(lang) );
-                mViews.last()->tabs()->last().addPhrasalGlossType( iit );
+                mViews.last()->tabs()->last()->addPhrasalGlossType( iit );
             }
             else if( name == "media-folder" )
             {

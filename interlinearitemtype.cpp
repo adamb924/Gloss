@@ -61,6 +61,32 @@ InterlinearItemType::LineType InterlinearItemType::type() const
     return mType;
 }
 
+QString InterlinearItemType::typeString() const
+{
+    switch(mType)
+    {
+    case InterlinearItemType::ImmutableText:
+        return QObject::tr("Immutable Text");
+        break;
+    case InterlinearItemType::ImmutableGloss:
+        return QObject::tr("Immutable Gloss");
+        break;
+    case InterlinearItemType::Text:
+        return QObject::tr("Text Form");
+        break;
+    case InterlinearItemType::Gloss:
+        return QObject::tr("Gloss");
+        break;
+    case InterlinearItemType::Analysis:
+        return QObject::tr("Analysis");
+        break;
+    case InterlinearItemType::Null:
+    default:
+        return QObject::tr("(Null)");
+        break;
+    };
+}
+
 WritingSystem InterlinearItemType::writingSystem() const
 {
     return mWritingSystem;

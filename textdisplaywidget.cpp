@@ -27,7 +27,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
     for(int i=0; i<view->tabs()->count(); i++)
     {
         // TODO really these should just be stored as pointers. This will waste memory; I'm just doing it to have it done with for now.
-        Tab * tab = new Tab( view->tabs()->at(i) );
+        Tab * tab = new Tab( * view->tabs()->at(i) );
         InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( tab, mText, mProject, this);
         idw->setFocus(foci);
         idw->setLines(lines);

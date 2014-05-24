@@ -77,7 +77,14 @@ SOURCES += main.cpp\
     annotationform.cpp \
     annotationmodel.cpp \
     interval.cpp \
-    writingsystemsform.cpp
+    writingsystemsform.cpp \
+    viewconfigurationdialog.cpp \
+    viewsmodel.cpp \
+    tabsmodel.cpp \
+    itemsmodel.cpp \
+    phrasalglossesmodel.cpp \
+    writingsystemdialog.cpp \
+    itemeditdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -145,7 +152,14 @@ HEADERS  += mainwindow.h \
     annotationform.h \
     annotationmodel.h \
     interval.h \
-    writingsystemsform.h
+    writingsystemsform.h \
+    viewconfigurationdialog.h \
+    viewsmodel.h \
+    tabsmodel.h \
+    itemsmodel.h \
+    phrasalglossesmodel.h \
+    writingsystemdialog.h \
+    itemeditdialog.h
 
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
@@ -169,7 +183,10 @@ FORMS    += mainwindow.ui \
     editwithsuggestionsdialog.ui \
     searchform.ui \
     annotationform.ui \
-    writingsystemsform.ui
+    writingsystemsform.ui \
+    viewconfigurationdialog.ui \
+    writingsystemdialog.ui \
+    itemeditdialog.ui
 
 LIBS += -L./ \
     -lquazip \

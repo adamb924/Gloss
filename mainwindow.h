@@ -185,6 +185,14 @@ private:
     void createSearchResultDock(QStandardItemModel * model, const QString & reminder);
     ///@}
 
+    /** @name View Methods
+     * These methods pertain to views.
+     */
+    ///@{
+private slots:
+    void viewConfigurationDialog();
+    ///@}
+
     /** @name Report Methods
      * These methods pertain to the production of reports.
      */

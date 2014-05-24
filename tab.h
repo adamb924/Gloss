@@ -15,18 +15,27 @@ class Tab
 {
 public:
   Tab(const QString & name);
+  ~Tab();
 
   QString name() const;
+  void setName(const QString & name);
 
   void addInterlinearLineType( const WritingSystem & ws, const InterlinearItemType & type );
-  void addPhrasalGlossType(const InterlinearItemType & type );
+  void removeInterlinearLineType( const WritingSystem & ws, int index );
+  void editInterlinearLineType( const WritingSystem & ws, int index, const InterlinearItemType & type );
 
-  QHash<WritingSystem,InterlinearItemTypeList> interlinearLines() const;
-  InterlinearItemTypeList phrasalGlossLines() const;
+  void addPhrasalGlossType(const InterlinearItemType & type );
+  void removePhrasalGloss(int index);
+  void setPhrasalGloss(int index, const InterlinearItemType & type);
+
+  QHash<WritingSystem,InterlinearItemTypeList*> interlinearLines() const;
+  QHash<WritingSystem,InterlinearItemTypeList*> interlinearLines();
+  InterlinearItemTypeList* phrasalGlossLines();
+  const InterlinearItemTypeList *phrasalGlossLines() const;
 
 private:
     QString mName;
-    QHash<WritingSystem,InterlinearItemTypeList> mInterlinearLines;
+    QHash<WritingSystem,InterlinearItemTypeList*> mInterlinearLines;
     InterlinearItemTypeList mPhrasalGlossLines;
 };
 

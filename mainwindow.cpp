@@ -22,6 +22,7 @@
 #include "baselinesearchreplacedialog.h"
 #include "opentextdialog.h"
 #include "searchform.h"
+#include "viewconfigurationdialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -104,6 +105,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionSearch_dock, SIGNAL(triggered()), this, SLOT(toggleSearchDock()));
     connect( ui->actionAnnotation_dock, SIGNAL(triggered()), this, SLOT(toggleAnnotationDock()));
 
+    connect( ui->actionConfigure_views, SIGNAL(triggered()), this, SLOT(viewConfigurationDialog()) );
+
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
 
@@ -180,6 +183,12 @@ void MainWindow::newProject()
             delete mProject;
         mProject = new Project(this);
         mProject->create(filename);
+
+        // Display writing systems form
+        writingSystems();
+
+        ViewConfigurationDialog dialog(mProject, this);
+        dialog.exec();
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
         setProjectActionsEnabled(true);
@@ -521,6 +530,7 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
     ui->menuProject->setEnabled(enabled);
     ui->menuSearch->setEnabled(enabled);
     ui->menuReports->setEnabled(enabled);
+    ui->menuView->setEnabled(enabled);
 }
 
 void MainWindow::openText()
@@ -908,6 +918,12 @@ void MainWindow::createSearchResultDock(QStandardItemModel * model, const QStrin
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     connect(mProject, SIGNAL(destroyed()), dock, SLOT(close()));
+}
+
+void MainWindow::viewConfigurationDialog()
+{
+    ViewConfigurationDialog dialog(mProject, this);
+    dialog.exec();
 }
 
 void MainWindow::focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci )
