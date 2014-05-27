@@ -147,6 +147,7 @@ void ViewConfigurationDialog::removePhrasalGloss()
 void ViewConfigurationDialog::viewChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     Q_UNUSED(deselected);
+
     if( ! selected.indexes().isEmpty() )
     {
         int currentView = selected.indexes().first().row();
@@ -159,6 +160,16 @@ void ViewConfigurationDialog::viewChanged(const QItemSelection &selected, const 
         mTabsModel = new TabsModel( mView );
         ui->tabView->setModel(mTabsModel);
         connect(ui->tabView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(tabChanged(QItemSelection,QItemSelection)) );
+
+        setTabWidgetsEnabled(true);
+        if( ui->tabView->selectionModel()->selectedRows().count() == 0 )
+        {
+            setItemWidgetsEnabled(false);
+        }
+    }
+    else
+    {
+        setTabWidgetsEnabled(false);
     }
 }
 
@@ -198,6 +209,11 @@ void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const Q
         mPhrasalGlossesModel = new PhrasalGlossesModel(mTab);
         ui->phrasalGlossView->setModel(mPhrasalGlossesModel);
 
+        setItemWidgetsEnabled(true);
+    }
+    else
+    {
+        setItemWidgetsEnabled(false);
     }
 }
 
@@ -294,4 +310,29 @@ void ViewConfigurationDialog::phrasalGlossDown()
 {
     if(mPhrasalGlossesModel == 0 || ui->phrasalGlossView->selectionModel()->selectedRows().count() == 0 ) return;
     mPhrasalGlossesModel->moveDown( ui->phrasalGlossView->selectionModel()->selectedRows().first().row() );
+}
+
+void ViewConfigurationDialog::setTabWidgetsEnabled(bool enabled)
+{
+    ui->tabDown->setEnabled(enabled);
+    ui->tabUp->setEnabled(enabled);
+    ui->tabView->setEnabled(enabled);
+    ui->addTab->setEnabled(enabled);
+    ui->removeTab->setEnabled(enabled);
+}
+
+void ViewConfigurationDialog::setItemWidgetsEnabled(bool enabled)
+{
+    ui->itemWritingSystemsCombo->setEnabled(enabled);
+    ui->itemView->setEnabled(enabled);
+    ui->itemUp->setEnabled(enabled);
+    ui->itemDown->setEnabled(enabled);
+    ui->addItem->setEnabled(enabled);
+    ui->removeItem->setEnabled(enabled);
+
+    ui->phrasalGlossView->setEnabled(enabled);
+    ui->phrasalGlossUp->setEnabled(enabled);
+    ui->phrasalGlossDown->setEnabled(enabled);
+    ui->addPhrasalGloss->setEnabled(enabled);
+    ui->removePhrasalGloss->setEnabled(enabled);
 }

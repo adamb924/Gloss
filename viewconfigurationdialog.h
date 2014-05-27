@@ -50,6 +50,9 @@ private slots:
     void phrasalGlossUp();
     void phrasalGlossDown();
 
+    void setTabWidgetsEnabled(bool enabled);
+    void setItemWidgetsEnabled(bool enabled);
+
 private:
     WritingSystem currentWritingSystem() const;
 
