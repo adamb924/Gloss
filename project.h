@@ -131,6 +131,12 @@ public:
 public slots:
     void setInterlinearView(QAction * action);
     void setQuickView(QAction * action);
+    void setOverrideMediaPath(bool value);
+
+    void setMetaLanguage(const WritingSystem & ws);
+    void setDefaultGlossLanguage(const WritingSystem & ws);
+    void setDefaultTextFormLanguage(const WritingSystem & ws);
+    void setMediaFolder(const QString & folder);
 
 private:
     DatabaseAdapter *mDbAdapter;
@@ -200,6 +206,7 @@ public:
     static QList<LongLongPair> getPairedNumbersFromXQuery(const QString & filepath, const QString & queryString);
 
     static QStringList getInterpretationUsage(const QString & filepath, const QString & encodedSettings);
+    bool overrideMediaPath() const;
 };
 
 #endif // PROJECT_H

@@ -914,6 +914,36 @@ void Project::setQuickView(QAction * action)
         mCurrentQuickView = mViews.at(index);
 }
 
+bool Project::overrideMediaPath() const
+{
+    return mOverrideMediaPath;
+}
+
+void Project::setOverrideMediaPath(bool value)
+{
+    mOverrideMediaPath = value;
+}
+
+void Project::setMetaLanguage(const WritingSystem &ws)
+{
+    mMetaLanguage = ws;
+}
+
+void Project::setDefaultGlossLanguage(const WritingSystem &ws)
+{
+    mDefaultGlossLanguage = ws;
+}
+
+void Project::setDefaultTextFormLanguage(const WritingSystem &ws)
+{
+    mDefaultTextFormLanguage = ws;
+}
+
+void Project::setMediaFolder(const QString &folder)
+{
+    mMediaPath = QDir(folder);
+}
+
 Project::MemoryMode Project::memoryMode() const
 {
     return mMemoryMode;

@@ -17,6 +17,8 @@ ProjectOptionsDialog::ProjectOptionsDialog(Project * project, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->overrideMediaPath->setChecked( mProject->overrideMediaPath() );
+
     ui->metaWritingSystemCombo->setWritingSystems( mProject->dbAdapter()->writingSystems() );
     ui->metaWritingSystemCombo->setCurrentWritingSystem( mProject->metaLanguage() );
 
@@ -50,6 +52,11 @@ ProjectOptionsDialog::ProjectOptionsDialog(Project * project, QWidget *parent) :
     connect( ui->addLEGloss, SIGNAL(clicked()), this, SLOT(addGloss()) );
     connect( ui->removeLEGloss, SIGNAL(clicked()), this, SLOT(removeGloss()) );
     connect( ui->leGlossesList, SIGNAL(activated(QModelIndex)), this, SLOT(editGloss(QModelIndex)) );
+
+    connect(ui->metaWritingSystemCombo, SIGNAL(writingSystemSelected(WritingSystem)), mProject, SLOT(setMetaLanguage(WritingSystem)) );
+    connect(ui->defaultGlossWS, SIGNAL(writingSystemSelected(WritingSystem)), mProject, SLOT(setDefaultGlossLanguage(WritingSystem)) );
+    connect(ui->defaultTextFormWS, SIGNAL(writingSystemSelected(WritingSystem)), mProject, SLOT(setDefaultTextFormLanguage(WritingSystem)) );
+    connect(ui->mediaFolder, SIGNAL(textChanged(QString)), mProject, SLOT(setMediaFolder(QString)) );
 }
 
 ProjectOptionsDialog::~ProjectOptionsDialog()
