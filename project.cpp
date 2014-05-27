@@ -55,6 +55,8 @@ bool Project::create(QString filename)
     mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
     mDbAdapter = new DatabaseAdapter(mDatabasePath);
     mDbAdapter->createTables();
+
+    return true;
 }
 
 bool Project::readFromFile(QString filename)
@@ -583,6 +585,7 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
 
 bool Project::interpretationUsageReport(const QString & filename)
 {
+    Q_UNUSED(filename);
     QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::interpretationUsageReport()."));
     return false;
 /*
@@ -603,6 +606,8 @@ bool Project::interpretationUsageReport(const QString & filename)
 
 bool Project::outputInterpretationUsageReport(const QString & filename, const QStringList & instances )
 {
+    Q_UNUSED(filename);
+    Q_UNUSED(instances);
     QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::outputInterpretationUsageReport()."));
     return false;
 /*

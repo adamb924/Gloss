@@ -19,8 +19,9 @@
 #include "itemeditdialog.h"
 
 ViewConfigurationDialog::ViewConfigurationDialog(Project *project, QWidget *parent) :
-    mProject(project), QDialog(parent),
-    ui(new Ui::ViewConfigurationDialog)
+    QDialog(parent),
+    ui(new Ui::ViewConfigurationDialog),
+    mProject(project)
 {
     ui->setupUi(this);
 
@@ -145,6 +146,7 @@ void ViewConfigurationDialog::removePhrasalGloss()
 
 void ViewConfigurationDialog::viewChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
+    Q_UNUSED(deselected);
     if( ! selected.indexes().isEmpty() )
     {
         int currentView = selected.indexes().first().row();
@@ -180,6 +182,7 @@ void ViewConfigurationDialog::populateWritingSystemCombo()
 
 void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
+    Q_UNUSED(deselected);
     if( ! selected.indexes().isEmpty() &&  !ui->viewView->selectionModel()->selectedRows().isEmpty() && mView != 0 )
     {
         int currentTab = selected.indexes().first().row();
@@ -200,6 +203,7 @@ void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const Q
 
 void ViewConfigurationDialog::indexLanguageChanged(int index)
 {
+    Q_UNUSED(index);
     WritingSystem currentWS = currentWritingSystem();
     if( mItemsModel != 0 )
     {

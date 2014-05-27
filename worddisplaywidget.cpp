@@ -17,7 +17,7 @@
 #include <QActionGroup>
 
 WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, const Project * project, QWidget *parent) :
-    mProject(project), QFrame(parent)
+    QFrame(parent), mProject(project)
 {
     setObjectName("WordDisplayWidget");
 
@@ -595,6 +595,7 @@ void WordDisplayWidget::fillData()
 
 void WordDisplayWidget::mouseDoubleClickEvent ( QMouseEvent * event )
 {
+    Q_UNUSED(event);
     mGlossItem->toggleApproval();
 }
 
@@ -661,6 +662,8 @@ GlossItem* WordDisplayWidget::glossItem()
 
 void WordDisplayWidget::refreshMorphologicalAnalysis(const WritingSystem & ws)
 {
+    //! @todo apparently this should be removed?
+    Q_UNUSED(ws);
     //    if( mAnalysisWidgets.contains(ws) )
     //    {
     //        mGlossItem->setMorphologicalAnalysisFromDatabase( ws );

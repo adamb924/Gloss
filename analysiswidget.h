@@ -34,13 +34,11 @@ public slots:
     void setupLayout();
 
 private:
+    const Project *mProject;
     GlossItem *mGlossItem;
-
-
     WritingSystem mWritingSystem;
 
     const DatabaseAdapter *mDbAdapter;
-    const Project *mProject;
 
     QVBoxLayout *mLayout;
 

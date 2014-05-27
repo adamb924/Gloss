@@ -7,8 +7,7 @@
 #include "project.h"
 
 LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const Project *project,  QWidget *parent) :
-        mProject(project), QWidget(parent),
-        ui(new Ui::LexicalEntryForm)
+        QWidget(parent), ui(new Ui::LexicalEntryForm), mProject(project)
 {
     ui->setupUi(this);
     mAllomorph = allomorph;

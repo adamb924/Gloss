@@ -19,7 +19,7 @@
 #include "tab.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
-    mTab(tab), mText(text), mProject(project), QScrollArea(parent)
+    QScrollArea(parent), mTab(tab), mText(text), mProject(project)
 {
     mBottomSpacing = new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding);
 

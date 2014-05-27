@@ -10,8 +10,9 @@
 #include "project.h"
 
 AnnotationForm::AnnotationForm(Text *text, const Project *project, QWidget *parent) :
-    mProject(project), QWidget(parent),
-    ui(new Ui::AnnotationForm)
+    QWidget(parent),
+    ui(new Ui::AnnotationForm),
+    mProject(project)
 {
     ui->setupUi(this);
 

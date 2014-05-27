@@ -26,5 +26,5 @@ int OpenTextDialog::linesPerScreen() const
 
 int OpenTextDialog::goToLine() const
 {
-    ui->goToLineSpinner->value();
+    return ui->goToLineSpinner->value();
 }

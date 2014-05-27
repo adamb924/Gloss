@@ -12,6 +12,7 @@ LexiconView::LexiconView(QWidget *parent) :
 
 void LexiconView::selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
 {
+    Q_UNUSED(deselected);
     if( selected.indexes().count() > 0 )
         emit lexicalEntrySelected( selected.indexes().first().data(Qt::UserRole).toLongLong() );
 }

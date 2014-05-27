@@ -10,7 +10,7 @@ class PhrasalGlossesModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit PhrasalGlossesModel(Tab * tab, QObject *parent = 0);
+    PhrasalGlossesModel(Tab * tab, QObject *parent = 0);
 
     void addPhrasalGloss(const WritingSystem & ws);
     void removePhrasalGloss(int index);

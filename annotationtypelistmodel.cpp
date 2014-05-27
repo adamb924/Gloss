@@ -3,17 +3,19 @@
 #include "annotationtype.h"
 
 AnnotationTypeListModel::AnnotationTypeListModel(QList<AnnotationType> * list, QObject *parent) :
-    mList(list), QAbstractListModel(parent)
+    QAbstractListModel(parent), mList(list)
 {
 }
 
 int AnnotationTypeListModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 
 int AnnotationTypeListModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return mList->count();
 }
 
@@ -28,6 +30,7 @@ QVariant AnnotationTypeListModel::data(const QModelIndex &index, int role) const
 
 Qt::ItemFlags AnnotationTypeListModel::flags(const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
 }
 

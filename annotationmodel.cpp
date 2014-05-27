@@ -30,11 +30,13 @@ void AnnotationModel::setAnnotationType(const QString & label)
 
 int AnnotationModel::rowCount(const QModelIndex & parent ) const
 {
+    Q_UNUSED(parent);
     return mGlossItems.count();
 }
 
 int AnnotationModel::columnCount(const QModelIndex & parent ) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 
@@ -49,6 +51,7 @@ QVariant AnnotationModel::data(const QModelIndex & index, int role ) const
 
 QVariant AnnotationModel::headerData(int section, Qt::Orientation orientation, int role ) const
 {
+    Q_UNUSED(role);
     if( orientation == Qt::Horizontal )
         return QVariant(section);
     else
@@ -71,6 +74,7 @@ bool AnnotationModel::setData(const QModelIndex & index, const QVariant & value,
 
 Qt::ItemFlags AnnotationModel::flags(const QModelIndex & index) const
 {
+    Q_UNUSED(index);
     return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 

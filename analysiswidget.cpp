@@ -12,10 +12,8 @@
 #include "project.h"
 
 AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const Project *project, QWidget *parent) :
-        mProject(project), QWidget(parent)
+        QWidget(parent), mProject(project), mGlossItem(glossItem), mWritingSystem(analysisWs)
 {
-    mGlossItem = glossItem;
-    mWritingSystem = analysisWs;
     mDbAdapter = mProject->dbAdapter();
 
     mLayout = new QVBoxLayout;

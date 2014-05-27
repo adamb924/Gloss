@@ -2,7 +2,7 @@
 #include "tab.h"
 
 PhrasalGlossesModel::PhrasalGlossesModel(Tab *tab, QObject *parent) :
-    mTab(tab), QAbstractListModel(parent)
+    QAbstractListModel(parent), mTab(tab)
 {
 }
 
@@ -28,11 +28,13 @@ void PhrasalGlossesModel::editPhrasalGloss(const QModelIndex &index, const Writi
 
 int PhrasalGlossesModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 
 int PhrasalGlossesModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return mTab->phrasalGlossLines()->count();
 }
 
@@ -47,6 +49,7 @@ QVariant PhrasalGlossesModel::data(const QModelIndex &index, int role) const
 
 Qt::ItemFlags PhrasalGlossesModel::flags(const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
 }
 

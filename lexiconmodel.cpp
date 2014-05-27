@@ -8,7 +8,7 @@
 #include "project.h"
 
 LexiconModel::LexiconModel(const AllTagsModel * allTags, const Project * project, QObject *parent) :
-    mProject(project), QSqlQueryModel(parent)
+    QSqlQueryModel(parent), mProject(project)
 {
     mDbAdapter = mProject->dbAdapter();
     mGlossFields= *(mProject->lexicalEntryGlossFields());

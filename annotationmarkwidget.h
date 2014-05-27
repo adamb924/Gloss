@@ -22,6 +22,7 @@ signals:
 protected:
     void mouseDoubleClickEvent(QMouseEvent * event)
     {
+        Q_UNUSED(event);
         emit doubleClicked( this );
     }
 };

@@ -7,8 +7,9 @@
 #include <QStandardItemModel>
 
 LexicalEntrySearchDialog::LexicalEntrySearchDialog(const Project *project, QWidget *parent) :
-    mProject(project), QDialog(parent),
-    ui(new Ui::LexicalEntrySearchDialog)
+    QDialog(parent),
+    ui(new Ui::LexicalEntrySearchDialog),
+    mProject(project)
 {
     ui->setupUi(this);
     mDbAdapter = mProject->dbAdapter();

@@ -22,7 +22,7 @@ class ViewConfigurationDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ViewConfigurationDialog(Project * project, QWidget *parent = 0);
+    ViewConfigurationDialog(Project * project, QWidget *parent = 0);
     ~ViewConfigurationDialog();
 
     void populateWritingSystemCombo();
@@ -53,11 +53,12 @@ private slots:
 private:
     WritingSystem currentWritingSystem() const;
 
+    Ui::ViewConfigurationDialog *ui;
+
     Project *mProject;
     View *mView;
     Tab * mTab;
 
-    Ui::ViewConfigurationDialog *ui;
     ViewsModel * mViewModel;
     TabsModel * mTabsModel;
     ItemsModel * mItemsModel;

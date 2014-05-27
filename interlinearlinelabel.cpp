@@ -36,6 +36,7 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
 
 void InterlinearLineLabel::mouseDoubleClickEvent ( QMouseEvent * event )
 {
+    Q_UNUSED(event);
     emitPlaySound();
 }
 

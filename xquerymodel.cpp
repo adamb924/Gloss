@@ -9,7 +9,8 @@
 
 #include "messagehandler.h"
 
-XQueryModel::XQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus ) : mQuery(queryString), mFocus(focus), QStandardItemModel( parent )
+XQueryModel::XQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus ) :
+    QStandardItemModel( parent ), mQuery(queryString), mFocus(focus)
 {
     QStandardItem *parentItem = invisibleRootItem();
 

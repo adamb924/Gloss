@@ -12,8 +12,9 @@
 #include "project.h"
 
 CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, const GlossItem *glossItem, const Project *project, QWidget *parent) :
-    mProject(project), QDialog(parent),
-    ui(new Ui::CreateLexicalEntryDialog)
+    QDialog(parent),
+    ui(new Ui::CreateLexicalEntryDialog),
+    mProject(project)
 {
     mDbAdapter = mProject->dbAdapter();
     mAllomorph = 0;
@@ -34,8 +35,9 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, con
 }
 
 CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent) :
-        mProject(project), QDialog(parent),
-        ui(new Ui::CreateLexicalEntryDialog)
+        QDialog(parent),
+        ui(new Ui::CreateLexicalEntryDialog),
+        mProject(project)
 {
     mDbAdapter = mProject->dbAdapter();
     mAllomorph = allomorph;

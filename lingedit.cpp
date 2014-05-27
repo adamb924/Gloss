@@ -41,6 +41,7 @@ void LingEdit::setTextBit( const TextBit & bit )
 
 void LingEdit::focusInEvent ( QFocusEvent * e )
 {
+    Q_UNUSED(e);
 //    QWidget::focusInEvent(e);
 
     // http://msdn.microsoft.com/en-us/goglobal/bb896001
@@ -69,6 +70,8 @@ void LingEdit::textChanged()
 
 void LingEdit::setId(LingEdit * edit, qlonglong id)
 {
+    //! @todo Rewrite this method of use \a edit?
+    Q_UNUSED(edit);
     mTextBit.setId(id);
 }
 

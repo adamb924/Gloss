@@ -4,18 +4,21 @@
 #include <QMimeData>
 #include <QtDebug>
 
-ViewsModel::ViewsModel(Project *project, QObject *parent) : mProject(project),
-    QAbstractListModel(parent)
+ViewsModel::ViewsModel(Project *project, QObject *parent) :
+    QAbstractListModel(parent),
+    mProject(project)
 {
 }
 
 int ViewsModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 
 int ViewsModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return mProject->views()->count();
 }
 
@@ -30,11 +33,14 @@ QVariant ViewsModel::data(const QModelIndex &index, int role) const
 
 bool ViewsModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    Q_UNUSED(role);
     mProject->views()->at( index.row() )->setName( value.toString() );
+    return true;
 }
 
 Qt::ItemFlags ViewsModel::flags(const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren | Qt::ItemIsDropEnabled | Qt::ItemIsDragEnabled;
 }
 

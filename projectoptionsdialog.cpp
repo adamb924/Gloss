@@ -11,9 +11,9 @@
 #include <QtDebug>
 
 ProjectOptionsDialog::ProjectOptionsDialog(Project * project, QWidget *parent) :
-    mProject(project),
     QDialog(parent),
-    ui(new Ui::ProjectOptionsDialog)
+    ui(new Ui::ProjectOptionsDialog),
+    mProject(project)
 {
     ui->setupUi(this);
 

@@ -47,5 +47,6 @@ bool TagModel::removeRows ( int row, int count, const QModelIndex & parent )
 
 Qt::ItemFlags TagModel::flags ( const QModelIndex & index ) const
 {
+    Q_UNUSED(index);
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled;
 }

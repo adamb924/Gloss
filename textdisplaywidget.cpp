@@ -54,6 +54,8 @@ TextDisplayWidget::~TextDisplayWidget()
 
 void TextDisplayWidget::tabChanged(int i)
 {
+    Q_UNUSED(i);
+    //! @todo Apparently this should be removed?
 //    if( i != 0 )
 //        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
 }
@@ -66,6 +68,8 @@ void TextDisplayWidget::closeEvent(QCloseEvent *event)
 
 void TextDisplayWidget::focusGlossLine(int line)
 {
+    Q_UNUSED(line);
+    //! @todo Apparently this should be removed?
 }
 
 void TextDisplayWidget::setLines(const QList<int> & lines)

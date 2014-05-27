@@ -15,8 +15,9 @@
 #include <QSortFilterProxyModel>
 
 LexiconEdit::LexiconEdit(const Project * project, QWidget *parent) :
-    mProject(project), QMainWindow(parent),
-    ui(new Ui::LexiconEdit)
+    QMainWindow(parent),
+    ui(new Ui::LexiconEdit),
+    mProject(project)
 {
     ui->setupUi(this);
 

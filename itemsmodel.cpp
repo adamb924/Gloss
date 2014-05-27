@@ -2,7 +2,7 @@
 #include "tab.h"
 
 ItemsModel::ItemsModel(Tab *tab, WritingSystem &ws, QObject *parent) :
-    mTab(tab), mWritingSystem(ws), QAbstractListModel(parent)
+    QAbstractListModel(parent), mTab(tab), mWritingSystem(ws)
 {
 }
 
@@ -35,11 +35,13 @@ void ItemsModel::editItem(const WritingSystem & ws, const QModelIndex &index, In
 
 int ItemsModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 
 int ItemsModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     if( mTab->interlinearLines().keys().contains( mWritingSystem ) )
     {
         return mTab->interlinearLines().value(mWritingSystem)->count();
@@ -61,6 +63,7 @@ QVariant ItemsModel::data(const QModelIndex &index, int role) const
 
 Qt::ItemFlags ItemsModel::flags(const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
 }
 

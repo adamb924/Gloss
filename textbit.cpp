@@ -9,7 +9,7 @@ TextBit::TextBit(const QString & text, const WritingSystem & ws, qlonglong id ) 
 {
 }
 
-TextBit::TextBit(const TextBit & other)
+TextBit::TextBit(const TextBit & other) : QObject()
 {
     mText = other.mText;
     mWritingSystem = other.mWritingSystem;

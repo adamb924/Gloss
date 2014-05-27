@@ -11,7 +11,7 @@
 #include <QtDebug>
 
 ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const Project *project, QWidget *parent) :
-    mProject(project), QDialog(parent)
+    QDialog(parent), mProject(project)
 {
     mDbAdapter = mProject->dbAdapter();
     mParseString = parseString;
