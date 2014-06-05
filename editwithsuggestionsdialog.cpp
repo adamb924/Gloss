@@ -14,6 +14,8 @@ EditWithSuggestionsDialog::EditWithSuggestionsDialog(const WritingSystem &ws, QW
 
     connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(copyValue(QModelIndex)) );
     connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()) );
+
+    mModel = 0;
 }
 
 EditWithSuggestionsDialog::~EditWithSuggestionsDialog()
@@ -28,6 +30,10 @@ void EditWithSuggestionsDialog::setDefaultString( const QString & string )
 
 void EditWithSuggestionsDialog::setSuggestions(const QStringList & strings )
 {
+    if( mModel != 0 )
+    {
+        delete mModel;
+    }
     mModel = new QStringListModel( strings, this );
     ui->listView->setModel( mModel );
 }

@@ -27,10 +27,6 @@ InterlinearItemType::InterlinearItemType(const QString & type, const WritingSyst
     {
         mType = InterlinearItemType::Analysis;
     }
-    else if( string == "analysis" )
-    {
-        mType = InterlinearItemType::Analysis;
-    }
     else if( string == "immutable-text" )
     {
         mType = InterlinearItemType::ImmutableText;

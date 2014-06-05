@@ -18,9 +18,8 @@
 #include "annotationtype.h"
 
 DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
-        QObject(parent)
+        QObject(parent), mFilename(filename)
 {
-    mFilename = filename;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", mFilename);
     db.setHostName("hostname");
     db.setDatabaseName(filename);

@@ -47,7 +47,7 @@ bool AllTagsModel::setData ( const QModelIndex & index, const QVariant & value, 
             myValue = Qt::PartiallyChecked;
         else if( value == Qt::PartiallyChecked )
             myValue = Qt::Checked;
-        else if( value == Qt::PartiallyChecked )
+        else if( value == Qt::Checked )
             myValue = Qt::Unchecked;
     }
     return QStandardItemModel::setData( index, myValue, role );

@@ -148,7 +148,7 @@ void Phrase::removeGlossItem( GlossItem *glossItem )
         return;
     }
 
-    GlossItem* toRemove = (GlossItem*)glossItem;
+    GlossItem* toRemove = qobject_cast<GlossItem*>(glossItem);
     int index = mGlossItems.indexOf( toRemove );
     if( index >= 0 && index < glossItemCount() )
     {

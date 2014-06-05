@@ -10,45 +10,25 @@
 #include <QtDebug>
 #include <QHash>
 
-GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *parent) : QObject(parent),
+    mBaselineWritingSystem(baselineBit.writingSystem()), mProject(project), mDbAdapter(mProject->dbAdapter()), mConcordance(mProject->concordance()), mId(-1)
 {
-    mBaselineWritingSystem = baselineBit.writingSystem();
     mTextForms.insert(mBaselineWritingSystem, baselineBit );
-    mId = -1;
-
-    mProject = project;
-    mDbAdapter = mProject->dbAdapter();
-    mConcordance = mProject->concordance();
-
     guessInterpretation();
-
     setCandidateNumberFromDatabase();
 }
 
-GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent) : QObject(parent)
+GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent) : QObject(parent),
+    mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter()), mConcordance(mProject->concordance()), mTextForms(textForms), mGlosses(glossForms)
 {
-    mBaselineWritingSystem = ws;
-    mProject = project;
-    mDbAdapter = mProject->dbAdapter();
-    mConcordance = mProject->concordance();
-
-    mTextForms = textForms;
-    mGlosses = glossForms;
-
     guessInterpretation();
     setCandidateNumberFromDatabase();
     updateGlossItemConcordance();
 }
 
-GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms, const QSet<qlonglong> & glossForms, qlonglong interpretationId, Project *project, QObject *parent ) : QObject(parent)
+GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms, const QSet<qlonglong> & glossForms, qlonglong interpretationId, Project *project, QObject *parent ) : QObject(parent),
+    mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter()), mConcordance(mProject->concordance()), mId(interpretationId)
 {
-    mBaselineWritingSystem = ws;
-    mProject = project;
-    mDbAdapter = mProject->dbAdapter();
-    mConcordance = mProject->concordance();
-
-    mId = interpretationId;
-
     QSetIterator<qlonglong> tfIter(textForms);
     while(tfIter.hasNext())
     {

@@ -139,11 +139,8 @@ public slots:
     void setMediaFolder(const QString & folder);
 
 private:
-    DatabaseAdapter *mDbAdapter;
-    QString mDatabaseFilename;
     QString mDatabasePath;
     QDir mMediaPath;
-    bool mOverrideMediaPath;
 
     QList<AnnotationType> mAnnotationTypes;
     QList<WritingSystem> mLexicalEntryCitationForms;
@@ -160,18 +157,7 @@ private:
 
     void maybeUpdateMediaPath();
 
-    Project::MemoryMode mMemoryMode;
-
-    View * mCurrentInterlinearView;
-    View * mCurrentQuickView;
-
     QList<View*> mViews;
-
-    MainWindow *mMainWindow;
-
-    Concordance mConcordance;
-
-    QString mProjectPath;
 
     void readTextPaths();
 
@@ -207,6 +193,18 @@ public:
 
     static QStringList getInterpretationUsage(const QString & filepath, const QString & encodedSettings);
     bool overrideMediaPath() const;
+
+private:
+    MainWindow *mMainWindow;
+    QString mDatabaseFilename;
+    DatabaseAdapter *mDbAdapter;
+    bool mOverrideMediaPath;
+    Project::MemoryMode mMemoryMode;
+    View * mCurrentInterlinearView;
+    View * mCurrentQuickView;
+
+    QString mProjectPath;
+    Concordance mConcordance;
 };
 
 #endif // PROJECT_H

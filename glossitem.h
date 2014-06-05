@@ -181,18 +181,17 @@ private:
 
     QHash<QString,TextBit> mAnnotations;
 
-    TextBitHash mTextForms;
-    TextBitHash mGlosses;
-
-    Project * mProject;
-    DatabaseAdapter * mDbAdapter;
-    Concordance * mConcordance;
-
     CandidateNumber mCandidateNumber;
     ApprovalStatus mApprovalStatus;
 
-    qlonglong mId;
     WritingSystem mBaselineWritingSystem;
+    Project * mProject;
+    DatabaseAdapter * mDbAdapter;
+    Concordance * mConcordance;
+    qlonglong mId;
+
+    TextBitHash mTextForms;
+    TextBitHash mGlosses;
 };
 
 #endif // GLOSSITEM_H

@@ -14,9 +14,9 @@
 
 DatabaseQueryDialog::DatabaseQueryDialog(const QString & databaseName, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DatabaseQueryDialog)
+    ui(new Ui::DatabaseQueryDialog),
+    mFilename(databaseName)
 {
-    mFilename = databaseName;
     ui->setupUi(this);
 
     connect(ui->doQuery, SIGNAL(clicked()), this, SLOT(doQuery()));

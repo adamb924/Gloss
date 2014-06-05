@@ -4,29 +4,24 @@
 #include <QStringList>
 #include <QDebug>
 
-MorphologicalAnalysis::MorphologicalAnalysis()
+MorphologicalAnalysis::MorphologicalAnalysis() :
+    mTextFormId(-1), mWritingSystem(WritingSystem())
 {
-    mTextFormId = -1;
-    mWritingSystem = WritingSystem();
 }
 
-MorphologicalAnalysis::MorphologicalAnalysis(const TextBit & textForm)
+MorphologicalAnalysis::MorphologicalAnalysis(const TextBit & textForm) :
+    mTextFormId(textForm.id()), mWritingSystem(textForm.writingSystem())
 {
-    mTextFormId = textForm.id();
-    mWritingSystem = textForm.writingSystem();
 }
 
-MorphologicalAnalysis::MorphologicalAnalysis(qlonglong textFormId, const WritingSystem & ws)
+MorphologicalAnalysis::MorphologicalAnalysis(qlonglong textFormId, const WritingSystem & ws) :
+    mTextFormId(textFormId), mWritingSystem(ws)
 {
-    mTextFormId = textFormId;
-    mWritingSystem = ws;
 }
 
-MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other)
+MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other) :
+    mTextFormId(other.mTextFormId), mWritingSystem(other.mWritingSystem), mAllomorphs(other.mAllomorphs)
 {
-    mWritingSystem = other.mWritingSystem;
-    mTextFormId = other.mTextFormId;
-    mAllomorphs = other.mAllomorphs;
 }
 
 MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnalysis & other)

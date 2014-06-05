@@ -103,19 +103,19 @@ public slots:
     void matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws );
 
 private:
+    Sound *mSound;
     FlexTextReader::Result mReadResult;
+    bool mValid;
     bool mChanged;
 
-    Sound *mSound;
-    QString mName, mComment;
-    QString mBaselineText;
-    bool mValid;
-    QUrl mAudioFileURL;
-
+    QString mName;
+    WritingSystem mBaselineWritingSystem;
     Project *mProject;
     DatabaseAdapter *mDbAdapter;
 
-    WritingSystem mBaselineWritingSystem;
+    QString mComment;
+    QString mBaselineText;
+    QUrl mAudioFileURL;
 
     QList<Phrase*> mPhrases;
 

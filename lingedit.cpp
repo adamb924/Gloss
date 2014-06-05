@@ -6,20 +6,14 @@
 #include "textbit.h"
 
 LingEdit::LingEdit(QWidget *parent) :
-    QLineEdit(parent)
+    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(TextBit())
 {
-    mOverrideFontSize = -1;
-
-    mTextBit = TextBit();
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
 
 LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
-    QLineEdit(parent)
+    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(bit)
 {
-    mOverrideFontSize = -1;
-
-    mTextBit = bit;
     setWritingSystem( mTextBit.writingSystem() );
     setText( mTextBit.text() );
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));

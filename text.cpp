@@ -25,53 +25,31 @@
 #include "flextextwriter.h"
 #include "flextextreader.h"
 
-Text::Text()
+Text::Text() :
+    mSound(0), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(false), mChanged(false), mBaselineWritingSystem(WritingSystem()), mProject(0), mDbAdapter(0)
 {
-    mSound = 0;
-    mReadResult = FlexTextReader::FlexTextReadNoAttempt;
-    mValid = false;
-    mChanged = false;
 }
 
-Text::Text(const WritingSystem & ws, const QString & name, Project *project)
+Text::Text(const WritingSystem & ws, const QString & name, Project *project) :
+    mSound(0), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(true), mChanged(false), mName(name), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter())
 {
-    mSound = 0;
-    mName = name;
-    mBaselineWritingSystem = ws;
-    mProject = project;
-    mDbAdapter = mProject->dbAdapter();
-    mReadResult = FlexTextReader::FlexTextReadNoAttempt;
-    mValid = true;
-    mChanged = false;
 }
 
-Text::Text(const QString & filePath, Project *project)
+Text::Text(const QString & filePath, Project *project) :
+    mSound(0), mValid(true), mChanged(false), mName(textNameFromPath(filePath)), mProject(project), mDbAdapter(mProject->dbAdapter())
 {
-    mSound = 0;
-
-    mName = textNameFromPath(filePath);
-    mProject = project;
-    mDbAdapter = mProject->dbAdapter();
-
     FlexTextReader reader(this);
     mReadResult = reader.readFile(filePath, true);
-
     if( mReadResult != FlexTextReader::FlexTextReadSuccess )
         mValid = false;
     mChanged = false;
 }
 
-Text::Text(const QString & filePath, const WritingSystem & ws, Project *project)
+Text::Text(const QString & filePath, const WritingSystem & ws, Project *project) :
+    mSound(0), mValid(true), mChanged(false), mName(textNameFromPath(filePath)), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter())
 {
-    mSound = 0;
-    mName = textNameFromPath(filePath);
-    mProject = project;
-    mDbAdapter = mProject->dbAdapter();
-    mBaselineWritingSystem = ws;
-
     FlexTextReader reader(this);
     mReadResult = reader.readFile(filePath, true);
-
     if( mReadResult != FlexTextReader::FlexTextReadSuccess )
         mValid = false;
     mChanged = false;

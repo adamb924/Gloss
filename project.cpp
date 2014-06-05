@@ -25,12 +25,9 @@
 #include "annotationtype.h"
 #include "writingsystem.h"
 
-Project::Project(MainWindow * mainWindow)
+Project::Project(MainWindow * mainWindow) :
+    mMainWindow(mainWindow), mDatabaseFilename("sqlite3-database.db"), mDbAdapter(0), mOverrideMediaPath(false), mMemoryMode(Project::OneAtATime), mCurrentInterlinearView(0), mCurrentQuickView(0)
 {
-    mMainWindow = mainWindow;
-    mDatabaseFilename = "sqlite3-database.db";
-    mDbAdapter = 0;
-    mOverrideMediaPath = false;
 }
 
 Project::~Project()

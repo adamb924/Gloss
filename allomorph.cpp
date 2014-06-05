@@ -3,34 +3,25 @@
 #include <QRegExp>
 #include <QtDebug>
 
-Allomorph::Allomorph()
+
+Allomorph::Allomorph() :
+    mType(Allomorph::Null), mTextBit( TextBit() ), mId(-1)
 {
-    mType = Null;
-    mId = -1;
-    mTextBit = TextBit();
 }
 
-Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type )
+Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type ) :
+    mType(type), mTextBit(bit), mId(id)
 {
-    mType = type;
-    mId = id;
-    mTextBit = bit;
 }
 
-Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type )
+Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type ) :
+    mType(type), mTextBit(bit), mId(id), mGlosses(glosses)
 {
-    mType = type;
-    mId = id;
-    mTextBit = bit;
-    mGlosses = glosses;
 }
 
-Allomorph::Allomorph(const Allomorph & other)
+Allomorph::Allomorph(const Allomorph & other) :
+    mType(other.mType), mTextBit(other.mTextBit), mId(other.mId), mGlosses(mGlosses = other.mGlosses)
 {
-    mType = other.mType;
-    mId = other.mId;
-    mTextBit = other.mTextBit;
-    mGlosses = other.mGlosses;
 }
 
 Allomorph& Allomorph::operator=(const Allomorph & other)

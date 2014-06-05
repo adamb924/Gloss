@@ -31,12 +31,12 @@ public:
     void setFontSize(int fontSize);
 
 private:
-    TextBit mTextBit;
 
     void focusInEvent ( QFocusEvent * e );
 //    void focusOutEvent ( QFocusEvent * e );
 
     int mOverrideFontSize;
+    TextBit mTextBit;
 
     void refreshStyle();
 

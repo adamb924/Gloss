@@ -1,17 +1,13 @@
 #include "annotationtype.h"
 
-AnnotationType::AnnotationType()
+AnnotationType::AnnotationType() :
+    mWritingSystem(WritingSystem()), mLabel(""), mMark("")
 {
-    mLabel = "";
-    mMark = "";
-    mWritingSystem = WritingSystem();
 }
 
-AnnotationType::AnnotationType(const QString &label, const QString &mark, const WritingSystem &ws)
+AnnotationType::AnnotationType(const QString &label, const QString &mark, const WritingSystem &ws) :
+    mWritingSystem(ws), mLabel(label), mMark(mark)
 {
-    mLabel = label;
-    mMark = mark;
-    mWritingSystem = ws;
 }
 
 WritingSystem AnnotationType::writingSystem() const
