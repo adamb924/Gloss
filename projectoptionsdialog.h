@@ -1,3 +1,9 @@
+/*!
+  \class ProjectOptionsDialog
+  \ingroup GUI
+  \brief This is a dialog box for editing Project options. It is used in MainWindow. The associated UI file is projectoptionsdialog.ui.
+*/
+
 #ifndef PROJECTOPTIONSDIALOG_H
 #define PROJECTOPTIONSDIALOG_H
 

@@ -1,3 +1,9 @@
+/*!
+  \class PhrasalGlossesModel
+  \ingroup GUIModel
+  \brief This is a model of a list of phrasal glosses (i.e., as child elements of a Tab). It's currently used in ViewConfigurationDialog, with a simple QListView.
+*/
+
 #ifndef PHRASALGLOSSESMODEL_H
 #define PHRASALGLOSSESMODEL_H
 

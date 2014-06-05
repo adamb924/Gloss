@@ -1,3 +1,9 @@
+/*!
+  \class TabsModel
+  \ingroup GUIModel
+  \brief This is a model of a list of Tab objects (i.e., as child elements of a View). It's currently used in ViewConfigurationDialog, with a simple QListView.
+*/
+
 #ifndef TABSMODEL_H
 #define TABSMODEL_H
 

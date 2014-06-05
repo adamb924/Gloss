@@ -1,3 +1,9 @@
+/*!
+  \class ItemEditDialog
+  \ingroup GUI
+  \brief This is a dialog for editing an InterlinearItemType. It's currently used in ViewConfigurationDialog. The associated UI file is itemeditdialog.h.
+*/
+
 #ifndef ITEMEDITDIALOG_H
 #define ITEMEDITDIALOG_H
 

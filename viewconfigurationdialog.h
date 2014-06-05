@@ -1,3 +1,9 @@
+/*!
+  \class ViewConfigurationDialog
+  \ingroup GUI
+  \brief This is a dialog box for configuring the View (and Tab etc.) elements of a Project. It is used in MainWindow. The associated UI file is viewconfigurationdialog.ui.
+*/
+
 #ifndef VIEWCONFIGURATIONDIALOG_H
 #define VIEWCONFIGURATIONDIALOG_H
 

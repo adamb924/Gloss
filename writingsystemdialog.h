@@ -1,3 +1,11 @@
+/*!
+  \class WritingSystemDialog
+  \ingroup GUI
+  \brief This is a dialog box containing a WritingSystemCombo widget. The associated UI file is writingsystemdialog.ui.
+
+  This class does not seem to be used at the moment.
+*/
+
 #ifndef WRITINGSYSTEMDIALOG_H
 #define WRITINGSYSTEMDIALOG_H
 
@@ -13,7 +21,7 @@ class WritingSystemDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit WritingSystemDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
+    WritingSystemDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
     ~WritingSystemDialog();
 
     WritingSystem writingSystem() const;

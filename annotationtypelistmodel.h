@@ -1,3 +1,9 @@
+/*!
+  \class AnnotationTypeListModel
+  \ingroup GUIModel
+  \brief This is a model of a list of annotation types (i.e., as a property of a Project). It's currently used in ProjectOptionsDialog, with a simple QListView.
+*/
+
 #ifndef ANNOTATIONTYPELISTMODEL_H
 #define ANNOTATIONTYPELISTMODEL_H
 

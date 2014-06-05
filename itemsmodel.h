@@ -1,3 +1,9 @@
+/*!
+  \class ItemsModel
+  \ingroup GUIModel
+  \brief This is a model of a list of interlinear items (i.e., as child elements of a Tab). It's currently used in ViewConfigurationDialog, with a simple QListView.
+*/
+
 #ifndef ITEMSMODEL_H
 #define ITEMSMODEL_H
 

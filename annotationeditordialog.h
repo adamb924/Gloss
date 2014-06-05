@@ -1,3 +1,9 @@
+/*!
+  \class AnnotationEditorDialog
+  \ingroup GUI
+  \brief This is a dialog for editing an AnnotationType. It's currently used in ProjectOptionsDialog. The associated UI file is annotationeditordialog.h.
+*/
+
 #ifndef ANNOTATIONEDITORDIALOG_H
 #define ANNOTATIONEDITORDIALOG_H
 

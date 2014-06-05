@@ -1,3 +1,9 @@
+/*!
+  \class WritingSystemListModel
+  \ingroup GUI
+  \brief This is a model class for displaying lists of writing systems. It's currently used in ProjectOptionsDialog, with a simple QListView.
+*/
+
 #ifndef WRITINGSYSTEMLISTMODEL_H
 #define WRITINGSYSTEMLISTMODEL_H
 

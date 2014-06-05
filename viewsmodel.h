@@ -1,3 +1,9 @@
+/*!
+  \class ViewsModel
+  \ingroup GUIModel
+  \brief This is a model of a list of View objects (i.e., as part of a Project configuration). It's currently used in ViewConfigurationDialog, with a simple QListView.
+*/
+
 #ifndef VIEWSMODEL_H
 #define VIEWSMODEL_H
 
