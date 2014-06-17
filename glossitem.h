@@ -123,6 +123,9 @@ public:
     //! \brief Connects various signals of the object to the project's Concordance object
     void connectToConcordance();
 
+    //! \brief Loads all morphological analyses in the database into the object's data structure
+    void loadMorphologicalAnalysesFromDatabase();
+
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
     void candidateNumberChanged(GlossItem::CandidateNumber status);
@@ -170,9 +173,6 @@ private:
 
     //! \brief Resets the strings for the text forms and gloss forms from the database. If an id doesn't exist in the database, then a new text form or gloss is created.
     void loadStringsFromDatabase();
-
-    //! \brief Loads all morphological analyses in the database into the object's data structure
-    void loadMorphologicalAnalysesFromDatabase();
 
     //! \brief Resets the concordance's entries for this GlossItem (by text form and gloss)
     void updateGlossItemConcordance();

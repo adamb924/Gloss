@@ -184,8 +184,8 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem) const
 
 bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
 {
+    glossItem->loadMorphologicalAnalysesFromDatabase();
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
-    qDebug() << "analysisLanguages" << analysisLanguages.count();
     foreach( WritingSystem ws, analysisLanguages )
     {
         const MorphologicalAnalysis * analysis = glossItem->morphologicalAnalysis( ws );
