@@ -20,7 +20,7 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
 }
 
 Allomorph::Allomorph(const Allomorph & other) :
-    mType(other.mType), mTextBit(other.mTextBit), mId(other.mId), mGlosses(mGlosses = other.mGlosses)
+    mType(other.mType), mTextBit(other.mTextBit), mId(other.mId), mGlosses(other.mGlosses)
 {
 }
 
