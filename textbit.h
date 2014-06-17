@@ -45,6 +45,8 @@ private:
     qlonglong mId;
 };
 
+QDebug operator<<(QDebug dbg, const TextBit &key);
+
 inline uint qHash(const TextBit & key)
 {
     return qHash(key.text() + key.id() + key.writingSystem().flexString() );

@@ -75,3 +75,10 @@ bool TextBit::isValid() const
 {
     return mId != -1;
 }
+
+
+QDebug operator<<(QDebug dbg, const TextBit & key)
+{
+    dbg.nospace() << "TextBit(Text: " << key.text() << ", ID: " << key.writingSystem().id() << ", WS(" << key.writingSystem().name() << ", " << key.writingSystem().flexString() << key.writingSystem().abbreviation() << ", " <<  key.writingSystem().keyboardCommand() << ", " << key.writingSystem().fontFamily() << ", " << key.writingSystem().fontSize() << "))";
+    return dbg.maybeSpace();
+}
