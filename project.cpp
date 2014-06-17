@@ -1053,7 +1053,7 @@ QList<WritingSystem> * Project::lexicalEntryGlossFields()
 
 const QList<WritingSystem> *Project::lexicalEntryGlossFields() const
 {
-    return &mLexicalEntryCitationForms;
+    return &mLexicalEntryGlosses;
 }
 
 QList<WritingSystem> Project::writingSystemListFromConfigurationFile(const QString & queryString) const
