@@ -69,7 +69,10 @@ public:
 
     void removeTempDirectory();
 
-    QHash<QString,Text*>* texts();
+    QHash<QString,Text*>* openedTexts();
+
+    //! \brief Returns a pointer the named text, or 0 if there is an error. If the text is not already in memory it is loaded first.
+    Text* text(const QString & name);
 
     OpenResult openText(const QString & name);
     OpenResult openTextFromPath(const QString & path);

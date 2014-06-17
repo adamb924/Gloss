@@ -88,7 +88,8 @@ SOURCES += main.cpp\
     projectoptionsdialog.cpp \
     writingsystemlistmodel.cpp \
     annotationeditordialog.cpp \
-    annotationtypelistmodel.cpp
+    annotationtypelistmodel.cpp \
+    exporttextsdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -167,7 +168,8 @@ HEADERS  += mainwindow.h \
     projectoptionsdialog.h \
     writingsystemlistmodel.h \
     annotationeditordialog.h \
-    annotationtypelistmodel.h
+    annotationtypelistmodel.h \
+    exporttextsdialog.h
 
 FORMS    += mainwindow.ui \
     newtextdialog.ui \
@@ -196,7 +198,8 @@ FORMS    += mainwindow.ui \
     writingsystemdialog.ui \
     itemeditdialog.ui \
     projectoptionsdialog.ui \
-    annotationeditordialog.ui
+    annotationeditordialog.ui \
+    exporttextsdialog.ui
 
 LIBS += -L./ \
     -lquazip \

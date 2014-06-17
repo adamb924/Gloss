@@ -166,7 +166,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
     text->setBaselineText(content);
     if( text->isValid() )
     {
-        text->saveText(false);
+        text->saveText(false, false, true,false);
         mTexts.insert(name, text);
         mTextPaths << filepathFromName(name);
         return text;
@@ -199,7 +199,7 @@ Text* Project::importFlexText(const QString & filePath,  const WritingSystem & w
 
     if(text->isValid())
     {
-        text->saveText(false);
+        text->saveText(false,false,true,false);
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
         return text;
@@ -218,7 +218,7 @@ Text* Project::textFromFlexText(const QString & filePath)
     {
         // save the file if it doesn't exist in the temp directory
         if( !QFile::exists( filepathFromName(text->name()) ) )
-            text->saveText(false);
+            text->saveText(false,false,true,false);
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
         return text;
@@ -323,9 +323,28 @@ QSet<QString>* Project::textPaths()
     return &mTextPaths;
 }
 
-QHash<QString,Text*>* Project::texts()
+QHash<QString,Text*>* Project::openedTexts()
 {
     return &mTexts;
+}
+
+Text* Project::text(const QString & name)
+{
+    if( mTexts.contains(name) )
+    {
+        return mTexts[name];
+    }
+    else
+    {
+        if( openText(name) == Project::Success )
+        {
+            return mTexts[name];
+        }
+        else
+        {
+            return 0;
+        }
+    }
 }
 
 Project::OpenResult Project::openText(const QString & name)
@@ -363,7 +382,7 @@ QStringList Project::textNames() const
 
 void Project::saveAndCloseText(Text *text)
 {
-    text->saveText(false);
+    text->saveText(false,false,true,false);
     mTexts.remove( text->name() );
     delete text;
 }
@@ -396,7 +415,7 @@ void Project::saveOpenTexts()
     while(iter.hasNext())
     {
         iter.next();
-        iter.value()->saveText(false);
+        iter.value()->saveText(false,false,true,false);
     }
 }
 
@@ -519,7 +538,7 @@ void Project::setTextXmlFromDatabase()
         progress.setLabelText( tr("Setting FlexText text... %1").arg(textName) );
         if( openText(textName) == Project::Success )
         {
-            mTexts[textName]->saveText(true, true);
+            mTexts[textName]->saveText(true, true, true, true);
             closeText( mTexts[textName] );
         }
         if( progress.wasCanceled() )

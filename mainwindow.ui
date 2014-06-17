@@ -51,6 +51,8 @@
     <addaction name="actionClose_Project"/>
     <addaction name="actionClose_project_without_saving"/>
     <addaction name="separator"/>
+    <addaction name="actionExport_texts"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuData">
@@ -451,6 +453,11 @@
   <action name="actionOptions">
    <property name="text">
     <string>Options...</string>
+   </property>
+  </action>
+  <action name="actionExport_texts">
+   <property name="text">
+    <string>Export texts...</string>
    </property>
   </action>
  </widget>

@@ -178,14 +178,26 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
     emit phraseRefreshNeeded( mPhrases.indexOf(phrase) );
 }
 
-void Text::saveText(bool verboseOutput, bool saveAnyway)
+void Text::saveText(bool verboseOutput, bool morphologicalAnalysis, bool glossNamespace, bool saveAnyway)
 {
     if( mChanged || saveAnyway )
     {
-        FlexTextWriter writer( this, verboseOutput );
+        FlexTextWriter writer( this );
+        writer.setVerboseOutput(verboseOutput);
+        writer.setIncludeMorphologicalAnalysis(morphologicalAnalysis);
+        writer.setIncludeGlossNamespace(glossNamespace);
         writer.writeFile( mProject->filepathFromName(mName) );
         mChanged = false;
     }
+}
+
+void Text::writeTextTo(const QString & path, bool verboseOutput, bool morphologicalAnalysis, bool glossNamespace)
+{
+    FlexTextWriter writer( this );
+    writer.setVerboseOutput(verboseOutput);
+    writer.setIncludeMorphologicalAnalysis(morphologicalAnalysis);
+    writer.setIncludeGlossNamespace(glossNamespace);
+    writer.writeFile( path );
 }
 
 bool Text::isValid() const
@@ -300,7 +312,7 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     setSound( theUrl );
 
     markAsChanged();
-    saveText(false,true);
+    saveText(false,false,true,true);
 
     return MergeEafSuccess;
 }

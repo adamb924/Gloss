@@ -24,6 +24,7 @@
 #include "searchform.h"
 #include "viewconfigurationdialog.h"
 #include "projectoptionsdialog.h"
+#include "exporttextsdialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave_Project, SIGNAL(triggered()), this, SLOT(saveProject()));
     connect(ui->actionClose_Project, SIGNAL(triggered()), this, SLOT(closeProject()));
     connect(ui->actionClose_project_without_saving, SIGNAL(triggered()), this, SLOT(closeProjectWithoutSaving()));
+    connect(ui->actionExport_texts, SIGNAL(triggered()), this, SLOT(exportTexts()) );
 
     connect(ui->actionOpen_text, SIGNAL(triggered()), this, SLOT(openText()));
     connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addBlankText()));
@@ -489,7 +491,7 @@ void MainWindow::importFlexText()
         if( QFile::exists(dialog.filename()) )
         {
             mProject->importFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
-            Text *text = mProject->texts()->value( Text::textNameFromPath(dialog.filename()) );
+            Text *text = mProject->openedTexts()->value( Text::textNameFromPath(dialog.filename()) );
             if(text != 0)
                 openText(text->name());
         }
@@ -510,6 +512,7 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
     ui->actionSave_Project_As->setEnabled(enabled);
     ui->actionClose_Project->setEnabled(enabled);
     ui->actionClose_project_without_saving->setEnabled(enabled);
+    ui->actionExport_texts->setEnabled(enabled);
 
     foreach(QAction * action , ui->menuData->actions() )
         action->setEnabled(enabled);
@@ -565,7 +568,7 @@ TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Fo
     switch( mProject->openText(textName) )
     {
     case Project::Success:
-        text = mProject->texts()->value(textName, 0);
+        text = mProject->openedTexts()->value(textName, 0);
         if( text != 0 )
         {
             subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), foci, this);
@@ -605,6 +608,27 @@ void MainWindow::projectOptions()
     }
 }
 
+void MainWindow::exportTexts()
+{
+    ExportTextsDialog dlg(mProject->textNames());
+    if( dlg.exec() == QDialog::Accepted )
+    {
+        QDir dir(dlg.destinationFolder());
+        foreach( QString textName, dlg.textNames() )
+        {
+            Text * text = mProject->text(textName);
+            if( text != 0)
+            {
+                text->writeTextTo( dir.absoluteFilePath(textName+".flextext") , true, true, dlg.includeGlossNamespace() );
+            }
+            else
+            {
+                QMessageBox::critical(this, tr("Error"), tr("There was an error exporting %1").arg(textName));
+            }
+        }
+    }
+}
+
 void MainWindow::deleteText()
 {
     if( mProject->textPaths()->count() == 0)
@@ -627,7 +651,7 @@ void MainWindow::mergeTranslations()
     if( dialog.exec() == QDialog::Accepted )
     {
         mProject->openText(dialog.text());
-        Text *text = mProject->texts()->value(dialog.text());
+        Text *text = mProject->openedTexts()->value(dialog.text());
         Text::MergeTranslationResult result = text->mergeTranslation( dialog.filename() , dialog.writingSystem() );
         mProject->closeText(text);
         switch(result)
@@ -979,10 +1003,10 @@ void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
     if( lineNumber == -1 )
         return;
 
-    if( mProject->texts()->contains(textName) )
+    if( mProject->openedTexts()->contains(textName) )
     {
         mProject->openText(textName);
-        Text *text = mProject->texts()->value(textName, 0);
+        Text *text = mProject->openedTexts()->value(textName, 0);
         if( text == 0)
             return;
         lineNumber--;
@@ -1000,7 +1024,7 @@ void MainWindow::editLine( const QString & textName , int lineNumber, const QLis
     if( lineNumber == -1 )
         return;
     mProject->openText(textName);
-    Text *text = mProject->texts()->value(textName, 0);
+    Text *text = mProject->openedTexts()->value(textName, 0);
     if( text == 0)
         return;
 
@@ -1025,7 +1049,7 @@ void MainWindow::editLineWithContext( const QString & textName , int lineNumber,
     if( lineNumber == -1 )
         return;
     mProject->openText(textName);
-    Text *text = mProject->texts()->value(textName, 0);
+    Text *text = mProject->openedTexts()->value(textName, 0);
     if( text == 0)
         return;
 
@@ -1111,7 +1135,7 @@ void MainWindow::bulkMergeTranslations()
             if( flextextNames.contains(textName) )
             {
                 mProject->openText(textName);
-                Text *text = mProject->texts()->value(textName);
+                Text *text = mProject->openedTexts()->value(textName);
                 if( text->mergeTranslation( filePath , ws ) == Text::Success )
                 {
                     successes++;
@@ -1144,7 +1168,7 @@ void MainWindow::mergeEaf()
     if( dialog.exec() == QDialog::Accepted )
     {
         mProject->openText(dialog.text());
-        Text *text = mProject->texts()->value(dialog.text());
+        Text *text = mProject->openedTexts()->value(dialog.text());
         Text::MergeEafResult result = text->mergeEaf( dialog.filename() );
         mProject->saveAndCloseText(text);
         switch(result)
@@ -1195,7 +1219,7 @@ void MainWindow::bulkMergeEaf()
             if( flextextNames.contains(textName) )
             {
                 mProject->openText(textName);
-                Text *text = mProject->texts()->value(textName);
+                Text *text = mProject->openedTexts()->value(textName);
                 if( text->mergeEaf( filePath ) == Text::MergeEafSuccess )
                 {
                     successes++;
@@ -1375,7 +1399,7 @@ InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, 
     switch( mProject->openText(textName) )
     {
     case Project::Success:
-        text = mProject->texts()->value(textName, 0);
+        text = mProject->openedTexts()->value(textName, 0);
         if( text != 0 )
         {
             subWindow = new InterlinearChunkEditor(text, mProject, View::Full, linesPerScreen, this);
@@ -1422,7 +1446,7 @@ void MainWindow::baselineSearchAndReplace()
         }
     }
 
-    QHashIterator<QString,Text*> iter( *mProject->texts() );
+    QHashIterator<QString,Text*> iter( *mProject->openedTexts() );
     if( iter.hasNext() )
     {
         iter.next();

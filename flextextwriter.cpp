@@ -12,10 +12,11 @@
 #include <QProgressDialog>
 #include <QtDebug>
 
-FlexTextWriter::FlexTextWriter(Text *text, bool verboseOutput)
+FlexTextWriter::FlexTextWriter(Text *text) : mText(text)
 {
-    mText = text;
-    mVerboseOutput = verboseOutput;
+    mVerboseOutput = false;
+    mIncludeGlossNamespace = true;
+    mIncludeMorphologicalAnalysis = false;
 }
 
 bool FlexTextWriter::writeFile( const QString & filename )
@@ -24,36 +25,41 @@ bool FlexTextWriter::writeFile( const QString & filename )
     if( !outFile.open(QFile::WriteOnly | QFile::Text) )
         return false;
 
-    QXmlStreamWriter stream(&outFile);
-    stream.setCodec("UTF-8");
-    stream.setAutoFormatting(true);
-    stream.writeNamespace("http://www.adambaker.org/gloss.php", "abg" );
+    stream = new QXmlStreamWriter(&outFile);
+    stream->setCodec("UTF-8");
+    stream->setAutoFormatting(true);
+    if( mIncludeGlossNamespace )
+    {
+        stream->writeNamespace("http://www.adambaker.org/gloss.php", "abg" );
+    }
 
-    stream.writeStartDocument();
-    stream.writeStartElement("document");
-    stream.writeAttribute("version", "2");
+    stream->writeStartDocument();
+    stream->writeStartElement("document");
+    stream->writeAttribute("version", "2");
 
-    serializeInterlinearText(&stream);
+    serializeInterlinearText();
 
-    stream.writeEndElement(); // document
-    stream.writeEndDocument();
+    stream->writeEndElement(); // document
+    stream->writeEndDocument();
+
+    delete stream;
 
     return true;
 }
 
-bool FlexTextWriter::serializeInterlinearText(QXmlStreamWriter *stream) const
+bool FlexTextWriter::serializeInterlinearText() const
 {
     stream->writeStartElement("interlinear-text");
 
-    stream->writeAttribute("http://www.adambaker.org/gloss.php","baseline-writing-system", mText->project()->metaLanguage().flexString() );
+    writeNamespaceAttribute( "baseline-writing-system", mText->project()->metaLanguage().flexString() );
 
     if( !mText->mAudioFileURL.isEmpty() )
-        stream->writeAttribute("http://www.adambaker.org/gloss.php","audio-file", mText->mAudioFileURL.toString() );
+        writeNamespaceAttribute( "audio-file", mText->mAudioFileURL.toString() );
 
     if( !mText->mName.isEmpty() )
-        serializeItem( "title" , mText->project()->metaLanguage() , mText->mName , stream );
+        serializeItem( "title" , mText->project()->metaLanguage() , mText->mName  );
     if( !mText->mComment.isEmpty() )
-        serializeItem( "comment" , mText->project()->metaLanguage() , mText->mComment , stream );
+        serializeItem( "comment" , mText->project()->metaLanguage() , mText->mComment  );
 
     stream->writeStartElement("paragraphs");
 
@@ -74,18 +80,18 @@ bool FlexTextWriter::serializeInterlinearText(QXmlStreamWriter *stream) const
 
         if( !phrase->interval()->isNull() )
         {
-            stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-start", QString("%1").arg(phrase->interval()->start()) );
-            stream->writeAttribute("http://www.adambaker.org/gloss.php","annotation-end", QString("%1").arg(phrase->interval()->end()) );
+            writeNamespaceAttribute( "annotation-start", QString("%1").arg(phrase->interval()->start()) );
+            writeNamespaceAttribute( "annotation-end", QString("%1").arg(phrase->interval()->end()) );
         }
 
-        serializeItem("segnum", mText->project()->metaLanguage(), QString("%1").arg(count) , stream );
+        serializeItem("segnum", mText->project()->metaLanguage(), QString("%1").arg(count)  );
 
         stream->writeStartElement("words");
         for(int i=0; i<phrase->glossItemCount(); i++ )
         {
             GlossItem *glossItem = phrase->glossItemAt(i);
 
-            serializeGlossItem(glossItem, stream);
+            serializeGlossItem(glossItem);
         }
 
         stream->writeEndElement(); // words
@@ -95,7 +101,7 @@ bool FlexTextWriter::serializeInterlinearText(QXmlStreamWriter *stream) const
         while (iter.hasNext())
         {
             iter.next();
-            serializeItem("gls",iter.key(),iter.value().text(),stream);
+            serializeItem("gls",iter.key(),iter.value().text());
         }
 
         stream->writeEndElement(); // phrase
@@ -107,26 +113,26 @@ bool FlexTextWriter::serializeInterlinearText(QXmlStreamWriter *stream) const
 
     stream->writeEndElement(); // paragraphs
 
-    serializeLanguages(stream);
+    serializeLanguages();
 
     stream->writeEndElement(); // interlinear-text
 
     return true;
 }
 
-bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *stream) const
+bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem) const
 {
     stream->writeStartElement("word");
 
-    stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(glossItem->id()) );
+    writeNamespaceAttribute( "id", QString("%1").arg(glossItem->id()) );
     if( glossItem->approvalStatus() == GlossItem::Approved )
-        stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "true" );
+        writeNamespaceAttribute( "approval-status", "true" );
     else
-        stream->writeAttribute("http://www.adambaker.org/gloss.php", "approval-status", "false" );
+        writeNamespaceAttribute( "approval-status", "false" );
 
     if( glossItem->baselineWritingSystem() != mText->baselineWritingSystem() )
     {
-        stream->writeAttribute("http://www.adambaker.org/gloss.php", "baseline-writing-system", glossItem->baselineWritingSystem().flexString() );
+        writeNamespaceAttribute( "baseline-writing-system", glossItem->baselineWritingSystem().flexString() );
     }
 
     TextBitHashIterator textIter(*glossItem->textForms());
@@ -135,9 +141,9 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
     {
         textIter.next();
         if( mVerboseOutput )
-            serializeItem("txt",textIter.key(),textIter.value().text() ,stream , textIter.value().id() );
+            serializeItem("txt",textIter.key(),textIter.value().text() , textIter.value().id() );
         else
-            serializeItemNonVerbose("txt", textIter.key(), stream , textIter.value().id() );
+            serializeItemNonVerbose("txt", textIter.key() , textIter.value().id() );
     }
 
     TextBitHashIterator glossIter(*glossItem->glosses());
@@ -146,67 +152,72 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem, QXmlStreamWriter *
     {
         glossIter.next();
         if( mVerboseOutput )
-            serializeItem("gls",glossIter.key(),glossIter.value().text(),stream, glossIter.value().id());
+            serializeItem("gls",glossIter.key(),glossIter.value().text(), glossIter.value().id());
         else
-            serializeItemNonVerbose("gls", glossIter.key(), stream , glossIter.value().id() );
+            serializeItemNonVerbose("gls", glossIter.key() , glossIter.value().id() );
     }
 
-    if( mVerboseOutput )
-        serializeMorphemes( glossItem, stream );
+    if( mIncludeMorphologicalAnalysis )
+    {
+        serializeMorphemes( glossItem );
+    }
 
     // custom annotations
-    QHashIterator<QString,TextBit> annIter = glossItem->annotations();
-    while ( annIter.hasNext() )
+    if( mIncludeGlossNamespace )
     {
-        annIter.next();
+        QHashIterator<QString,TextBit> annIter = glossItem->annotations();
+        while ( annIter.hasNext() )
+        {
+            annIter.next();
 
-        stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation");
-        stream->writeAttribute("key", annIter.key() );
-        stream->writeAttribute("lang", annIter.value().writingSystem().flexString() );
-        stream->writeCharacters(annIter.value().text());
-        stream->writeEndElement();
+            stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation");
+            stream->writeAttribute("key", annIter.key() );
+            stream->writeAttribute("lang", annIter.value().writingSystem().flexString() );
+            stream->writeCharacters(annIter.value().text());
+            stream->writeEndElement();
+        }
     }
-
     stream->writeEndElement(); // word
 
     return true;
 }
 
-bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem, QXmlStreamWriter *stream) const
+bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
 {
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
+    qDebug() << "analysisLanguages" << analysisLanguages.count();
     foreach( WritingSystem ws, analysisLanguages )
     {
         const MorphologicalAnalysis * analysis = glossItem->morphologicalAnalysis( ws );
         if( ! analysis->isEmpty() )
         {
             stream->writeStartElement("morphemes");
-            stream->writeAttribute("http://www.adambaker.org/gloss.php", "lang", ws.flexString() );
+            writeNamespaceAttribute( "lang", ws.flexString() );
 
             AllomorphIterator iter = analysis->allomorphIterator();
             while(iter.hasNext())
-                serializeAllomorph( iter.next() , stream );
+                serializeAllomorph( iter.next()  );
             stream->writeEndElement(); // morphemes
         }
     }
     return true;
 }
 
-bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph, QXmlStreamWriter *stream) const
+bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
 {
     stream->writeStartElement("morph");
 
     stream->writeAttribute("type", allomorph.typeString());
-    stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(allomorph.id()) );
+    writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
 
-    serializeItem( "txt" , allomorph.writingSystem(), allomorph.text(), stream );
+    serializeItem( "txt" , allomorph.writingSystem(), allomorph.text() );
 
     TextBitHash citationForms = mText->mDbAdapter->lexicalEntryCitationFormsForAllomorph( allomorph.id() );
     TextBitHashIterator citationIter(citationForms);
     while( citationIter.hasNext() )
     {
         citationIter.next();
-        serializeItem( "cf", citationIter.key(), citationIter.value().text(), stream, citationIter.value().id() );
+        serializeItem( "cf", citationIter.key(), citationIter.value().text(), citationIter.value().id() );
     }
 
     TextBitHash glossForms = mText->mDbAdapter->lexicalEntryGlossFormsForAllomorph( allomorph.id() );
@@ -214,14 +225,17 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph, QXmlStreamW
     while( glossIter.hasNext() )
     {
         glossIter.next();
-        serializeItem( "gls", glossIter.key(), glossIter.value().text(), stream, glossIter.value().id() );
+        serializeItem( "gls", glossIter.key(), glossIter.value().text(), glossIter.value().id() );
     }
 
-    QStringListIterator tagIter( mText->mDbAdapter->grammaticalTagsForAllomorph( allomorph.id() ) );
-    while( tagIter.hasNext() )
+    if( mIncludeGlossNamespace )
     {
-        stream->writeEmptyElement("http://www.adambaker.org/gloss.php", "grammatical-tag");
-        stream->writeAttribute("http://www.adambaker.org/gloss.php", "name", tagIter.next() );
+        QStringListIterator tagIter( mText->mDbAdapter->grammaticalTagsForAllomorph( allomorph.id() ) );
+        while( tagIter.hasNext() )
+        {
+            stream->writeEmptyElement("http://www.adambaker.org/gloss.php", "grammatical-tag");
+            stream->writeAttribute("http://www.adambaker.org/gloss.php", "name", tagIter.next() );
+        }
     }
 
     stream->writeEndElement(); // morph
@@ -229,7 +243,7 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph, QXmlStreamW
     return true;
 }
 
-bool FlexTextWriter::serializeLanguages(QXmlStreamWriter *stream) const
+bool FlexTextWriter::serializeLanguages() const
 {
     stream->writeStartElement("languages");
     QList<WritingSystem> ws = mText->mDbAdapter->writingSystems();
@@ -238,11 +252,11 @@ bool FlexTextWriter::serializeLanguages(QXmlStreamWriter *stream) const
         stream->writeStartElement("language");
         stream->writeAttribute("lang", ws.at(i).flexString() );
         stream->writeAttribute("font", ws.at(i).fontFamily() );
-        stream->writeAttribute("http://www.adambaker.org/gloss.php","font-size", QString("%1").arg(ws.at(i).fontSize()) );
+        writeNamespaceAttribute("font-size", QString("%1").arg(ws.at(i).fontSize()) );
         if( ws.at(i).layoutDirection() == Qt::RightToLeft )
             stream->writeAttribute("RightToLeft", "true" );
         if( mText->mBaselineWritingSystem.flexString() == ws.at(i).flexString() )
-            stream->writeAttribute("http://www.adambaker.org/gloss.php","is-baseline", "true" );
+            writeNamespaceAttribute("is-baseline", "true" );
 
         stream->writeEndElement(); // language
     }
@@ -251,24 +265,47 @@ bool FlexTextWriter::serializeLanguages(QXmlStreamWriter *stream) const
     return true;
 }
 
-void FlexTextWriter::serializeItem(const QString & type, const WritingSystem & ws, const QString & text , QXmlStreamWriter *stream, qlonglong id) const
+void FlexTextWriter::serializeItem(const QString & type, const WritingSystem & ws, const QString & text , qlonglong id) const
 {
     stream->writeStartElement("item");
     if( id != -1 )
-        stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(id) );
+        writeNamespaceAttribute( "id", QString("%1").arg(id) );
     stream->writeAttribute("type",type);
     stream->writeAttribute("lang",ws.flexString());
     stream->writeCharacters(text);
     stream->writeEndElement();
 }
 
-void FlexTextWriter::serializeItemNonVerbose(const QString & type, const WritingSystem & ws, QXmlStreamWriter *stream, qlonglong id ) const
+void FlexTextWriter::serializeItemNonVerbose(const QString & type, const WritingSystem & ws, qlonglong id ) const
 {
     stream->writeStartElement("item");
     if( id != -1 )
-        stream->writeAttribute("http://www.adambaker.org/gloss.php", "id", QString("%1").arg(id) );
+        writeNamespaceAttribute( "id", QString("%1").arg(id) );
     stream->writeAttribute("type",type);
     stream->writeAttribute("lang",ws.flexString());
     stream->writeEndElement();
+}
+
+void FlexTextWriter::setVerboseOutput(bool value)
+{
+    mVerboseOutput = value;
+}
+
+void FlexTextWriter::setIncludeGlossNamespace(bool value)
+{
+    mIncludeGlossNamespace = value;
+}
+
+void FlexTextWriter::setIncludeMorphologicalAnalysis(bool value)
+{
+    mIncludeMorphologicalAnalysis = value;
+}
+
+void FlexTextWriter::writeNamespaceAttribute(const QString &name, const QString &value) const
+{
+    if( mIncludeGlossNamespace )
+    {
+        stream->writeAttribute("http://www.adambaker.org/gloss.php", name, value );
+    }
 }
 

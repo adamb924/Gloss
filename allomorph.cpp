@@ -15,8 +15,9 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type ) :
 }
 
 Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type ) :
-    mType(type), mTextBit(bit), mId(id), mGlosses(glosses)
+    mType(type), mTextBit(bit), mId(id)
 {
+    mGlosses.unite(glosses);
 }
 
 Allomorph::Allomorph(const Allomorph & other) :

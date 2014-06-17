@@ -78,6 +78,7 @@ private slots:
     void projectClose();
     void writingSystems();
     void projectOptions();
+    void exportTexts();
 
     ///@}
 

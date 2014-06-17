@@ -408,6 +408,9 @@ QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
     QList<WritingSystem> languages;
     QHashIterator<WritingSystem,MorphologicalAnalysis*> iter( mMorphologicalAnalyses );
+
+    qDebug() << "mMorphologicalAnalyses" << mMorphologicalAnalyses.count();
+
     while(iter.hasNext())
     {
         iter.next();

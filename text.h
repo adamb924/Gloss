@@ -62,7 +62,10 @@ public:
 
     QList<Phrase*>* phrases();
 
-    void saveText(bool verboseOutput, bool saveAnyway = false);
+    void writeTextTo(const QString & path, bool verboseOutput, bool morphologicalAnalysis, bool glossNamespace);
+
+    //! @todo There is probably a better way to write the interface for this method.
+    void saveText(bool verboseOutput, bool morphologicalAnalysis, bool glossNamespace, bool saveAnyway);
 
     Text::MergeTranslationResult mergeTranslation(const QString & filename, const WritingSystem & ws );
 
