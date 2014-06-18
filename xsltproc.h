@@ -35,6 +35,7 @@ private:
     QString mErrorFilename;
     QString mOutputFilename;
     char **mParams;
+    int mNParams;
 
     bool mErrorRedirect;
 

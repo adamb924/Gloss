@@ -28,8 +28,7 @@ Xsltproc::Xsltproc()
     mXml = 0;
 
     mParams = 0;
-
-    mErrorRedirect = false;
+    mNParams = 0;
 }
 
 Xsltproc::~Xsltproc()
@@ -55,8 +54,13 @@ void Xsltproc::setOutputFilename(const QString & filename)
 
 void Xsltproc::setParameters(const QHash<QString,QString> & parameters)
 {
-    if( mParams == 0 ) delete mParams;
-    mParams = new char*[2*parameters.count()+1];
+    for(int i=0; i<mNParams; i++)
+    {
+        delete mParams[i];
+    }
+    if( mParams != 0 ) delete mParams;
+    mNParams = parameters.count();
+    mParams = new char*[2*mNParams+1];
 
     QList<QByteArray*> byteArrays;
     QHashIterator<QString,QString> iter(parameters);
@@ -71,7 +75,6 @@ void Xsltproc::setParameters(const QHash<QString,QString> & parameters)
         mParams[i++] = byteArrays.last()->data();
     }
     mParams[i] = NULL;
-    qDeleteAll(byteArrays);
 }
 
 Xsltproc::ReturnValue Xsltproc::execute()
@@ -79,10 +82,7 @@ Xsltproc::ReturnValue Xsltproc::execute()
     Xsltproc::ReturnValue retval = Xsltproc::Success;
     try
     {
-        if( mErrorRedirect )
-        {
-            if( freopen(mErrorFilename.toUtf8().data(),"w",stderr) == NULL ) throw Xsltproc::GenericFailure;
-        }
+        if( freopen(mErrorFilename.toUtf8().data(),"w",stderr) == NULL ) throw Xsltproc::GenericFailure;
 
         mStylesheet = xsltParseStylesheetFile( (const xmlChar*)mStyleSheetFilename.toUtf8().data() );
         if(mStylesheet == 0) throw Xsltproc::InvalidStylesheet;
@@ -91,6 +91,7 @@ Xsltproc::ReturnValue Xsltproc::execute()
         if(mXml == 0) throw Xsltproc::InvalidXmlFile;
 
         mOutput = xsltApplyStylesheet(mStylesheet, mXml, (const char**)mParams);
+        if(mOutput == 0) throw Xsltproc::GenericFailure;
 
         FILE *foutput = 0;
         foutput = fopen(mOutputFilename.toUtf8().data(),"w");
@@ -103,10 +104,7 @@ Xsltproc::ReturnValue Xsltproc::execute()
         retval = e;
     }
 
-    if( mErrorRedirect )
-    {
-        fclose(stderr);
-    }
+    fclose(stderr);
 
     freeResources();
 
@@ -134,6 +132,5 @@ void Xsltproc::freeResources()
 
 void Xsltproc::setErrorFilename(const QString & filename)
 {
-    mErrorRedirect = true;
     mErrorFilename = filename;
 }
