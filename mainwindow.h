@@ -54,6 +54,7 @@ private:
     Project *mProject;
 
     void addTableMenuItems();
+    void addTableMenuItems(const QStringList & tableNames);
     void addMemoryModeMenuItems();
 
     void setProjectActionsEnabled(bool enabled);
@@ -87,7 +88,6 @@ private slots:
      */
     ///@{
 private slots:
-    void addBlankText();
     void importFlexText();
     void importPlainText();
     void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText);

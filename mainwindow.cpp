@@ -60,7 +60,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionExport_texts, SIGNAL(triggered()), this, SLOT(exportTexts()) );
 
     connect(ui->actionOpen_text, SIGNAL(triggered()), this, SLOT(openText()));
-    connect(ui->actionAdd_text, SIGNAL(triggered()), this, SLOT(addBlankText()));
     connect(ui->actionImport_FlexText, SIGNAL(triggered()), this, SLOT(importFlexText()));
     connect(ui->actionImport_plain_text, SIGNAL(triggered()), this, SLOT(importPlainText()));
     connect(ui->actionWriting_systems, SIGNAL(triggered()), this, SLOT(writingSystems()) );
@@ -130,15 +129,28 @@ MainWindow::~MainWindow()
 
 void MainWindow::addTableMenuItems()
 {
-    ui->menuGuts->addSeparator();
-
     QStringList tables;
-    tables << "Interpretations" << "TextForms" << "Glosses" << "WritingSystems" << "Allomorph" << "LexicalEntry" << "LexicalEntryGloss" << "LexicalEntryCitationForm" << "LexicalEntryTags" << "MorphologicalAnalysisMembers" << "GrammaticalTags";
-    foreach(QString table, tables)
+    tables << "Interpretations" << "TextForms" << "Glosses" << "WritingSystems";
+    addTableMenuItems(tables);
+
+    ui->menuView_Edit_SQL_Tables->addSeparator();
+    tables.clear();
+    tables << "Allomorph" << "LexicalEntry" << "LexicalEntryGloss" << "LexicalEntryCitationForm" << "LexicalEntryTags" << "MorphologicalAnalysisMembers" << "GrammaticalTags";
+    addTableMenuItems(tables);
+
+    ui->menuView_Edit_SQL_Tables->addSeparator();
+    tables.clear();
+    tables << "GlossIndex" << "InterpretationIndex" << "TextFormIndex";
+    addTableMenuItems(tables);
+}
+
+void MainWindow::addTableMenuItems(const QStringList & tableNames)
+{
+    foreach(QString table, tableNames)
     {
         QAction *action = new QAction(table,ui->menuGuts);
         action->setData(table);
-        ui->menuGuts->addAction(action);
+        ui->menuView_Edit_SQL_Tables->addAction(action);
         QActionGroup *group = new QActionGroup(this);
         group->addAction(action);
         connect(group,SIGNAL(triggered(QAction*)),this,SLOT(sqlTableView(QAction*)));
@@ -150,32 +162,26 @@ void MainWindow::addMemoryModeMenuItems()
     QActionGroup *group = new QActionGroup(this);
     QAction *action;
 
-    QMenu *menu = new QMenu(tr("Memory mode"), ui->menuProject);
-
-//    enum MemoryMode { OneAtATime, AccumulateSlowly, GreedyFast };
-
-    action = new QAction(tr("One-at-a-time"), menu );
+    action = new QAction(tr("One-at-a-time"), ui->menuMemory_mode );
     action->setData(Project::OneAtATime);
     action->setCheckable(true);
     action->setChecked(true);
-    menu->addAction(action);
+    ui->menuMemory_mode->addAction(action);
     group->addAction(action);
 
-    action = new QAction(tr("Accumulate slowly"), menu );
+    action = new QAction(tr("Accumulate slowly"), ui->menuMemory_mode );
     action->setData(Project::AccumulateSlowly);
     action->setCheckable(true);
-    menu->addAction(action);
+    ui->menuMemory_mode->addAction(action);
     group->addAction(action);
 
-    action = new QAction(tr("Greedy / Fast"), menu );
+    action = new QAction(tr("Greedy / Fast"), ui->menuMemory_mode );
     action->setData(Project::GreedyFast);
     action->setCheckable(true);
-    menu->addAction(action);
+    ui->menuMemory_mode->addAction(action);
     group->addAction(action);
 
     connect( group, SIGNAL(triggered(QAction*)), this, SLOT(setMemoryMode(QAction*)) );
-
-    ui->menuProject->addMenu(menu);
 }
 
 void MainWindow::newProject()
@@ -290,18 +296,6 @@ bool MainWindow::maybeSave()
     default:
         return false;
         break;
-    }
-}
-
-void MainWindow::addBlankText()
-{
-    NewTextDialog dialog( mProject->dbAdapter()->writingSystems(), this);
-    if( dialog.exec() == QDialog::Accepted )
-    {
-        Text *text = mProject->newText(dialog.name(), dialog.writingSystem());
-        TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
-        ui->mdiArea->addSubWindow(subWindow);
-        subWindow->show();
     }
 }
 
@@ -526,15 +520,10 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
     foreach(QAction * action , ui->menuGuts->actions() )
         action->setEnabled(enabled);
 
-    foreach(QAction * action , ui->menuReports->actions() )
-        action->setEnabled(enabled);
-
     ui->menuData->setEnabled(enabled);
     ui->menuGuts->setEnabled(enabled);
     ui->menuProject->setEnabled(enabled);
     ui->menuSearch->setEnabled(enabled);
-    ui->menuReports->setEnabled(enabled);
-    ui->menuView->setEnabled(enabled);
 }
 
 void MainWindow::openText()
@@ -1346,50 +1335,39 @@ void MainWindow::editLexicon()
 
 void MainWindow::refreshViews()
 {
-    if( mInterlinearViewMenu != 0 )
-        delete mInterlinearViewMenu;
-    mInterlinearViewMenu = new QMenu(tr("View"));
-
     QActionGroup * views = new QActionGroup(this);
 
     for(int i=0; i<mProject->views()->count(); i++)
     {
-        QAction *act = mInterlinearViewMenu->addAction( mProject->views()->at(i)->name() );
+        QAction *act = ui->menuCurrent_view->addAction( mProject->views()->at(i)->name() );
         act->setCheckable(true);
         act->setData( i );
         views->addAction(act);
     }
     connect( views, SIGNAL(triggered(QAction*)), mProject, SLOT(setInterlinearView(QAction*)) );
 
-    if( mQuickViewMenu != 0 )
-        delete mQuickViewMenu;
-    mQuickViewMenu = new QMenu(tr("Quick View"));
-
     QActionGroup * interlinearViews = new QActionGroup(this);
 
     for(int i=0; i<mProject->views()->count(); i++)
     {
-        QAction *act = mQuickViewMenu->addAction( mProject->views()->at(i)->name() );
+        QAction *act = ui->menuCurrent_quick_view->addAction( mProject->views()->at(i)->name() );
         act->setCheckable(true);
         act->setData( i );
         interlinearViews->addAction(act);
     }
     connect( interlinearViews, SIGNAL(triggered(QAction*)), mProject, SLOT(setQuickView(QAction*)) );
 
-    if( mInterlinearViewMenu->actions().count() > 0 )
+    if( ui->menuCurrent_view->actions().count() > 0 )
     {
-        mInterlinearViewMenu->actions().first()->setChecked(true);
-        mProject->setInterlinearView(mInterlinearViewMenu->actions().first());
+        ui->menuCurrent_view->actions().first()->setChecked(true);
+        mProject->setInterlinearView(ui->menuCurrent_view->actions().first());
     }
 
-    if( mQuickViewMenu->actions().count() > 0 )
+    if( ui->menuCurrent_quick_view->actions().count() > 0 )
     {
-        mQuickViewMenu->actions().first()->setChecked(true);
-        mProject->setQuickView(mInterlinearViewMenu->actions().first());
+        ui->menuCurrent_quick_view->actions().first()->setChecked(true);
+        mProject->setQuickView(ui->menuCurrent_quick_view->actions().first());
     }
-
-    ui->menuProject->addMenu(mInterlinearViewMenu);
-    ui->menuProject->addMenu(mQuickViewMenu);
 }
 
 InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, int linesPerScreen)
