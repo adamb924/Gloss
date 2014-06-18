@@ -40,7 +40,7 @@ void LingEdit::focusInEvent ( QFocusEvent * e )
 
     // http://msdn.microsoft.com/en-us/goglobal/bb896001
     QProcess switchInput;
-    switchInput.start( "C:/Program Files/AutoHotkey/AutoHotkey.exe" , QStringList() << mTextBit.writingSystem().keyboardCommand() );
+    switchInput.start( mTextBit.writingSystem().keyboardCommand() );
     switchInput.waitForFinished();
 
     refreshStyle();
