@@ -1259,6 +1259,5 @@ void Project::serializeConfigurationXml()
 
     stream.writeEndElement(); // gloss-configuration
 
-    mMainWindow->refreshViews();
     file->close();
 }

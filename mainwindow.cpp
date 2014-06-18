@@ -202,8 +202,11 @@ void MainWindow::newProject()
     if( viewConfigurationDialog() == 0)
         return;
 
+    mProject->serializeConfigurationXml();
+
     setWindowTitle( tr("Gloss - %1").arg(filename) );
     setProjectActionsEnabled(true);
+    refreshViews();
 }
 
 void MainWindow::openProject()
@@ -1336,6 +1339,9 @@ void MainWindow::editLexicon()
 
 void MainWindow::refreshViews()
 {
+    qDeleteAll(ui->menuCurrent_view->actions());
+    qDeleteAll(ui->menuCurrent_quick_view->actions());
+
     QActionGroup * views = new QActionGroup(this);
 
     for(int i=0; i<mProject->views()->count(); i++)
