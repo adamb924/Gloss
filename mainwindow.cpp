@@ -188,20 +188,22 @@ void MainWindow::newProject()
 {
     QString filename = QFileDialog::getSaveFileName(this, tr("New") );
 
-    if( !filename.isNull() )
-    {
-        if( mProject != 0 )
-            delete mProject;
-        mProject = new Project(this);
-        mProject->create(filename);
+    if( filename.isNull() ) return;
 
-        writingSystems();
-        projectOptions();
-        viewConfigurationDialog();
+    if( mProject != 0 )
+        delete mProject;
+    mProject = new Project(this);
+    mProject->create(filename);
 
-        setWindowTitle( tr("Gloss - %1").arg(filename) );
-        setProjectActionsEnabled(true);
-    }
+    if( writingSystems() == 0)
+        return;
+    if( projectOptions() == 0)
+        return;
+    if( viewConfigurationDialog() == 0)
+        return;
+
+    setWindowTitle( tr("Gloss - %1").arg(filename) );
+    setProjectActionsEnabled(true);
 }
 
 void MainWindow::openProject()
@@ -575,7 +577,7 @@ TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Fo
     return subWindow;
 }
 
-void MainWindow::writingSystems()
+int MainWindow::writingSystems()
 {
     QDialog *dialog = new QDialog;
     QVBoxLayout *layout = new QVBoxLayout;
@@ -583,18 +585,17 @@ void MainWindow::writingSystems()
     connect( wsWidget, SIGNAL(accept()), dialog, SLOT(accept()) );
     layout->addWidget(wsWidget);
     dialog->setLayout(layout);
-    dialog->exec();
+    int retVal = dialog->exec();
+    if( retVal)
+        mProject->dbAdapter()->loadWritingSystems();
     delete dialog;
+    return retVal;
 }
 
-void MainWindow::projectOptions()
+int MainWindow::projectOptions()
 {
     ProjectOptionsDialog dialog(mProject, this);
-    dialog.exec();
-    if( QDialog::Accepted == dialog.result() )
-    {
-        //! @todo Logic here
-    }
+    return dialog.exec();
 }
 
 void MainWindow::exportTexts()
@@ -944,10 +945,10 @@ void MainWindow::createSearchResultDock(QStandardItemModel * model, const QStrin
     connect(mProject, SIGNAL(destroyed()), dock, SLOT(close()));
 }
 
-void MainWindow::viewConfigurationDialog()
+int MainWindow::viewConfigurationDialog()
 {
     ViewConfigurationDialog dialog(mProject, this);
-    dialog.exec();
+    return dialog.exec();
 }
 
 void MainWindow::focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci )

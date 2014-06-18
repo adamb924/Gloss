@@ -224,10 +224,11 @@ public:
     QString guessLexicalEntryGloss( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
     QStringList suggestLexicalEntryGlosses( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
 
+    void loadWritingSystems();
+
 private:
     QString mFilename;
 
-    void loadWritingSystems();
     QList<WritingSystem> mWritingSystems;
     QHash<qlonglong, WritingSystem> mWritingSystemByRowId;
     QHash<QString, WritingSystem> mWritingSystemByFlexString;

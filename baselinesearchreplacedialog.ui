@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>322</width>
-    <height>195</height>
+    <height>229</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Replace Baseline Text</string>
+   <string>Baseline Search-and-Replace</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -67,7 +67,7 @@
   <customwidget>
    <class>WritingSystemCombo</class>
    <extends>QComboBox</extends>
-   <header>writingsystemcombo.h</header>
+   <header location="global">writingsystemcombo.h</header>
   </customwidget>
   <customwidget>
    <class>LingEdit</class>

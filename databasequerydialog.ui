@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Perform SQL Query</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="5,1">
    <item>

@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>313</width>
-    <height>140</height>
+    <height>168</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Create morphological analysis</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

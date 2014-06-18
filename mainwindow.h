@@ -77,8 +77,8 @@ private slots:
     void closeProject();
     void closeProjectWithoutSaving();
     void projectClose();
-    void writingSystems();
-    void projectOptions();
+    int writingSystems();
+    int projectOptions();
     void exportTexts();
 
     ///@}
@@ -192,7 +192,7 @@ private:
      */
     ///@{
 private slots:
-    void viewConfigurationDialog();
+    int viewConfigurationDialog();
     ///@}
 
     /** @name Report Methods
