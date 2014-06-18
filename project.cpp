@@ -828,10 +828,14 @@ QList<View*> *Project::views()
     return &mViews;
 }
 
+QString Project::configurationXmlPath() const
+{
+    return getTempDir().absoluteFilePath("configuration.xml");
+}
+
 void Project::parseConfigurationFile()
 {
-    mConfigurationXmlPath = getTempDir().absoluteFilePath("configuration.xml");
-    QFile *file = new QFile( mConfigurationXmlPath );
+    QFile *file = new QFile( configurationXmlPath() );
     file->open(QFile::ReadOnly);
     QXmlStreamReader stream(file);
 
@@ -1062,7 +1066,7 @@ QList<WritingSystem> Project::writingSystemListFromConfigurationFile(const QStri
     QXmlResultItems result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::writingSystemListFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(configurationXmlPath()).path(QUrl::FullyEncoded)));
     query.setQuery(queryString);
     query.evaluateTo(&result);
     QXmlItem item(result.next());
@@ -1080,7 +1084,7 @@ void Project::languageSettingsFromConfigurationFile()
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::metalanguageFromConfigurationFile"));
 
-    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(configurationXmlPath()).path(QUrl::FullyEncoded)));
 
     query.setQuery("string(doc($path)/gloss-configuration/meta-language/@lang)");
     query.evaluateTo(&result);
@@ -1108,7 +1112,7 @@ void Project::annotationTypesFromConfigurationFile()
     QStringList result;
     QXmlQuery query(QXmlQuery::XQuery10);
     query.setMessageHandler(new MessageHandler("DatabaseAdapter::annotationTypesFromConfigurationFile"));
-    query.bindVariable("path", QVariant(QUrl::fromLocalFile(mConfigurationXmlPath).path(QUrl::FullyEncoded)));
+    query.bindVariable("path", QVariant(QUrl::fromLocalFile(configurationXmlPath()).path(QUrl::FullyEncoded)));
     query.setQuery("declare variable $path external; "
                    "for $x in doc($path)/gloss-configuration/annotations/annotation "
                    "return string-join( ($x/@name, $x/@mark , $x/@lang ) , ',') ");
@@ -1158,7 +1162,7 @@ WritingSystem Project::defaultTextFormLanguage() const
 
 void Project::serializeConfigurationXml()
 {
-    QFile *file = new QFile( mConfigurationXmlPath);
+    QFile *file = new QFile( configurationXmlPath() );
     file->open(QFile::WriteOnly);
     QXmlStreamWriter stream(file);
     stream.setAutoFormatting(true);

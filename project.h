@@ -153,6 +153,7 @@ private:
     WritingSystem mDefaultGlossLanguage;
     QString mConfigurationXmlPath;
 
+    QString configurationXmlPath() const;
     void parseConfigurationFile();
     QList<WritingSystem> writingSystemListFromConfigurationFile(const QString & queryString) const;
     void languageSettingsFromConfigurationFile();
