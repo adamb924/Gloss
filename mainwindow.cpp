@@ -195,8 +195,8 @@ void MainWindow::newProject()
         mProject = new Project(this);
         mProject->create(filename);
 
-        projectOptions();
         writingSystems();
+        projectOptions();
         viewConfigurationDialog();
 
         setWindowTitle( tr("Gloss - %1").arg(filename) );
