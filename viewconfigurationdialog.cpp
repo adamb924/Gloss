@@ -60,6 +60,9 @@ ViewConfigurationDialog::ViewConfigurationDialog(Project *project, QWidget *pare
     connect(ui->itemDown, SIGNAL(clicked()), this, SLOT(itemDown()));
     connect(ui->phrasalGlossUp, SIGNAL(clicked()), this, SLOT(phrasalGlossUp()));
     connect(ui->phrasalGlossDown, SIGNAL(clicked()), this, SLOT(phrasalGlossDown()));
+
+    setTabWidgetsEnabled(false);
+    setItemWidgetsEnabled(false);
 }
 
 ViewConfigurationDialog::~ViewConfigurationDialog()
