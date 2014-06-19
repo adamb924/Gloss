@@ -136,10 +136,10 @@ signals:
     //! \brief Emitted when the approval status of the GlossItem changes
     void approvalStatusChanged(GlossItem::ApprovalStatus status);
 
-    //! \brief Emitted whenever the text form or glosses have changed (in order to signal the need of a GUI refresh)
+    //! \brief Emitted whenever the text form or glosses have changed. This is currently used only by WordDisplayWidget
     void fieldsChanged();
 
-    //! \brief Emitted whenever a text form changes
+    //! \brief Emitted whenever a text form changes. This is currently used by Concordance
     void textFormChanged(const TextBit & textForm);
 
     //! \brief Emitted whenever a gloss changes
