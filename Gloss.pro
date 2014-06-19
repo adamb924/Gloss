@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     lingedit.cpp \
     textbit.cpp \
     databaseadapter.cpp \
-    newtextdialog.cpp \
     importflextextdialog.cpp \
     text.cpp \
     glossitem.cpp \
@@ -101,7 +100,6 @@ HEADERS  += mainwindow.h \
     lingedit.h \
     textbit.h \
     databaseadapter.h \
-    newtextdialog.h \
     importflextextdialog.h \
     text.h \
     phrase.h \
@@ -172,7 +170,6 @@ HEADERS  += mainwindow.h \
     exporttextsdialog.h
 
 FORMS    += mainwindow.ui \
-    newtextdialog.ui \
     importflextextdialog.ui \
     mergetranslationdialog.ui \
     generictextinputdialog.ui \

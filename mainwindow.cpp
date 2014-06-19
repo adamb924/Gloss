@@ -4,7 +4,6 @@
 #include "project.h"
 #include "databaseadapter.h"
 #include "textdisplaywidget.h"
-#include "newtextdialog.h"
 #include "importflextextdialog.h"
 #include "writingsystem.h"
 #include "writingsystemsform.h"
