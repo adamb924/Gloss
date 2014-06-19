@@ -150,7 +150,7 @@ void Text::setGlossItemsFromBaseline()
             mPhrases.append( new Phrase( this, mProject) );
             connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
             connect( mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), this, SLOT(requestGuiRefresh(Phrase*)));
-            connect( mPhrases.last(), SIGNAL(glossChanged()), this, SLOT(markAsChanged()));
+            connect( mPhrases.last(), SIGNAL(phrasalGlossChanged()), this, SLOT(markAsChanged()));
 
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )

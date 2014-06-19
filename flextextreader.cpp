@@ -87,7 +87,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
 
                 QObject::connect( mText->mPhrases.last(), SIGNAL(phraseChanged()), mText, SLOT(setBaselineFromGlossItems()) );
                 QObject::connect( mText->mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), mText, SLOT(requestGuiRefresh(Phrase*)));
-                QObject::connect( mText->mPhrases.last(), SIGNAL(glossChanged()), mText, SLOT(markAsChanged()));
+                QObject::connect( mText->mPhrases.last(), SIGNAL(phrasalGlossChanged()), mText, SLOT(markAsChanged()));
 
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )
