@@ -37,6 +37,8 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
         connect( text, SIGNAL(phrasalGlossChanged(int,TextBit)), this, SLOT(updatePhrasalGloss(int,TextBit)) );
 
+        connect( text, SIGNAL(guiRefreshRequest()), idw, SLOT(resetGui()) );
+
         mIdwTabs << idw;
         addTab( idw, tab->name() );
     }

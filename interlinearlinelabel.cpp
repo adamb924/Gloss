@@ -57,6 +57,6 @@ void InterlinearLineLabel::emitEditLine()
 
 void InterlinearLineLabel::emitRemoveLine()
 {
-    if( QMessageBox::Yes == QMessageBox::question(this, tr("Confirm deletion"), tr("Are you sure you want to remove this gloss item? This cannot be undone."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) )
+    if( QMessageBox::Yes == QMessageBox::question(this, tr("Confirm deletion"), tr("Are you sure you want to remove this line? This cannot be undone."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) )
         emit removeLine(mLineNumber);
 }

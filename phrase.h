@@ -78,7 +78,6 @@ signals:
     void phrasalGlossChanged(Phrase * thisPhrase, const TextBit & bit);
 
     //! \brief Emitted when the user requests to delete the final GlossItem
-    /// @todo This signal is never connected to anything, though it seems that it should be...
     void requestRemovePhrase(Phrase * phrase);
 
     //! \brief Emitted whenever a GlossItem of the phrase changes

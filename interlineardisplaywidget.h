@@ -48,6 +48,7 @@ public slots:
     void setLayoutFromText();
     void setLines( const QList<int> lines );
     void setFocus( const QList<Focus> & foci );
+    void resetGui();
 
 protected:
     void scrollContentsBy ( int dx, int dy );
@@ -57,6 +58,7 @@ protected:
 private slots:
     void saveText();
     void saveTextVerbose();
+
 
     void approveAll(int lineNumber);
     void playSound(int lineNumber);

@@ -83,6 +83,19 @@ void InterlinearDisplayWidget::saveTextVerbose()
     mText->saveText(true, true, true, true);
 }
 
+void InterlinearDisplayWidget::resetGui()
+{
+    QList<int> newLines = mLines;
+    for(int i=0; i<newLines.count(); i++)
+    {
+        if( newLines.at(i) >= mText->phrases()->count() )
+        {
+            newLines.removeAt(i);
+        }
+    }
+    setLines(newLines);
+}
+
 void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
@@ -314,6 +327,7 @@ void InterlinearDisplayWidget::setLines( const QList<int> lines )
 void InterlinearDisplayWidget::requestLineRefresh( int line )
 {
     mLineRefreshRequests.insert( line );
+    setLayoutFromText();
 }
 
 void InterlinearDisplayWidget::setFocus( const QList<Focus> & foci )

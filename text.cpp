@@ -12,6 +12,8 @@
 #include <QStringList>
 #include <QList>
 
+#include <QtDebug>
+
 #include "writingsystem.h"
 #include "project.h"
 #include "databaseadapter.h"
@@ -152,6 +154,7 @@ void Text::setGlossItemsFromBaseline()
             connect( mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), this, SLOT(requestGuiRefresh(Phrase*)));
             connect( mPhrases.last(), SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), this, SLOT(markAsChanged()));
             connect( mPhrases.last(), SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), this, SLOT(registerPhrasalGlossChange(Phrase*,TextBit)));
+            connect( mPhrases.last(), SIGNAL(requestRemovePhrase(Phrase*)), this, SLOT(removePhrase(Phrase*)) );
 
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )
@@ -406,15 +409,7 @@ void Text::removeLine( int lineNumber )
 {
     if( lineNumber < mPhrases.count() )
     {
-        markAsChanged();
-
-        QStringList lines = mBaselineText.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
-        lines.removeAt(lineNumber);
-        mBaselineText = lines.join( "\n" );
-
-        delete mPhrases.takeAt( lineNumber );
-        emit baselineTextChanged(mBaselineText);
-        emit glossItemsChanged();
+        removePhrase( mPhrases.at(lineNumber) );
     }
 }
 
@@ -567,4 +562,15 @@ void Text::registerPhrasalGlossChange(Phrase * thisPhrase, const TextBit & bit)
     int lineNumber = mPhrases.indexOf(thisPhrase);
     if( lineNumber != -1 )
         emit phrasalGlossChanged(lineNumber, bit);
+}
+
+void Text::removePhrase( Phrase * phrase )
+{
+    int index = mPhrases.indexOf(phrase);
+    if( index != -1)
+    {
+        delete mPhrases.takeAt(index);
+        emit guiRefreshRequest();
+        markAsChanged();
+    }
 }

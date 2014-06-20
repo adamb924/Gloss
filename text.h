@@ -132,12 +132,14 @@ private:
 private slots:
     void requestGuiRefresh( Phrase * phrase );
     void registerPhrasalGlossChange(Phrase *thisPhrase, const TextBit & bit);
+    void removePhrase( Phrase * phrase );
 
 signals:
     void baselineTextChanged(const QString & baselineText);
     void glossItemsChanged();
     void idChanged(TextBit *b, qlonglong oldId);
     void phraseRefreshNeeded( int lineNumber );
+    void guiRefreshRequest();
     void phrasalGlossChanged( int lineNumber, const TextBit & bit);
 };
 
