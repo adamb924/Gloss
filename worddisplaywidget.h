@@ -40,6 +40,8 @@ public:
 
     void setFocused(bool isFocused);
 
+    void receiveKeyboardFocus();
+
 private:
     GlossItem *mGlossItem;
     Concordance *mConcordance;

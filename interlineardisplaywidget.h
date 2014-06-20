@@ -43,6 +43,7 @@ public slots:
     void setLayoutFromText();
     void setLines( const QList<int> lines );
     void setFocus( const QList<Focus> & foci );
+    int lineNumberOfWdw(WordDisplayWidget *wdw) const;
     void resetGui();
 
 protected:
@@ -63,6 +64,8 @@ private slots:
     void playSound( WordDisplayWidget * wdw );
     void leftGlossItem( WordDisplayWidget * wdw );
     void rightGlossItem( WordDisplayWidget * wdw );
+    void moveToNextGlossItem( WordDisplayWidget * wdw );
+    void moveToPreviousGlossItem( WordDisplayWidget * wdw );
 
 protected:
     const Tab * mTab;
@@ -87,7 +90,7 @@ protected:
     QSet<int> mLineRefreshRequests;
 
     // WordDisplayWidget objects, keyed to line number
-    QMultiHash<int, WordDisplayWidget*> mWordDisplayWidgets;
+    QList< QList<WordDisplayWidget*> > mWordDisplayWidgets;
     QMultiHash<int, LingEdit*> mPhrasalGlossEdits;
 
     QLayout* addLine(int lineNumber);

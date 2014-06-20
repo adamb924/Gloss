@@ -134,13 +134,13 @@ void WordDisplayWidget::setupShortcuts()
     addAction(approveLine);
 
     QAction *rightGlossItem = new QAction(this);
-    rightGlossItem->setShortcut( QKeySequence("Ctrl+Alt+Right") );
+    rightGlossItem->setShortcut( QKeySequence("Alt+Right") );
     rightGlossItem->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( rightGlossItem, SIGNAL(triggered()), this, SLOT(rightGlossItem()) );
     addAction(rightGlossItem);
 
     QAction *leftGlossItem = new QAction(this);
-    leftGlossItem->setShortcut( QKeySequence("Ctrl+Alt+Left") );
+    leftGlossItem->setShortcut( QKeySequence("Alt+Left") );
     leftGlossItem->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( leftGlossItem, SIGNAL(triggered()), this, SLOT(leftGlossItem()) );
     addAction(leftGlossItem);
@@ -808,6 +808,23 @@ void WordDisplayWidget::setFocused(bool isFocused)
         setStyleSheet("WordDisplayWidget { border: 1px solid red; }");
     else
         setStyleSheet("WordDisplayWidget { border: none; }");
+}
+
+void WordDisplayWidget::receiveKeyboardFocus()
+{
+    for(int i=0; i<mGlossLines.count(); i++)
+    {
+        if( mGlossLines.at(i).type() == InterlinearItemType::Text)
+        {
+            mTextFormEdits.value( mGlossLines.at(i).writingSystem() )->setFocus();
+            return;
+        }
+        else if (mGlossLines.at(i).type() ==  InterlinearItemType::Gloss )
+        {
+            mGlossEdits.value( mGlossLines.at(i).writingSystem() )->setFocus();
+            return;
+        }
+    }
 }
 
 void WordDisplayWidget::keyPressEvent ( QKeyEvent * event )

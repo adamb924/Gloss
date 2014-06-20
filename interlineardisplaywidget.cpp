@@ -191,13 +191,13 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             layout->removeWidget(lineLabel);
         }
 
-        QListIterator<WordDisplayWidget*> iter( mWordDisplayWidgets.values(lineNumber) );
+        QListIterator<WordDisplayWidget*> iter( mWordDisplayWidgets.at(lineNumber) );
         while(iter.hasNext())
         {
             WordDisplayWidget *wdw = iter.next();
             layout->removeWidget(wdw);
             wdw->deleteLater();
-            mWordDisplayWidgets.remove( lineNumber, wdw );
+            mWordDisplayWidgets[lineNumber].removeOne( wdw );
         }
 
         QListIterator<LingEdit*> phrasalIter( mPhrasalGlossEdits.values(lineNumber) );
@@ -263,7 +263,9 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
     for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
     {
         WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
-        mWordDisplayWidgets.insert(i, wdw);
+        if( !( i < mWordDisplayWidgets.count() ) )
+            mWordDisplayWidgets.append( QList<WordDisplayWidget*>() );
+        mWordDisplayWidgets[i].append(wdw);
         flowLayout->addWidget(wdw);
     }
 }
@@ -334,49 +336,119 @@ void InterlinearDisplayWidget::setFocus( const QList<Focus> & foci )
 {
     mFoci = foci;
 
-    QListIterator<WordDisplayWidget*> iter( mWordDisplayWidgets.values() );
-    while(iter.hasNext())
-        maybeFocus( iter.next() );
+    for( int i=0; i<mWordDisplayWidgets.count(); i++ )
+    {
+        for( int j=0; j<mWordDisplayWidgets.at(i).count(); j++)
+        {
+            maybeFocus( mWordDisplayWidgets.at(i).at(j) );
+        }
+    }
 }
 
 void InterlinearDisplayWidget::approveAll( WordDisplayWidget * wdw )
 {
-    int lineNumber = mWordDisplayWidgets.key( wdw );
-    approveAll(lineNumber);
+    int lineNumber = lineNumberOfWdw(wdw);
+    if( lineNumber != -1 )
+    {
+        approveAll(lineNumber);
+    }
 }
 
 void InterlinearDisplayWidget::playSound( WordDisplayWidget * wdw )
 {
-    int lineNumber = mWordDisplayWidgets.key( wdw );
-    playSound(lineNumber);
+    int lineNumber = lineNumberOfWdw(wdw);
+    if( lineNumber != -1 )
+    {
+        playSound(lineNumber);
+    }
+}
+
+int InterlinearDisplayWidget::lineNumberOfWdw( WordDisplayWidget * wdw ) const
+{
+    for(int i=0; i<mWordDisplayWidgets.count(); i++)
+    {
+        if( mWordDisplayWidgets.at(i).contains(wdw) )
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 void InterlinearDisplayWidget::leftGlossItem( WordDisplayWidget * wdw )
 {
-    // TODO think about whether this is possible to implement, or necessary
     if( wdw->glossItem()->baselineWritingSystem().layoutDirection() == Qt::LeftToRight )
     {
         // next
-        qDebug() << "next";
+        moveToNextGlossItem(wdw);
     }
     else
     {
         // previous
-        qDebug() << "previous";
+        moveToPreviousGlossItem(wdw);
     }
 }
 
 void InterlinearDisplayWidget::rightGlossItem( WordDisplayWidget * wdw )
 {
-    // TODO think about whether this is possible to implement, or necessary
     if( wdw->glossItem()->baselineWritingSystem().layoutDirection() == Qt::LeftToRight )
     {
         // previous
-//        qDebug() << "previous";
+        moveToPreviousGlossItem(wdw);
     }
     else
     {
         // next
-//        qDebug() << "next";
+        moveToNextGlossItem(wdw);
+    }
+}
+
+void InterlinearDisplayWidget::moveToNextGlossItem(WordDisplayWidget *wdw)
+{
+    int lineNumber = lineNumberOfWdw(wdw);
+    if( lineNumber != -1 )
+    {
+        int position = mText->phrases()->at(lineNumber)->indexOfGlossItem(wdw->glossItem());
+        if( position != -1 )
+        {
+            if( position == mWordDisplayWidgets.at(lineNumber).count() - 1 )
+            {
+                // move to first of next line
+                if( lineNumber+1 < mWordDisplayWidgets.count() )
+                {
+                    mWordDisplayWidgets.at(lineNumber+1).first()->receiveKeyboardFocus();
+                }
+            }
+            else
+            {
+                // move to position + 1
+                mWordDisplayWidgets.at(lineNumber).at(position+1)->receiveKeyboardFocus();
+            }
+        }
+    }
+}
+
+void InterlinearDisplayWidget::moveToPreviousGlossItem(WordDisplayWidget *wdw)
+{
+    int lineNumber = lineNumberOfWdw(wdw);
+    if( lineNumber != -1 )
+    {
+        int position = mText->phrases()->at(lineNumber)->indexOfGlossItem(wdw->glossItem());
+        if( position != -1 )
+        {
+            if( position == 0 )
+            {
+                // move to last of previous line
+                if( lineNumber-1 >= 0 )
+                {
+                    mWordDisplayWidgets.at(lineNumber-1).last()->receiveKeyboardFocus();
+                }
+            }
+            else
+            {
+                // move to position + 1
+                mWordDisplayWidgets.at(lineNumber).at(position-1)->receiveKeyboardFocus();
+            }
+        }
     }
 }

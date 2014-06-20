@@ -509,16 +509,6 @@ QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBitHash & t
 {
     QString query;
 
-    // TODO if there is no interpretation for these text forms, this method returns a list of interpretations that don't have any text forms in that writing system
-    // e.g. Wakhi id 3950
-    //
-    // what is the way to deal with that? treat the singleton case differently?
-    // should those "orphan" text forms be permitted?
-    // should I specify a baseline text form that has to be there?
-    // it's important to know how these are occuring in the first place
-    // meantime, opening and closing each text where they appear solved the problem
-    // ANSWER: they are created by a database cleanup
-
     TextBitHashIterator textIter(textForms);
     while (textIter.hasNext())
     {
