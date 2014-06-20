@@ -70,6 +70,8 @@ public:
     //! \brief Returns the a const pointer to a list of GlossItems
     const QList<GlossItem*>* glossItems() const;
 
+    void connectToText();
+
 signals:
     //! \brief Emitted whenever a GlossItem of the phrase changes
     void phraseChanged();

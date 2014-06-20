@@ -205,6 +205,15 @@ const QList<GlossItem*>* Phrase::glossItems() const
     return &mGlossItems;
 }
 
+void Phrase::connectToText()
+{
+    connect( this, SIGNAL(phraseChanged()), mText, SLOT(setBaselineFromGlossItems()) );
+    connect( this, SIGNAL(requestGuiRefresh(Phrase*)), mText, SLOT(requestGuiRefresh(Phrase*)));
+    connect( this, SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), mText, SLOT(markAsChanged()));
+    connect( this, SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), mText, SLOT(registerPhrasalGlossChange(Phrase*,TextBit)));
+    connect( this, SIGNAL(requestRemovePhrase(Phrase*)), mText, SLOT(removePhrase(Phrase*)) );
+}
+
 int Phrase::indexOfGlossItem(GlossItem * item) const
 {
     return mGlossItems.indexOf(item);

@@ -150,11 +150,7 @@ void Text::setGlossItemsFromBaseline()
         {
             progress.setValue(i);
             mPhrases.append( new Phrase( this, mProject) );
-            connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
-            connect( mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), this, SLOT(requestGuiRefresh(Phrase*)));
-            connect( mPhrases.last(), SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), this, SLOT(markAsChanged()));
-            connect( mPhrases.last(), SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), this, SLOT(registerPhrasalGlossChange(Phrase*,TextBit)));
-            connect( mPhrases.last(), SIGNAL(requestRemovePhrase(Phrase*)), this, SLOT(removePhrase(Phrase*)) );
+            mPhrases.last()->connectToText();
 
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )
