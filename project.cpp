@@ -908,7 +908,7 @@ void Project::parseConfigurationFile()
 
     maybeUpdateMediaPath();
 
-    mMainWindow->refreshViews();
+    mMainWindow->refreshViewsMenu();
     file->close();
 }
 

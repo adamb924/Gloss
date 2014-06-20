@@ -24,9 +24,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
 
     for(int i=0; i<view->tabs()->count(); i++)
     {
-        // TODO really these should just be stored as pointers. This will waste memory; I'm just doing it to have it done with for now.
-        Tab * tab = new Tab( * view->tabs()->at(i) );
-        InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( tab, mText, mProject, this);
+        InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( view->tabs()->at(i), mText, mProject, this);
         idw->setFocus(foci);
         idw->setLines(lines);
 
@@ -38,7 +36,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         connect( text, SIGNAL(guiRefreshRequest()), idw, SLOT(resetGui()) );
 
         mIdwTabs << idw;
-        addTab( idw, tab->name() );
+        addTab( idw, view->tabs()->at(i)->name() );
     }
 
     if( count() == 1 )
@@ -63,12 +61,6 @@ void TextDisplayWidget::closeEvent(QCloseEvent *event)
 {
     saveText();
     event->accept();
-}
-
-void TextDisplayWidget::focusGlossLine(int line)
-{
-    Q_UNUSED(line);
-    //! @todo Apparently this should be removed?
 }
 
 void TextDisplayWidget::setLines(const QList<int> & lines)

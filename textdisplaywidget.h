@@ -25,7 +25,6 @@ public:
     TextDisplayWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci = QList<Focus>(), QWidget *parent = 0);
     ~TextDisplayWidget();
 
-    void focusGlossLine(int line);
     void setLines(const QList<int> & lines);
     void saveText();
     Text * text();

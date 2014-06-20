@@ -27,7 +27,6 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
 
     bool inWord = false;
     bool inPhrase = false;
-    bool inMorphemes = false;
     TextBitHash textForms;
     TextBitHash glossForms;
 
@@ -68,11 +67,7 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
                             lang = mText->mProject->dbAdapter()->writingSystem( attr.value("lang").toString() );
                     QString text = stream.readElementText();
 
-                    if( inMorphemes )
-                    {
-                        // TODO do something with this information, eventually
-                    }
-                    else if( inWord )
+                    if( inWord )
                     {
                         qlonglong itemId = attr.hasAttribute("http://www.adambaker.org/gloss.php","id") ? attr.value("http://www.adambaker.org/gloss.php","id").toString().toLongLong() : -1;
                         // there's no handling here for the case where itemId == -1
@@ -101,14 +96,6 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
                     mText->setSound( QUrl::fromEncoded( attr.value("http://www.adambaker.org/gloss.php","audio-file").toString().toUtf8() ) );
                 }
             }
-            else if(name == "morphemes")
-            {
-                // TODO read this at some point?
-            }
-            else if(name == "morph")
-            {
-                // TODO read this at some point?
-            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
@@ -121,10 +108,6 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
             else if(name == "phrase")
             {
                 inPhrase = false;
-            }
-            else if(name == "morphemes")
-            {
-                // TODO will it be possible to read this data at some point?
             }
         }
     }

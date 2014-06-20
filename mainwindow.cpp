@@ -205,7 +205,7 @@ void MainWindow::newProject()
 
     setWindowTitle( tr("Gloss - %1").arg(filename) );
     setProjectActionsEnabled(true);
-    refreshViews();
+    refreshViewsMenu();
 }
 
 void MainWindow::openProject()
@@ -952,7 +952,7 @@ int MainWindow::viewConfigurationDialog()
     ViewConfigurationDialog dialog(mProject, this);
     int result = dialog.exec();
     if( result )
-        refreshViews();
+        refreshViewsMenu();
     return result;
 }
 
@@ -969,7 +969,6 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
             TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
             if( tdw != 0 )
             {
-                tdw->focusGlossLine( lineNumber );
                 tdw->setFocus(foci);
                 return;
             }
@@ -1339,7 +1338,7 @@ void MainWindow::editLexicon()
     edit->show();
 }
 
-void MainWindow::refreshViews()
+void MainWindow::refreshViewsMenu()
 {
     qDeleteAll(ui->menuCurrent_view->actions());
     qDeleteAll(ui->menuCurrent_quick_view->actions());

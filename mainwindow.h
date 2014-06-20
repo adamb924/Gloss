@@ -39,8 +39,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    //! \todo Figure out what this does!
-    void refreshViews();
+    //! \brief This creates the list of available views in the views submenu (in the MainWindow menu bar).
+    void refreshViewsMenu();
 
 private:
     Ui::MainWindow *ui;
@@ -140,7 +140,7 @@ private slots:
     void toggleSearchDock();
 
     //! \brief Toggle the display of the annotation dock.
-    void toggleAnnotationDock(); // TODO this is sort of out of place
+    void toggleAnnotationDock();
 
     //! \brief Provide a dialog box for the user to perform an XQuery directly on the texts.
     void rawXQuery();
