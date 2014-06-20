@@ -91,7 +91,7 @@ protected:
 
     // WordDisplayWidget objects, keyed to line number
     QMultiHash<int, WordDisplayWidget*> mWordDisplayWidgets;
-    QMultiHash<int, QWidget*> mPhrasalGlossWidgets;
+    QMultiHash<int, LingEdit*> mPhrasalGlossEdits;
 
     QLayout* addLine(int lineNumber);
 

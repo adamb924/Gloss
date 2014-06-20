@@ -43,16 +43,12 @@ InterlinearDisplayWidget::~InterlinearDisplayWidget()
 
 void InterlinearDisplayWidget::setPhrasalGloss(int lineNumber, const TextBit &bit)
 {
-    QList<QWidget*> widgets = mPhrasalGlossWidgets.values(lineNumber);
-    for( int i=0; i<widgets.count(); i++)
+    QList<LingEdit*> edits = mPhrasalGlossEdits.values(lineNumber);
+    for( int i=0; i<edits.count(); i++)
     {
-        LingEdit * edit = qobject_cast<LingEdit*>(widgets.at(i));
-        if( edit != 0 )
+        if( edits.at(i)->textBit().writingSystem() == bit.writingSystem() )
         {
-            if( edit->textBit().writingSystem() == bit.writingSystem() )
-            {
-                edit->setTextBit(bit);
-            }
+            edits.at(i)->setTextBit(bit);
         }
     }
 }
@@ -133,7 +129,7 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
         edit->matchTextAlignmentTo( mTab->interlinearLines().value( mText->baselineWritingSystem())->first().writingSystem().layoutDirection() );
         connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
 
-        mPhrasalGlossWidgets.insert( i , edit );
+        mPhrasalGlossEdits.insert( i , edit );
     }
 }
 
@@ -191,13 +187,13 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             mWordDisplayWidgets.remove( lineNumber, wdw );
         }
 
-        QListIterator<QWidget*> phrasalIter( mPhrasalGlossWidgets.values(lineNumber) );
+        QListIterator<LingEdit*> phrasalIter( mPhrasalGlossEdits.values(lineNumber) );
         while(phrasalIter.hasNext())
         {
-            QWidget *gloss = phrasalIter.next();
+            LingEdit *gloss = phrasalIter.next();
             layout->removeWidget(gloss);
             gloss->deleteLater();
-            mPhrasalGlossWidgets.remove( lineNumber, gloss );
+            mPhrasalGlossEdits.remove( lineNumber, gloss );
         }
    }
 }
