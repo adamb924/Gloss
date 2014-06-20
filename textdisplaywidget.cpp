@@ -22,8 +22,6 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         QMessageBox::critical(this, tr("Error"), tr("There is no valid view available. Something is likely wrong with your configuration.xml file."));
     }
 
-    connect(this,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
-
     for(int i=0; i<view->tabs()->count(); i++)
     {
         // TODO really these should just be stored as pointers. This will waste memory; I'm just doing it to have it done with for now.
@@ -53,14 +51,6 @@ TextDisplayWidget::~TextDisplayWidget()
 {
     if( mProject->memoryMode() == Project::OneAtATime )
         mProject->closeText(mText);
-}
-
-void TextDisplayWidget::tabChanged(int i)
-{
-    Q_UNUSED(i);
-    //! @todo Apparently this should be removed?
-//    if( i != 0 )
-    //        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
 }
 
 void TextDisplayWidget::updatePhrasalGloss(int lineNumber, const TextBit &bit)

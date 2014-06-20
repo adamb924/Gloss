@@ -38,7 +38,6 @@ public:
     QHash<qlonglong, LingEdit*> glossEdits() const;
     GlossItem* glossItem();
 
-    void refreshMorphologicalAnalysis(const WritingSystem & ws);
     void setFocused(bool isFocused);
 
 private:

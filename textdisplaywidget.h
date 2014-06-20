@@ -40,7 +40,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void tabChanged(int i);
     void updatePhrasalGloss( int lineNumber, const TextBit & bit);
 };
 

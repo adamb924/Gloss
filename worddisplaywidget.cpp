@@ -660,17 +660,6 @@ GlossItem* WordDisplayWidget::glossItem()
     return mGlossItem;
 }
 
-void WordDisplayWidget::refreshMorphologicalAnalysis(const WritingSystem & ws)
-{
-    //! @todo apparently this should be removed?
-    Q_UNUSED(ws);
-    //    if( mAnalysisWidgets.contains(ws) )
-    //    {
-    //        mGlossItem->setMorphologicalAnalysisFromDatabase( ws );
-    //        mAnalysisWidgets[ws]->createInitializedLayout();
-    //    }
-}
-
 void WordDisplayWidget::displayDatabaseReport()
 {
     QString reportString;

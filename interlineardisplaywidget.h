@@ -37,11 +37,6 @@ public:
 
     void setPhrasalGloss(int lineNumber, const TextBit & bit);
 
-signals:
-    //! \brief Emitted whenever the top line number of the widget is changed. \a line is 0-indexed.
-    // TODO emit this at some point
-    void lineNumberChanged(int line);
-
 public slots:
     void scrollToLine(int line);
     void requestLineRefresh( int line );
