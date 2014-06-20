@@ -950,7 +950,10 @@ void MainWindow::createSearchResultDock(QStandardItemModel * model, const QStrin
 int MainWindow::viewConfigurationDialog()
 {
     ViewConfigurationDialog dialog(mProject, this);
-    return dialog.exec();
+    int result = dialog.exec();
+    if( result )
+        refreshViews();
+    return result;
 }
 
 void MainWindow::focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci )

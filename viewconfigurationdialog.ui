@@ -349,6 +349,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>The changes you make will take effect with the next text you open.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
