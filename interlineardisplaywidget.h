@@ -35,6 +35,7 @@ public:
     InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
+    void setPhrasalGloss(int lineNumber, const TextBit & bit);
 
 signals:
     //! \brief Emitted whenever the top line number of the widget is changed. \a line is 0-indexed.

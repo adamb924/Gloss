@@ -150,7 +150,8 @@ void Text::setGlossItemsFromBaseline()
             mPhrases.append( new Phrase( this, mProject) );
             connect( mPhrases.last(), SIGNAL(phraseChanged()), this, SLOT(setBaselineFromGlossItems()) );
             connect( mPhrases.last(), SIGNAL(requestGuiRefresh(Phrase*)), this, SLOT(requestGuiRefresh(Phrase*)));
-            connect( mPhrases.last(), SIGNAL(phrasalGlossChanged()), this, SLOT(markAsChanged()));
+            connect( mPhrases.last(), SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), this, SLOT(markAsChanged()));
+            connect( mPhrases.last(), SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), this, SLOT(registerPhrasalGlossChange(Phrase*,TextBit)));
 
             setLineOfGlossItems(mPhrases.last(), lines.at(i));
             if( progress.wasCanceled() )
@@ -559,4 +560,11 @@ void Text::baselineSearchReplace( const TextBit & search , const TextBit & repla
             }
         }
     }
+}
+
+void Text::registerPhrasalGlossChange(Phrase * thisPhrase, const TextBit & bit)
+{
+    int lineNumber = mPhrases.indexOf(thisPhrase);
+    if( lineNumber != -1 )
+        emit phrasalGlossChanged(lineNumber, bit);
 }

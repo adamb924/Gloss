@@ -41,7 +41,7 @@ protected:
 
 private slots:
     void tabChanged(int i);
-
+    void updatePhrasalGloss( int lineNumber, const TextBit & bit);
 };
 
 #endif // TEXTDISPLAYWIDGET_H

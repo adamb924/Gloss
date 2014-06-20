@@ -41,6 +41,22 @@ InterlinearDisplayWidget::~InterlinearDisplayWidget()
 
 }
 
+void InterlinearDisplayWidget::setPhrasalGloss(int lineNumber, const TextBit &bit)
+{
+    QList<QWidget*> widgets = mPhrasalGlossWidgets.values(lineNumber);
+    for( int i=0; i<widgets.count(); i++)
+    {
+        LingEdit * edit = qobject_cast<LingEdit*>(widgets.at(i));
+        if( edit != 0 )
+        {
+            if( edit->textBit().writingSystem() == bit.writingSystem() )
+            {
+                edit->setTextBit(bit);
+            }
+        }
+    }
+}
+
 void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 {
     InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), mText->phrases()->at(i)->interval()->isValid(), mText->phrases()->at(i)->interval()->summaryString(), this);

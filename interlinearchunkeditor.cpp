@@ -66,7 +66,6 @@ void InterlinearChunkEditor::goTo()
 
 void InterlinearChunkEditor::moveToLine(int line)
 {
-    qDebug() << "InterlinearChunkEditor::moveToLine(int line)" << line;
     line--; // zero-index it
     moveToPosition( (line / mChunkSize) * mChunkSize );
 }

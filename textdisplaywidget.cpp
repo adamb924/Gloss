@@ -35,6 +35,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()) );
         connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
         connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
+        connect( text, SIGNAL(phrasalGlossChanged(int,TextBit)), this, SLOT(updatePhrasalGloss(int,TextBit)) );
 
         mIdwTabs << idw;
         addTab( idw, tab->name() );
@@ -57,7 +58,13 @@ void TextDisplayWidget::tabChanged(int i)
     Q_UNUSED(i);
     //! @todo Apparently this should be removed?
 //    if( i != 0 )
-//        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
+    //        mText->setBaselineText( ui->baselineTextEdit->toPlainText() );
+}
+
+void TextDisplayWidget::updatePhrasalGloss(int lineNumber, const TextBit &bit)
+{
+    for(int i=0; i<mIdwTabs.count(); i++)
+        mIdwTabs.at(i)->setPhrasalGloss(lineNumber, bit);
 }
 
 void TextDisplayWidget::closeEvent(QCloseEvent *event)

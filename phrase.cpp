@@ -37,7 +37,7 @@ void Phrase::setPhrasalGloss( const TextBit & bit )
     if( !mGlosses.contains(bit.writingSystem()) || mGlosses.value(bit.writingSystem()) !=  bit )
     {
         mGlosses.insert( bit.writingSystem(), bit );
-        emit phrasalGlossChanged();
+        emit phrasalGlossChanged(this, bit);
     }
 }
 
