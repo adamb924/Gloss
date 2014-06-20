@@ -331,7 +331,6 @@ void Text::setBaselineTextForLine( int i, const QString & text )
 {
     if( i >= mPhrases.count() )
         return;
-    // TODO maybe setLineOfGloss items should just be redone anyway
     setLineOfGlossItems( mPhrases.at(i) , text );
 }
 

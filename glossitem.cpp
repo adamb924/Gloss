@@ -111,7 +111,6 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 
         emit fieldsChanged();
     }
-    // TODO possibly update the concordance at this point
 }
 
 void GlossItem::setGloss(const TextBit & gloss)
