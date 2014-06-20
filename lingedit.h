@@ -33,7 +33,7 @@ public:
 private:
 
     void focusInEvent ( QFocusEvent * e );
-//    void focusOutEvent ( QFocusEvent * e );
+    void focusOutEvent ( QFocusEvent * e );
 
     int mOverrideFontSize;
     TextBit mTextBit;
