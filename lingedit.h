@@ -45,7 +45,6 @@ signals:
 
 public slots:
     void textChanged();
-    void setId(LingEdit * edit, qlonglong id);
     void setTextBit( const TextBit & bit );
     void setWritingSystem( const WritingSystem & ws );
 

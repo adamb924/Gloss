@@ -62,13 +62,6 @@ void LingEdit::textChanged()
     }
 }
 
-void LingEdit::setId(LingEdit * edit, qlonglong id)
-{
-    //! @todo Rewrite this method of use \a edit?
-    Q_UNUSED(edit);
-    mTextBit.setId(id);
-}
-
 qlonglong LingEdit::id() const
 {
     return mTextBit.id();
