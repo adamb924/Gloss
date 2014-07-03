@@ -13,13 +13,13 @@ Concordance::Concordance(QObject *parent) :
 
 void Concordance::removeGlossItemFromConcordance( QObject * item )
 {
-    QListIterator<qlonglong> keys( mGlossItemsByTextFormId.keys( qobject_cast<GlossItem*>(item) ) );
+    QListIterator<qlonglong> keys( mGlossItemsByTextFormId.keys( (GlossItem*)item ) );
     while(keys.hasNext())
-        mGlossItemsByTextFormId.remove( keys.next(), qobject_cast<GlossItem*>(item) );
+        mGlossItemsByTextFormId.remove( keys.next(), (GlossItem*)item );
 
-    keys = QListIterator<qlonglong>( mGlossItemsByGlossId.keys( qobject_cast<GlossItem*>(item) ) );
+    keys = QListIterator<qlonglong>( mGlossItemsByGlossId.keys( (GlossItem*)item ) );
     while(keys.hasNext())
-        mGlossItemsByGlossId.remove( keys.next(), qobject_cast<GlossItem*>(item) );
+        mGlossItemsByGlossId.remove( keys.next(), (GlossItem*)item );
 }
 
 void Concordance::removeGlossItemTextFormIdPair( GlossItem * item , qlonglong textFormId )
