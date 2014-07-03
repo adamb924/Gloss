@@ -25,13 +25,14 @@ class ImmutableLabel;
 class AnalysisWidget;
 class Concordance;
 class AnnotationMarkWidget;
+class Tab;
 
 class WordDisplayWidget : public QFrame
 {
     Q_OBJECT
 
 public:
-    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, const Project * project, QWidget *parent = 0);
+    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const Tab * tab, const Project * project, QWidget *parent = 0);
     ~WordDisplayWidget();
 
     QHash<qlonglong, LingEdit*> textFormEdits() const;
@@ -43,9 +44,6 @@ public:
     void receiveKeyboardFocus();
 
 private:
-    GlossItem *mGlossItem;
-    Concordance *mConcordance;
-    Qt::Alignment mAlignment;
     AnnotationMarkWidget *mAnnotationMarks;
 
     void setupShortcuts();
@@ -63,6 +61,7 @@ private:
     void cycleGloss( const WritingSystem & ws );
 
     void setupLayout();
+
     LingEdit* addGlossLine( const InterlinearItemType & glossLine );
     LingEdit* addTextFormLine( const InterlinearItemType & glossLine );
     ImmutableLabel* addImmutableTextFormLine( const InterlinearItemType & glossLine, bool technicolor );
@@ -77,9 +76,14 @@ private:
     QHash<WritingSystem, AnalysisWidget*> mAnalysisWidgets;
 
     void mouseDoubleClickEvent ( QMouseEvent * event );
+    void mousePressEvent(QMouseEvent * event);
 
-    DatabaseAdapter *mDbAdapter;
     const Project * mProject;
+    const Tab * mTab;
+    const DatabaseAdapter *mDbAdapter;
+    GlossItem *mGlossItem;
+    Concordance *mConcordance;
+    Qt::Alignment mAlignment;
 
 signals:
     void splitWidgetInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );
@@ -104,6 +108,8 @@ signals:
 
     void requestSetFollowingTextForms( GlossItem *glossItem , const WritingSystem & ws );
     void requestSetFollowingGlosses( GlossItem *glossItem , const WritingSystem & ws );
+
+    void leftClicked( WordDisplayWidget * wdw );
 
 private slots:
     void annotationMarkActivated( const QString & key );

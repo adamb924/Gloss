@@ -16,17 +16,18 @@
 #include <QtDebug>
 #include <QActionGroup>
 
-WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const QList<InterlinearItemType> & lines, DatabaseAdapter *dbAdapter, const Project * project, QWidget *parent) :
-    QFrame(parent), mProject(project)
+WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const Tab * tab, const Project * project, QWidget *parent) :
+    QFrame(parent),
+    mProject(project),
+    mTab(tab),
+    mDbAdapter(project->dbAdapter()),
+    mGlossItem(item),
+    mConcordance(mGlossItem->concordance()),
+    mAlignment(alignment)
 {
     setObjectName("WordDisplayWidget");
 
-    mDbAdapter = dbAdapter;
-    mGlossItem = item;
-    mConcordance = mGlossItem->concordance();
-    mAlignment = alignment;
-
-    mGlossLines = lines;
+    mGlossLines = *mTab->interlinearLines().value( mGlossItem->baselineWritingSystem() );
 
     setupLayout();
 
@@ -597,6 +598,12 @@ void WordDisplayWidget::mouseDoubleClickEvent ( QMouseEvent * event )
 {
     Q_UNUSED(event);
     mGlossItem->toggleApproval();
+}
+
+void WordDisplayWidget::mousePressEvent ( QMouseEvent * event )
+{
+    Q_UNUSED(event);
+    emit leftClicked(this);
 }
 
 void WordDisplayWidget::selectDifferentCandidate(QAction *action)
