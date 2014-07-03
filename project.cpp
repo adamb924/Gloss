@@ -395,6 +395,11 @@ void Project::closeText(Text *text)
 
 void Project::deleteText(QString textName)
 {
+    Text * text = mTexts.value(textName);
+    if( text != 0 )
+    {
+        delete text;
+    }
     mTexts.remove( textName );
     QString path = filepathFromName(textName);
     mTextPaths.remove( path );
@@ -426,9 +431,10 @@ void Project::closeOpenTexts( const QStringList & except )
     {
         iter.next();
         if( ! except.contains( iter.value()->name() ) )
+        {
             closeText( iter.value() );
+        }
     }
-    mTexts.clear();
 }
 
 QString Project::doDatabaseCleanup()
