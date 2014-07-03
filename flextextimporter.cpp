@@ -102,7 +102,6 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
             if(name == "word")
             {
                 mText->mPhrases.last()->appendGlossItem(new GlossItem( mText->mBaselineWritingSystem, textForms, glossForms, mText->mProject ));
-                mText->mPhrases.last()->lastGlossItem()->connectToConcordance();
                 inWord = false;
             }
             else if(name == "phrase")

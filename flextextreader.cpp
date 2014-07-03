@@ -148,7 +148,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             if(name == "word")
             {
                 mText->mPhrases.last()->appendGlossItem(new GlossItem( glossItemBaselineWritingSystem.isNull() ? mText->mBaselineWritingSystem : glossItemBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject ));
-                mText->mPhrases.last()->lastGlossItem()->connectToConcordance();
                 mText->mPhrases.last()->lastGlossItem()->setApprovalStatus(approvalStatus);
 
                 QHashIterator<QString,TextBit> annIter(annotations);
