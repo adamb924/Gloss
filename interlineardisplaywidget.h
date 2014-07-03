@@ -93,6 +93,8 @@ private:
 
 protected:
     QHash<int, QLayout*> mLineLayouts;
+    QHash<int, QVBoxLayout*> mPhrasalGlossLayouts;
+
     QHash<int, InterlinearLineLabel*> mLineLabels;
     QList<int> mLines;
     QList<Focus> mFoci;
@@ -104,15 +106,14 @@ protected:
 
 
     QLayout* addLine(int lineNumber);
+    QVBoxLayout* addPhrasalGlossLayout(int lineNumber);
 
     QVBoxLayout *mLayout;
 
     QList<InterlinearItemType> mPhrasalGlossLines;
 
-    LingEdit* addPhrasalGlossLine(  const TextBit & gloss );
-
     //! \brief Add the phrasal gloss lines for phrase \a i
-    void addPhrasalGlossLines( int i );
+    void addPhrasalGlossLines(int i , QVBoxLayout *phrasalGlossLayout);
 
     //! \brief Add a line label for phrase \a i
     void addLineLabel( int i , QLayout * flowLayout  );

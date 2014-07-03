@@ -73,6 +73,14 @@ QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
     return flowLayout;
 }
 
+QVBoxLayout* InterlinearDisplayWidget::addPhrasalGlossLayout(int lineNumber)
+{
+    QVBoxLayout *layout = new QVBoxLayout;
+    mPhrasalGlossLayouts.insert(lineNumber, layout);
+    mLayout->addLayout(layout);
+    return layout;
+}
+
 void InterlinearDisplayWidget::saveText()
 {
     mText->saveText(false, false, true, true);
@@ -176,24 +184,21 @@ void InterlinearDisplayWidget::scrollContentsBy ( int dx, int dy )
     }
 }
 
-void InterlinearDisplayWidget::addPhrasalGlossLines( int i )
+void InterlinearDisplayWidget::addPhrasalGlossLines( int i , QVBoxLayout * phrasalGlossLayout )
 {
     for(int j=0; j< mTab->phrasalGlossLines()->count(); j++)
     {
         TextBit bit = mText->phrases()->at(i)->gloss( mTab->phrasalGlossLines()->at(j).writingSystem() );
-        LingEdit *edit = addPhrasalGlossLine( bit );
+
+        LingEdit *edit = new LingEdit( bit , this);
+        phrasalGlossLayout->addWidget(edit);
+
         edit->matchTextAlignmentTo( mTab->interlinearLines().value( mText->baselineWritingSystem())->first().writingSystem().layoutDirection() );
         connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
 
         mPhrasalGlossEdits.insert( i , edit );
+        phrasalGlossLayout->addWidget( edit );
     }
-}
-
-LingEdit* InterlinearDisplayWidget::addPhrasalGlossLine( const TextBit & gloss )
-{
-    LingEdit *edit = new LingEdit( gloss , this);
-    mLayout->addWidget(edit);
-    return edit;
 }
 
 void InterlinearDisplayWidget::approveAll(int lineNumber)
@@ -272,15 +277,17 @@ void InterlinearDisplayWidget::setLayoutFromText()
         int lineIndex = iter.next();
 
         QLayout *flowLayout;
+        QVBoxLayout *phrasalGlossLayout;
 
         if( mLineLayouts.value(lineIndex) == 0 ) // there is no layout here
         {
             flowLayout = addLine(lineIndex);
-            addPhrasalGlossLines(lineIndex);
+            phrasalGlossLayout = addPhrasalGlossLayout(lineIndex);
         }
         else if( mLineRefreshRequests.contains( lineIndex ) )
         {
             flowLayout = mLineLayouts.value(lineIndex);
+            phrasalGlossLayout = mPhrasalGlossLayouts.value(lineIndex);
             clearWidgetsFromLine(lineIndex);
         }
         else
@@ -292,6 +299,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
         {
             addLineLabel(lineIndex, flowLayout);
             addWordWidgets(lineIndex, flowLayout);
+            addPhrasalGlossLines(lineIndex, phrasalGlossLayout);
         }
 
         mLineRefreshRequests.clear();
@@ -367,6 +375,8 @@ void InterlinearDisplayWidget::setLines( const QList<int> lines )
     mLines = lines;
     qDeleteAll(mLineLayouts);
     mLineLayouts.clear();
+    qDeleteAll(mPhrasalGlossLayouts);
+    mPhrasalGlossLayouts.clear();
     mLineLabels.clear();
     setLayoutFromText();
 }
