@@ -39,6 +39,8 @@ private:
 
     bool serializeGlossItem(GlossItem *glossItem) const;
 
+    bool serializePunctuation(GlossItem *glossItem) const;
+
     //! \brief Serialize the interlinear text (i.e., <interlinear-text> to the XML stream
     bool serializeMorphemes(GlossItem *glossItem) const;
 

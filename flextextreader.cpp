@@ -116,6 +116,10 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                         {
                             glossFormIds.insert( itemId );
                         }
+                        else if ( type == "punct" && itemId != -1 && lang.isValid() )
+                        {
+                            textFormIds.insert( itemId );
+                        }
                     }
                     else if ( inPhrase && type == "gls" && lang.isValid() )
                     {

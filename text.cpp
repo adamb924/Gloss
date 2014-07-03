@@ -153,7 +153,16 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
 {
     phrase->clearGlossItems();
 
-    QStringList words = line.split(QRegExp("[ \\t]+"),QString::SkipEmptyParts);
+    QStringList words = line.split(QRegExp("\\b+"),QString::SkipEmptyParts);
+    for(int i=0; i<words.count(); i++)
+    {
+        words[i] = words.at(i).trimmed();
+        if( words.at(i).isEmpty() )
+        {
+            words.removeAt(i);
+            i--;
+        }
+    }
     for(int i=0; i<words.count(); i++)
     {
         phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));

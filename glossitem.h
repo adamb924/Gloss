@@ -4,6 +4,8 @@
   \brief A data class representing a gloss item in an interlinear text. This consists of an id (the _id field of the Interpretations SQL table), hashes of text and gloss lines, and a pointer to the TextBit of the baseline text.
 
   Each GlossItem is associated with a row from the Interpretations SQL table (mId corresponds _id). The other data values are not necessarily predictable from this information, however, since there can be many-to-one relationships between text forms or glosses and interpretations, however.
+
+  GlossItem objects representing punctuation are the same as any other GlossItem. It is the responsibility of the GUI, and input/output code, to display and record these elements appropriately. The GlossItem::isPunctuation() returns true if the baseline text of the object is nothing but punctuation.
 */
 
 #ifndef GLOSSITEM_H
@@ -125,6 +127,9 @@ public:
 
     //! \brief Loads all morphological analyses in the database into the object's data structure
     void loadMorphologicalAnalysesFromDatabase();
+
+    //! \brief Returns true if the object represents punctuation; otherwise false.
+    bool isPunctuation() const;
 
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes

@@ -18,6 +18,7 @@
 #include "annotationmarkwidget.h"
 #include "tab.h"
 #include "writingsystem.h"
+#include "immutablelabel.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
     QScrollArea(parent), mTab(tab), mText(text), mProject(project), mMouseMode(InterlinearDisplayWidget::Normal)
@@ -239,10 +240,10 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             layout->removeWidget(lineLabel);
         }
 
-        QListIterator<WordDisplayWidget*> iter( mWordDisplayWidgets.at(lineNumber) );
+        QListIterator<QWidget*> iter( mWordDisplayWidgets.at(lineNumber) );
         while(iter.hasNext())
         {
-            WordDisplayWidget *wdw = iter.next();
+            QWidget *wdw = iter.next();
             layout->removeWidget(wdw);
             wdw->deleteLater();
             mWordDisplayWidgets[lineNumber].removeOne( wdw );
@@ -313,9 +314,19 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 {
     for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
     {
-        WordDisplayWidget *wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
+        QWidget *wdw;
+        if( mText->phrases()->at(i)->glossItemAt(j)->isPunctuation() )
+        {
+            wdw = new ImmutableLabel( mText->phrases()->at(i)->glossItemAt(j)->baselineText(), false , this);
+        }
+        else
+        {
+            wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
+        }
+
+        // add another list to mWordDisplayWidgets if necessary
         if( !( i < mWordDisplayWidgets.count() ) )
-            mWordDisplayWidgets.append( QList<WordDisplayWidget*>() );
+            mWordDisplayWidgets.append( QList<QWidget*>() );
         mWordDisplayWidgets[i].append(wdw);
         flowLayout->addWidget(wdw);
     }
@@ -347,18 +358,23 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     return wdw;
 }
 
-void InterlinearDisplayWidget::maybeFocus(WordDisplayWidget * wdw)
+void InterlinearDisplayWidget::maybeFocus(QWidget * wdw)
 {
+    WordDisplayWidget * wdwRecast = qobject_cast<WordDisplayWidget*>(wdw);
+    if( wdwRecast == 0  )
+    {
+        return;
+    }
     bool isFocused = false;
     for(int i=0; i<mFoci.count(); i++)
     {
-        if( wdw->glossItem()->matchesFocus( mFoci.at(i) ) )
+        if( wdwRecast->glossItem()->matchesFocus( mFoci.at(i) ) )
         {
             isFocused = true;
             break;
         }
     }
-    wdw->setFocused(isFocused);
+    wdwRecast->setFocused(isFocused);
 }
 
 void InterlinearDisplayWidget::setLinesToDefault()
@@ -418,8 +434,12 @@ void InterlinearDisplayWidget::playSound( WordDisplayWidget * wdw )
     }
 }
 
-int InterlinearDisplayWidget::lineNumberOfWdw( WordDisplayWidget * wdw ) const
+int InterlinearDisplayWidget::lineNumberOfWdw(QWidget *wdw ) const
 {
+    if( qobject_cast<WordDisplayWidget*>(wdw) == 0  )
+    {
+        return -1;
+    }
     for(int i=0; i<mWordDisplayWidgets.count(); i++)
     {
         if( mWordDisplayWidgets.at(i).contains(wdw) )
@@ -466,19 +486,8 @@ void InterlinearDisplayWidget::moveToNextGlossItem(WordDisplayWidget *wdw)
         int position = mText->phrases()->at(lineNumber)->indexOfGlossItem(wdw->glossItem());
         if( position != -1 )
         {
-            if( position == mWordDisplayWidgets.at(lineNumber).count() - 1 )
-            {
-                // move to first of next line
-                if( lineNumber+1 < mWordDisplayWidgets.count() )
-                {
-                    mWordDisplayWidgets.at(lineNumber+1).first()->receiveKeyboardFocus();
-                }
-            }
-            else
-            {
-                // move to position + 1
-                mWordDisplayWidgets.at(lineNumber).at(position+1)->receiveKeyboardFocus();
-            }
+            findNextWdw(lineNumber,position);
+            qobject_cast<WordDisplayWidget*>(mWordDisplayWidgets.at(lineNumber).at(position))->receiveKeyboardFocus();
         }
     }
 }
@@ -491,19 +500,48 @@ void InterlinearDisplayWidget::moveToPreviousGlossItem(WordDisplayWidget *wdw)
         int position = mText->phrases()->at(lineNumber)->indexOfGlossItem(wdw->glossItem());
         if( position != -1 )
         {
-            if( position == 0 )
-            {
-                // move to last of previous line
-                if( lineNumber-1 >= 0 )
-                {
-                    mWordDisplayWidgets.at(lineNumber-1).last()->receiveKeyboardFocus();
-                }
-            }
-            else
-            {
-                // move to position + 1
-                mWordDisplayWidgets.at(lineNumber).at(position-1)->receiveKeyboardFocus();
-            }
+            findPreviousWdw(lineNumber,position);
+            qobject_cast<WordDisplayWidget*>(mWordDisplayWidgets.at(lineNumber).at(position))->receiveKeyboardFocus();
         }
     }
+}
+
+void InterlinearDisplayWidget::findPreviousWdw(int &lineNumber, int &position)
+{
+    do
+    {
+        if( position == 0 )
+        {
+            // move to last of previous line
+            if( lineNumber-1 >= 0 )
+            {
+                lineNumber--;
+                position = mWordDisplayWidgets.at(lineNumber).count() - 1;
+            }
+        }
+        else
+        {
+            position--;
+        }
+    } while( qobject_cast<WordDisplayWidget*>(mWordDisplayWidgets.at(lineNumber).at(position)) == 0  && lineNumber >= 0 && position >= 0 );
+}
+
+void InterlinearDisplayWidget::findNextWdw(int &lineNumber, int &position)
+{
+    do
+    {
+        if( position == mWordDisplayWidgets.at(lineNumber).count() - 1 )
+        {
+            // move to first of next line
+            if( lineNumber+1 < mWordDisplayWidgets.count() )
+            {
+                lineNumber++;
+                position = 0;
+            }
+        }
+        else
+        {
+            position++;
+        }
+    } while( qobject_cast<WordDisplayWidget*>(mWordDisplayWidgets.at(lineNumber).at(position)) == 0 && lineNumber < mWordDisplayWidgets.count() && position < mWordDisplayWidgets.at(lineNumber).count() );
 }

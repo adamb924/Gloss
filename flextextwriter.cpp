@@ -91,7 +91,14 @@ bool FlexTextWriter::serializeInterlinearText() const
         {
             GlossItem *glossItem = phrase->glossItemAt(i);
 
-            serializeGlossItem(glossItem);
+            if( glossItem->isPunctuation() )
+            {
+                serializePunctuation(glossItem);
+            }
+            else
+            {
+                serializeGlossItem(glossItem);
+            }
         }
 
         stream->writeEndElement(); // words
@@ -179,6 +186,15 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem) const
     }
     stream->writeEndElement(); // word
 
+    return true;
+}
+
+bool FlexTextWriter::serializePunctuation(GlossItem *glossItem) const
+{
+    stream->writeStartElement("word");
+    writeNamespaceAttribute( "id", QString("%1").arg(glossItem->id()) );
+    serializeItem("punct", glossItem->baselineWritingSystem(), glossItem->baselineText().text(), glossItem->baselineText().id() );
+    stream->writeEndElement(); // word
     return true;
 }
 

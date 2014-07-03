@@ -403,6 +403,19 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
     }
 }
 
+bool GlossItem::isPunctuation() const
+{
+    QString text = baselineText().text();
+    for( int i=0; i<text.length(); i++ )
+    {
+        if( !text.at(i).isPunct() )
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
     QList<WritingSystem> languages;

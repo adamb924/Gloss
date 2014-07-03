@@ -45,7 +45,9 @@ public slots:
     void setLayoutFromText();
     void setLines( const QList<int> lines );
     void setFocus( const QList<Focus> & foci );
-    int lineNumberOfWdw(WordDisplayWidget *wdw) const;
+
+    // Returns the line number of \a wdw. If \a wdw is not a WordDisplayWidget, returns -1. If \a wdw cannot be found, returns -1.
+    int lineNumberOfWdw(QWidget *wdw) const;
     void resetGui();
 
 protected:
@@ -66,8 +68,12 @@ private slots:
     void playSound( WordDisplayWidget * wdw );
     void leftGlossItem( WordDisplayWidget * wdw );
     void rightGlossItem( WordDisplayWidget * wdw );
+
     void moveToNextGlossItem( WordDisplayWidget * wdw );
     void moveToPreviousGlossItem( WordDisplayWidget * wdw );
+
+    void findPreviousWdw(int &lineNumber, int &position);
+    void findNextWdw(int &lineNumber, int &position);
 
     void enterChangeBaselineMode(QAction * action);
 
@@ -101,7 +107,7 @@ protected:
     QSet<int> mLineRefreshRequests;
 
     // WordDisplayWidget objects, keyed to line number
-    QList< QList<WordDisplayWidget*> > mWordDisplayWidgets;
+    QList< QList<QWidget*> > mWordDisplayWidgets;
     QMultiHash<int, LingEdit*> mPhrasalGlossEdits;
 
 
@@ -118,7 +124,7 @@ protected:
     //! \brief Add a line label for phrase \a i
     void addLineLabel( int i , QLayout * flowLayout  );
 
-    void maybeFocus(WordDisplayWidget * wdw);
+    void maybeFocus(QWidget *wdw);
 };
 
 #endif // INTERLINEARDISPLAYWIDGET_H
