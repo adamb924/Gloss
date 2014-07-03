@@ -160,6 +160,19 @@ void Phrase::removeGlossItem( GlossItem *glossItem )
     }
 }
 
+void Phrase::replaceGlossItem(GlossItem *glossItem, const TextBit &bit)
+{
+    int index = mGlossItems.indexOf(glossItem);
+    if( index == -1 )
+    {
+        return;
+    }
+    mGlossItems.takeAt(index)->deleteLater();
+    mGlossItems.insert( index , new GlossItem(bit, mProject) );
+    emit requestGuiRefresh(this);
+    emit phraseChanged();
+}
+
 int Phrase::glossItemCount() const
 {
     return mGlossItems.count();

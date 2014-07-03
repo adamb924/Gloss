@@ -32,6 +32,8 @@ class InterlinearDisplayWidget : public QScrollArea
 {
     Q_OBJECT
 public:
+    enum MouseMode { Normal, ChangeBaseline };
+
     InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent = 0);
     ~InterlinearDisplayWidget();
 
@@ -67,14 +69,21 @@ private slots:
     void moveToNextGlossItem( WordDisplayWidget * wdw );
     void moveToPreviousGlossItem( WordDisplayWidget * wdw );
 
+    void enterChangeBaselineMode(QAction * action);
+
+    void wdwClicked( WordDisplayWidget * wdw );
+
 protected:
     const Tab * mTab;
     Text *mText;
     Project *mProject;
+    InterlinearDisplayWidget::MouseMode mMouseMode;
     int mCurrentLine;
+    WritingSystem mChangeWritingSystemTo;
 
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
+    void keyPressEvent ( QKeyEvent * event );
 
     QSpacerItem * mBottomSpacing;
 
@@ -92,6 +101,7 @@ protected:
     // WordDisplayWidget objects, keyed to line number
     QList< QList<WordDisplayWidget*> > mWordDisplayWidgets;
     QMultiHash<int, LingEdit*> mPhrasalGlossEdits;
+
 
     QLayout* addLine(int lineNumber);
 

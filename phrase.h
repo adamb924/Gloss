@@ -70,6 +70,9 @@ public:
     //! \brief Returns the a const pointer to a list of GlossItems
     const QList<GlossItem*>* glossItems() const;
 
+    //! \brief Replace the GlossItem at \a index with a new GlossItem with baseline text \a bit
+    void replaceGlossItem(GlossItem *glossItem, const TextBit & bit );
+
     void connectToText();
 
 signals:

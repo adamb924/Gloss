@@ -17,9 +17,10 @@
 #include "focus.h"
 #include "annotationmarkwidget.h"
 #include "tab.h"
+#include "writingsystem.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
-    QScrollArea(parent), mTab(tab), mText(text), mProject(project)
+    QScrollArea(parent), mTab(tab), mText(text), mProject(project), mMouseMode(InterlinearDisplayWidget::Normal)
 {
     mBottomSpacing = new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding);
 
@@ -38,7 +39,6 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, 
 
 InterlinearDisplayWidget::~InterlinearDisplayWidget()
 {
-
 }
 
 void InterlinearDisplayWidget::setPhrasalGloss(int lineNumber, const TextBit &bit)
@@ -101,7 +101,50 @@ void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     QMenu menu(this);
     menu.addAction(tr("Save this text"), this, SLOT(saveText()), QKeySequence("Ctrl+Shift+S"));
     menu.addAction(tr("Save this text, verbose output"), this, SLOT(saveTextVerbose()) );
+
+    QActionGroup *wsGroup = new QActionGroup(this);
+    QMenu *wsMenu = new QMenu(tr("Change baseline writing system..."));
+    QList<WritingSystem> ws = mProject->dbAdapter()->writingSystems();
+    for(int i=0; i < ws.count(); i++)
+    {
+        QAction *action = new QAction(ws.at(i).name(),this);
+        action->setData(ws.at(i).id());
+        wsMenu->addAction(action);
+        wsGroup->addAction(action);
+    }
+    menu.addMenu(wsMenu);
+
+    connect(wsGroup,SIGNAL(triggered(QAction*)),this, SLOT(enterChangeBaselineMode(QAction*)) );
+
     menu.exec(event->globalPos());
+}
+
+void InterlinearDisplayWidget::enterChangeBaselineMode(QAction * action)
+{
+    mMouseMode = InterlinearDisplayWidget::ChangeBaseline;
+    mChangeWritingSystemTo = mProject->dbAdapter()->writingSystem( action->data().toInt() );
+    setCursor(QCursor(Qt::CrossCursor));
+}
+
+void InterlinearDisplayWidget::keyPressEvent ( QKeyEvent * event )
+{
+    int key = event->key();
+    if( key == Qt::Key_Escape )
+    {
+        mMouseMode = InterlinearDisplayWidget::Normal;
+        setCursor(QCursor(Qt::ArrowCursor));
+    }
+}
+
+void InterlinearDisplayWidget::wdwClicked( WordDisplayWidget * wdw )
+{
+    if( mMouseMode == InterlinearDisplayWidget::ChangeBaseline )
+    {
+        TextBit newBaseline = wdw->glossItem()->baselineText();
+        newBaseline.setWritingSystem( mChangeWritingSystemTo );
+        int lineNumber = lineNumberOfWdw(wdw);
+        mText->phrases()->at(lineNumber)->replaceGlossItem(wdw->glossItem(), newBaseline);
+    }
 }
 
 void InterlinearDisplayWidget::scrollToLine(int line)
@@ -272,7 +315,7 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
 
 WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *item, Phrase *phrase)
 {
-    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, *mTab->interlinearLines().value(item->baselineWritingSystem()), mProject->dbAdapter(), mProject, this );
+    WordDisplayWidget *wdw = new WordDisplayWidget( item , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mTab, mProject, this );
     maybeFocus(wdw);
 
     connect( wdw, SIGNAL(splitWidget(GlossItem*,QList<TextBit>)), phrase, SLOT(splitGloss(GlossItem*,QList<TextBit>)) );
@@ -290,6 +333,8 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(requestReplaceFollowing(GlossItem*,QString)), mText, SLOT(replaceFollowing(GlossItem*,QString)) );
     connect( wdw, SIGNAL(requestSetFollowingTextForms(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingTextForms(GlossItem*,WritingSystem)) );
     connect( wdw, SIGNAL(requestSetFollowingGlosses(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingGlosses(GlossItem*,WritingSystem)) );
+
+    connect( wdw, SIGNAL(leftClicked(WordDisplayWidget*)), this, SLOT(wdwClicked(WordDisplayWidget*)) );
 
     return wdw;
 }
