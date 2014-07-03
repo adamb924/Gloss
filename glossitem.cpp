@@ -58,7 +58,6 @@ void GlossItem::resetBaselineText( const TextBit & baselineBit )
 
     mTextForms.clear();
     mGlosses.clear();
-
     mTextForms.insert(mBaselineWritingSystem, baselineBit );
     mId = -1;
 
@@ -242,12 +241,13 @@ GlossItem::CandidateNumber GlossItem::candidateNumber() const
 void GlossItem::guessInterpretation()
 {
     QList<qlonglong> candidates;
-    if( mTextForms.count() > 0 || mGlosses.count() > 0 )
+
+    if( mTextForms.count() > 1 || mGlosses.count() > 0 )
         candidates = mDbAdapter->candidateInterpretations(mTextForms,mGlosses);
     else
         candidates =  mDbAdapter->candidateInterpretations( baselineText() );
 
-    if( candidates.length() == 0 )
+    if( candidates.count() == 0 )
     {
         if( mTextForms.count() > 0)
             setInterpretation( mDbAdapter->newInterpretation(mTextForms,mGlosses) , true ); // true because they'll all be blank
