@@ -183,7 +183,7 @@ QHash<qlonglong,QString> DatabaseAdapter::interpretationGlosses(qlonglong interp
     return candidates;
 }
 
-qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong writingSystemId)
+qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong writingSystemId) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("insert into TextForms (InterpretationId,WritingSystem) values (:InterpretationId,:WritingSystem);");
@@ -201,7 +201,7 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong wri
     }
 }
 
-qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit & bit)
+qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit & bit) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
@@ -235,7 +235,7 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit
     }
 }
 
-qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writingSystemId)
+qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writingSystemId) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("insert into Glosses (InterpretationId,WritingSystem) values (:InterpretationId,:WritingSystem);");
@@ -252,7 +252,7 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writin
     }
 }
 
-qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & bit)
+qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & bit) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
@@ -294,7 +294,7 @@ qlonglong DatabaseAdapter::newInterpretation()
     return q.lastInsertId().toLongLong();
 }
 
-qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
+qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit ) const
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);
     db.transaction();
@@ -325,7 +325,7 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit )
     return id;
 }
 
-qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitHash & glossForms )
+qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitHash & glossForms ) const
 {
     QSqlDatabase db = QSqlDatabase::database(mFilename);
     db.transaction();
@@ -1521,7 +1521,7 @@ void DatabaseAdapter::removeTag( const QString & tag ) const
         qWarning() << q.lastError().text() << q.executedQuery();
 }
 
-QString DatabaseAdapter::guessGloss( const QString & hint , const WritingSystem & ws )
+QString DatabaseAdapter::guessGloss( const QString & hint , const WritingSystem & ws ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare( "select Form from Glosses where InterpretationId in (select InterpretationId from Glosses where Form=:Form) and WritingSystem=:WritingSystem limit 1;" );

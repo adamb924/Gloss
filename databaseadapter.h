@@ -67,22 +67,22 @@ public:
     qlonglong newInterpretation();
 
     //! \brief Creates a new interpretation of the baseline TextBit \a bit and returns the database index of the Interpreation
-    qlonglong newInterpretation( const TextBit & bit );
+    qlonglong newInterpretation( const TextBit & bit ) const;
 
     //! \brief Creates a new interpretation with the given text forms and glosses. Returns the _id of the interpretation
-    qlonglong newInterpretation( TextBitHash & textForms , TextBitHash & glossForms );
+    qlonglong newInterpretation( TextBitHash & textForms , TextBitHash & glossForms ) const;
 
     //! \brief Creates a text form for the given interpretation, with the given writing system. Returns the _id of the text form.
-    qlonglong newTextForm(qlonglong interpretationId, qlonglong writingSystemId);
+    qlonglong newTextForm(qlonglong interpretationId, qlonglong writingSystemId) const;
 
     //! \brief Creates a text form for the given interpretation and content in the \a bit. Or, if the a text form with the same form, writing system, and id already exists, the _id of that text form is returned and no new text form is created. Returns the _id of the text form.
-    qlonglong newTextForm(qlonglong interpretationId, const TextBit & bit);
+    qlonglong newTextForm(qlonglong interpretationId, const TextBit & bit) const;
 
     //! \brief Creates an empty gloss for the given interpretation, with the given writing system
-    qlonglong newGloss(qlonglong interpretationId, qlonglong writingSystemId);
+    qlonglong newGloss(qlonglong interpretationId, qlonglong writingSystemId) const;
 
     //! \brief Creates a gloss for the given interpretation and content in the \a bit. Or, if the a gloss with the same form, writing system, and id already exists, the _id of that gloss is returned and no new gloss is created. Returns the _id of the gloss.
-    qlonglong newGloss(qlonglong interpretationId, const TextBit & bit);
+    qlonglong newGloss(qlonglong interpretationId, const TextBit & bit) const;
 
     //! \brief Returns a list of glosses for the given Interpretation _id (\a id), with one gloss per WritingSystem in the database, if one is available. This is not guaranteed to be a helpful return!
     TextBitHash guessInterpretationGlosses(qlonglong id) const;
@@ -215,7 +215,7 @@ public:
 
     void removeTag( const QString & tag ) const;
 
-    QString guessGloss( const QString & hint , const WritingSystem & ws );
+    QString guessGloss( const QString & hint , const WritingSystem & ws ) const;
 
     qlonglong lexicalEntryIdFromAllomorph(qlonglong allomorphId) const;
 
