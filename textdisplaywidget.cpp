@@ -28,7 +28,6 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         idw->setFocus(foci);
         idw->setLines(lines);
 
-        connect( text, SIGNAL(baselineTextChanged(QString)), idw, SLOT(setLayoutFromText()) );
         connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
         connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
         connect( text, SIGNAL(phrasalGlossChanged(int,TextBit)), this, SLOT(updatePhrasalGloss(int,TextBit)) );

@@ -97,21 +97,6 @@ void Text::setBaselineWritingSystem(const WritingSystem & ws)
     mBaselineWritingSystem = ws;
 }
 
-QString Text::baselineText() const
-{
-    return mBaselineText;
-}
-
-void Text::setBaselineText(const QString & text)
-{
-    if( text != mBaselineText )
-    {
-        mBaselineText = text;
-        setGlossItemsFromBaseline();
-        emit baselineTextChanged(mBaselineText);
-    }
-}
-
 const Project *Text::project() const
 {
     return mProject;
@@ -128,9 +113,9 @@ void Text::clearGlossItems()
     mPhrases.clear();
 }
 
-void Text::setGlossItemsFromBaseline()
+void Text::setGlossItemsFromBaseline(const QString & content)
 {
-    QStringList lines = mBaselineText.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
+    QStringList lines = content.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
     if( mPhrases.count() == lines.count() )
     {
         for(int i=0; i<lines.count(); i++)
@@ -372,19 +357,6 @@ bool Text::playSoundForLine( int lineNumber )
 FlexTextReader::Result Text::readResult() const
 {
     return mReadResult;
-}
-
-void Text::setBaselineFromGlossItems()
-{
-    QStringList phrases;
-    foreach(Phrase *phrase, mPhrases)
-    {
-        QStringList items;
-        foreach(GlossItem *item, *phrase->glossItems() )
-            items << item->baselineText().text();
-        phrases << items.join(" ");
-    }
-    setBaselineText( phrases.join("\n") );
 }
 
 void Text::markAsChanged()

@@ -55,9 +55,6 @@ public:
     WritingSystem baselineWritingSystem() const;
     void setBaselineWritingSystem(const WritingSystem & ws);
 
-    QString baselineText() const;
-    void setBaselineText(const QString & text);
-
     const Project * project() const;
 
     QList<Phrase*>* phrases();
@@ -95,8 +92,9 @@ public:
 
     void findGlossItemLocation(GlossItem *glossItem, int & line, int & position) const;
 
+    void setGlossItemsFromBaseline(const QString &content);
+
 public slots:
-    void setBaselineFromGlossItems();
     void markAsChanged();
     void removeLine( int lineNumber );
     void setFollowingInterpretations( GlossItem *glossItem );
@@ -117,7 +115,6 @@ private:
     DatabaseAdapter *mDbAdapter;
 
     QString mComment;
-    QString mBaselineText;
     QUrl mAudioFileURL;
 
     QList<Phrase*> mPhrases;
@@ -125,7 +122,6 @@ private:
 
     void clearGlossItems();
 
-    void setGlossItemsFromBaseline();
 
     void setLineOfGlossItems(Phrase *phrase , const QString & line );
 
@@ -135,7 +131,6 @@ private slots:
     void removePhrase( Phrase * phrase );
 
 signals:
-    void baselineTextChanged(const QString & baselineText);
     void glossItemsChanged();
     void idChanged(TextBit *b, qlonglong oldId);
     void phraseRefreshNeeded( int lineNumber );

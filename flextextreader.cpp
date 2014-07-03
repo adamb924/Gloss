@@ -175,7 +175,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
         qWarning() << "Text::readTextFromFlexText error with xml reading";
         return FlexTextReadXmlReadError;
     }
-    mText->setBaselineFromGlossItems();
+
     return FlexTextReadSuccess;
 }
 

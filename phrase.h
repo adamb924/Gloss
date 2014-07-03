@@ -76,10 +76,6 @@ public:
     void connectToText();
 
 signals:
-    //! \brief Emitted whenever a GlossItem of the phrase changes
-    /// This signal is used in similar context to requestGuiRefresh(Phrase*), but the two methods cannot be collapsed (see Phrase::connectGlossItem)
-    void phraseChanged();
-
     //! \brief Emitted whenever a phrasal gloss changes
     void phrasalGlossChanged(Phrase * thisPhrase, const TextBit & bit);
 
@@ -87,7 +83,6 @@ signals:
     void requestRemovePhrase(Phrase * phrase);
 
     //! \brief Emitted whenever a GlossItem of the phrase changes
-    /// This signal is used in similar context to phraseChanged(), but the two methods cannot be collapsed (see Phrase::connectGlossItem)
     void requestGuiRefresh(Phrase * phrase);
 
 public slots:

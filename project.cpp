@@ -163,7 +163,9 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
     }
 
     Text *text = new Text(ws,name,this);
-    text->setBaselineText(content);
+
+    text->setGlossItemsFromBaseline(content);
+
     if( text->isValid() )
     {
         text->saveText(false, false, true,false);

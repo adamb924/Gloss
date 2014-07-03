@@ -78,7 +78,6 @@ void Phrase::splitGloss( GlossItem *glossItem, const QList<TextBit> & bits )
         index++;
     }
     emit requestGuiRefresh(this);
-    emit phraseChanged();
 }
 
 void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
@@ -105,7 +104,6 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
         glossItem->deleteLater();
 
         emit requestGuiRefresh(this);
-        emit phraseChanged();
     }
 }
 
@@ -133,7 +131,6 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
         glossItem->deleteLater();
 
         emit requestGuiRefresh(this);
-        emit phraseChanged();
     }
 }
 
@@ -154,9 +151,7 @@ void Phrase::removeGlossItem( GlossItem *glossItem )
     {
         mGlossItems.removeAt(index);
         toRemove->deleteLater();
-
         emit requestGuiRefresh(this);
-        emit phraseChanged();
     }
 }
 
@@ -170,7 +165,6 @@ void Phrase::replaceGlossItem(GlossItem *glossItem, const TextBit &bit)
     mGlossItems.takeAt(index)->deleteLater();
     mGlossItems.insert( index , connectGlossItem( new GlossItem(bit, mProject) ) );
     emit requestGuiRefresh(this);
-    emit phraseChanged();
 }
 
 int Phrase::glossItemCount() const
@@ -197,9 +191,12 @@ void Phrase::clearGlossItems()
 GlossItem* Phrase::connectGlossItem(GlossItem * item)
 {
     item->connectToConcordance();
-    connect( item, SIGNAL(baselineTextChanged(TextBit)), this, SIGNAL(phraseChanged()) );
+
+    /// these signals tell the Text (and then the Project) that the data have changed
     connect( item, SIGNAL(fieldsChanged()), mText, SLOT(markAsChanged()) );
     connect( item, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), mText, SLOT(markAsChanged()) );
+
+    /// return the item as a convenience to the sender
     return item;
 }
 
@@ -220,7 +217,8 @@ const QList<GlossItem*>* Phrase::glossItems() const
 
 void Phrase::connectToText()
 {
-    connect( this, SIGNAL(phraseChanged()), mText, SLOT(setBaselineFromGlossItems()) );
+    /// if a GUI refresh is requested, it follows that the text has been changed
+    connect ( this, SIGNAL(requestGuiRefresh(Phrase*)), mText, SLOT(markAsChanged()) );
     connect( this, SIGNAL(requestGuiRefresh(Phrase*)), mText, SLOT(requestGuiRefresh(Phrase*)));
     connect( this, SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), mText, SLOT(markAsChanged()));
     connect( this, SIGNAL(phrasalGlossChanged(Phrase*,TextBit)), mText, SLOT(registerPhrasalGlossChange(Phrase*,TextBit)));

@@ -117,7 +117,6 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
         qWarning() << "FlexTextImporter::readTextFromFlexText error with xml reading";
         return FlexTextImporter::FlexTextReadXmlReadError;
     }
-    mText->setBaselineFromGlossItems();
 
     return FlexTextImporter::FlexTextReadSuccess;
 }
