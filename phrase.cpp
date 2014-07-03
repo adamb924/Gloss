@@ -168,7 +168,7 @@ void Phrase::replaceGlossItem(GlossItem *glossItem, const TextBit &bit)
         return;
     }
     mGlossItems.takeAt(index)->deleteLater();
-    mGlossItems.insert( index , new GlossItem(bit, mProject) );
+    mGlossItems.insert( index , connectGlossItem( new GlossItem(bit, mProject) ) );
     emit requestGuiRefresh(this);
     emit phraseChanged();
 }
