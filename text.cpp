@@ -172,7 +172,6 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
     for(int i=0; i<words.count(); i++)
     {
         phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
-        phrase->lastGlossItem()->connectToConcordance();
     }
 
     emit phraseRefreshNeeded( mPhrases.indexOf(phrase) );
