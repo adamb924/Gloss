@@ -543,7 +543,7 @@ void Text::baselineSearchReplace( const TextBit & search , const TextBit & repla
     {
         for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
         {
-            if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == search.text() )
+            if( mPhrases.at(i)->glossItemAt(j)->baselineText() == search )
             {
                 mPhrases.at(i)->glossItemAt(j)->resetBaselineText( replace );
             }
