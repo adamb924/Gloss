@@ -42,7 +42,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
         }
         else if ( view->tabs()->at(i)->type() == Tab::SyntacticParsing )
         {
-            SyntacticParsingWidget * spw = new SyntacticParsingWidget(this);
+            SyntacticParsingWidget * spw = new SyntacticParsingWidget(mText, view->tabs()->at(i), mProject, this);
             addTab( spw , view->tabs()->at(i)->name() );
         }
     }

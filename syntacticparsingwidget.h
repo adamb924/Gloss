@@ -3,6 +3,13 @@
 
 #include <QWidget>
 
+class QGraphicsScene;
+
+class Text;
+class Tab;
+class Project;
+class QGraphicsItem;
+
 namespace Ui {
 class SyntacticParsingWidget;
 }
@@ -12,11 +19,24 @@ class SyntacticParsingWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit SyntacticParsingWidget(QWidget *parent = 0);
+    SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent = 0);
     ~SyntacticParsingWidget();
 
 private:
+    void setupLayout();
+
+private slots:
+    void selectionChanged();
+
+private:
     Ui::SyntacticParsingWidget *ui;
+    Text *mText;
+    const Tab *mTab;
+    const Project *mProject;
+
+    QList<QGraphicsItem*> mPreviouslySelectedItems;
+
+    QGraphicsScene *mScene;
 };
 
 #endif // SYNTACTICPARSINGWIDGET_H

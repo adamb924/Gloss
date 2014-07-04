@@ -25,7 +25,7 @@ WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, c
     mConcordance(mGlossItem->concordance()),
     mAlignment(alignment)
 {
-    setStyleSheet("* { background-color: transparent; }");
+    setStyleSheet("WordDisplayWidget { border: 1px solid transparent; background-color: transparent; }");
 
     setObjectName("WordDisplayWidget");
 
@@ -833,6 +833,18 @@ void WordDisplayWidget::receiveKeyboardFocus()
             mGlossEdits.value( mGlossLines.at(i).writingSystem() )->setFocus();
             return;
         }
+    }
+}
+
+void WordDisplayWidget::setSelected(bool selected)
+{
+    if( selected )
+    {
+        setStyleSheet("WordDisplayWidget { border: 1px solid #c0c0c0; background-color: transparent; }");
+    }
+    else
+    {
+        setStyleSheet("WordDisplayWidget { border: 1px solid transparent; background-color: transparent; }");
     }
 }
 

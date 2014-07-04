@@ -43,6 +43,8 @@ public:
 
     void receiveKeyboardFocus();
 
+    void setSelected(bool selected);
+
 private:
     AnnotationMarkWidget *mAnnotationMarks;
 
