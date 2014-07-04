@@ -25,7 +25,7 @@ WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, c
     mConcordance(mGlossItem->concordance()),
     mAlignment(alignment)
 {
-    setStyleSheet("* { background-color: white; }");
+    setStyleSheet("* { background-color: transparent; }");
 
     setObjectName("WordDisplayWidget");
 
