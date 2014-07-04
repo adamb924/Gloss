@@ -25,6 +25,8 @@ WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, c
     mConcordance(mGlossItem->concordance()),
     mAlignment(alignment)
 {
+    setStyleSheet("* { background-color: white; }");
+
     setObjectName("WordDisplayWidget");
 
     mGlossLines = *mTab->interlinearLines().value( mGlossItem->baselineWritingSystem() );
