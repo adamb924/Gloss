@@ -3,6 +3,7 @@
 #include "databaseadapter.h"
 #include "text.h"
 #include "interlineardisplaywidget.h"
+#include "syntacticparsingwidget.h"
 
 #include <QCloseEvent>
 #include <QLabel>
@@ -24,18 +25,26 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
 
     for(int i=0; i<view->tabs()->count(); i++)
     {
-        InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( view->tabs()->at(i), mText, mProject, this);
-        idw->setFocus(foci);
-        idw->setLines(lines);
+        if( view->tabs()->at(i)->type() == Tab::InterlinearDisplay )
+        {
+            InterlinearDisplayWidget * idw = new InterlinearDisplayWidget( view->tabs()->at(i), mText, mProject, this);
+            idw->setFocus(foci);
+            idw->setLines(lines);
 
-        connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
-        connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
-        connect( text, SIGNAL(phrasalGlossChanged(int,TextBit)), this, SLOT(updatePhrasalGloss(int,TextBit)) );
+            connect( text, SIGNAL(glossItemsChanged()), idw, SLOT(setLayoutFromText()) );
+            connect( text, SIGNAL(phraseRefreshNeeded(int)), idw, SLOT(requestLineRefresh(int)) );
+            connect( text, SIGNAL(phrasalGlossChanged(int,TextBit)), this, SLOT(updatePhrasalGloss(int,TextBit)) );
 
-        connect( text, SIGNAL(guiRefreshRequest()), idw, SLOT(resetGui()) );
+            connect( text, SIGNAL(guiRefreshRequest()), idw, SLOT(resetGui()) );
 
-        mIdwTabs << idw;
-        addTab( idw, view->tabs()->at(i)->name() );
+            mIdwTabs << idw;
+            addTab( idw, view->tabs()->at(i)->name() );
+        }
+        else if ( view->tabs()->at(i)->type() == Tab::SyntacticParsing )
+        {
+            SyntacticParsingWidget * spw = new SyntacticParsingWidget(this);
+            addTab( spw , view->tabs()->at(i)->name() );
+        }
     }
 
     if( count() == 1 )

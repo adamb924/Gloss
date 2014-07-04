@@ -88,7 +88,8 @@ SOURCES += main.cpp\
     writingsystemlistmodel.cpp \
     annotationeditordialog.cpp \
     annotationtypelistmodel.cpp \
-    exporttextsdialog.cpp
+    exporttextsdialog.cpp \
+    syntacticparsingwidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -167,7 +168,8 @@ HEADERS  += mainwindow.h \
     writingsystemlistmodel.h \
     annotationeditordialog.h \
     annotationtypelistmodel.h \
-    exporttextsdialog.h
+    exporttextsdialog.h \
+    syntacticparsingwidget.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -196,7 +198,8 @@ FORMS    += mainwindow.ui \
     itemeditdialog.ui \
     projectoptionsdialog.ui \
     annotationeditordialog.ui \
-    exporttextsdialog.ui
+    exporttextsdialog.ui \
+    syntacticparsingwidget.ui
 
 LIBS += -L./ \
     -lquazip \

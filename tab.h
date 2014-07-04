@@ -14,7 +14,9 @@
 class Tab
 {
 public:
-    Tab(const QString & name);
+    enum TabType { InterlinearDisplay, SyntacticParsing, Null };
+
+    Tab(const QString & name, TabType type = Tab::InterlinearDisplay );
     ~Tab();
 
     QString name() const;
@@ -33,10 +35,16 @@ public:
     InterlinearItemTypeList* phrasalGlossLines();
     const InterlinearItemTypeList *phrasalGlossLines() const;
 
+    Tab::TabType type() const;
+
+    static QString getTypeString(TabType t);
+    static TabType getType(QString t);
+
 private:
     QString mName;
     QHash<WritingSystem,InterlinearItemTypeList*> mInterlinearLines;
     InterlinearItemTypeList mPhrasalGlossLines;
+    Tab::TabType mType;
 };
 
 #endif // TAB_H

@@ -863,7 +863,8 @@ void Project::parseConfigurationFile()
             else if( name == "tab" )
             {
                 inTab = true;
-                mViews.last()->tabs()->append( new Tab( stream.attributes().value("name").toString() ) );
+                Tab::TabType type = stream.attributes().hasAttribute("type") ? Tab::getType(stream.attributes().value("type").toString()) : Tab::InterlinearDisplay;
+                mViews.last()->tabs()->append( new Tab( stream.attributes().value("name").toString() , type ) );
             }
             else if( name == "item-type" )
             {
@@ -1206,6 +1207,7 @@ void Project::serializeConfigurationXml()
 
             stream.writeStartElement("tab");
             stream.writeAttribute("name", tab->name() );
+            stream.writeAttribute("type", Tab::getTypeString(tab->type()) );
 
             for(int k=0; k < tab->interlinearLines().keys().count(); k++)
             {

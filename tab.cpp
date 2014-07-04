@@ -1,6 +1,6 @@
 #include "tab.h"
 
-Tab::Tab(const QString &name) : mName(name)
+Tab::Tab(const QString &name, TabType type) : mName(name), mType(type)
 {
 }
 
@@ -74,6 +74,35 @@ QHash<WritingSystem,InterlinearItemTypeList*> Tab::interlinearLines()
 const InterlinearItemTypeList* Tab::phrasalGlossLines() const
 {
     return &mPhrasalGlossLines;
+}
+
+Tab::TabType Tab::type() const
+{
+    return mType;
+}
+
+QString Tab::getTypeString(Tab::TabType t)
+{
+    switch(t)
+    {
+    case Tab::InterlinearDisplay:
+        return "interlinear-display";
+    case Tab::SyntacticParsing:
+        return "syntactic-parsing";
+    case Tab::Null:
+    default:
+        return "null";
+    }
+}
+
+Tab::TabType Tab::getType(QString t)
+{
+    if( t == "interlinear-display" )
+        return Tab::InterlinearDisplay;
+    else if ( t == "syntactic-parsing" )
+        return Tab::SyntacticParsing;
+    else
+        return Tab::Null;
 }
 
 InterlinearItemTypeList* Tab::phrasalGlossLines()
