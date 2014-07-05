@@ -26,7 +26,6 @@ private:
     void setupLayout();
 
 private slots:
-    void selectionChanged();
 
 private:
     Ui::SyntacticParsingWidget *ui;
@@ -35,6 +34,10 @@ private:
     const Project *mProject;
 
     QList<QGraphicsItem*> mPreviouslySelectedItems;
+
+    int mInterMorphemeDistance;
+    int mInterWordDistance;
+    int mVerticalDistance;
 
     QGraphicsScene *mScene;
 };

@@ -38,6 +38,9 @@ public:
     //! \brief Returns the text of the allomorph, punctuation indicators indicating what kind of allomorph it is
     QString typeFormattedString() const;
 
+    //! \brief Returns the string formatted with a - or a =, according to whether it is a proclitic, enclitic, prefix, suffix
+    TextBit textBitForConcatenation() const;
+
     //! \brief Returns the text of the allomorph as a TextBit (including punctuation indicators)
     TextBit textBit() const;
 

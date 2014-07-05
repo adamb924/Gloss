@@ -1,5 +1,7 @@
 #include "writingsystem.h"
 
+#include <QFont>
+
 WritingSystem::WritingSystem() : mId(-1), mName(""), mAbbreviation(""), mFlexString(""), mKeyboardCommand(""), mFontFamily(""), mFontSize(0), mLayoutDirection(Qt::LeftToRight)
 {
 }
@@ -37,6 +39,11 @@ QString WritingSystem::flexString() const
 Qt::LayoutDirection WritingSystem::layoutDirection() const
 {
     return mLayoutDirection;
+}
+
+QFont WritingSystem::font() const
+{
+    return QFont( mFontFamily, mFontSize );
 }
 
 QString WritingSystem::fontFamily() const

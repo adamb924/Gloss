@@ -44,6 +44,28 @@ QString Allomorph::typeFormattedString() const
     return mTextBit.text();
 }
 
+TextBit Allomorph::textBitForConcatenation() const
+{
+    QString text = mTextBit.text();
+    if( mType == Allomorph::Proclitic )
+    {
+        text = text + "=";
+    }
+    else if ( mType == Allomorph::Enclitic )
+    {
+        text = "=" + text;
+    }
+    else if ( mType == Allomorph::Suffix )
+    {
+        text = "-" + text;
+    }
+    else if ( mType == Allomorph::Prefix )
+    {
+        text = text + "-";
+    }
+    return TextBit( text, mTextBit.writingSystem() );
+}
+
 Allomorph::Type Allomorph::type() const
 {
     return mType;

@@ -11,6 +11,9 @@
 #include "tab.h"
 #include "project.h"
 #include "worddisplaywidget.h"
+#include "morphemegraphicsitem.h"
+#include "allomorph.h"
+#include "textbit.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -26,7 +29,9 @@ SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, con
     ui->graphicsView->setScene(mScene);
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
-    connect( mScene, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+    mInterMorphemeDistance = 5;
+    mInterWordDistance = 15;
+    mVerticalDistance = 5;
 
     setupLayout();
 }
@@ -38,62 +43,62 @@ SyntacticParsingWidget::~SyntacticParsingWidget()
 
 void SyntacticParsingWidget::setupLayout()
 {
-    /// @todo Support RTL layout
-    QGraphicsLinearLayout *layout = new QGraphicsLinearLayout;
-
-    for(int i=0; i<mText->phrases()->count(); i++)
+    qreal x = mInterWordDistance;
+    for(int i=0; i<mText->phrases()->count(); i++) /// for each phrase
     {
-        for(int j=0; j<mText->phrases()->at(i)->glossItems()->count(); j++)
+        for(int j=0; j<mText->phrases()->at(i)->glossItems()->count(); j++) /// for each gloss item
         {
-            WordDisplayWidget *wdw = new WordDisplayWidget( mText->phrases()->at(i)->glossItemAt(j) , mText->baselineWritingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight, mTab, mProject, 0 );
-            QGraphicsWidget *graphicsWdw = mScene->addWidget( wdw );
-            layout->addItem( graphicsWdw );
-            graphicsWdw->setFlag(QGraphicsItem::ItemIsSelectable, true);
-        }
-    }
+            int longestLine = 0;
+            qreal y=0;
 
-    QGraphicsWidget *form = new QGraphicsWidget;
-    form->setLayout(layout);
-    mScene->addItem(form);
+            GlossItem *glossItem = mText->phrases()->at(i)->glossItems()->at(j);
+            InterlinearItemTypeList *lines = mTab->interlinearLines().value( glossItem->baselineWritingSystem() );
+            for(int k=0; k<lines->count(); k++) /// for each interlinear line
+            {
+                qreal lineLength = 0;
+                qreal lineHeight = 0;
+                if( lines->at(k).type() == InterlinearItemType::Analysis )
+                {
+                    MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
+                    AllomorphIterator iter = ma->allomorphIterator();
+                    while (iter.hasNext())
+                    {
+                        MorphemeGraphicsItem *item = new MorphemeGraphicsItem( iter.next().textBitForConcatenation() );
+                        item->setPos(x + lineLength, y);
+                        mScene->addItem(item);
+                        lineLength += item->boundingRect().width();
+                        if( iter.hasNext() )
+                        {
+                            lineLength += mInterMorphemeDistance;
+                        }
+                        lineHeight = item->boundingRect().height();
+                    }
+                }
+                else if ( lines->at(k).type() == InterlinearItemType::ImmutableText )
+                {
+                    QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->textForm( lines->at(k).writingSystem() ).text() );
+                    item->setFont( lines->at(k).writingSystem().font() );
+                    item->setPos(x, y);
+                    mScene->addItem(item);
+                    lineHeight = item->boundingRect().height();
+                    lineLength = item->boundingRect().width();
+                }
+                else if ( lines->at(k).type() == InterlinearItemType::ImmutableGloss )
+                {
+                    QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->gloss( lines->at(k).writingSystem() ).text() );
+                    item->setFont( lines->at(k).writingSystem().font() );
+                    item->setPos(x, y);
+                    mScene->addItem(item);
+                    lineHeight = item->boundingRect().height();
+                    lineLength = item->boundingRect().width();
+                }
+                longestLine = lineLength > longestLine ? lineLength : longestLine;
+                y += lineHeight + mVerticalDistance;
+            } /// for each interlinear line
 
+            x += longestLine + mInterWordDistance;
+        } /// for each gloss item
+    } /// for each phrase
 }
 
-void SyntacticParsingWidget::selectionChanged()
-{
-    QList<QGraphicsItem*> selectedItems = mScene->selectedItems();
 
-    QSet<QGraphicsItem*> current = selectedItems.toSet();
-    QSet<QGraphicsItem*> previous = mPreviouslySelectedItems.toSet();
-    QSet<QGraphicsItem*> deselected = previous.subtract(current);
-    QSet<QGraphicsItem*> selected = current.subtract(previous);
-
-    QSetIterator<QGraphicsItem*> i(deselected);
-    while (i.hasNext())
-    {
-        QGraphicsProxyWidget *pw = qgraphicsitem_cast<QGraphicsProxyWidget*>( i.next() );
-        if( pw != 0 )
-        {
-            WordDisplayWidget *wdw = qobject_cast<WordDisplayWidget*>(pw->widget());
-            if( wdw != 0 )
-            {
-                wdw->setSelected(false);
-            }
-        }
-    }
-
-    QSetIterator<QGraphicsItem*> j(selected);
-    while (j.hasNext())
-    {
-        QGraphicsProxyWidget *pw = qgraphicsitem_cast<QGraphicsProxyWidget*>( j.next() );
-        if( pw != 0 )
-        {
-            WordDisplayWidget *wdw = qobject_cast<WordDisplayWidget*>(pw->widget());
-            if( wdw != 0 )
-            {
-                wdw->setSelected(true);
-            }
-        }
-    }
-
-    mPreviouslySelectedItems = selectedItems;
-}

@@ -16,6 +16,8 @@
 #include <QHash>
 #include <QtDebug>
 
+class QFont;
+
 class WritingSystem
 {
 public:
@@ -28,6 +30,7 @@ public:
     QString flexString() const;
     QString keyboardCommand() const;
     Qt::LayoutDirection layoutDirection() const;
+    QFont font() const;
 
     QString summaryString() const;
 
