@@ -37,6 +37,8 @@ SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, con
     ui->graphicsView->setScene(mScene);
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
+    connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(analysisSelectionChanged(QString)) );
+
     ui->comboBox->insertItems(0, text->syntacticAnalyses()->keys() );
 
     connect( ui->addButton, SIGNAL(clicked()), this, SLOT(newAnalysis()));
