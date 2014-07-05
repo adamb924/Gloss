@@ -4,12 +4,17 @@
 #include <QGraphicsSimpleTextItem>
 
 class TextBit;
+class Allomorph;
 
 class MorphemeGraphicsItem : public QGraphicsSimpleTextItem
 {
 public:
-    MorphemeGraphicsItem(const TextBit &bit, QGraphicsItem *parent = 0);
+    MorphemeGraphicsItem(const Allomorph * allomorph, QGraphicsItem *parent = 0);
 
+    const Allomorph *allomorph() const;
+
+private:
+    const Allomorph *mAllomorph;
 };
 
 #endif // MORPHEMEGRAPHICSITEM_H

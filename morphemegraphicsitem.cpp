@@ -1,13 +1,20 @@
 #include "morphemegraphicsitem.h"
 
 #include "textbit.h"
+#include "allomorph.h"
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-MorphemeGraphicsItem::MorphemeGraphicsItem(const TextBit & bit, QGraphicsItem * parent)
-    : QGraphicsSimpleTextItem(bit.text(), parent)
+MorphemeGraphicsItem::MorphemeGraphicsItem(const Allomorph *allomorph, QGraphicsItem * parent)
+    : QGraphicsSimpleTextItem( allomorph->textBitForConcatenation().text(), parent),
+    mAllomorph(allomorph)
 {
-    setFont( bit.writingSystem().font() );
+    setFont( allomorph->writingSystem().font() );
     setFlag(QGraphicsItem::ItemIsSelectable, true);
+}
+
+const Allomorph* MorphemeGraphicsItem::allomorph() const
+{
+    return mAllomorph;
 }

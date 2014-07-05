@@ -3,10 +3,17 @@
 
 #include "syntacticanalysiselement.h"
 
+class Allomorph;
+
 class SyntacticAnalysisTerminal : public SyntacticAnalysisElement
 {
 public:
-    SyntacticAnalysisTerminal();
+    SyntacticAnalysisTerminal(const Allomorph * allomorph);
+
+    const Allomorph* allomorph() const;
+
+private:
+    const Allomorph *mAllomorph;
 };
 
 #endif // SYNTACTICANALYSISTERMINAL_H

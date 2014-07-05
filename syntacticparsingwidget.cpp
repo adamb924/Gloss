@@ -17,6 +17,7 @@
 #include "allomorph.h"
 #include "textbit.h"
 #include "syntacticanalysis.h"
+#include "syntacticanalysisterminal.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -68,14 +69,13 @@ void SyntacticParsingWidget::setupBaseline()
                 if( lines->at(k).type() == InterlinearItemType::Analysis )
                 {
                     MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
-                    AllomorphIterator iter = ma->allomorphIterator();
-                    while (iter.hasNext())
+                    for(int m=0; m<ma->allomorphCount(); m++)
                     {
-                        MorphemeGraphicsItem *item = new MorphemeGraphicsItem( iter.next().textBitForConcatenation() );
+                        MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m) );
                         item->setPos(x + lineLength, y);
                         mScene->addItem(item);
                         lineLength += item->boundingRect().width();
-                        if( iter.hasNext() )
+                        if( m < ma->allomorphCount()-1 )
                         {
                             lineLength += mInterMorphemeDistance;
                         }
@@ -113,6 +113,50 @@ void SyntacticParsingWidget::redrawSyntacticAnnotations()
 {
     if( mAnalysis == 0 ) return;
 
+}
+
+void SyntacticParsingWidget::createConstituent()
+{
+    QList<SyntacticAnalysisTerminal *> terminals;
+    QListIterator<const Allomorph*> iter(selectedAllmorphs());
+
+    if( iter.hasNext() ) /// i.e., if the selection is not empty
+    {
+        bool ok;
+        QString label = QInputDialog::getText(this, tr("New constituent"),
+                                             tr("Label:"), QLineEdit::Normal,tr(""), &ok);
+        if (ok && !label.isEmpty())
+        {
+            while( iter.hasNext() )
+            {
+                terminals << new SyntacticAnalysisTerminal(iter.next());
+            }
+            mAnalysis->createConstituent( label , terminals );
+        }
+    }
+}
+
+QList<const Allomorph *> SyntacticParsingWidget::selectedAllmorphs()
+{
+    QList<const Allomorph *> allomorphs;
+    QListIterator<QGraphicsItem*> iter(mScene->selectedItems());
+    while( iter.hasNext() )
+    {
+        MorphemeGraphicsItem * item = qgraphicsitem_cast<MorphemeGraphicsItem*>(iter.next());
+        if( item != 0 ) /// should never happen since only MorphemeGraphicsItem objects are selectable, but just in case...
+        {
+            allomorphs << item->allomorph();
+        }
+    }
+    return allomorphs;
+}
+
+void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
+{
+    if( event->key() == Qt::Key_A )
+    {
+        createConstituent();
+    }
 }
 
 void SyntacticParsingWidget::analysisSelectionChanged(const QString &newSelection)

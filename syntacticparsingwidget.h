@@ -10,6 +10,7 @@ class Tab;
 class Project;
 class QGraphicsItem;
 class SyntacticAnalysis;
+class Allomorph;
 
 namespace Ui {
 class SyntacticParsingWidget;
@@ -27,7 +28,13 @@ private:
     void setupBaseline();
     void redrawSyntacticAnnotations();
 
+    QList<const Allomorph *> selectedAllmorphs();
+
+protected:
+    void keyReleaseEvent(QKeyEvent * event);
+
 private slots:
+    void createConstituent();
     void analysisSelectionChanged(const QString & newSelection);
     void newAnalysis();
     void deleteAnalysis();
