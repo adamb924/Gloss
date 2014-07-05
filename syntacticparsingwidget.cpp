@@ -117,6 +117,8 @@ void SyntacticParsingWidget::redrawSyntacticAnnotations()
 
 void SyntacticParsingWidget::createConstituent()
 {
+    if( mAnalysis == 0 ) return;
+
     QList<SyntacticAnalysisTerminal *> terminals;
     QListIterator<const Allomorph*> iter(selectedAllmorphs());
 
