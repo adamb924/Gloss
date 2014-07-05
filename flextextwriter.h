@@ -25,13 +25,11 @@ public:
 
     void setVerboseOutput(bool value);
     void setIncludeGlossNamespace(bool value);
-    void setIncludeMorphologicalAnalysis(bool value);
 
 private:
     Text *mText;
     bool mVerboseOutput;
     bool mIncludeGlossNamespace;
-    bool mIncludeMorphologicalAnalysis;
     QXmlStreamWriter * stream;
 
     //! \brief Serialize the interlinear text (i.e., <interlinear-text> to the XML stream
@@ -41,11 +39,14 @@ private:
 
     bool serializePunctuation(GlossItem *glossItem) const;
 
-    //! \brief Serialize the interlinear text (i.e., <interlinear-text> to the XML stream
+    //! \brief Serialize the interlinear text (i.e., <interlinear-text> to the XML stream)
     bool serializeMorphemes(GlossItem *glossItem) const;
 
-    //! \brief Serialize the interlinear text (i.e., <interlinear-text> to the XML stream
+    //! \brief Serialize the allomorph (i.e., <morph> in the XML stream)
     bool serializeAllomorph(const Allomorph & allomorph) const;
+
+    //! \brief Serialize the allomorph (i.e., <morph> in the XML stream) without including all of the database information
+    bool serializeAllomorphNonverbose(const Allomorph & allomorph) const;
 
     //! \brief Serialize the languages.
     bool serializeLanguages() const;

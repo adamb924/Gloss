@@ -79,7 +79,7 @@ void TextDisplayWidget::setLines(const QList<int> & lines)
 
 void TextDisplayWidget::saveText()
 {
-    mText->saveText(false,false,true,false);
+    mText->saveText(false,true,false);
 }
 
 Text * TextDisplayWidget::text()

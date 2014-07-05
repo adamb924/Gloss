@@ -84,12 +84,12 @@ QVBoxLayout* InterlinearDisplayWidget::addPhrasalGlossLayout(int lineNumber)
 
 void InterlinearDisplayWidget::saveText()
 {
-    mText->saveText(false, false, true, true);
+    mText->saveText(false, true, true);
 }
 
 void InterlinearDisplayWidget::saveTextVerbose()
 {
-    mText->saveText(true, true, true, true);
+    mText->saveText(true, true, true);
 }
 
 void InterlinearDisplayWidget::resetGui()

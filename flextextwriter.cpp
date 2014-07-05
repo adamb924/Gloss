@@ -16,7 +16,6 @@ FlexTextWriter::FlexTextWriter(Text *text) : mText(text)
 {
     mVerboseOutput = false;
     mIncludeGlossNamespace = true;
-    mIncludeMorphologicalAnalysis = false;
 }
 
 bool FlexTextWriter::writeFile( const QString & filename )
@@ -164,10 +163,7 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem) const
             serializeItemNonVerbose("gls", glossIter.key() , glossIter.value().id() );
     }
 
-    if( mIncludeMorphologicalAnalysis )
-    {
-        serializeMorphemes( glossItem );
-    }
+    serializeMorphemes( glossItem );
 
     // custom annotations
     if( mIncludeGlossNamespace )
@@ -212,7 +208,9 @@ bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
 
             AllomorphIterator iter = analysis->allomorphIterator();
             while(iter.hasNext())
-                serializeAllomorph( iter.next()  );
+            {
+                mVerboseOutput ? serializeAllomorph( iter.next() ) : serializeAllomorphNonverbose( iter.next() );
+            }
             stream->writeEndElement(); // morphemes
         }
     }
@@ -225,6 +223,7 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
 
     stream->writeAttribute("type", allomorph.typeString());
     writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
+    writeNamespaceAttribute( "guid" , allomorph.guid() );
 
     serializeItem( "txt" , allomorph.writingSystem(), allomorph.text() );
 
@@ -256,6 +255,14 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
 
     stream->writeEndElement(); // morph
 
+    return true;
+}
+
+bool FlexTextWriter::serializeAllomorphNonverbose(const Allomorph &allomorph) const
+{
+    stream->writeEmptyElement("morph");
+    writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
+    writeNamespaceAttribute( "guid" , allomorph.guid() );
     return true;
 }
 
@@ -310,11 +317,6 @@ void FlexTextWriter::setVerboseOutput(bool value)
 void FlexTextWriter::setIncludeGlossNamespace(bool value)
 {
     mIncludeGlossNamespace = value;
-}
-
-void FlexTextWriter::setIncludeMorphologicalAnalysis(bool value)
-{
-    mIncludeMorphologicalAnalysis = value;
 }
 
 void FlexTextWriter::writeNamespaceAttribute(const QString &name, const QString &value) const

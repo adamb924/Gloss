@@ -611,7 +611,7 @@ void MainWindow::exportTexts()
             Text * text = mProject->text(textName);
             if( text != 0)
             {
-                text->writeTextTo( dir.absoluteFilePath(textName+".flextext") , true, true, dlg.includeGlossNamespace() );
+                text->writeTextTo( dir.absoluteFilePath(textName+".flextext") , true, dlg.includeGlossNamespace() );
             }
             else
             {
