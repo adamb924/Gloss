@@ -41,6 +41,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
 
     bool inWord = false;
     bool inPhrase = false;
+    bool inMorphemes = false;
 
     qlonglong interpretationId = -1;
     GlossItem::ApprovalStatus approvalStatus = GlossItem::Unapproved;
@@ -98,7 +99,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     mText->mPhrases.last()->setInterval( Interval(start, end) );
                 }
             }
-            else if ( name == "item" )
+            else if ( name == "item" && !inMorphemes )
             {
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("type") )
@@ -152,6 +153,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             }
             else if( name == "morphemes")
             {
+                inMorphemes = true;
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","lang") )
                 {
@@ -206,6 +208,10 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             else if(name == "phrase")
             {
                 inPhrase = false;
+            }
+            else if(name == "morphemes")
+            {
+                inMorphemes=false;
             }
         }
     }
