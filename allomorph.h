@@ -25,7 +25,11 @@ public:
     Allomorph(const Allomorph & other);
     Allomorph& operator=(const Allomorph & other);
 
+    //! \brief Returns true if all members of \a other are identical (including the GUID)
     bool operator==(const Allomorph & other) const;
+
+    //! \brief Returns true if all members of \a other are identical (excluding the GUID)
+    bool equalExceptGuid(const Allomorph & other) const;
 
     //! \brief Returns the type of the allomorph as Allomorph::Type
     Type type() const;
@@ -72,7 +76,14 @@ public:
     //! \brief Set the type of the allomorph to \a t
     void setType( Type t );
 
+    //! \brief Return the GUID in string format
     QString guid() const;
+
+    //! \brief Set the GUID to \a guidString (where \a guidString is the string format of the QUuid)
+    void setGuid( const QString & guidString );
+
+    //! \brief Set the GUID to \a guidString (where \a guidString is the string format of the QUuid)
+    void setGuid( const QUuid & guid );
 
     //! \brief Returns the type string for \a t
     static QString getTypeString(Type t);

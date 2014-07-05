@@ -26,6 +26,8 @@ public:
     MorphologicalAnalysis& operator=(const MorphologicalAnalysis & other);
     bool operator!=(const MorphologicalAnalysis & other) const;
 
+    bool equalExceptGuid(const MorphologicalAnalysis & other) const;
+
     //! \brief Returns a string representation of the analysis, with the baseline text delimited by morpheme breaks
     QString baselineSummary() const;
 

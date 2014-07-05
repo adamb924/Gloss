@@ -52,6 +52,11 @@ bool Allomorph::operator==(const Allomorph & other) const
     return mType == other.mType && mTextBit == other.mTextBit && mId == other.mId && mGlosses == other.mGlosses && mGuid == other.mGuid;
 }
 
+bool Allomorph::equalExceptGuid(const Allomorph &other) const
+{
+    return mType == other.mType && mTextBit == other.mTextBit && mId == other.mId && mGlosses == other.mGlosses;
+}
+
 QString Allomorph::typeFormattedString() const
 {
     return mTextBit.text();
@@ -147,6 +152,16 @@ void Allomorph::setType( Type t )
 QString Allomorph::guid() const
 {
     return mGuid.toString();
+}
+
+void Allomorph::setGuid(const QString &guidString)
+{
+    mGuid = QUuid(guidString);
+}
+
+void Allomorph::setGuid(const QUuid &guid)
+{
+    mGuid = guid;
 }
 
 QString Allomorph::getTypeString(Allomorph::Type t)

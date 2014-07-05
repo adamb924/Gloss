@@ -49,6 +49,8 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     QHash<QString,TextBit> annotations;
     QSet<qlonglong> textFormIds;
     QSet<qlonglong> glossFormIds;
+    QHash<QString,QList<QUuid> > morphGuids;
+    QList<QUuid> *currentGuids = 0;
 
     while (!stream.atEnd())
     {
@@ -63,6 +65,8 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 textFormIds.clear();
                 glossFormIds.clear();
                 annotations.clear();
+
+                morphGuids.clear();
 
                 if( stream.attributes().hasAttribute("http://www.adambaker.org/gloss.php","id") )
                 {
@@ -146,19 +150,52 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     mText->setSound( QUrl::fromEncoded( attr.value("http://www.adambaker.org/gloss.php","audio-file").toString().toUtf8() ) );
                 }
             }
+            else if( name == "morphemes")
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","lang") )
+                {
+                    QString lang = attr.value("http://www.adambaker.org/gloss.php","lang").toString();
+                    morphGuids.insert( lang , QList<QUuid>() );
+                    currentGuids = & morphGuids[lang];
+                }
+            }
+            else if( name == "morph")
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","guid") && !morphGuids.isEmpty() )
+                {
+                    currentGuids->append( QUuid( attr.value("http://www.adambaker.org/gloss.php","guid").toString() ) );
+                }
+            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
             if(name == "word")
             {
                 mText->mPhrases.last()->appendGlossItem(new GlossItem( glossItemBaselineWritingSystem.isNull() ? mText->mBaselineWritingSystem : glossItemBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject ));
-                mText->mPhrases.last()->lastGlossItem()->setApprovalStatus(approvalStatus);
+                GlossItem * glossItem = mText->mPhrases.last()->lastGlossItem();
+
+                glossItem->setApprovalStatus(approvalStatus);
 
                 QHashIterator<QString,TextBit> annIter(annotations);
                 while(annIter.hasNext())
                 {
                     annIter.next();
-                    mText->mPhrases.last()->lastGlossItem()->setAnnotation( annIter.key(), annIter.value() );
+                    glossItem->setAnnotation( annIter.key(), annIter.value() );
+                }
+
+                // put all of the GUIDs in for the allomorphs
+                foreach( QString lang , morphGuids.keys() )
+                {
+                    MorphologicalAnalysis * ma = glossItem->morphologicalAnalysis( mDbAdapter->writingSystem(lang) );
+                    if( ma->allomorphCount() == morphGuids.value(lang).count() )
+                    {
+                        for(int i=0; i<ma->allomorphCount(); i++)
+                        {
+                            ma->allomorph(i)->setGuid( morphGuids.value(lang).at(i) );
+                        }
+                    }
                 }
 
                 inWord = false;

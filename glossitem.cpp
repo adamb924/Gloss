@@ -390,14 +390,18 @@ void GlossItem::loadStringsFromDatabase()
 
 void GlossItem::loadMorphologicalAnalysesFromDatabase()
 {
-    mMorphologicalAnalyses.clear();
     TextBitHashIterator tfIter( mTextForms );
     while(tfIter.hasNext())
     {
         tfIter.next();
         if( mDbAdapter->textFormHasMorphologicalAnalysis( tfIter.value().id() ) )
         {
-            mMorphologicalAnalyses.insert( tfIter.key() , mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() ) );
+            /// This is intended to preserve the GUIDs if the morphological analysis has not changed
+            MorphologicalAnalysis * databaseMA = mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() );
+            if( !databaseMA->equalExceptGuid(  *mMorphologicalAnalyses.value( tfIter.value().writingSystem() ) ) )
+            {
+                mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
+            }
             emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value(tfIter.key()) );
         }
     }

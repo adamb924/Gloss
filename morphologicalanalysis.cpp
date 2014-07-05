@@ -37,6 +37,22 @@ bool MorphologicalAnalysis::operator!=(const MorphologicalAnalysis & other) cons
     return mTextFormId != other.mTextFormId || mAllomorphs != other.mAllomorphs;
 }
 
+bool MorphologicalAnalysis::equalExceptGuid(const MorphologicalAnalysis &other) const
+{
+    if( mTextFormId != other.mTextFormId || mAllomorphs.count() != other.mAllomorphs.count() )
+    {
+        return false;
+    }
+    for(int i=0; i<mAllomorphs.count(); i++)
+    {
+        if( ! mAllomorphs.at(i).equalExceptGuid( other.mAllomorphs.at(i) ) )
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 QString MorphologicalAnalysis::baselineSummary() const
 {
     QString summary;
