@@ -9,6 +9,7 @@ class Text;
 class Tab;
 class Project;
 class QGraphicsItem;
+class SyntacticAnalysis;
 
 namespace Ui {
 class SyntacticParsingWidget;
@@ -23,15 +24,21 @@ public:
     ~SyntacticParsingWidget();
 
 private:
-    void setupLayout();
+    void setupBaseline();
+    void redrawSyntacticAnnotations();
 
 private slots:
+    void analysisSelectionChanged(const QString & newSelection);
+    void newAnalysis();
+    void deleteAnalysis();
 
 private:
     Ui::SyntacticParsingWidget *ui;
     Text *mText;
     const Tab *mTab;
     const Project *mProject;
+
+    SyntacticAnalysis * mAnalysis;
 
     QList<QGraphicsItem*> mPreviouslySelectedItems;
 

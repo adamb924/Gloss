@@ -26,6 +26,7 @@
 #include "sound.h"
 #include "flextextwriter.h"
 #include "flextextreader.h"
+#include "syntacticanalysis.h"
 
 Text::Text() :
     mSound(0), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(false), mChanged(false), mBaselineWritingSystem(WritingSystem()), mProject(0), mDbAdapter(0)
@@ -147,6 +148,11 @@ void Text::setGlossItemsFromBaseline(const QString & content)
         progress.setValue(lines.count());
     }
     emit glossItemsChanged();
+}
+
+QHash<QString, SyntacticAnalysis *> *Text::syntacticAnalyses()
+{
+    return &mSyntacticAnalyses;
 }
 
 void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )

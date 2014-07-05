@@ -26,6 +26,7 @@ class QDir;
 class DatabaseAdapter;
 class QUrl;
 class Sound;
+class SyntacticAnalysis;
 
 class Text : public QObject
 {
@@ -94,6 +95,8 @@ public:
 
     void setGlossItemsFromBaseline(const QString &content);
 
+    QHash<QString, SyntacticAnalysis*>* syntacticAnalyses();
+
 public slots:
     void markAsChanged();
     void removeLine( int lineNumber );
@@ -113,6 +116,8 @@ private:
     WritingSystem mBaselineWritingSystem;
     Project *mProject;
     DatabaseAdapter *mDbAdapter;
+
+    QHash<QString, SyntacticAnalysis*> mSyntacticAnalyses;
 
     QString mComment;
     QUrl mAudioFileURL;

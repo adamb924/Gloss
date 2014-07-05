@@ -90,7 +90,11 @@ SOURCES += main.cpp\
     annotationtypelistmodel.cpp \
     exporttextsdialog.cpp \
     syntacticparsingwidget.cpp \
-    morphemegraphicsitem.cpp
+    morphemegraphicsitem.cpp \
+    syntacticanalysis.cpp \
+    syntacticanalysiselement.cpp \
+    syntacticanalysisconstituent.cpp \
+    syntacticanalysisterminal.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -171,7 +175,11 @@ HEADERS  += mainwindow.h \
     annotationtypelistmodel.h \
     exporttextsdialog.h \
     syntacticparsingwidget.h \
-    morphemegraphicsitem.h
+    morphemegraphicsitem.h \
+    syntacticanalysis.h \
+    syntacticanalysiselement.h \
+    syntacticanalysisconstituent.h \
+    syntacticanalysisterminal.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
