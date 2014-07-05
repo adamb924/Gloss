@@ -9,7 +9,7 @@ Allomorph::Allomorph(QUuid guid) :
 {
     if( mGuid.isNull() )
     {
-        QUuid::createUuid();
+        mGuid = QUuid::createUuid();
     }
 }
 
@@ -18,7 +18,7 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type , QUuid guid) 
 {
     if( mGuid.isNull() )
     {
-        QUuid::createUuid();
+        mGuid = QUuid::createUuid();
     }
 }
 
@@ -28,7 +28,7 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
     mGlosses.unite(glosses);
     if( mGuid.isNull() )
     {
-        QUuid::createUuid();
+        mGuid = QUuid::createUuid();
     }
 }
 
