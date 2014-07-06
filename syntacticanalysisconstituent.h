@@ -14,6 +14,10 @@ public:
     SyntacticAnalysisConstituent(const QString &label, QList<SyntacticAnalysisElement *> &elements);
     SyntacticAnalysisConstituent(const QString &label, QList<SyntacticAnalysisTerminal *> &elements);
 
+    QString label() const;
+    const Allomorph * allomorph() const;
+    QList<SyntacticAnalysisElement *>* elements();
+
 private:
     QString mLabel;
     QList<SyntacticAnalysisElement *> mElements;

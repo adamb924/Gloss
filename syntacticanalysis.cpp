@@ -16,3 +16,8 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
     SyntacticAnalysisConstituent *tmp = new SyntacticAnalysisConstituent(label, elements );
     mElements << tmp;
 }
+
+const QList<SyntacticAnalysisConstituent *> *SyntacticAnalysis::elements() const
+{
+    return &mElements;
+}

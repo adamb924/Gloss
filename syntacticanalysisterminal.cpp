@@ -11,3 +11,8 @@ const Allomorph *SyntacticAnalysisTerminal::allomorph() const
 {
     return mAllomorph;
 }
+
+QString SyntacticAnalysisTerminal::label() const
+{
+    return QString();
+}

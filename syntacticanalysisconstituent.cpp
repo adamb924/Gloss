@@ -15,3 +15,18 @@ SyntacticAnalysisConstituent::SyntacticAnalysisConstituent(const QString & label
         mElements << elements[i];
     }
 }
+
+QString SyntacticAnalysisConstituent::label() const
+{
+    return mLabel;
+}
+
+const Allomorph *SyntacticAnalysisConstituent::allomorph() const
+{
+    return 0;
+}
+
+QList<SyntacticAnalysisElement *> *SyntacticAnalysisConstituent::elements()
+{
+    return &mElements;
+}

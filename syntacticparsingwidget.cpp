@@ -17,7 +17,9 @@
 #include "allomorph.h"
 #include "textbit.h"
 #include "syntacticanalysis.h"
+#include "syntacticanalysisconstituent.h"
 #include "syntacticanalysisterminal.h"
+#include "constituentgraphicsitem.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -54,6 +56,7 @@ SyntacticParsingWidget::~SyntacticParsingWidget()
 
 void SyntacticParsingWidget::setupBaseline()
 {
+    mGraphicsItemAllomorphHash.clear();
     qreal x = mInterWordDistance;
     for(int i=0; i<mText->phrases()->count(); i++) /// for each phrase
     {
@@ -82,6 +85,8 @@ void SyntacticParsingWidget::setupBaseline()
                             lineLength += mInterMorphemeDistance;
                         }
                         lineHeight = item->boundingRect().height();
+
+                        mGraphicsItemAllomorphHash.insert(ma->allomorph(m), item);
                     }
                 }
                 else if ( lines->at(k).type() == InterlinearItemType::ImmutableText )
@@ -114,7 +119,23 @@ void SyntacticParsingWidget::setupBaseline()
 void SyntacticParsingWidget::redrawSyntacticAnnotations()
 {
     if( mAnalysis == 0 ) return;
+    qDeleteAll(mConstiuencyItems);
+    mConstiuencyItems.clear();
 
+    for(int i=0; i < mAnalysis->elements()->count(); i++ ) // for each element of the analysis
+    {
+        QList<QGraphicsItem*> daughters;
+        for(int j=0; j < mAnalysis->elements()->at(i)->elements()->count(); j++ )
+        {
+            if( mAnalysis->elements()->at(i)->elements()->at(j)->allomorph() != 0 )
+            {
+                daughters << mGraphicsItemAllomorphHash.value(mAnalysis->elements()->at(i)->elements()->at(j)->allomorph());
+            }
+        }
+        QGraphicsItem * item = new ConstituentGraphicsItem( mAnalysis->elements()->at(i)->label(), daughters );
+        mScene->addItem(item);
+        mConstiuencyItems << item;
+    }
 }
 
 void SyntacticParsingWidget::createConstituent()
@@ -136,8 +157,11 @@ void SyntacticParsingWidget::createConstituent()
                 terminals << new SyntacticAnalysisTerminal(iter.next());
             }
             mAnalysis->createConstituent( label , terminals );
+            redrawSyntacticAnnotations();
         }
     }
+
+    mScene->clearSelection();
 }
 
 QList<const Allomorph *> SyntacticParsingWidget::selectedAllmorphs()

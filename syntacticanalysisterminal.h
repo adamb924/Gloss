@@ -12,6 +12,8 @@ public:
 
     const Allomorph* allomorph() const;
 
+    QString label() const;
+
 private:
     const Allomorph *mAllomorph;
 };

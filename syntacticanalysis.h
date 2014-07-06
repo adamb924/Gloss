@@ -15,9 +15,11 @@ public:
 
     void createConstituent(const QString &label, QList<SyntacticAnalysisTerminal*> elements);
 
+    const QList<SyntacticAnalysisConstituent*>* elements() const;
+
 private:
     QString mName;
-    QList<SyntacticAnalysisElement*> mElements;
+    QList<SyntacticAnalysisConstituent*> mElements;
 };
 
 #endif // SYNTACTICANALYSIS_H

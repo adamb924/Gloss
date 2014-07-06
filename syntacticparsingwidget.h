@@ -47,7 +47,8 @@ private:
 
     SyntacticAnalysis * mAnalysis;
 
-    QList<QGraphicsItem*> mPreviouslySelectedItems;
+    QList<QGraphicsItem*> mConstiuencyItems;
+    QHash<const Allomorph*,QGraphicsItem*> mGraphicsItemAllomorphHash;
 
     int mInterMorphemeDistance;
     int mInterWordDistance;
