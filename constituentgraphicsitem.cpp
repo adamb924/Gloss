@@ -22,8 +22,6 @@ ConstituentGraphicsItem::ConstituentGraphicsItem(const QString & label, const QL
 
 QRectF ConstituentGraphicsItem::boundingRect() const
 {
-//    qDebug() << "ConstituentGraphicsItem::boundingRect";
-
     if( mDaughters.isEmpty() )
     {
         return QRectF(0,0,0,0);
@@ -31,12 +29,13 @@ QRectF ConstituentGraphicsItem::boundingRect() const
 
     qreal left = mDaughters.first()->sceneBoundingRect().center().x();
     qreal right = mDaughters.first()->sceneBoundingRect().center().x();
+    qreal bottom = mDaughters.first()->sceneBoundingRect().top();
     for(int i=1; i<mDaughters.count(); i++)
     {
         left = qMin( left, mDaughters.at(i)->sceneBoundingRect().center().x() );
         right = qMax( right, mDaughters.at(i)->sceneBoundingRect().center().x() );
+        bottom = qMin( bottom, mDaughters.at(i)->sceneBoundingRect().top() );
     }
-    qreal bottom = mDaughters.first()->sceneBoundingRect().top();
     qreal top = bottom - mStalkHeight - mPenWidth - mFontHeight;
 
     return QRectF( sceneTransform().inverted().map( QPointF(left,top) ) , QSize(right-left, bottom-top) );
