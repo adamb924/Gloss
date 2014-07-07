@@ -4,22 +4,20 @@
 #include <QString>
 #include <QList>
 
-class SyntacticAnalysisConstituent;
 class SyntacticAnalysisElement;
-class SyntacticAnalysisTerminal;
 
 class SyntacticAnalysis
 {
 public:
     SyntacticAnalysis(const QString & name);
 
-    void createConstituent(const QString &label, QList<SyntacticAnalysisTerminal*> elements);
+    void createConstituent(const QString &label, QList<SyntacticAnalysisElement*> elements);
 
-    const QList<SyntacticAnalysisConstituent*>* elements() const;
+    const QList<SyntacticAnalysisElement*>* elements() const;
 
 private:
     QString mName;
-    QList<SyntacticAnalysisConstituent*> mElements;
+    QList<SyntacticAnalysisElement*> mElements;
 };
 
 #endif // SYNTACTICANALYSIS_H

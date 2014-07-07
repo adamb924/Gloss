@@ -17,9 +17,8 @@
 #include "allomorph.h"
 #include "textbit.h"
 #include "syntacticanalysis.h"
-#include "syntacticanalysisconstituent.h"
-#include "syntacticanalysisterminal.h"
 #include "constituentgraphicsitem.h"
+#include "syntacticanalysiselement.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -142,7 +141,7 @@ void SyntacticParsingWidget::createConstituent()
 {
     if( mAnalysis == 0 ) return;
 
-    QList<SyntacticAnalysisTerminal *> terminals;
+    QList<SyntacticAnalysisElement *> terminals;
     QListIterator<const Allomorph*> iter(selectedAllmorphs());
 
     if( iter.hasNext() ) /// i.e., if the selection is not empty
@@ -154,7 +153,7 @@ void SyntacticParsingWidget::createConstituent()
         {
             while( iter.hasNext() )
             {
-                terminals << new SyntacticAnalysisTerminal(iter.next());
+                terminals << new SyntacticAnalysisElement(iter.next());
             }
             mAnalysis->createConstituent( label , terminals );
             redrawSyntacticAnnotations();

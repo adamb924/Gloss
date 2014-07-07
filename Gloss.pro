@@ -93,8 +93,6 @@ SOURCES += main.cpp\
     morphemegraphicsitem.cpp \
     syntacticanalysis.cpp \
     syntacticanalysiselement.cpp \
-    syntacticanalysisconstituent.cpp \
-    syntacticanalysisterminal.cpp \
     constituentgraphicsitem.cpp
 
 HEADERS  += mainwindow.h \
@@ -179,8 +177,6 @@ HEADERS  += mainwindow.h \
     morphemegraphicsitem.h \
     syntacticanalysis.h \
     syntacticanalysiselement.h \
-    syntacticanalysisconstituent.h \
-    syntacticanalysisterminal.h \
     constituentgraphicsitem.h
 
 FORMS    += mainwindow.ui \
