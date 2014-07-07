@@ -56,12 +56,11 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
         return;
     }
     QRectF rect = sceneBoundingRect();
-    qreal stalkBase = rect.bottom();
-    qreal stalkTop = stalkBase - mStalkHeight;
+    qreal stalkTop = rect.bottom() - mStalkHeight;
     for(int i=0; i<mDaughters.count(); i++)
     {
         qreal x = mDaughters.at(i)->sceneBoundingRect().center().x();
-        painter->drawLine( sceneTransform().inverted().map( QPointF(x, stalkBase) ) ,sceneTransform().inverted().map( QPointF(x, stalkTop) ) );
+        painter->drawLine( sceneTransform().inverted().map( QPointF(x, mDaughters.at(i)->sceneBoundingRect().top() ) ) ,sceneTransform().inverted().map( QPointF(x, stalkTop) ) );
     }
 
     painter->drawLine( sceneTransform().inverted().map( QPointF(rect.left(), stalkTop) ) ,sceneTransform().inverted().map( QPointF(rect.right(), stalkTop) ) );
