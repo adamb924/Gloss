@@ -6,6 +6,7 @@
 #include <QFont>
 #include <QFontMetrics>
 #include <QGraphicsItem>
+#include <QStyleOptionGraphicsItem>
 
 #include <QtDebug>
 
@@ -18,6 +19,8 @@ ConstituentGraphicsItem::ConstituentGraphicsItem(const QString & label, const QL
     mPenWidth = 2;
     mFont = QFont("Times New Roman",12);
     mFontHeight = QFontMetrics(mFont).height();
+
+    setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 
 QRectF ConstituentGraphicsItem::boundingRect() const
@@ -43,7 +46,6 @@ QRectF ConstituentGraphicsItem::boundingRect() const
 
 void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    Q_UNUSED(option);
     Q_UNUSED(widget);
 
     painter->setPen( QColor(0,0,0) );
@@ -62,5 +64,15 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
     }
 
     painter->drawLine( sceneTransform().inverted().map( QPointF(rect.left(), stalkTop) ) ,sceneTransform().inverted().map( QPointF(rect.right(), stalkTop) ) );
-    painter->drawText( sceneTransform().inverted().mapRect( QRectF( QPointF(rect.left(), stalkTop-mFontHeight), QPointF(rect.right(), stalkTop) ) ) , Qt::AlignCenter , mLabel );
+    QRectF textRect = QRectF( QPointF(rect.left(), stalkTop-mFontHeight), QPointF(rect.right(), stalkTop) );
+    painter->drawText( sceneTransform().inverted().mapRect( textRect ) , Qt::AlignCenter , mLabel );
+
+    if(option->state & QStyle::State_Selected)
+    {
+        QRectF selectionRect = QFontMetrics(mFont).boundingRect( mLabel );
+        selectionRect.moveCenter( textRect.center() );
+        selectionRect.adjust( 0 , 0, 0 , -2 ); /// pull it away from the horizontal line
+        painter->setPen( Qt::DashLine );
+        painter->drawRect( selectionRect );
+    }
 }
