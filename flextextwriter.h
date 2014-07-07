@@ -15,6 +15,8 @@ class QXmlStreamWriter;
 class Allomorph;
 class GlossItem;
 class WritingSystem;
+class SyntacticAnalysis;
+class SyntacticAnalysisElement;
 
 class FlexTextWriter
 {
@@ -38,6 +40,10 @@ private:
     bool serializeGlossItem(GlossItem *glossItem) const;
 
     bool serializePunctuation(GlossItem *glossItem) const;
+
+    bool serializeGrammaticalAnalysis(const SyntacticAnalysis * analysis) const;
+
+    bool serializeGrammaticalElement(const SyntacticAnalysisElement * element) const;
 
     //! \brief Serialize the interlinear text (i.e., <interlinear-text> to the XML stream)
     bool serializeMorphemes(GlossItem *glossItem) const;

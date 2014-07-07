@@ -15,6 +15,11 @@ public:
 
     const QList<SyntacticAnalysisElement*>* elements() const;
 
+    QString name() const;
+
+    //! \brief Returns true if all of the elements are terminal elements, otherwise returns false
+    bool allTerminals(QList<SyntacticAnalysisElement *> elements) const;
+
 private:
     QString mName;
     QList<SyntacticAnalysisElement*> mElements;

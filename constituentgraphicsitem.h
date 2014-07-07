@@ -17,6 +17,7 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     SyntacticAnalysisElement* element();
+    const SyntacticAnalysisElement* element() const;
 
 signals:
 

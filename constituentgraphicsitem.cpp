@@ -90,3 +90,8 @@ SyntacticAnalysisElement *ConstituentGraphicsItem::element()
 {
     return mElement;
 }
+
+const SyntacticAnalysisElement *ConstituentGraphicsItem::element() const
+{
+    return mElement;
+}

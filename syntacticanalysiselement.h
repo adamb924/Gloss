@@ -18,6 +18,7 @@ public:
     QString label() const;
     const Allomorph * allomorph() const;
     QList<SyntacticAnalysisElement *> *elements();
+    const QList<SyntacticAnalysisElement *> *elements() const;
     bool isTerminal() const;
 
 private:

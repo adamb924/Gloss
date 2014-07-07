@@ -31,6 +31,11 @@ QList<SyntacticAnalysisElement *> *SyntacticAnalysisElement::elements()
     return &mElements;
 }
 
+const QList<SyntacticAnalysisElement *> *SyntacticAnalysisElement::elements() const
+{
+    return &mElements;
+}
+
 bool SyntacticAnalysisElement::isTerminal() const
 {
     return mType == SyntacticAnalysisElement::Terminal;

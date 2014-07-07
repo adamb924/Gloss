@@ -6,6 +6,8 @@
 #include "allomorph.h"
 #include "databaseadapter.h"
 #include "project.h"
+#include "syntacticanalysis.h"
+#include "syntacticanalysiselement.h"
 
 #include <QFile>
 #include <QXmlStreamWriter>
@@ -119,6 +121,15 @@ bool FlexTextWriter::serializeInterlinearText() const
 
     stream->writeEndElement(); // paragraphs
 
+    if( mIncludeGlossNamespace )
+    {
+        QStringList keys = mText->syntacticAnalyses()->keys();
+        for(int i=0; i<keys.count(); i++)
+        {
+            serializeGrammaticalAnalysis( mText->syntacticAnalyses()->value(keys.at(i)) );
+        }
+    }
+
     serializeLanguages();
 
     stream->writeEndElement(); // interlinear-text
@@ -191,6 +202,40 @@ bool FlexTextWriter::serializePunctuation(GlossItem *glossItem) const
     writeNamespaceAttribute( "id", QString("%1").arg(glossItem->id()) );
     serializeItem("punct", glossItem->baselineWritingSystem(), glossItem->baselineText().text(), glossItem->baselineText().id() );
     stream->writeEndElement(); // word
+    return true;
+}
+
+bool FlexTextWriter::serializeGrammaticalAnalysis(const SyntacticAnalysis * analysis) const
+{
+    stream->writeStartElement("http://www.adambaker.org/gloss.php", "syntactic-analysis");
+    writeNamespaceAttribute("name", analysis->name());
+
+    for(int i=0; i<analysis->elements()->count(); i++)
+    {
+        serializeGrammaticalElement( analysis->elements()->at(i) );
+    }
+
+    stream->writeEndElement(); // syntactic-analysis
+    return true;
+}
+
+bool FlexTextWriter::serializeGrammaticalElement(const SyntacticAnalysisElement * element) const
+{
+    if( element->isTerminal() )
+    {
+        stream->writeEmptyElement("http://www.adambaker.org/gloss.php","terminal");
+        writeNamespaceAttribute("guid", element->allomorph()->guid() );
+    }
+    else /// constituent
+    {
+        stream->writeStartElement("http://www.adambaker.org/gloss.php","constituent");
+        writeNamespaceAttribute("label", element->label() );
+        for(int i=0; i<element->elements()->count(); i++)
+        {
+            serializeGrammaticalElement( element->elements()->at(i) );
+        }
+        stream->writeEndElement(); // constituent
+    }
     return true;
 }
 
