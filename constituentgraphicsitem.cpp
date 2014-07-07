@@ -64,7 +64,16 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
     }
 
     painter->drawLine( sceneTransform().inverted().map( QPointF(rect.left(), stalkTop) ) ,sceneTransform().inverted().map( QPointF(rect.right(), stalkTop) ) );
-    QRectF textRect = QRectF( QPointF(rect.left(), stalkTop-mFontHeight), QPointF(rect.right(), stalkTop) );
+    QRectF textRect;
+    if( rect.left() == rect.right() )
+    {
+        textRect = QFontMetrics(mFont).boundingRect( mLabel );
+        textRect.moveCenter( QPointF(rect.left() , stalkTop-mFontHeight/2) );
+    }
+    else
+    {
+        textRect = QRectF( QPointF(rect.left(), stalkTop-mFontHeight), QPointF(rect.right(), stalkTop) );
+    }
     painter->drawText( sceneTransform().inverted().mapRect( textRect ) , Qt::AlignCenter , mLabel );
 
     if(option->state & QStyle::State_Selected)
