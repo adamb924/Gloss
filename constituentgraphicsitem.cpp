@@ -10,10 +10,11 @@
 
 #include <QtDebug>
 
-ConstituentGraphicsItem::ConstituentGraphicsItem(const QString & label, const QList<QGraphicsItem*> daughters, QGraphicsItem *parent) :
+ConstituentGraphicsItem::ConstituentGraphicsItem(const QString & label, const QList<QGraphicsItem*> daughters, SyntacticAnalysisElement * element, QGraphicsItem *parent) :
     QGraphicsItem(parent),
     mDaughters(daughters),
-    mLabel(label)
+    mLabel(label),
+    mElement(element)
 {
     mStalkHeight = 10;
     mPenWidth = 2;
@@ -84,4 +85,9 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
         painter->setPen( Qt::DashLine );
         painter->drawRect( selectionRect );
     }
+}
+
+SyntacticAnalysisElement *ConstituentGraphicsItem::element()
+{
+    return mElement;
 }

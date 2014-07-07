@@ -10,6 +10,7 @@ class Tab;
 class Project;
 class QGraphicsItem;
 class SyntacticAnalysis;
+class SyntacticAnalysisElement;
 class Allomorph;
 
 namespace Ui {
@@ -27,8 +28,10 @@ public:
 private:
     void setupBaseline();
     void redrawSyntacticAnnotations();
+    QGraphicsItem* addElementToScene(SyntacticAnalysisElement *element );
 
     QList<const Allomorph *> selectedAllmorphs();
+    QList<SyntacticAnalysisElement *> selectedElements();
 
 protected:
     void keyReleaseEvent(QKeyEvent * event);

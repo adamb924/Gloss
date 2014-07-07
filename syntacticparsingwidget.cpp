@@ -123,43 +123,47 @@ void SyntacticParsingWidget::redrawSyntacticAnnotations()
 
     for(int i=0; i < mAnalysis->elements()->count(); i++ ) // for each element of the analysis
     {
-        QList<QGraphicsItem*> daughters;
-        for(int j=0; j < mAnalysis->elements()->at(i)->elements()->count(); j++ )
-        {
-            if( mAnalysis->elements()->at(i)->elements()->at(j)->allomorph() != 0 )
-            {
-                daughters << mGraphicsItemAllomorphHash.value(mAnalysis->elements()->at(i)->elements()->at(j)->allomorph());
-            }
-        }
-        QGraphicsItem * item = new ConstituentGraphicsItem( mAnalysis->elements()->at(i)->label(), daughters );
-        mScene->addItem(item);
-        mConstiuencyItems << item;
+        addElementToScene( mAnalysis->elements()->at(i) );
     }
+}
+
+QGraphicsItem *SyntacticParsingWidget::addElementToScene(SyntacticAnalysisElement *element)
+{
+    QList<QGraphicsItem*> daughters;
+    for(int i=0; i<element->elements()->count(); i++)
+    {
+        if( element->elements()->at(i)->isTerminal() ) /// terminal
+        {
+            daughters << mGraphicsItemAllomorphHash.value(element->elements()->at(i)->allomorph());
+        }
+        else /// constituent
+        {
+            daughters << addElementToScene( element->elements()->at(i) );
+        }
+    }
+    QGraphicsItem * item = new ConstituentGraphicsItem( element->label(), daughters, element );
+    mConstiuencyItems << item;
+    mScene->addItem(item);
+    return item;
 }
 
 void SyntacticParsingWidget::createConstituent()
 {
     if( mAnalysis == 0 ) return;
 
-    QList<SyntacticAnalysisElement *> terminals;
-    QListIterator<const Allomorph*> iter(selectedAllmorphs());
+    QList<SyntacticAnalysisElement *> elements = selectedElements();
 
-    if( iter.hasNext() ) /// i.e., if the selection is not empty
+    if( !elements.isEmpty() )
     {
         bool ok;
         QString label = QInputDialog::getText(this, tr("New constituent"),
                                              tr("Label:"), QLineEdit::Normal,tr(""), &ok);
         if (ok && !label.isEmpty())
         {
-            while( iter.hasNext() )
-            {
-                terminals << new SyntacticAnalysisElement(iter.next());
-            }
-            mAnalysis->createConstituent( label , terminals );
+            mAnalysis->createConstituent( label , elements );
             redrawSyntacticAnnotations();
         }
     }
-
     mScene->clearSelection();
 }
 
@@ -176,6 +180,30 @@ QList<const Allomorph *> SyntacticParsingWidget::selectedAllmorphs()
         }
     }
     return allomorphs;
+}
+
+QList<SyntacticAnalysisElement *> SyntacticParsingWidget::selectedElements()
+{
+    QList<SyntacticAnalysisElement *> elements;
+    QListIterator<QGraphicsItem*> iter(mScene->selectedItems());
+    while( iter.hasNext() )
+    {
+        QGraphicsItem * item = iter.next();
+        MorphemeGraphicsItem * mgi = qgraphicsitem_cast<MorphemeGraphicsItem*>(item);
+        if( mgi != 0 ) /// then it's a morpheme graphics item (with
+        {
+            elements << new SyntacticAnalysisElement( mgi->allomorph() );
+        }
+        else
+        {
+            ConstituentGraphicsItem * con = qgraphicsitem_cast<ConstituentGraphicsItem*>(item);
+            if( con != 0 )
+            {
+                elements << con->element();
+            }
+        }
+    }
+    return elements;
 }
 
 void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
