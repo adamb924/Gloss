@@ -3,6 +3,7 @@
 
 class Allomorph;
 class QString;
+class SyntacticAnalysisElement;
 
 #include <QList>
 #include <QString>
@@ -20,6 +21,14 @@ public:
     QList<SyntacticAnalysisElement *> *elements();
     const QList<SyntacticAnalysisElement *> *elements() const;
     bool isTerminal() const;
+    bool hasDescendant( const SyntacticAnalysisElement * element ) const;
+    bool hasChild(SyntacticAnalysisElement *element ) const;
+
+    //! \brief Returns the address of the object if it has \a element as a child, or tries to find it in its descendants
+    const SyntacticAnalysisElement * findParent(SyntacticAnalysisElement *element ) const;
+    SyntacticAnalysisElement * findParent(SyntacticAnalysisElement *element );
+
+    void replaceWithConstituent(const QString & label, QList<SyntacticAnalysisElement *> &elements);
 
 private:
     const Allomorph *mAllomorph;

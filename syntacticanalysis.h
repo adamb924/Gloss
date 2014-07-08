@@ -17,8 +17,22 @@ public:
 
     QString name() const;
 
+private:
+
     //! \brief Returns true if all of the elements are terminal elements, otherwise returns false
     bool allTerminals(QList<SyntacticAnalysisElement *> elements) const;
+
+    //! \brief Returns true if any of the elements are already parsed into constituents, otherwise returns false
+    bool anyHaveParents(QList<SyntacticAnalysisElement *> elements) const;
+
+    //! \brief Returns true if none of the elements are already parsed into constituents, otherwise returns false
+    bool noneHaveParents(QList<SyntacticAnalysisElement *> elements) const;
+
+    //! \brief Returns true if the elements are all sisters, otherwise returns false. Returns true if there are fewer than two elements
+    bool areSisters(QList<SyntacticAnalysisElement *> elements);
+
+    //! \brief Returns the address of the object if it has \a element as a child, or tries to find it in its descendants
+    SyntacticAnalysisElement *findParent(SyntacticAnalysisElement *element );
 
 private:
     QString mName;

@@ -75,7 +75,8 @@ void SyntacticParsingWidget::setupBaseline()
                     MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
                     for(int m=0; m<ma->allomorphCount(); m++)
                     {
-                        MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m) );
+                        SyntacticAnalysisElement * element = new SyntacticAnalysisElement( ma->allomorph(m) );
+                        MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m), element );
                         item->setPos(x + lineLength, y);
                         mScene->addItem(item);
                         lineLength += item->boundingRect().width();
@@ -192,7 +193,7 @@ QList<SyntacticAnalysisElement *> SyntacticParsingWidget::selectedElements()
         MorphemeGraphicsItem * mgi = qgraphicsitem_cast<MorphemeGraphicsItem*>(item);
         if( mgi != 0 ) /// then it's a morpheme graphics item (with
         {
-            elements << new SyntacticAnalysisElement( mgi->allomorph() );
+            elements << mgi->element();
         }
         else
         {
