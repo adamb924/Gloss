@@ -49,10 +49,10 @@ private:
     bool serializeMorphemes(GlossItem *glossItem) const;
 
     //! \brief Serialize the allomorph (i.e., <morph> in the XML stream)
-    bool serializeAllomorph(const Allomorph & allomorph) const;
+    bool serializeAllomorph(const Allomorph *allomorph) const;
 
     //! \brief Serialize the allomorph (i.e., <morph> in the XML stream) without including all of the database information
-    bool serializeAllomorphNonverbose(const Allomorph & allomorph) const;
+    bool serializeAllomorphNonverbose(const Allomorph * allomorph) const;
 
     //! \brief Serialize the languages.
     bool serializeLanguages() const;

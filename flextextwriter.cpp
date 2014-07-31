@@ -262,23 +262,23 @@ bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
     return true;
 }
 
-bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
+bool FlexTextWriter::serializeAllomorph(const Allomorph * allomorph) const
 {
     stream->writeStartElement("morph");
 
-    stream->writeAttribute("type", allomorph.typeString());
-    writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
-    writeNamespaceAttribute( "guid" , allomorph.guid() );
+    stream->writeAttribute("type", allomorph->typeString());
+    writeNamespaceAttribute( "id", QString("%1").arg(allomorph->id()) );
+    writeNamespaceAttribute( "guid" , allomorph->guid() );
 
     /// @todo Debug hack
-    if( allomorph.id() == 87 )
+    if( allomorph->id() == 87 )
     {
-        qDebug() << "FlexTextWriter::serializeAllomorph" << allomorph.guid();
+        qDebug() << "FlexTextWriter::serializeAllomorph" << allomorph->guid();
     }
 
-    serializeItem( "txt" , allomorph.writingSystem(), allomorph.text() );
+    serializeItem( "txt" , allomorph->writingSystem(), allomorph->text() );
 
-    TextBitHash citationForms = mText->mDbAdapter->lexicalEntryCitationFormsForAllomorph( allomorph.id() );
+    TextBitHash citationForms = mText->mDbAdapter->lexicalEntryCitationFormsForAllomorph( allomorph->id() );
     TextBitHashIterator citationIter(citationForms);
     while( citationIter.hasNext() )
     {
@@ -286,7 +286,7 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
         serializeItem( "cf", citationIter.key(), citationIter.value().text(), citationIter.value().id() );
     }
 
-    TextBitHash glossForms = mText->mDbAdapter->lexicalEntryGlossFormsForAllomorph( allomorph.id() );
+    TextBitHash glossForms = mText->mDbAdapter->lexicalEntryGlossFormsForAllomorph( allomorph->id() );
     TextBitHashIterator glossIter(glossForms);
     while( glossIter.hasNext() )
     {
@@ -296,7 +296,7 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
 
     if( mIncludeGlossNamespace )
     {
-        QStringListIterator tagIter( mText->mDbAdapter->grammaticalTagsForAllomorph( allomorph.id() ) );
+        QStringListIterator tagIter( mText->mDbAdapter->grammaticalTagsForAllomorph( allomorph->id() ) );
         while( tagIter.hasNext() )
         {
             stream->writeEmptyElement("http://www.adambaker.org/gloss.php", "grammatical-tag");
@@ -309,17 +309,17 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
     return true;
 }
 
-bool FlexTextWriter::serializeAllomorphNonverbose(const Allomorph &allomorph) const
+bool FlexTextWriter::serializeAllomorphNonverbose(const Allomorph *allomorph) const
 {
     stream->writeEmptyElement("morph");
-    writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
-    writeNamespaceAttribute( "guid" , allomorph.guid() );
+    writeNamespaceAttribute( "id", QString("%1").arg(allomorph->id()) );
+    writeNamespaceAttribute( "guid" , allomorph->guid() );
 
 
     /// @todo Debug hack
-    if( allomorph.id() == 87 )
+    if( allomorph->id() == 87 )
     {
-        qDebug() << "FlexTextWriter::serializeAllomorphNonverbose" << allomorph.guid();
+        qDebug() << "FlexTextWriter::serializeAllomorphNonverbose" << allomorph->guid();
     }
 
     return true;

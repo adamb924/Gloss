@@ -966,7 +966,7 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
     while( iter.hasNext() )
     {
         q.bindValue(":TextFormId", textFormId );
-        q.bindValue(":AllomorphId", iter.next().id() );
+        q.bindValue(":AllomorphId", iter.next()->id() );
         q.bindValue(":AllomorphOrder", position );
         position++;
         if( !q.exec() )
@@ -989,7 +989,7 @@ MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( ql
         TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
         TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
         qlonglong allomorphId = q.value(4).toLongLong();
-        analysis->addAllomorph( Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) ) );
+        analysis->addAllomorph(new Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) ) );
 
 //        if( textFormId == 3017 )
 //        {
@@ -1027,7 +1027,7 @@ bool DatabaseAdapter::textFormHasMorphologicalAnalysis( qlonglong textFormId ) c
     return q.next();
 }
 
-Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
+Allomorph *DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select LexicalEntryId,Form,WritingSystem,LexicalEntry.MorphologicalCategory from Allomorph,LexicalEntry on LexicalEntryId=LexicalEntry._id where Allomorph._id=:_id;");
@@ -1039,11 +1039,11 @@ Allomorph DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
             qlonglong lexicalEntryId = q.value(0).toLongLong();
             TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
             TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
-            return Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) );
+            return new Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) );
         }
     }
     qWarning() << "DatabaseAdapter::allomorphFromId"  << allomorphId << q.lastError().text() << q.executedQuery();
-    return Allomorph();
+    return new Allomorph();
 }
 
 TextBitHash DatabaseAdapter::lexicalItemGlosses(qlonglong lexicalEntryId) const

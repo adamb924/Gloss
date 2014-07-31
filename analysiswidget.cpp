@@ -78,9 +78,9 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
         QActionGroup * group = new QActionGroup(this);
         while(iter.hasNext())
         {
-            Allomorph allomorph = iter.next();
-            QAction * action = new QAction(tr("Edit %1").arg( allomorph.text() ), this);
-            action->setData( allomorph.id() );
+            Allomorph *allomorph = iter.next();
+            QAction * action = new QAction(tr("Edit %1").arg( allomorph->text() ), this);
+            action->setData( allomorph->id() );
             menu->addAction(action);
             group->addAction(action);
         }
@@ -126,10 +126,10 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
 
     lexicalEntryId = selectCandidateLexicalEntry();
 
-    Allomorph allomorph( -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
+    Allomorph * allomorph = new Allomorph( -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
     if( lexicalEntryId == -1 )
     {
-        CreateLexicalEntryDialog dialog( &allomorph, true, mGlossItem, mProject, this);
+        CreateLexicalEntryDialog dialog( allomorph, true, mGlossItem, mProject, this);
         connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
         if( dialog.exec() == QDialog::Accepted )
             lexicalEntryId = dialog.lexicalEntryId();

@@ -163,7 +163,7 @@ public:
     bool textFormHasMorphologicalAnalysis( qlonglong textFormId ) const;
 
     //! \brief Return an Allomorph object with data from the allomorph id indicated
-    Allomorph allomorphFromId( qlonglong allomorphId ) const;
+    Allomorph *allomorphFromId( qlonglong allomorphId ) const;
 
     //! \brief Return the glosses associated with the given lexical entry
     TextBitHash lexicalItemGlosses(qlonglong lexicalEntryId) const;

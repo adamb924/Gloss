@@ -24,6 +24,11 @@ MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other
 {
 }
 
+MorphologicalAnalysis::~MorphologicalAnalysis()
+{
+    qDeleteAll(mAllomorphs);
+}
+
 MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnalysis & other)
 {
     mWritingSystem = other.mWritingSystem;
@@ -45,7 +50,7 @@ bool MorphologicalAnalysis::equalExceptGuid(const MorphologicalAnalysis &other) 
     }
     for(int i=0; i<mAllomorphs.count(); i++)
     {
-        if( ! mAllomorphs.at(i).equalExceptGuid( other.mAllomorphs.at(i) ) )
+        if( ! mAllomorphs.at(i)->equalExceptGuid( *other.mAllomorphs.at(i) ) )
         {
             return false;
         }
@@ -60,12 +65,12 @@ QString MorphologicalAnalysis::baselineSummary() const
     {
         if( i > 0 )
         {
-            if( mAllomorphs.at(i).isClitic() )
+            if( mAllomorphs.at(i)->isClitic() )
                 summary += "=";
             else
                 summary += "-";
         }
-        summary += mAllomorphs.at(i).text();
+        summary += mAllomorphs.at(i)->text();
     }
     return summary;
 }
@@ -77,22 +82,22 @@ QString MorphologicalAnalysis::glossSummary(const WritingSystem & ws) const
     {
         if( i > 0 )
         {
-            if( mAllomorphs.at(i).isClitic() )
+            if( mAllomorphs.at(i)->isClitic() )
                 summary += "=";
             else
                 summary += "-";
         }
-        summary += mAllomorphs.at(i).gloss(ws).text();
+        summary += mAllomorphs.at(i)->gloss(ws).text();
     }
     return summary;
 }
 
 AllomorphIterator MorphologicalAnalysis::allomorphIterator() const
 {
-    return QListIterator<Allomorph>(mAllomorphs);
+    return AllomorphIterator(mAllomorphs);
 }
 
-void MorphologicalAnalysis::addAllomorph(const Allomorph & allomorph)
+void MorphologicalAnalysis::addAllomorph(Allomorph * allomorph)
 {
     mAllomorphs.append(allomorph);
 }
@@ -104,12 +109,12 @@ bool MorphologicalAnalysis::isEmpty() const
 
 Allomorph* MorphologicalAnalysis::allomorph(int i)
 {
-    return &mAllomorphs[i];
+    return mAllomorphs[i];
 }
 
 Allomorph* MorphologicalAnalysis::operator[](int i)
 {
-    return &mAllomorphs[i];
+    return mAllomorphs[i];
 }
 
 int MorphologicalAnalysis::allomorphCount() const
