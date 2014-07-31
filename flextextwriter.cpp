@@ -241,11 +241,18 @@ bool FlexTextWriter::serializeGrammaticalElement(const SyntacticAnalysisElement 
 
 bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
 {
+    /// 7/31/2014: Right now I can't remember why I call this.
+    /// Evidently there's some circumstance in which the data
+    /// structures don't have the current data.
     glossItem->loadMorphologicalAnalysesFromDatabase();
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
     foreach( WritingSystem ws, analysisLanguages )
     {
         const MorphologicalAnalysis * analysis = glossItem->morphologicalAnalysis( ws );
+        if( analysis->textFormId() == 3099 )
+        {
+            qDebug() << analysis->allomorph(0)->guid();
+        }
         if( ! analysis->isEmpty() )
         {
             stream->writeStartElement("morphemes");

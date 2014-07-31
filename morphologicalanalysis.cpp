@@ -20,12 +20,20 @@ MorphologicalAnalysis::MorphologicalAnalysis(qlonglong textFormId, const Writing
 }
 
 MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other) :
-    mTextFormId(other.mTextFormId), mWritingSystem(other.mWritingSystem), mAllomorphs(other.mAllomorphs)
+    mTextFormId(other.mTextFormId), mWritingSystem(other.mWritingSystem)
 {
+    for(int i=0; i<other.mAllomorphs.count(); i++)
+    {
+        mAllomorphs.append( new Allomorph(*other.allomorph(i)) );
+    }
 }
 
 MorphologicalAnalysis::~MorphologicalAnalysis()
 {
+    if( mTextFormId == 3099 )
+    {
+        qDebug() << "~MorphologicalAnalysis()" << mAllomorphs;
+    }
     qDeleteAll(mAllomorphs);
 }
 
@@ -33,7 +41,10 @@ MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnaly
 {
     mWritingSystem = other.mWritingSystem;
     mTextFormId = other.mTextFormId;
-    mAllomorphs = other.mAllomorphs;
+    for(int i=0; i<other.mAllomorphs.count(); i++)
+    {
+        mAllomorphs.append( new Allomorph(*other.allomorph(i)) );
+    }
     return *this;
 }
 
@@ -110,6 +121,11 @@ bool MorphologicalAnalysis::isEmpty() const
 Allomorph* MorphologicalAnalysis::allomorph(int i)
 {
     return mAllomorphs[i];
+}
+
+const Allomorph* MorphologicalAnalysis::allomorph(int i) const
+{
+    return mAllomorphs.at(i);
 }
 
 Allomorph* MorphologicalAnalysis::operator[](int i)

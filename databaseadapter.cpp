@@ -991,11 +991,6 @@ MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( ql
         qlonglong allomorphId = q.value(4).toLongLong();
         analysis->addAllomorph(new Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) ) );
 
-//        if( textFormId == 3017 )
-//        {
-//            qDebug() << "Just want to see when this is being called.";
-//        }
-
         /// @todo Debug hack
         if( textFormId == 3099 )
         {

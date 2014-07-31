@@ -236,6 +236,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
 
                 glossItem->setApprovalStatus(approvalStatus);
 
+                // set all of the annotation (footnote marks)
                 QHashIterator<QString,TextBit> annIter(annotations);
                 while(annIter.hasNext())
                 {
@@ -243,10 +244,19 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     glossItem->setAnnotation( annIter.key(), annIter.value() );
                 }
 
+                /// @todo so, when this is usually called, it's irrelevant
+                /// a gloss item would normall only hav ea morphological
+                /// analysis after it is required by the GUI
+                /// I can't see how this does anything
+
                 // put all of the GUIDs in for the allomorphs
                 foreach( QString lang , morphGuids.keys() )
                 {
                     MorphologicalAnalysis * ma = glossItem->morphologicalAnalysis( mDbAdapter->writingSystem(lang) );
+                    if( ma->textFormId() == 3099 )
+                    {
+                        qDebug() << "FlexTextReader::readFile" << ma->allomorph(0)->guid();
+                    }
                     if( ma->allomorphCount() == morphGuids.value(lang).count() )
                     {
                         for(int i=0; i<ma->allomorphCount(); i++)
