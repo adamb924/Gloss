@@ -1,5 +1,7 @@
 #include "syntacticanalysiselement.h"
 
+#include "allomorph.h"
+
 #include <QtDebug>
 
 SyntacticAnalysisElement::SyntacticAnalysisElement(const Allomorph * allomorph)
@@ -8,7 +10,7 @@ SyntacticAnalysisElement::SyntacticAnalysisElement(const Allomorph * allomorph)
 {
 }
 
-SyntacticAnalysisElement::SyntacticAnalysisElement(const QString & label, QList<SyntacticAnalysisElement *> &elements)
+SyntacticAnalysisElement::SyntacticAnalysisElement(const QString & label, const QList<SyntacticAnalysisElement *> &elements)
     : mLabel(label),
       mType(SyntacticAnalysisElement::Consituent)
 {
@@ -58,6 +60,28 @@ bool SyntacticAnalysisElement::hasDescendant(const SyntacticAnalysisElement *ele
 bool SyntacticAnalysisElement::hasChild( SyntacticAnalysisElement * element ) const
 {
     return mElements.contains(element);
+}
+
+void SyntacticAnalysisElement::addChild(SyntacticAnalysisElement *element)
+{
+    mElements.append(element);
+}
+
+void SyntacticAnalysisElement::debug() const
+{
+    if( mType == SyntacticAnalysisElement::Terminal )
+    {
+        qWarning() << "SyntacticAnalysisElement Terminal" << mAllomorph->text();
+    }
+    else /// constituent
+    {
+        qWarning() << "SyntacticAnalysisElement Begin Constituent" << mLabel;
+        for(int i=0; i<mElements.count(); i++)
+        {
+            mElements.at(i)->debug();
+        }
+        qWarning() << "SyntacticAnalysisElement End Constituent" << mLabel;
+    }
 }
 
 SyntacticAnalysisElement *SyntacticAnalysisElement::findParent(SyntacticAnalysisElement *element)

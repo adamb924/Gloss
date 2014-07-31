@@ -6,6 +6,8 @@
 #include "databaseadapter.h"
 #include "project.h"
 #include "messagehandler.h"
+#include "syntacticanalysis.h"
+#include "syntacticanalysiselement.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -51,12 +53,16 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     QSet<qlonglong> textFormIds;
     QSet<qlonglong> glossFormIds;
     QHash<QString,QList<QUuid> > morphGuids;
+    QHash<QString,Allomorph*> guidAllomorphHash;
     QList<QUuid> *currentGuids = 0;
+    SyntacticAnalysis * currentSyntacticAnalysis = 0;
+    QStack<SyntacticAnalysisElement*> elementStack;
 
     while (!stream.atEnd())
     {
         stream.readNext();
         QString name = stream.name().toString();
+        QString nameSpace = stream.namespaceUri().toString();
         if( stream.tokenType() == QXmlStreamReader::StartElement )
         {
             if( name == "word" )
@@ -170,6 +176,56 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     currentGuids->append( QUuid( attr.value("http://www.adambaker.org/gloss.php","guid").toString() ) );
                 }
             }
+            else if ( name == "syntactic-analysis" && nameSpace == "http://www.adambaker.org/gloss.php" )
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","name") )
+                {
+                    QString name = attr.value("http://www.adambaker.org/gloss.php","name").toString();
+                    currentSyntacticAnalysis = new SyntacticAnalysis(name);
+                    mText->syntacticAnalyses()->insert(name, currentSyntacticAnalysis);
+                }
+            }
+            else if ( name == "constituent" && nameSpace == "http://www.adambaker.org/gloss.php" )
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","label") )
+                {
+                    QString label = attr.value("http://www.adambaker.org/gloss.php","label").toString();
+                    SyntacticAnalysisElement * newElement = new SyntacticAnalysisElement(label, QList<SyntacticAnalysisElement*>() );
+                    if( elementStack.isEmpty() )
+                    {
+                        currentSyntacticAnalysis->addElement(newElement);
+                    }
+                    else
+                    {
+                        elementStack.top()->addChild(newElement);
+                    }
+                    qDebug() << "push";
+                    elementStack.push( newElement );
+                }
+            }
+            else if ( name == "terminal" && nameSpace == "http://www.adambaker.org/gloss.php" )
+            {
+                qDebug() << "terminal";
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","guid") )
+                {
+                    QString guid = attr.value("http://www.adambaker.org/gloss.php","guid").toString();
+                    if( guidAllomorphHash.contains(guid) )
+                    {
+                        SyntacticAnalysisElement * newElement = new SyntacticAnalysisElement( guidAllomorphHash.value(guid) );
+                        if( !elementStack.isEmpty() )
+                        {
+                            elementStack.top()->addChild(newElement);
+                        }
+                    }
+                    else
+                    {
+                        return FlexTextReader::FlexTextReadXmlReadError; /// @todo probably not the best error code
+                    }
+                }
+            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
@@ -196,6 +252,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                         for(int i=0; i<ma->allomorphCount(); i++)
                         {
                             ma->allomorph(i)->setGuid( morphGuids.value(lang).at(i) );
+                            guidAllomorphHash.insert( morphGuids.value(lang).at(i).toString() , ma->allomorph(i) );
                         }
                     }
                 }
@@ -213,10 +270,21 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             {
                 inMorphemes=false;
             }
+            else if ( name == "constituent" && nameSpace == "http://www.adambaker.org/gloss.php" )
+            {
+                qDebug() << "pop";
+                elementStack.pop();
+            }
         }
     }
 
     file.close();
+
+    qDebug() << mText->syntacticAnalyses()->keys();
+    if( mText->syntacticAnalyses()->contains("Test") )
+    {
+        mText->syntacticAnalyses()->value("Test")->debug();
+    }
 
     if (stream.hasError()) {
         qWarning() << "Text::readTextFromFlexText error with xml reading";

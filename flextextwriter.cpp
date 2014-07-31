@@ -270,6 +270,12 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
     writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
     writeNamespaceAttribute( "guid" , allomorph.guid() );
 
+    /// @todo Debug hack
+    if( allomorph.id() == 87 )
+    {
+        qDebug() << "FlexTextWriter::serializeAllomorph" << allomorph.guid();
+    }
+
     serializeItem( "txt" , allomorph.writingSystem(), allomorph.text() );
 
     TextBitHash citationForms = mText->mDbAdapter->lexicalEntryCitationFormsForAllomorph( allomorph.id() );
@@ -308,6 +314,14 @@ bool FlexTextWriter::serializeAllomorphNonverbose(const Allomorph &allomorph) co
     stream->writeEmptyElement("morph");
     writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
     writeNamespaceAttribute( "guid" , allomorph.guid() );
+
+
+    /// @todo Debug hack
+    if( allomorph.id() == 87 )
+    {
+        qDebug() << "FlexTextWriter::serializeAllomorphNonverbose" << allomorph.guid();
+    }
+
     return true;
 }
 

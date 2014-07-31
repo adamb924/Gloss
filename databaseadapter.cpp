@@ -990,6 +990,17 @@ MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( ql
         TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
         qlonglong allomorphId = q.value(4).toLongLong();
         analysis->addAllomorph( Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) ) );
+
+//        if( textFormId == 3017 )
+//        {
+//            qDebug() << "Just want to see when this is being called.";
+//        }
+
+        /// @todo Debug hack
+        if( textFormId == 3099 )
+        {
+            qDebug() << "DatabaseAdapter::morphologicalAnalysisFromTextFormId" << analysis->allomorph(0)->guid();
+        }
     }
     return analysis;
 }

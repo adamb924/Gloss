@@ -15,7 +15,11 @@ public:
 
     const QList<SyntacticAnalysisElement*>* elements() const;
 
+    void addElement(SyntacticAnalysisElement * element);
+
     QString name() const;
+
+    void debug() const;
 
 private:
 

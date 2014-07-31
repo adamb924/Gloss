@@ -14,7 +14,7 @@ public:
     enum Type { Consituent , Terminal };
 
     SyntacticAnalysisElement(const Allomorph * allomorph);
-    SyntacticAnalysisElement(const QString & label, QList<SyntacticAnalysisElement *> &elements);
+    SyntacticAnalysisElement(const QString & label, const QList<SyntacticAnalysisElement *> & elements);
 
     QString label() const;
     const Allomorph * allomorph() const;
@@ -23,6 +23,8 @@ public:
     bool isTerminal() const;
     bool hasDescendant( const SyntacticAnalysisElement * element ) const;
     bool hasChild(SyntacticAnalysisElement *element ) const;
+    void addChild(SyntacticAnalysisElement *element);
+    void debug() const;
 
     //! \brief Returns the address of the object if it has \a element as a child, or tries to find it in its descendants
     const SyntacticAnalysisElement * findParent(SyntacticAnalysisElement *element ) const;

@@ -49,9 +49,23 @@ const QList<SyntacticAnalysisElement *> *SyntacticAnalysis::elements() const
     return &mElements;
 }
 
+void SyntacticAnalysis::addElement(SyntacticAnalysisElement *element)
+{
+    mElements.append(element);
+}
+
 QString SyntacticAnalysis::name() const
 {
     return mName;
+}
+
+void SyntacticAnalysis::debug() const
+{
+    qWarning() << "SyntacticAnalysis" << mName;
+    for(int i=0; i<mElements.count(); i++)
+    {
+        mElements.at(i)->debug();
+    }
 }
 
 bool SyntacticAnalysis::allTerminals(QList<SyntacticAnalysisElement *> elements) const

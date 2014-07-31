@@ -38,14 +38,14 @@ SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, con
     ui->graphicsView->setScene(mScene);
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
+    setupBaseline();
+
     connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(analysisSelectionChanged(QString)) );
 
     ui->comboBox->insertItems(0, text->syntacticAnalyses()->keys() );
 
     connect( ui->addButton, SIGNAL(clicked()), this, SLOT(newAnalysis()));
     connect( ui->deleteButton, SIGNAL(clicked()), this, SLOT(deleteAnalysis()) );
-
-    setupBaseline();
 }
 
 SyntacticParsingWidget::~SyntacticParsingWidget()
@@ -136,10 +136,18 @@ QGraphicsItem *SyntacticParsingWidget::addElementToScene(SyntacticAnalysisElemen
         if( element->elements()->at(i)->isTerminal() ) /// terminal
         {
             daughters << mGraphicsItemAllomorphHash.value(element->elements()->at(i)->allomorph());
+            if( daughters.last() == 0 )
+            {
+                qDebug() << "Zero";
+            }
         }
         else /// constituent
         {
             daughters << addElementToScene( element->elements()->at(i) );
+            if( daughters.last() == 0 )
+            {
+                qDebug() << "Zero";
+            }
         }
     }
     QGraphicsItem * item = new ConstituentGraphicsItem( element->label(), daughters, element );
