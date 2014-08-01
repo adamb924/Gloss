@@ -315,18 +315,6 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
 
 MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws)
 {
-    if( !mMorphologicalAnalyses.contains(ws) && mDbAdapter->hasMorphologicalAnalysis( mTextForms.value(ws).id() ) )
-    {
-        if( mTextForms.value(ws).id() == 3099 )
-            qDebug() << this << "reading from database for" << ws << "I only have" << mMorphologicalAnalyses.keys();
-        mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
-    }
-    else
-    {
-        if( mTextForms.value(ws).id() == 3099 )
-            qDebug() << "Apparently already available.";
-    }
-
     return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
 }
 
@@ -338,12 +326,6 @@ void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
         emit fieldsChanged();
         emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis->writingSystem() ) );
     }
-}
-
-void GlossItem::setMorphologicalAnalysisFromDatabase( const WritingSystem & ws )
-{
-    mMorphologicalAnalyses.insert(ws, mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
-    emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value(ws) );
 }
 
 void GlossItem::loadStringsFromDatabase()
@@ -405,12 +387,8 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
         tfIter.next();
         if( mDbAdapter->textFormHasMorphologicalAnalysis( tfIter.value().id() ) )
         {
-            /// This is intended to preserve the GUIDs if the morphological analysis has not changed
             MorphologicalAnalysis * databaseMA = mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() );
-            if( !databaseMA->equalExceptGuid(  *mMorphologicalAnalyses.value( tfIter.value().writingSystem() ) ) )
-            {
-                mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
-            }
+            mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
             emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value(tfIter.key()) );
         }
     }
@@ -431,6 +409,7 @@ bool GlossItem::isPunctuation() const
 
 QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
 {
+    /// @todo is there a reason this isn't just: return mMorphologicalAnalyses.keys();
     QList<WritingSystem> languages;
     QHashIterator<WritingSystem,MorphologicalAnalysis*> iter( mMorphologicalAnalyses );
 

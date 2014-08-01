@@ -87,6 +87,7 @@ public:
     WritingSystem baselineWritingSystem() const;
 
     //! \brief Returns the morphological analysis for the given writing system, or an empty one
+    /// @todo Any reason for this not to be const?
     MorphologicalAnalysis * morphologicalAnalysis(const WritingSystem & ws);
 
     //! \brief Returns a list of languages for which there are morphological analyses
@@ -94,9 +95,6 @@ public:
 
     //! \brief Sets the morphological analysis for the given writing system
     void setMorphologicalAnalysis(MorphologicalAnalysis * analysis );
-
-    //! \brief Sets the morphological analysis for the given writing system
-    void setMorphologicalAnalysisFromDatabase( const WritingSystem & ws );
 
     //! \brief Returns true if this gloss item matches the specified focus, otherwise false
     bool matchesFocus( const Focus & focus ) const;
@@ -125,7 +123,7 @@ public:
     //! \brief Connects various signals of the object to the project's Concordance object
     void connectToConcordance();
 
-    //! \brief Loads all morphological analyses in the database into the object's data structure
+    //! \brief Loads all morphological analyses in the database into the object's data structure. This method will change all of the GUIDs of the allomorphs.
     void loadMorphologicalAnalysesFromDatabase();
 
     //! \brief Returns true if the object represents punctuation; otherwise false.
