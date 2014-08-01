@@ -136,18 +136,10 @@ QGraphicsItem *SyntacticParsingWidget::addElementToScene(SyntacticAnalysisElemen
         if( element->elements()->at(i)->isTerminal() ) /// terminal
         {
             daughters << mGraphicsItemAllomorphHash.value(element->elements()->at(i)->allomorph());
-            if( daughters.last() == 0 )
-            {
-                qDebug() << "Zero";
-            }
         }
         else /// constituent
         {
             daughters << addElementToScene( element->elements()->at(i) );
-            if( daughters.last() == 0 )
-            {
-                qDebug() << "Zero";
-            }
         }
     }
     QGraphicsItem * item = new ConstituentGraphicsItem( element->label(), daughters, element );

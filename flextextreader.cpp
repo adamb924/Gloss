@@ -201,13 +201,11 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     {
                         elementStack.top()->addChild(newElement);
                     }
-                    qDebug() << "push";
                     elementStack.push( newElement );
                 }
             }
             else if ( name == "terminal" && nameSpace == "http://www.adambaker.org/gloss.php" )  // <terminal>
             {
-                qDebug() << "terminal";
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","guid") )
                 {
@@ -274,7 +272,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             }
             else if ( name == "constituent" && nameSpace == "http://www.adambaker.org/gloss.php" ) // </constituent>
             {
-                qDebug() << "pop";
                 elementStack.pop();
             }
         }
