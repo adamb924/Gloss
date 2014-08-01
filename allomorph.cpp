@@ -29,11 +29,6 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
     if( mGuid.isNull() )
     {
         mGuid = QUuid::createUuid();
-        /// @todo Debug
-        if( id == 87 )
-        {
-            qDebug() << "Allomorph::Allomorph" << mGuid;
-        }
     }
 }
 
