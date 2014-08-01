@@ -241,15 +241,10 @@ bool FlexTextWriter::serializeGrammaticalElement(const SyntacticAnalysisElement 
 
 bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
 {
-    glossItem->loadMorphologicalAnalysesFromDatabase();
     QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
     foreach( WritingSystem ws, analysisLanguages )
     {
         const MorphologicalAnalysis * analysis = glossItem->morphologicalAnalysis( ws );
-        if( analysis->textFormId() == 3099 )
-        {
-            qDebug() << "FlexTextWriter::serializeMorphemes" << analysis->allomorph(0)->guid();
-        }
         if( ! analysis->isEmpty() )
         {
             stream->writeStartElement("morphemes");
@@ -273,12 +268,6 @@ bool FlexTextWriter::serializeAllomorph(const Allomorph & allomorph) const
     stream->writeAttribute("type", allomorph.typeString());
     writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
     writeNamespaceAttribute( "guid" , allomorph.guid() );
-
-    /// @todo Debug hack
-    if( allomorph.id() == 87 )
-    {
-        qDebug() << "FlexTextWriter::serializeAllomorph" << allomorph.guid();
-    }
 
     serializeItem( "txt" , allomorph.writingSystem(), allomorph.text() );
 
@@ -318,13 +307,6 @@ bool FlexTextWriter::serializeAllomorphNonverbose(const Allomorph &allomorph) co
     stream->writeEmptyElement("morph");
     writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
     writeNamespaceAttribute( "guid" , allomorph.guid() );
-
-
-    /// @todo Debug hack
-//    if( allomorph.id() == 87 )
-//    {
-//        qDebug() << "FlexTextWriter::serializeAllomorphNonverbose" << allomorph.guid();
-//    }
 
     return true;
 }
