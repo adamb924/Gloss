@@ -29,6 +29,11 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
     if( mGuid.isNull() )
     {
         mGuid = QUuid::createUuid();
+        /// @todo Debug
+        if( id == 87 )
+        {
+            qDebug() << "Allomorph::Allomorph" << mGuid;
+        }
     }
 }
 
@@ -294,4 +299,10 @@ QString Allomorph::stripPunctuation(const QString &string)
     s.replace("*","");
     s.replace("-","");
     return s;
+}
+
+QDebug operator<<(QDebug dbg, const Allomorph &key)
+{
+    dbg.nospace() << "Allomorph(" << key.id() << ", " << key.textBit() << ", " << key.guid();
+    return dbg.maybeSpace();
 }

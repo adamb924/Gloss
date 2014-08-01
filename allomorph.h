@@ -108,5 +108,6 @@ private:
     QUuid mGuid;
 };
 
+QDebug operator<<(QDebug dbg, const Allomorph &key);
 
 #endif // ALLOMORPH_H
