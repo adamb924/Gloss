@@ -32,6 +32,16 @@ MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnaly
     return *this;
 }
 
+MorphologicalAnalysis *MorphologicalAnalysis::copyWithNewGuids() const
+{
+    MorphologicalAnalysis *other = new MorphologicalAnalysis(mTextFormId, mWritingSystem);
+    for(int i=0; i<mAllomorphs.count(); i++)
+    {
+        other->addAllomorph( Allomorph(mAllomorphs.at(i).id(), mAllomorphs.at(i).textBit(), mAllomorphs.at(i).glosses(), mAllomorphs.at(i).type() ) );
+    }
+    return other;
+}
+
 bool MorphologicalAnalysis::operator!=(const MorphologicalAnalysis & other) const
 {
     return mTextFormId != other.mTextFormId || mAllomorphs != other.mAllomorphs;

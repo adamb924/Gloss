@@ -24,6 +24,8 @@ public:
     MorphologicalAnalysis(const MorphologicalAnalysis & other);
 
     MorphologicalAnalysis& operator=(const MorphologicalAnalysis & other);
+    MorphologicalAnalysis *copyWithNewGuids() const;
+
     bool operator!=(const MorphologicalAnalysis & other) const;
 
     bool equalExceptGuid(const MorphologicalAnalysis & other) const;

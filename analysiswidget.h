@@ -27,7 +27,7 @@ public:
     AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const Project *project, QWidget *parent = 0);
 
 signals:
-    void morphologicalAnalysisChanged(MorphologicalAnalysis * analysis);
+    void morphologicalAnalysisChanged(const MorphologicalAnalysis * analysis);
     void requestAlternateInterpretation();
 
 public slots:

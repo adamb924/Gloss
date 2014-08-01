@@ -152,7 +152,7 @@ signals:
     void baselineTextChanged(const TextBit & textForm);
 
     //! \brief Emitted when the morphological analysis for \a textFormId changes
-    void morphologicalAnalysisChanged(MorphologicalAnalysis * analysis);
+    void morphologicalAnalysisChanged(const MorphologicalAnalysis * analysis);
 
 public slots:
     //! \brief Toggles the approval status of the GlossItem

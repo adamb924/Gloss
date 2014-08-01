@@ -320,11 +320,12 @@ MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & w
 
 void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
 {
-    if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) || ( mMorphologicalAnalyses.contains(analysis->writingSystem()) && *mMorphologicalAnalyses.value( analysis->writingSystem() ) != *analysis ) )
+    if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) || ( mMorphologicalAnalyses.contains(analysis->writingSystem()) && !mMorphologicalAnalyses.value( analysis->writingSystem() )->equalExceptGuid( *analysis ) ) )
     {
-        mMorphologicalAnalyses.insert( analysis->writingSystem() , new MorphologicalAnalysis(*analysis) );
+        mMorphologicalAnalyses.insert( analysis->writingSystem() , analysis );
         emit fieldsChanged();
-        emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( analysis->writingSystem() ) );
+        MorphologicalAnalysis *ma = mMorphologicalAnalyses.value( analysis->writingSystem() );
+        emit morphologicalAnalysisChanged( ma );
     }
 }
 
@@ -519,5 +520,5 @@ void GlossItem::connectToConcordance()
     connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)), Qt::UniqueConnection);
     connect( this, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)), Qt::UniqueConnection);
     connect( this, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)), Qt::UniqueConnection);
-    connect( this, SIGNAL(morphologicalAnalysisChanged(MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis*)), Qt::UniqueConnection);
+    connect( this, SIGNAL(morphologicalAnalysisChanged(const MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(const MorphologicalAnalysis*)), Qt::UniqueConnection);
 }

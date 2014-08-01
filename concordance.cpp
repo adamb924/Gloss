@@ -66,9 +66,11 @@ void Concordance::updateGlossItemGlossConcordance( GlossItem * item, qlonglong g
     mGlossItemsByGlossId.insert( glossId, item );
 }
 
-void Concordance::updateGlossItemMorphologicalAnalysis(MorphologicalAnalysis * analysis)
+void Concordance::updateGlossItemMorphologicalAnalysis(const MorphologicalAnalysis * analysis)
 {
     QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis->textFormId() );
     foreach(GlossItem *item, itemList)
-        item->setMorphologicalAnalysis( analysis );
+    {
+        item->setMorphologicalAnalysis( analysis->copyWithNewGuids() );
+    }
 }
