@@ -134,6 +134,11 @@ QList<WritingSystem> Allomorph::glossLanguages() const
     return mGlosses.keys();
 }
 
+TextBitHash Allomorph::glosses() const
+{
+    return mGlosses;
+}
+
 bool Allomorph::isStem() const
 {
     return mType == Allomorph::Stem || mType == Allomorph::BoundStem;

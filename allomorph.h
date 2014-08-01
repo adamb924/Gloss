@@ -67,6 +67,9 @@ public:
     //! \brief Returns the a list of WritingSystem objects for which the allomorph has glosses
     QList<WritingSystem> glossLanguages() const;
 
+    //! \brief Returns the glosses of the allomorph
+    TextBitHash glosses() const;
+
     //! \brief Returns the id of the allomorph
     qlonglong id() const;
 
