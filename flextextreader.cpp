@@ -52,7 +52,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     QHash<QString,TextBit> annotations;
     QSet<qlonglong> textFormIds;
     QSet<qlonglong> glossFormIds;
-    QHash<QString,QList<QUuid> > morphGuids;
+    QHash<QString,QList<QUuid> > morphGuids; /// the string here is a flextext string
     QHash<QString,Allomorph*> guidAllomorphHash;
     QList<QUuid> *currentGuids = 0;
     SyntacticAnalysis * currentSyntacticAnalysis = 0;
@@ -65,7 +65,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
         QString nameSpace = stream.namespaceUri().toString();
         if( stream.tokenType() == QXmlStreamReader::StartElement )
         {
-            if( name == "word" )
+            if( name == "word" ) // <word>
             {
                 inWord = true;
 
@@ -90,7 +90,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     glossItemBaselineWritingSystem = mDbAdapter->writingSystem( stream.attributes().value("http://www.adambaker.org/gloss.php", "baseline-writing-system").toString() );
                 }
             }
-            else if ( name == "phrase" )
+            else if ( name == "phrase" ) // <phrase>
             {
                 inPhrase = true;
 
@@ -105,7 +105,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     mText->mPhrases.last()->setInterval( Interval(start, end) );
                 }
             }
-            else if ( name == "item" && !inMorphemes )
+            else if ( name == "item" && !inMorphemes ) // <item>
             {
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("type") )
@@ -138,7 +138,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     }
                 }
             }
-            else if ( name == "annotation" && stream.namespaceUri().toString() == "http://www.adambaker.org/gloss.php" )
+            else if ( name == "annotation" && stream.namespaceUri().toString() == "http://www.adambaker.org/gloss.php" ) // <annotation>
             {
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("lang") && attr.hasAttribute("key") )
@@ -149,7 +149,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     annotations.insert( key , TextBit(text, ws) );
                 }
             }
-            else if(name == "interlinear-text")
+            else if(name == "interlinear-text") // <interlinear-text>
             {
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","audio-file") )
@@ -157,7 +157,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     mText->setSound( QUrl::fromEncoded( attr.value("http://www.adambaker.org/gloss.php","audio-file").toString().toUtf8() ) );
                 }
             }
-            else if( name == "morphemes")
+            else if( name == "morphemes") // <morphemes>
             {
                 inMorphemes = true;
                 QXmlStreamAttributes attr = stream.attributes();
@@ -168,7 +168,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     currentGuids = & morphGuids[lang];
                 }
             }
-            else if( name == "morph")
+            else if( name == "morph") // <morph>
             {
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","guid") && !morphGuids.isEmpty() )
@@ -176,7 +176,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     currentGuids->append( QUuid( attr.value("http://www.adambaker.org/gloss.php","guid").toString() ) );
                 }
             }
-            else if ( name == "syntactic-analysis" && nameSpace == "http://www.adambaker.org/gloss.php" )
+            else if ( name == "syntactic-analysis" && nameSpace == "http://www.adambaker.org/gloss.php" ) // <syntactic-analysis>
             {
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","name") )
@@ -186,7 +186,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     mText->syntacticAnalyses()->insert(name, currentSyntacticAnalysis);
                 }
             }
-            else if ( name == "constituent" && nameSpace == "http://www.adambaker.org/gloss.php" )
+            else if ( name == "constituent" && nameSpace == "http://www.adambaker.org/gloss.php" ) // <constituent>
             {
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","label") )
@@ -205,7 +205,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     elementStack.push( newElement );
                 }
             }
-            else if ( name == "terminal" && nameSpace == "http://www.adambaker.org/gloss.php" )
+            else if ( name == "terminal" && nameSpace == "http://www.adambaker.org/gloss.php" )  // <terminal>
             {
                 qDebug() << "terminal";
                 QXmlStreamAttributes attr = stream.attributes();
@@ -229,12 +229,14 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
-            if(name == "word")
+            if(name == "word") // </word>
             {
-                mText->mPhrases.last()->appendGlossItem(new GlossItem( glossItemBaselineWritingSystem.isNull() ? mText->mBaselineWritingSystem : glossItemBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject ));
-                GlossItem * glossItem = mText->mPhrases.last()->lastGlossItem();
+                GlossItem * glossItem = new GlossItem( glossItemBaselineWritingSystem.isNull() ? mText->mBaselineWritingSystem : glossItemBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject );
+                mText->mPhrases.last()->appendGlossItem(glossItem);
 
                 glossItem->setApprovalStatus(approvalStatus);
+
+                glossItem->loadMorphologicalAnalysesFromDatabase();
 
                 QHashIterator<QString,TextBit> annIter(annotations);
                 while(annIter.hasNext())
@@ -262,15 +264,15 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 approvalStatus = GlossItem::Unapproved;
                 glossItemBaselineWritingSystem = WritingSystem();
             }
-            else if(name == "phrase")
+            else if(name == "phrase") // </phrase>
             {
                 inPhrase = false;
             }
-            else if(name == "morphemes")
+            else if(name == "morphemes") // </morphemes>
             {
                 inMorphemes=false;
             }
-            else if ( name == "constituent" && nameSpace == "http://www.adambaker.org/gloss.php" )
+            else if ( name == "constituent" && nameSpace == "http://www.adambaker.org/gloss.php" ) // </constituent>
             {
                 qDebug() << "pop";
                 elementStack.pop();
@@ -279,12 +281,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     }
 
     file.close();
-
-    qDebug() << mText->syntacticAnalyses()->keys();
-    if( mText->syntacticAnalyses()->contains("Test") )
-    {
-        mText->syntacticAnalyses()->value("Test")->debug();
-    }
 
     if (stream.hasError()) {
         qWarning() << "Text::readTextFromFlexText error with xml reading";
