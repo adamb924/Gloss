@@ -112,11 +112,6 @@ const Allomorph* MorphologicalAnalysis::allomorph(int i) const
     return &mAllomorphs[i];
 }
 
-Allomorph* MorphologicalAnalysis::operator[](int i)
-{
-    return &mAllomorphs[i];
-}
-
 int MorphologicalAnalysis::allomorphCount() const
 {
     return mAllomorphs.count();

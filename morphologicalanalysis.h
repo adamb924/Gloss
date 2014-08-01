@@ -61,9 +61,6 @@ public:
     //! \brief Returns the \a i th allomorph of the analysis
     const Allomorph* allomorph(int i) const;
 
-    //! \brief Returns the \a i th allomorph of the analysis
-    Allomorph* operator[](int i);
-
 private:
     qlonglong mTextFormId;
     WritingSystem mWritingSystem;
