@@ -233,6 +233,9 @@
    <property name="text">
     <string>Import plain text...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+I</string>
+   </property>
   </action>
   <action name="actionWriting_systems">
    <property name="text">
