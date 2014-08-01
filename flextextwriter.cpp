@@ -246,6 +246,10 @@ bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
     foreach( WritingSystem ws, analysisLanguages )
     {
         const MorphologicalAnalysis * analysis = glossItem->morphologicalAnalysis( ws );
+        if( analysis->textFormId() == 3099 )
+        {
+            qDebug() << "FlexTextWriter::serializeMorphemes" << analysis->allomorph(0)->guid();
+        }
         if( ! analysis->isEmpty() )
         {
             stream->writeStartElement("morphemes");
@@ -317,10 +321,10 @@ bool FlexTextWriter::serializeAllomorphNonverbose(const Allomorph &allomorph) co
 
 
     /// @todo Debug hack
-    if( allomorph.id() == 87 )
-    {
-        qDebug() << "FlexTextWriter::serializeAllomorphNonverbose" << allomorph.guid();
-    }
+//    if( allomorph.id() == 87 )
+//    {
+//        qDebug() << "FlexTextWriter::serializeAllomorphNonverbose" << allomorph.guid();
+//    }
 
     return true;
 }

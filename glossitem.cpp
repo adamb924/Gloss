@@ -316,7 +316,16 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
 MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws)
 {
     if( !mMorphologicalAnalyses.contains(ws) && mDbAdapter->hasMorphologicalAnalysis( mTextForms.value(ws).id() ) )
+    {
+        if( mTextForms.value(ws).id() == 3099 )
+            qDebug() << this << "reading from database for" << ws << "I only have" << mMorphologicalAnalyses.keys();
         mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( mTextForms.value(ws).id() ) );
+    }
+    else
+    {
+        if( mTextForms.value(ws).id() == 3099 )
+            qDebug() << "Apparently already available.";
+    }
 
     return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
 }
