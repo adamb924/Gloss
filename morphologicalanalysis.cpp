@@ -107,6 +107,11 @@ Allomorph* MorphologicalAnalysis::allomorph(int i)
     return &mAllomorphs[i];
 }
 
+const Allomorph* MorphologicalAnalysis::allomorph(int i) const
+{
+    return &mAllomorphs[i];
+}
+
 Allomorph* MorphologicalAnalysis::operator[](int i)
 {
     return &mAllomorphs[i];
