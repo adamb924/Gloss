@@ -12,18 +12,27 @@ SyntacticAnalysis::SyntacticAnalysis(const QString &name)
 void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticAnalysisElement*> elements)
 {
     if( elements.isEmpty() ) return;
-    if( allTerminals(elements) && noneHaveParents(elements) ) /// if all of the elements are terminal nodes, we just add that to the analysis
+
+    bool bAllTerminals = allTerminals(elements);
+    bool bNoneHaveParents = noneHaveParents(elements); // this is inaccurate
+    bool bAreSisters = areSisters(elements);
+    bool bAnyHaveParents = anyHaveParents(elements);
+
+    qDebug() << bAllTerminals << bNoneHaveParents << bAreSisters << bAnyHaveParents;
+
+    if( bAllTerminals && bNoneHaveParents ) /// if all of the elements are terminal nodes, we just add that to the analysis
     {
         SyntacticAnalysisElement *tmp = new SyntacticAnalysisElement(label, elements );
         mElements << tmp;
     }
-    else if( areSisters(elements) )
+    else if( bAreSisters )
     {
+        qDebug() << "Elements are sisters";
         findParent(elements[0])->replaceWithConstituent(label, elements);
     }
     else /// at least some of the nodes are constituents
     {
-        if( anyHaveParents(elements) )
+        if( bAnyHaveParents )
         {
             /// Some elements have parents; undefined behavior.
             return;
@@ -68,6 +77,11 @@ void SyntacticAnalysis::debug() const
     }
 }
 
+bool SyntacticAnalysis::isEmpty() const
+{
+    return mElements.count() == 0;
+}
+
 bool SyntacticAnalysis::allTerminals(QList<SyntacticAnalysisElement *> elements) const
 {
     for(int i=0; i<elements.count(); i++)
@@ -101,6 +115,7 @@ bool SyntacticAnalysis::noneHaveParents(QList<SyntacticAnalysisElement *> elemen
     {
         for(int j=0; j<mElements.count(); j++)
         {
+            qDebug() << "SyntacticAnalysis::noneHaveParents" << i << j;
             if( mElements.at(j)->hasDescendant(elements.at(i)) )
             {
                 return false;
@@ -117,6 +132,10 @@ bool SyntacticAnalysis::areSisters(QList<SyntacticAnalysisElement *> elements)
         return true;
     }
     const SyntacticAnalysisElement * firstParent = findParent( elements.first() );
+    if( firstParent == 0 )
+    {
+        return false;
+    }
     for(int i=1; i<elements.count(); i++)
     {
         if( ! firstParent->hasChild( elements.at(i) ) )

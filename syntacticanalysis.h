@@ -5,6 +5,8 @@
 #include <QList>
 
 class SyntacticAnalysisElement;
+class Text;
+class Tab;
 
 class SyntacticAnalysis
 {
@@ -21,6 +23,8 @@ public:
 
     void debug() const;
 
+    bool isEmpty() const;
+
 private:
 
     //! \brief Returns true if all of the elements are terminal elements, otherwise returns false
@@ -35,7 +39,7 @@ private:
     //! \brief Returns true if the elements are all sisters, otherwise returns false. Returns true if there are fewer than two elements
     bool areSisters(QList<SyntacticAnalysisElement *> elements);
 
-    //! \brief Returns the address of the object if it has \a element as a child, or tries to find it in its descendants
+    //! \brief Returns the address of the object if it has \a element as a child, or tries to find it in its descendants. If no parent is found, returns 0.
     SyntacticAnalysisElement *findParent(SyntacticAnalysisElement *element );
 
 private:
