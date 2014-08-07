@@ -59,6 +59,7 @@ public:
     const Project * project() const;
 
     QList<Phrase*>* phrases();
+    const QList<Phrase *> *phrases() const;
 
     void writeTextTo(const QString & path, bool verboseOutput, bool glossNamespace);
 

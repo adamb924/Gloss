@@ -108,6 +108,11 @@ QList<Phrase*>* Text::phrases()
     return &mPhrases;
 }
 
+const QList<Phrase*>* Text::phrases() const
+{
+    return &mPhrases;
+}
+
 void Text::clearGlossItems()
 {
     qDeleteAll(mPhrases);
