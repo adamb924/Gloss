@@ -58,9 +58,18 @@ const QList<SyntacticAnalysisElement *> *SyntacticAnalysis::elements() const
     return &mElements;
 }
 
-void SyntacticAnalysis::addElement(SyntacticAnalysisElement *element)
+void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
 {
     mElements.append(element);
+    if( element->allomorph() != 0 )
+    {
+        mBaselineConcordance.insert( element->allomorph() , element );
+    }
+}
+
+const QHash<const Allomorph *, SyntacticAnalysisElement *> *SyntacticAnalysis::allomorphConcordance() const
+{
+    return &mBaselineConcordance;
 }
 
 QString SyntacticAnalysis::name() const

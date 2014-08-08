@@ -3,10 +3,12 @@
 
 #include <QString>
 #include <QList>
+#include <QHash>
 
 class SyntacticAnalysisElement;
 class Text;
 class Tab;
+class Allomorph;
 
 class SyntacticAnalysis
 {
@@ -17,7 +19,9 @@ public:
 
     const QList<SyntacticAnalysisElement*>* elements() const;
 
-    void addElement(SyntacticAnalysisElement * element);
+    void addBaselineElement(SyntacticAnalysisElement * element);
+
+    const QHash<const Allomorph *, SyntacticAnalysisElement *> *allomorphConcordance() const;
 
     QString name() const;
 
@@ -45,6 +49,7 @@ private:
 private:
     QString mName;
     QList<SyntacticAnalysisElement*> mElements;
+    QHash<const Allomorph*, SyntacticAnalysisElement*> mBaselineConcordance;
 };
 
 #endif // SYNTACTICANALYSIS_H

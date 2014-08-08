@@ -55,6 +55,9 @@ SyntacticParsingWidget::~SyntacticParsingWidget()
 
 void SyntacticParsingWidget::setupBaseline()
 {
+    if( mAnalysis == 0 ) return;
+
+    mScene->clear();
     mGraphicsItemAllomorphHash.clear();
     qreal x = mInterWordDistance;
     for(int i=0; i<mText->phrases()->count(); i++) /// for each phrase
@@ -75,7 +78,7 @@ void SyntacticParsingWidget::setupBaseline()
                     MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
                     for(int m=0; m<ma->allomorphCount(); m++)
                     {
-                        SyntacticAnalysisElement * element = new SyntacticAnalysisElement( ma->allomorph(m) );
+                        SyntacticAnalysisElement * element = mAnalysis->allomorphConcordance()->value( ma->allomorph(m) );
                         MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m), element );
                         item->setPos(x + lineLength, y);
                         mScene->addItem(item);
@@ -220,6 +223,7 @@ void SyntacticParsingWidget::analysisSelectionChanged(const QString &newSelectio
     if( mText->syntacticAnalyses()->contains(newSelection) )
     {
         mAnalysis = mText->syntacticAnalyses()->value(newSelection);
+        setupBaseline();
         redrawSyntacticAnnotations();
     }
 }

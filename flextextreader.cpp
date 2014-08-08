@@ -195,7 +195,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     SyntacticAnalysisElement * newElement = new SyntacticAnalysisElement(label, QList<SyntacticAnalysisElement*>() );
                     if( elementStack.isEmpty() )
                     {
-                        currentSyntacticAnalysis->addElement(newElement);
+                        currentSyntacticAnalysis->addBaselineElement(newElement);
                     }
                     else
                     {
