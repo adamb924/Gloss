@@ -31,6 +31,8 @@ public:
     //! \brief Returns true if all members of \a other are identical (excluding the GUID)
     bool equalExceptGuid(const Allomorph & other) const;
 
+    bool equalExceptGuid(const Allomorph *other) const;
+
     //! \brief Returns the type of the allomorph as Allomorph::Type
     Type type() const;
 

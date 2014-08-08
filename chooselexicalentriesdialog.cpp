@@ -51,7 +51,7 @@ void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
     while(iter.hasNext())
     {
         QString text = iter.next();
-        mAnalysis->addAllomorph( Allomorph( -1, TextBit( Allomorph::stripPunctuation(text) , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
+        mAnalysis->addAllomorph(new Allomorph( -1, TextBit( Allomorph::stripPunctuation(text) , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
     }
 }
 
@@ -60,10 +60,10 @@ void ChooseLexicalEntriesDialog::setupLayout()
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
 
-    AllomorphIterator iter = mAnalysis->allomorphIterator();
+    AllomorphPointerIterator iter = mAnalysis->allomorphIterator();
     while(iter.hasNext())
     {
-        LexicalEntryForm *form = new LexicalEntryForm( iter.next(), mGlossItem, mProject, this );
+        LexicalEntryForm *form = new LexicalEntryForm( *iter.next(), mGlossItem, mProject, this );
         connect(form, SIGNAL(entryChanged()), this, SLOT(setAcceptable()) );
 
         layout->addWidget(form);

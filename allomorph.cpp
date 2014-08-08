@@ -57,6 +57,11 @@ bool Allomorph::equalExceptGuid(const Allomorph &other) const
     return mType == other.mType && mTextBit == other.mTextBit && mId == other.mId && mGlosses == other.mGlosses;
 }
 
+bool Allomorph::equalExceptGuid(const Allomorph * other) const
+{
+    return mType == other->mType && mTextBit == other->mTextBit && mId == other->mId && mGlosses == other->mGlosses;
+}
+
 QString Allomorph::typeFormattedString() const
 {
     return mTextBit.text();

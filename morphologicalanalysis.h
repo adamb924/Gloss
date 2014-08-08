@@ -14,6 +14,7 @@
 #include "allomorph.h"
 
 typedef QListIterator<Allomorph> AllomorphIterator;
+typedef QListIterator<Allomorph*> AllomorphPointerIterator;
 
 class MorphologicalAnalysis
 {
@@ -46,10 +47,10 @@ public:
     WritingSystem writingSystem() const;
 
     //! \brief Returns an AllomorphIterator for iterating over the allomorphs of the analysis
-    AllomorphIterator allomorphIterator() const;
+    AllomorphPointerIterator allomorphIterator() const;
 
     //! \brief Add an allomorph to the end of the morphological analysis
-    void addAllomorph(const Allomorph & allomorph);
+    void addAllomorph(Allomorph *allomorph);
 
     //! \brief Returns true if the analysis has no allomorphs, otherwise returns false
     bool isEmpty() const;
@@ -66,7 +67,7 @@ public:
 private:
     qlonglong mTextFormId;
     WritingSystem mWritingSystem;
-    QList<Allomorph> mAllomorphs;
+    QList<Allomorph*> mAllomorphs;
 
 };
 

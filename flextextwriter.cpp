@@ -250,10 +250,10 @@ bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
             stream->writeStartElement("morphemes");
             writeNamespaceAttribute( "lang", ws.flexString() );
 
-            AllomorphIterator iter = analysis->allomorphIterator();
+            AllomorphPointerIterator iter = analysis->allomorphIterator();
             while(iter.hasNext())
             {
-                mVerboseOutput ? serializeAllomorph( iter.next() ) : serializeAllomorphNonverbose( iter.next() );
+                mVerboseOutput ? serializeAllomorph( *iter.next() ) : serializeAllomorphNonverbose( *iter.next() );
             }
             stream->writeEndElement(); // morphemes
         }
