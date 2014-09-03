@@ -42,7 +42,6 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
         /// create a new element with containing \a elements
         SyntacticAnalysisElement *tmp = new SyntacticAnalysisElement(label, elements );
         mElements << tmp;
-        mElementConcordance.insert( tmp->allomorph()->guid() , tmp );
         /// remove each of \a elements from the baseline
         foreach( SyntacticAnalysisElement * e, elements )
         {
