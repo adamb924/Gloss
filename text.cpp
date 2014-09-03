@@ -427,7 +427,7 @@ void Text::setFollowingInterpretations( GlossItem *glossItem )
     {
         if( mPhrases.at(startingPhrase)->glossItemAt(i)->baselineText().text() == textForm )
         {
-            mPhrases.at(startingPhrase)->glossItemAt(i)->setInterpretation( interpretationId );
+            mPhrases.at(startingPhrase)->glossItemAt(i)->setInterpretation( interpretationId, true );
         }
     }
 
@@ -437,7 +437,7 @@ void Text::setFollowingInterpretations( GlossItem *glossItem )
         {
             if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == textForm )
             {
-                mPhrases.at(i)->glossItemAt(j)->setInterpretation( interpretationId );
+                mPhrases.at(i)->glossItemAt(j)->setInterpretation( interpretationId, true );
             }
         }
     }
@@ -455,7 +455,7 @@ void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
     {
         if( mPhrases.at(startingPhrase)->glossItemAt(i)->baselineText().text() == searchFor )
         {
-            mPhrases.at(startingPhrase)->glossItemAt(i)->setInterpretation( glossItem->id() );
+            mPhrases.at(startingPhrase)->glossItemAt(i)->setInterpretation( glossItem->id(), true );
         }
     }
 
@@ -465,7 +465,7 @@ void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
         {
             if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == searchFor )
             {
-                mPhrases.at(i)->glossItemAt(j)->setInterpretation( glossItem->id() );
+                mPhrases.at(i)->glossItemAt(j)->setInterpretation( glossItem->id(), true );
             }
         }
     }

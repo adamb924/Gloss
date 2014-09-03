@@ -78,8 +78,10 @@ void SyntacticParsingWidget::setupBaseline()
                     MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
                     for(int m=0; m<ma->allomorphCount(); m++)
                     {
-                        SyntacticAnalysisElement * element = mAnalysis->allomorphConcordance()->value( ma->allomorph(m) );
-                        MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m), element );
+                        /// @todo Perhaps what we need is a list of
+                        SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
+                        qDebug() << "SyntacticParsingWidget::setupBaseline()" << ma->allomorph(m)->guid() << "produces" << element;
+                        MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m)->textBitForConcatenation(), element );
                         item->setPos(x + lineLength, y);
                         mScene->addItem(item);
                         lineLength += item->boundingRect().width();
@@ -169,21 +171,6 @@ void SyntacticParsingWidget::createConstituent()
         }
     }
     mScene->clearSelection();
-}
-
-QList<const Allomorph *> SyntacticParsingWidget::selectedAllmorphs()
-{
-    QList<const Allomorph *> allomorphs;
-    QListIterator<QGraphicsItem*> iter(mScene->selectedItems());
-    while( iter.hasNext() )
-    {
-        MorphemeGraphicsItem * item = qgraphicsitem_cast<MorphemeGraphicsItem*>(iter.next());
-        if( item != 0 ) /// should never happen since only MorphemeGraphicsItem objects are selectable, but just in case...
-        {
-            allomorphs << item->allomorph();
-        }
-    }
-    return allomorphs;
 }
 
 QList<SyntacticAnalysisElement *> SyntacticParsingWidget::selectedElements()

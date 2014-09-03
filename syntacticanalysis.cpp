@@ -1,6 +1,7 @@
 #include "syntacticanalysis.h"
 
 #include "syntacticanalysiselement.h"
+#include "allomorph.h"
 
 #include <QtDebug>
 
@@ -14,20 +15,24 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
     if( elements.isEmpty() ) return;
 
     bool bAllTerminals = allTerminals(elements);
-    bool bNoneHaveParents = noneHaveParents(elements); // this is inaccurate
     bool bAreSisters = areSisters(elements);
     bool bAnyHaveParents = anyHaveParents(elements);
+    bool bNoneHaveParents = !bAnyHaveParents;
 
     qDebug() << bAllTerminals << bNoneHaveParents << bAreSisters << bAnyHaveParents;
 
-    if( bAllTerminals && bNoneHaveParents ) /// if all of the elements are terminal nodes, we just add that to the analysis
+    if( bNoneHaveParents ) /// if all of the elements are terminal nodes, we just add that to the analysis
     {
         SyntacticAnalysisElement *tmp = new SyntacticAnalysisElement(label, elements );
         mElements << tmp;
+        foreach( SyntacticAnalysisElement * e, elements )
+        {
+            mElements.removeAll(e);
+        }
     }
     else if( bAreSisters )
     {
-        qDebug() << "Elements are sisters";
+        qDebug() << "Elements are sisters" << findParent(elements[0]);
         findParent(elements[0])->replaceWithConstituent(label, elements);
     }
     else /// at least some of the nodes are constituents
@@ -60,16 +65,18 @@ const QList<SyntacticAnalysisElement *> *SyntacticAnalysis::elements() const
 
 void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
 {
+    qDebug() << "SyntacticAnalysis::addBaselineElement" << * element;
     mElements.append(element);
-    if( element->allomorph() != 0 )
+    if( element->isTerminal() )
     {
-        mBaselineConcordance.insert( element->allomorph() , element );
+        mBaselineConcordance.insert( element->allomorph()->guid() , element );
     }
 }
 
-const QHash<const Allomorph *, SyntacticAnalysisElement *> *SyntacticAnalysis::allomorphConcordance() const
+SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
 {
-    return &mBaselineConcordance;
+    qDebug() << "SyntacticAnalysis::elementFromGuid" << mBaselineConcordance;
+    return mBaselineConcordance.value(guid, 0);
 }
 
 QString SyntacticAnalysis::name() const
@@ -116,22 +123,6 @@ bool SyntacticAnalysis::anyHaveParents(QList<SyntacticAnalysisElement *> element
         }
     }
     return false;
-}
-
-bool SyntacticAnalysis::noneHaveParents(QList<SyntacticAnalysisElement *> elements) const
-{
-    for(int i=0; i<elements.count(); i++)
-    {
-        for(int j=0; j<mElements.count(); j++)
-        {
-            qDebug() << "SyntacticAnalysis::noneHaveParents" << i << j;
-            if( mElements.at(j)->hasDescendant(elements.at(i)) )
-            {
-                return false;
-            }
-        }
-    }
-    return true;
 }
 
 bool SyntacticAnalysis::areSisters(QList<SyntacticAnalysisElement *> elements)

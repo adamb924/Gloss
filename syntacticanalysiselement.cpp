@@ -11,7 +11,8 @@ SyntacticAnalysisElement::SyntacticAnalysisElement(const Allomorph * allomorph)
 }
 
 SyntacticAnalysisElement::SyntacticAnalysisElement(const QString & label, const QList<SyntacticAnalysisElement *> &elements)
-    : mLabel(label),
+    : mAllomorph(0),
+      mLabel(label),
       mType(SyntacticAnalysisElement::Consituent)
 {
     for(int i=0; i<elements.count(); i++)
@@ -135,4 +136,14 @@ void SyntacticAnalysisElement::replaceWithConstituent(const QString &label, QLis
         mElements.removeAll( element );
     }
     mElements.insert( minIndex, new SyntacticAnalysisElement( label , elements ) );
+}
+
+
+QDebug operator<<(QDebug dbg, const SyntacticAnalysisElement &key)
+{
+    if( key.isTerminal() )
+        dbg.nospace() << "SyntacticAnalysisElement (terminal)" << * key.allomorph();
+    else
+        dbg.nospace() << "SyntacticAnalysisElement (constituent)" << * key.elements();
+    return dbg.maybeSpace();
 }

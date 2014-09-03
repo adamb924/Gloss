@@ -10,13 +10,11 @@ class SyntacticAnalysisElement;
 class MorphemeGraphicsItem : public QGraphicsSimpleTextItem
 {
 public:
-    MorphemeGraphicsItem(const Allomorph * allomorph, SyntacticAnalysisElement * element, QGraphicsItem *parent = 0);
+    MorphemeGraphicsItem(const TextBit &bit, SyntacticAnalysisElement * element, QGraphicsItem *parent = 0);
 
-    const Allomorph *allomorph() const;
     SyntacticAnalysisElement* element();
 
 private:
-    const Allomorph *mAllomorph;
     SyntacticAnalysisElement * mElement;
 };
 

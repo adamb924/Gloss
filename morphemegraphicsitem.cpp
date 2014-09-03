@@ -6,18 +6,12 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-MorphemeGraphicsItem::MorphemeGraphicsItem(const Allomorph *allomorph, SyntacticAnalysisElement *element, QGraphicsItem * parent)
-    : QGraphicsSimpleTextItem( allomorph->textBitForConcatenation().text(), parent),
-    mAllomorph(allomorph),
+MorphemeGraphicsItem::MorphemeGraphicsItem(const TextBit & bit, SyntacticAnalysisElement *element, QGraphicsItem * parent)
+    : QGraphicsSimpleTextItem( bit.text(), parent),
     mElement(element)
 {
-    setFont( allomorph->writingSystem().font() );
+    setFont( bit.writingSystem().font() );
     setFlag(QGraphicsItem::ItemIsSelectable, true);
-}
-
-const Allomorph* MorphemeGraphicsItem::allomorph() const
-{
-    return mAllomorph;
 }
 
 SyntacticAnalysisElement *MorphemeGraphicsItem::element()

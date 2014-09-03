@@ -66,11 +66,17 @@ void Concordance::updateGlossItemGlossConcordance( GlossItem * item, qlonglong g
     mGlossItemsByGlossId.insert( glossId, item );
 }
 
-void Concordance::updateGlossItemMorphologicalAnalysis(const MorphologicalAnalysis * analysis)
+void Concordance::updateGlossItemMorphologicalAnalysis(const GlossItem * originator, const MorphologicalAnalysis * analysis)
 {
     QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( analysis->textFormId() );
     foreach(GlossItem *item, itemList)
     {
-        item->setMorphologicalAnalysis( analysis->copyWithNewGuids() );
+        /// this isn't necessary for the other concordance functions, but this
+        /// one in particular needs to avoid unecessary copies of the MorphologicalAnalysis
+        /// or else it will always be creating new GUIDs for the allomorphs.
+        if( item != originator)
+        {
+            item->setMorphologicalAnalysis( analysis->copyWithNewGuids() );
+        }
     }
 }

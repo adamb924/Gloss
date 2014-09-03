@@ -141,3 +141,16 @@ WritingSystem MorphologicalAnalysis::writingSystem() const
 {
     return mWritingSystem;
 }
+
+
+QDebug operator<<(QDebug dbg, const MorphologicalAnalysis &key)
+{
+    dbg.nospace() << "MorphologicalAnalysis(TextForm ID: " << key.textFormId() << ", WS: " << key.writingSystem() << ", Allomorphs(";
+    AllomorphPointerIterator iter = key.allomorphIterator();
+    while( iter.hasNext() )
+    {
+        dbg.nospace() << * iter.next() << ", ";
+    }
+    dbg.nospace() << ")";
+    return dbg.maybeSpace();
+}

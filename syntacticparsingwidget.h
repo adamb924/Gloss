@@ -30,7 +30,6 @@ private:
     void redrawSyntacticAnnotations();
     QGraphicsItem* addElementToScene(SyntacticAnalysisElement *element );
 
-    QList<const Allomorph *> selectedAllmorphs();
     QList<SyntacticAnalysisElement *> selectedElements();
 
 protected:

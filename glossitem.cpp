@@ -101,12 +101,11 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
                 setGloss( tfGlosses.value() );
             }
         }
+        /// @todo As the function is currently being called, this branch is never used
         else
         {
             loadStringsFromDatabase();
         }
-
-        loadMorphologicalAnalysesFromDatabase();
 
         emit fieldsChanged();
     }
@@ -163,7 +162,7 @@ void GlossItem::setTextForm(const TextBit & textForm)
 
         emit fieldsChanged();
         emit textFormChanged(textForm);
-        emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value( ws ) );
+        emit morphologicalAnalysisChanged( this, mMorphologicalAnalyses.value( ws ) );
     }
 }
 
@@ -259,7 +258,6 @@ void GlossItem::guessInterpretation()
         setInterpretation( candidates.at(0), true );  // true because the user hadn't had a chance to specify
     }
     setApprovalStatus(GlossItem::Unapproved);
-    loadMorphologicalAnalysesFromDatabase();
 }
 
 void GlossItem::toggleApproval()
@@ -320,12 +318,13 @@ MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & w
 
 void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
 {
-    if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) || ( mMorphologicalAnalyses.contains(analysis->writingSystem()) && !mMorphologicalAnalyses.value( analysis->writingSystem() )->equalExceptGuid( *analysis ) ) )
+    if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) ||
+              !mMorphologicalAnalyses.value( analysis->writingSystem() )->equalExceptGuid( *analysis ) )
     {
         mMorphologicalAnalyses.insert( analysis->writingSystem() , analysis );
         emit fieldsChanged();
         MorphologicalAnalysis *ma = mMorphologicalAnalyses.value( analysis->writingSystem() );
-        emit morphologicalAnalysisChanged( ma );
+        emit morphologicalAnalysisChanged( this, ma );
     }
 }
 
@@ -389,8 +388,16 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
         if( mDbAdapter->textFormHasMorphologicalAnalysis( tfIter.value().id() ) )
         {
             MorphologicalAnalysis * databaseMA = mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() );
-            mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
-            emit morphologicalAnalysisChanged( mMorphologicalAnalyses.value(tfIter.key()) );
+            if( mMorphologicalAnalyses.contains(tfIter.key()) )
+            {
+                mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
+                emit morphologicalAnalysisChanged( this, mMorphologicalAnalyses.value(tfIter.key()) );
+            }
+            else
+            {
+                /// @todo As this method is currently called, this branch should never be reached
+                mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
+            }
         }
     }
 }
@@ -520,5 +527,5 @@ void GlossItem::connectToConcordance()
     connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)), Qt::UniqueConnection);
     connect( this, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)), Qt::UniqueConnection);
     connect( this, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)), Qt::UniqueConnection);
-    connect( this, SIGNAL(morphologicalAnalysisChanged(const MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(const MorphologicalAnalysis*)), Qt::UniqueConnection);
+    connect( this, SIGNAL(morphologicalAnalysisChanged(const GlossItem*,const MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(const GlossItem*,const MorphologicalAnalysis*)), Qt::UniqueConnection);
 }

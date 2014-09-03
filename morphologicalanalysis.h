@@ -71,4 +71,6 @@ private:
 
 };
 
+QDebug operator<<(QDebug dbg, const MorphologicalAnalysis &key);
+
 #endif // MORPHOLOGICALANALYSIS_H

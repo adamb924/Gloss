@@ -39,4 +39,6 @@ private:
     QList<SyntacticAnalysisElement *> mElements;
 };
 
+QDebug operator<<(QDebug dbg, const SyntacticAnalysisElement &key);
+
 #endif // SYNTACTICANALYSISELEMENT_H

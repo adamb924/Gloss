@@ -9,6 +9,7 @@ class SyntacticAnalysisElement;
 class Text;
 class Tab;
 class Allomorph;
+class QUuid;
 
 class SyntacticAnalysis
 {
@@ -21,7 +22,7 @@ public:
 
     void addBaselineElement(SyntacticAnalysisElement * element);
 
-    const QHash<const Allomorph *, SyntacticAnalysisElement *> *allomorphConcordance() const;
+    SyntacticAnalysisElement *elementFromGuid(const QUuid & guid);
 
     QString name() const;
 
@@ -37,9 +38,6 @@ private:
     //! \brief Returns true if any of the elements are already parsed into constituents, otherwise returns false
     bool anyHaveParents(QList<SyntacticAnalysisElement *> elements) const;
 
-    //! \brief Returns true if none of the elements are already parsed into constituents, otherwise returns false
-    bool noneHaveParents(QList<SyntacticAnalysisElement *> elements) const;
-
     //! \brief Returns true if the elements are all sisters, otherwise returns false. Returns true if there are fewer than two elements
     bool areSisters(QList<SyntacticAnalysisElement *> elements);
 
@@ -49,7 +47,7 @@ private:
 private:
     QString mName;
     QList<SyntacticAnalysisElement*> mElements;
-    QHash<const Allomorph*, SyntacticAnalysisElement*> mBaselineConcordance;
+    QHash<QUuid, SyntacticAnalysisElement*> mBaselineConcordance;
 };
 
 #endif // SYNTACTICANALYSIS_H
