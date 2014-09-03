@@ -63,7 +63,10 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
         painter->drawLine( sceneTransform().inverted().map( QPointF(x, mDaughters.at(i)->sceneBoundingRect().top() ) ) ,sceneTransform().inverted().map( QPointF(x, stalkTop) ) );
     }
 
+    /// draw the horizontal line
     painter->drawLine( sceneTransform().inverted().map( QPointF(rect.left(), stalkTop) ) ,sceneTransform().inverted().map( QPointF(rect.right(), stalkTop) ) );
+
+    /// draw the text label
     QRectF textRect;
     if( rect.left() == rect.right() )
     {
@@ -76,6 +79,7 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
     }
     painter->drawText( sceneTransform().inverted().mapRect( textRect ) , Qt::AlignCenter , mLabel );
 
+    /// draw selection rectangle
     if(option->state & QStyle::State_Selected)
     {
         QRectF selectionRect = QFontMetrics(mFont).boundingRect( mLabel );
