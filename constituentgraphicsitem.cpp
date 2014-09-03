@@ -7,6 +7,10 @@
 #include <QFontMetrics>
 #include <QGraphicsItem>
 #include <QStyleOptionGraphicsItem>
+#include <QMimeData>
+#include <QDrag>
+#include <QGraphicsSceneMouseEvent>
+#include "syntacticanalysiselement.h"
 
 #include <QtDebug>
 
@@ -21,6 +25,7 @@ ConstituentGraphicsItem::ConstituentGraphicsItem(const QString & label, const QL
     mFont = QFont("Times New Roman",12);
     mFontHeight = QFontMetrics(mFont).height();
 
+    setAcceptDrops(true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 
@@ -87,6 +92,27 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
         selectionRect.adjust( 0 , 0, 0 , -2 ); /// pull it away from the horizontal line
         painter->setPen( Qt::DashLine );
         painter->drawRect( selectionRect );
+    }
+}
+
+void ConstituentGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QMimeData *data = new QMimeData;
+    data->setData("SyntacticAnalysisElement*", QByteArray((char*)mElement) );
+    data->setText("Hello world");
+
+    QDrag *drag = new QDrag(event->widget());
+    drag->setMimeData(data);
+    drag->start();
+}
+
+void ConstituentGraphicsItem::dropEvent(QGraphicsSceneDragDropEvent *event)
+{
+    if( event->source() != 0 ) /// if it's not coming from outside the application
+    {
+        SyntacticAnalysisElement * origin = (SyntacticAnalysisElement *)event->mimeData()->data("SyntacticAnalysisElement*").data();
+        mElement->addChild(origin);
+        qDebug() << origin->allomorph();
     }
 }
 

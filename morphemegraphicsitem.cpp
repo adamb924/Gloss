@@ -5,6 +5,9 @@
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <QMimeData>
+#include <QDrag>
+#include <QGraphicsSceneMouseEvent>
 
 MorphemeGraphicsItem::MorphemeGraphicsItem(const TextBit & bit, SyntacticAnalysisElement *element, QGraphicsItem * parent)
     : QGraphicsSimpleTextItem( bit.text(), parent),
@@ -17,4 +20,14 @@ MorphemeGraphicsItem::MorphemeGraphicsItem(const TextBit & bit, SyntacticAnalysi
 SyntacticAnalysisElement *MorphemeGraphicsItem::element()
 {
     return mElement;
+}
+
+void MorphemeGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QMimeData *data = new QMimeData;
+    data->setData("SyntacticAnalysisElement*", QByteArray((char*)mElement) );
+
+    QDrag *drag = new QDrag(event->widget());
+    drag->setMimeData(data);
+    drag->start();
 }

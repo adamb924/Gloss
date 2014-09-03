@@ -15,6 +15,8 @@ public:
     SyntacticAnalysisElement* element();
 
 private:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+
     SyntacticAnalysisElement * mElement;
 };
 

@@ -24,6 +24,9 @@ signals:
 public slots:
 
 private:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void dropEvent(QGraphicsSceneDragDropEvent * event);
+
     QList<QGraphicsItem*> mDaughters;
     QString mLabel;
     SyntacticAnalysisElement * mElement;
