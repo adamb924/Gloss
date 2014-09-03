@@ -8,6 +8,7 @@
 #include <QGraphicsProxyWidget>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QMenu>
 
 #include "text.h"
 #include "tab.h"
@@ -198,6 +199,14 @@ QList<SyntacticAnalysisElement *> SyntacticParsingWidget::selectedElements()
     return elements;
 }
 
+void SyntacticParsingWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu(this);
+    menu.addAction(tr("Save this text"), this, SLOT(saveText()), QKeySequence("Ctrl+Shift+S"));
+    menu.addAction(tr("Save this text, verbose output"), this, SLOT(saveTextVerbose()) );
+    menu.exec(event->globalPos());
+}
+
 void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
 {
     if( event->key() == Qt::Key_A )
@@ -237,6 +246,16 @@ void SyntacticParsingWidget::deleteAnalysis()
         delete mText->syntacticAnalyses()->take(name);
         ui->comboBox->removeItem( ui->comboBox->currentIndex() );
     }
+}
+
+void SyntacticParsingWidget::saveText()
+{
+    mText->saveText(false, true, true);
+}
+
+void SyntacticParsingWidget::saveTextVerbose()
+{
+    mText->saveText(true, true, true);
 }
 
 

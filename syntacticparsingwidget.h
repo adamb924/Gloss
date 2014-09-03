@@ -32,6 +32,8 @@ private:
 
     QList<SyntacticAnalysisElement *> selectedElements();
 
+    void contextMenuEvent ( QContextMenuEvent * event );
+
 protected:
     void keyReleaseEvent(QKeyEvent * event);
 
@@ -40,6 +42,8 @@ private slots:
     void analysisSelectionChanged(const QString & newSelection);
     void newAnalysis();
     void deleteAnalysis();
+    void saveText();
+    void saveTextVerbose();
 
 private:
     Ui::SyntacticParsingWidget *ui;
