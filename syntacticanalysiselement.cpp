@@ -46,6 +46,11 @@ bool SyntacticAnalysisElement::isTerminal() const
     return mType == SyntacticAnalysisElement::Terminal;
 }
 
+bool SyntacticAnalysisElement::isConstituent() const
+{
+    return mType == SyntacticAnalysisElement::Consituent;
+}
+
 bool SyntacticAnalysisElement::hasDescendant(const SyntacticAnalysisElement *element) const
 {
     for(int i=0; i<mElements.count(); i++)
@@ -72,7 +77,7 @@ void SyntacticAnalysisElement::debug() const
 {
     if( mType == SyntacticAnalysisElement::Terminal )
     {
-        qWarning() << "SyntacticAnalysisElement Terminal" << mAllomorph->text();
+        qWarning() << "SyntacticAnalysisElement(" << this << " ) Terminal Allomorph(" << mAllomorph << ")";
     }
     else /// constituent
     {

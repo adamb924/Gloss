@@ -21,6 +21,7 @@ public:
     QList<SyntacticAnalysisElement *> *elements();
     const QList<SyntacticAnalysisElement *> *elements() const;
     bool isTerminal() const;
+    bool isConstituent() const;
     bool hasDescendant( const SyntacticAnalysisElement * element ) const;
     bool hasChild(SyntacticAnalysisElement *element ) const;
     void addChild(SyntacticAnalysisElement *element);
