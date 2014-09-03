@@ -53,7 +53,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     QSet<qlonglong> textFormIds;
     QSet<qlonglong> glossFormIds;
     QHash<QString,QList<QUuid> > morphGuids; /// the string here is a flextext string
-    QHash<QString,Allomorph*> guidAllomorphHash;
     QList<QUuid> *currentGuids = 0;
     SyntacticAnalysis * currentSyntacticAnalysis = 0;
     QStack<SyntacticAnalysisElement*> elementStack;
@@ -211,19 +210,10 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","guid") )
                 {
                     QString guid = attr.value("http://www.adambaker.org/gloss.php","guid").toString();
-                    if( guidAllomorphHash.contains(guid) )
+                    SyntacticAnalysisElement * newElement = currentSyntacticAnalysis->elementFromGuid( QUuid(guid) );
+                    if( !elementStack.isEmpty() )
                     {
-                        SyntacticAnalysisElement * newElement = new SyntacticAnalysisElement( guidAllomorphHash.value(guid) );
-                        if( !elementStack.isEmpty() )
-                        {
-                            elementStack.top()->addChild(newElement);
-                        }
-                        /// remove it from the hash once it's put into the syntactic analysis
-                        guidAllomorphHash.remove(guid);
-                    }
-                    else
-                    {
-                        return FlexTextReader::FlexTextReadXmlReadError; /// @todo probably not the best error code
+                        elementStack.top()->addChild(newElement);
                     }
                 }
             }
@@ -255,7 +245,6 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                         for(int i=0; i<ma->allomorphCount(); i++)
                         {
                             ma->allomorph(i)->setGuid( morphGuids.value(lang).at(i) );
-                            guidAllomorphHash.insert( morphGuids.value(lang).at(i).toString() , ma->allomorph(i) );
                         }
                     }
                 }

@@ -52,7 +52,7 @@ private:
     QString mName;
     WritingSystem mWritingSystem;
     QList<SyntacticAnalysisElement*> mElements;
-    QHash<QUuid, SyntacticAnalysisElement*> mBaselineConcordance;
+    QHash<QUuid, SyntacticAnalysisElement*> mElementConcordance;
 };
 
 #endif // SYNTACTICANALYSIS_H

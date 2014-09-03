@@ -42,6 +42,7 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
         /// create a new element with containing \a elements
         SyntacticAnalysisElement *tmp = new SyntacticAnalysisElement(label, elements );
         mElements << tmp;
+        mElementConcordance.insert( tmp->allomorph()->guid() , tmp );
         /// remove each of \a elements from the baseline
         foreach( SyntacticAnalysisElement * e, elements )
         {
@@ -70,7 +71,9 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
                 minIndex = qMin( minIndex , mElements.indexOf( element ) );
                 mElements.removeAll( element );
             }
-            mElements.insert( minIndex, new SyntacticAnalysisElement( label , elements ) );
+            SyntacticAnalysisElement * tmp = new SyntacticAnalysisElement( label , elements );
+            mElements.insert( minIndex, tmp );
+            mElementConcordance.insert( tmp->allomorph()->guid() , tmp );
         }
 
     }
@@ -86,13 +89,13 @@ void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
     mElements.append(element);
     if( element->isTerminal() )
     {
-        mBaselineConcordance.insert( element->allomorph()->guid() , element );
+        mElementConcordance.insert( element->allomorph()->guid() , element );
     }
 }
 
 SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
 {
-    return mBaselineConcordance.value(guid, 0);
+    return mElementConcordance.value(guid, 0);
 }
 
 QString SyntacticAnalysis::name() const
@@ -109,7 +112,10 @@ void SyntacticAnalysis::debug() const
 {
     for(int i=0; i<mElements.count(); i++)
     {
-        mElements.at(i)->debug();
+        if( mElements.at(i)->isConstituent() )
+        {
+            mElements.at(i)->debug();
+        }
     }
 }
 
@@ -136,9 +142,12 @@ bool SyntacticAnalysis::anyHaveParents(QList<SyntacticAnalysisElement *> element
     {
         for(int j=0; j<mElements.count(); j++)
         {
-            if( mElements.at(j)->hasDescendant(elements.at(i)) )
+            if( !mElements.at(j)->isTerminal() )
             {
-                return true;
+                if( mElements.at(j)->hasDescendant(elements.at(i)) )
+                {
+                    return true;
+                }
             }
         }
     }
