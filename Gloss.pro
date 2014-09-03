@@ -93,7 +93,8 @@ SOURCES += main.cpp\
     morphemegraphicsitem.cpp \
     syntacticanalysis.cpp \
     syntacticanalysiselement.cpp \
-    constituentgraphicsitem.cpp
+    constituentgraphicsitem.cpp \
+    createsyntacticanalysisdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -177,7 +178,8 @@ HEADERS  += mainwindow.h \
     morphemegraphicsitem.h \
     syntacticanalysis.h \
     syntacticanalysiselement.h \
-    constituentgraphicsitem.h
+    constituentgraphicsitem.h \
+    createsyntacticanalysisdialog.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -207,7 +209,8 @@ FORMS    += mainwindow.ui \
     projectoptionsdialog.ui \
     annotationeditordialog.ui \
     exporttextsdialog.ui \
-    syntacticparsingwidget.ui
+    syntacticparsingwidget.ui \
+    createsyntacticanalysisdialog.ui
 
 LIBS += -L./ \
     -lquazip \

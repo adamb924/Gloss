@@ -91,6 +91,10 @@ public:
     /// @todo Any reason for this not to be const?
     MorphologicalAnalysis * morphologicalAnalysis(const WritingSystem & ws);
 
+    //! \brief Returns the morphological analysis for the given writing system, or an empty one
+    /// @todo Any reason for this not to be const?
+    const MorphologicalAnalysis * morphologicalAnalysis(const WritingSystem & ws) const;
+
     //! \brief Returns a list of languages for which there are morphological analyses
     QList<WritingSystem> morphologicalAnalysisLanguages() const;
 

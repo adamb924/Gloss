@@ -19,6 +19,8 @@
 #include "syntacticanalysis.h"
 #include "constituentgraphicsitem.h"
 #include "syntacticanalysiselement.h"
+#include "createsyntacticanalysisdialog.h"
+#include "databaseadapter.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -78,9 +80,7 @@ void SyntacticParsingWidget::setupBaseline()
                     MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
                     for(int m=0; m<ma->allomorphCount(); m++)
                     {
-                        /// @todo Perhaps what we need is a list of
                         SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
-                        qDebug() << "SyntacticParsingWidget::setupBaseline()" << ma->allomorph(m)->guid() << "produces" << element;
                         MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m)->textBitForConcatenation(), element );
                         item->setPos(x + lineLength, y);
                         mScene->addItem(item);
@@ -181,7 +181,8 @@ QList<SyntacticAnalysisElement *> SyntacticParsingWidget::selectedElements()
     {
         QGraphicsItem * item = iter.next();
         MorphemeGraphicsItem * mgi = qgraphicsitem_cast<MorphemeGraphicsItem*>(item);
-        if( mgi != 0 ) /// then it's a morpheme graphics item (with
+
+        if( mgi != 0 ) /// then it's a morpheme graphics item (with an associated element)
         {
             elements << mgi->element();
         }
@@ -217,14 +218,12 @@ void SyntacticParsingWidget::analysisSelectionChanged(const QString &newSelectio
 
 void SyntacticParsingWidget::newAnalysis()
 {
-    bool ok;
-    QString name = QInputDialog::getText(this, tr("Create a new syntactical analysis"),
-                                         tr("Name:"), QLineEdit::Normal,tr(""), &ok);
-    if (ok && !name.isEmpty())
+    CreateSyntacticAnalysisDialog dlg(mProject->dbAdapter()->writingSystems());
+    if( dlg.exec() )
     {
-        mAnalysis = new SyntacticAnalysis(name);
-        mText->syntacticAnalyses()->insert( name , mAnalysis );
-        ui->comboBox->insertItem(0, name);
+        mAnalysis = new SyntacticAnalysis(dlg.name(), dlg.writingSystem(), mText);
+        mText->syntacticAnalyses()->insert( dlg.name() , mAnalysis );
+        ui->comboBox->insertItem(0, dlg.name());
         ui->comboBox->setCurrentIndex(0);
         redrawSyntacticAnnotations();
     }

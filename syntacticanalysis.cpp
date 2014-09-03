@@ -2,12 +2,28 @@
 
 #include "syntacticanalysiselement.h"
 #include "allomorph.h"
+#include "text.h"
+#include "phrase.h"
+#include "glossitem.h"
 
 #include <QtDebug>
 
-SyntacticAnalysis::SyntacticAnalysis(const QString &name)
-    : mName(name)
+SyntacticAnalysis::SyntacticAnalysis(const QString &name, const WritingSystem &ws, const Text * text)
+    : mName(name),
+      mWritingSystem(ws)
 {
+    for(int i=0; i<text->phrases()->count(); i++)
+    {
+        const Phrase * phrase = text->phrases()->at(i);
+        for(int j=0; j<phrase->glossItemCount(); j++)
+        {
+            const MorphologicalAnalysis * ma = phrase->glossItemAt(j)->morphologicalAnalysis(mWritingSystem);
+            for(int k=0; k<ma->allomorphCount(); k++)
+            {
+                addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k) ) );
+            }
+        }
+    }
 }
 
 void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticAnalysisElement*> elements)
@@ -23,8 +39,10 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
 
     if( bNoneHaveParents ) /// if all of the elements are terminal nodes, we just add that to the analysis
     {
+        /// create a new element with containing \a elements
         SyntacticAnalysisElement *tmp = new SyntacticAnalysisElement(label, elements );
         mElements << tmp;
+        /// remove each of \a elements from the baseline
         foreach( SyntacticAnalysisElement * e, elements )
         {
             mElements.removeAll(e);
@@ -65,7 +83,6 @@ const QList<SyntacticAnalysisElement *> *SyntacticAnalysis::elements() const
 
 void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
 {
-    qDebug() << "SyntacticAnalysis::addBaselineElement" << * element;
     mElements.append(element);
     if( element->isTerminal() )
     {
@@ -75,7 +92,6 @@ void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
 
 SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
 {
-    qDebug() << "SyntacticAnalysis::elementFromGuid" << mBaselineConcordance;
     return mBaselineConcordance.value(guid, 0);
 }
 
@@ -84,9 +100,13 @@ QString SyntacticAnalysis::name() const
     return mName;
 }
 
+WritingSystem SyntacticAnalysis::writingSystem() const
+{
+    return mWritingSystem;
+}
+
 void SyntacticAnalysis::debug() const
 {
-    qWarning() << "SyntacticAnalysis" << mName;
     for(int i=0; i<mElements.count(); i++)
     {
         mElements.at(i)->debug();

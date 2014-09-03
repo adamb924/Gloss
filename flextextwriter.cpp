@@ -209,6 +209,7 @@ bool FlexTextWriter::serializeGrammaticalAnalysis(const SyntacticAnalysis * anal
 {
     stream->writeStartElement("http://www.adambaker.org/gloss.php", "syntactic-analysis");
     writeNamespaceAttribute("name", analysis->name());
+    writeNamespaceAttribute("lang", analysis->writingSystem().flexString() );
 
     for(int i=0; i<analysis->elements()->count(); i++)
     {

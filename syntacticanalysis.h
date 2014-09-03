@@ -5,6 +5,8 @@
 #include <QList>
 #include <QHash>
 
+#include "writingsystem.h"
+
 class SyntacticAnalysisElement;
 class Text;
 class Tab;
@@ -14,7 +16,7 @@ class QUuid;
 class SyntacticAnalysis
 {
 public:
-    SyntacticAnalysis(const QString & name);
+    SyntacticAnalysis(const QString & name, const WritingSystem & ws, const Text *text);
 
     void createConstituent(const QString &label, QList<SyntacticAnalysisElement*> elements);
 
@@ -25,6 +27,8 @@ public:
     SyntacticAnalysisElement *elementFromGuid(const QUuid & guid);
 
     QString name() const;
+
+    WritingSystem writingSystem() const;
 
     void debug() const;
 
@@ -46,6 +50,7 @@ private:
 
 private:
     QString mName;
+    WritingSystem mWritingSystem;
     QList<SyntacticAnalysisElement*> mElements;
     QHash<QUuid, SyntacticAnalysisElement*> mBaselineConcordance;
 };

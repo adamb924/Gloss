@@ -179,10 +179,11 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             else if ( name == "syntactic-analysis" && nameSpace == "http://www.adambaker.org/gloss.php" ) // <syntactic-analysis>
             {
                 QXmlStreamAttributes attr = stream.attributes();
-                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","name") )
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","name") && attr.hasAttribute("http://www.adambaker.org/gloss.php","lang") )
                 {
                     QString name = attr.value("http://www.adambaker.org/gloss.php","name").toString();
-                    currentSyntacticAnalysis = new SyntacticAnalysis(name);
+                    WritingSystem ws = mDbAdapter->writingSystem( attr.value( "http://www.adambaker.org/gloss.php","lang").toString() );
+                    currentSyntacticAnalysis = new SyntacticAnalysis(name, ws, mText );
                     mText->syntacticAnalyses()->insert(name, currentSyntacticAnalysis);
                 }
             }
@@ -217,6 +218,8 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                         {
                             elementStack.top()->addChild(newElement);
                         }
+                        /// remove it from the hash once it's put into the syntactic analysis
+                        guidAllomorphHash.remove(guid);
                     }
                     else
                     {

@@ -316,6 +316,11 @@ MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & w
     return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
 }
 
+const MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws) const
+{
+    return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
+}
+
 void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
 {
     if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) ||
