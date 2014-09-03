@@ -63,6 +63,26 @@ bool SyntacticAnalysisElement::hasDescendant(const SyntacticAnalysisElement *ele
     return false;
 }
 
+bool SyntacticAnalysisElement::removeElement(SyntacticAnalysisElement *element)
+{
+    if( mElements.contains( element ) )
+    {
+        mElements.removeAll(element);
+        return true;
+    }
+    else
+    {
+        for(int i=0; i<mElements.count(); i++)
+        {
+            if( mElements.at(i)->removeElement(element) )
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 bool SyntacticAnalysisElement::hasChild( SyntacticAnalysisElement * element ) const
 {
     return mElements.contains(element);

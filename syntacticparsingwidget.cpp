@@ -174,6 +174,16 @@ void SyntacticParsingWidget::createConstituent()
     mScene->clearSelection();
 }
 
+void SyntacticParsingWidget::removeConstituent()
+{
+    QList<SyntacticAnalysisElement *> elements = selectedElements();
+    foreach( SyntacticAnalysisElement * e, elements)
+    {
+        mAnalysis->removeElement( e );
+    }
+    redrawSyntacticAnnotations();
+}
+
 QList<SyntacticAnalysisElement *> SyntacticParsingWidget::selectedElements()
 {
     QList<SyntacticAnalysisElement *> elements;
@@ -212,6 +222,10 @@ void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
     if( event->key() == Qt::Key_A )
     {
         createConstituent();
+    }
+    else if ( event->key() == Qt::Key_X )
+    {
+        removeConstituent();
     }
 }
 

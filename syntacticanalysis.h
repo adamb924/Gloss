@@ -23,6 +23,7 @@ public:
     const QList<SyntacticAnalysisElement*>* elements() const;
 
     void addBaselineElement(SyntacticAnalysisElement * element);
+    void removeElement(SyntacticAnalysisElement * element);
 
     SyntacticAnalysisElement *elementFromGuid(const QUuid & guid);
 

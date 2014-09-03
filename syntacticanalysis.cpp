@@ -92,6 +92,27 @@ void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
     }
 }
 
+void SyntacticAnalysis::removeElement(SyntacticAnalysisElement *element)
+{
+    if( mElements.contains(element) )
+    {
+        mElements.removeAll(element);
+    }
+    else
+    {
+        for(int i=0; i<mElements.count(); i++)
+        {
+            if( mElements.at(i)->isConstituent() )
+            {
+                if( mElements.at(i)->removeElement(element) )
+                {
+                    continue;
+                }
+            }
+        }
+    }
+}
+
 SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
 {
     return mElementConcordance.value(guid, 0);

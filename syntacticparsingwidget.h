@@ -39,6 +39,7 @@ protected:
 
 private slots:
     void createConstituent();
+    void removeConstituent();
     void analysisSelectionChanged(const QString & newSelection);
     void newAnalysis();
     void deleteAnalysis();
