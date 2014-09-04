@@ -12,8 +12,6 @@ QRectF LineNumberGraphicsItem::boundingRect() const
 {
     QRectF rect = QFontMetrics(QFont()).boundingRect( tr("%1").arg(mLineNumber) );
     rect.moveTop( -1 * rect.top() );
-//    rect.moveLeft( -0.75 * rect.width() );
-//    rect.moveRight( 0.75 * rect.width() );
     return rect;
 }
 
