@@ -94,7 +94,8 @@ SOURCES += main.cpp\
     syntacticanalysis.cpp \
     syntacticanalysiselement.cpp \
     constituentgraphicsitem.cpp \
-    createsyntacticanalysisdialog.cpp
+    createsyntacticanalysisdialog.cpp \
+    linenumbergraphicsitem.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -179,7 +180,8 @@ HEADERS  += mainwindow.h \
     syntacticanalysis.h \
     syntacticanalysiselement.h \
     constituentgraphicsitem.h \
-    createsyntacticanalysisdialog.h
+    createsyntacticanalysisdialog.h \
+    linenumbergraphicsitem.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \

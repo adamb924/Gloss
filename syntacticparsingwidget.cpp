@@ -22,6 +22,7 @@
 #include "syntacticanalysiselement.h"
 #include "createsyntacticanalysisdialog.h"
 #include "databaseadapter.h"
+#include "linenumbergraphicsitem.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -65,6 +66,12 @@ void SyntacticParsingWidget::setupBaseline()
     qreal x = mInterWordDistance;
     for(int i=0; i<mText->phrases()->count(); i++) /// for each phrase
     {
+        LineNumberGraphicsItem *lineNumberItem = new LineNumberGraphicsItem(i+1);
+        lineNumberItem->setPos(x,0);
+        mScene->addItem(lineNumberItem);
+        x += lineNumberItem->boundingRect().width() + mInterWordDistance;
+        connect(lineNumberItem, SIGNAL(requestPlayLine(int)), mText, SLOT(playSoundForLine(int)) );
+
         for(int j=0; j<mText->phrases()->at(i)->glossItems()->count(); j++) /// for each gloss item
         {
             int longestLine = 0;

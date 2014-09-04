@@ -86,9 +86,6 @@ public:
 
     void setSound(const QUrl & filename);
 
-    //! \brief Plays the sound for the given 0-indexed line number, or returns an error.
-    bool playSoundForLine( int lineNumber );
-
     FlexTextReader::Result readResult() const;
 
     void findGlossItemLocation(GlossItem *glossItem, int & line, int & position) const;
@@ -105,6 +102,9 @@ public slots:
     void baselineSearchReplace( const TextBit & search , const TextBit & replace );
     void matchFollowingTextForms(GlossItem *glossItem, const WritingSystem & ws );
     void matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws );
+
+    //! \brief Plays the sound for the given 0-indexed line number, or returns an error.
+    bool playSoundForLine( int lineNumber );
 
 private:
     Sound *mSound;
