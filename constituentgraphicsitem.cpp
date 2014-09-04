@@ -53,6 +53,22 @@ QRectF ConstituentGraphicsItem::boundingRect() const
     return QRectF( sceneTransform().inverted().map( QPointF(left,top) ) , QSize(right-left, bottom-top) );
 }
 
+QPainterPath ConstituentGraphicsItem::shape() const
+{
+    QPainterPath path;
+    QRectF rect = sceneBoundingRect();
+    qreal stalkTop = rect.top() + mFontHeight;
+
+    QRectF textRect = QRectF( QPointF(rect.left(), stalkTop-mFontHeight), QPointF(rect.right(), stalkTop) );
+
+    QRectF selectionRect = QFontMetrics(mFont).boundingRect( mLabel );
+    selectionRect.moveCenter( textRect.center() );
+    selectionRect.adjust( 0 , 0, 0 , -2 );
+
+    path.addRect( selectionRect );
+    return path;
+}
+
 void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
@@ -104,9 +120,6 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
         painter->setPen( Qt::DashLine );
         painter->drawRect( selectionRect );
     }
-
-    painter->setPen( QColor(255,0,0) );
-    painter->drawRect( boundingRect() );
 }
 
 void ConstituentGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
