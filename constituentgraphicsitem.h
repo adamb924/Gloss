@@ -19,6 +19,9 @@ public:
     SyntacticAnalysisElement* element();
     const SyntacticAnalysisElement* element() const;
 
+    enum { Type = UserType + 1 };
+    int type() const;
+
 signals:
 
 public slots:
@@ -26,6 +29,8 @@ public slots:
 private:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void dropEvent(QGraphicsSceneDragDropEvent * event);
+
+    int maxDepth() const;
 
     QList<QGraphicsItem*> mDaughters;
     QString mLabel;
@@ -36,6 +41,8 @@ private:
 
     qreal mStalkHeight;
     qreal mPenWidth;
+
+    int mDepth;
 };
 
 #endif // CONSTITUENTGRAPHICSITEM_H

@@ -24,6 +24,7 @@ ConstituentGraphicsItem::ConstituentGraphicsItem(const QString & label, const QL
     mPenWidth = 2;
     mFont = QFont("Times New Roman",12);
     mFontHeight = QFontMetrics(mFont).height();
+    mDepth =  maxDepth();
 
     setAcceptDrops(true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -38,14 +39,16 @@ QRectF ConstituentGraphicsItem::boundingRect() const
 
     qreal left = mDaughters.first()->sceneBoundingRect().center().x();
     qreal right = mDaughters.first()->sceneBoundingRect().center().x();
-    qreal bottom = mDaughters.first()->sceneBoundingRect().top();
-    for(int i=1; i<mDaughters.count(); i++)
+    QPointF pt = sceneTransform().inverted().map( QPointF(0, 0 ) );
+    qreal bottom = pt.y();
+
+    for(int i=0; i<mDaughters.count(); i++)
     {
-        left = qMin( left, mDaughters.at(i)->sceneBoundingRect().center().x() );
-        right = qMax( right, mDaughters.at(i)->sceneBoundingRect().center().x() );
-        bottom = qMin( bottom, mDaughters.at(i)->sceneBoundingRect().top() );
+        left = qMin( left, mDaughters.at(i)->sceneBoundingRect().left() );
+        right = qMax( right, mDaughters.at(i)->sceneBoundingRect().right() );
     }
-    qreal top = bottom - mStalkHeight - mPenWidth - mFontHeight;
+
+    qreal top = bottom - mDepth * ( mPenWidth + mFontHeight + mStalkHeight );
 
     return QRectF( sceneTransform().inverted().map( QPointF(left,top) ) , QSize(right-left, bottom-top) );
 }
@@ -54,22 +57,30 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
 {
     Q_UNUSED(widget);
 
-    painter->setPen( QColor(0,0,0) );
+    painter->setPen( QPen(QBrush(QColor(0,0,0)), mPenWidth) );
 
     if( mDaughters.isEmpty() )
     {
         return;
     }
     QRectF rect = sceneBoundingRect();
-    qreal stalkTop = rect.bottom() - mStalkHeight;
+
+    /// draw the stalks
+    qreal stalkTop = rect.top() + mFontHeight;
+    qreal left = mDaughters.first()->sceneBoundingRect().center().x();
+    qreal right = mDaughters.first()->sceneBoundingRect().center().x();
+
     for(int i=0; i<mDaughters.count(); i++)
     {
         qreal x = mDaughters.at(i)->sceneBoundingRect().center().x();
         painter->drawLine( sceneTransform().inverted().map( QPointF(x, mDaughters.at(i)->sceneBoundingRect().top() ) ) ,sceneTransform().inverted().map( QPointF(x, stalkTop) ) );
+
+        left = qMin( left, mDaughters.at(i)->sceneBoundingRect().center().x() );
+        right = qMax( right, mDaughters.at(i)->sceneBoundingRect().center().x() );
     }
 
     /// draw the horizontal line
-    painter->drawLine( sceneTransform().inverted().map( QPointF(rect.left(), stalkTop) ) ,sceneTransform().inverted().map( QPointF(rect.right(), stalkTop) ) );
+    painter->drawLine( sceneTransform().inverted().map( QPointF(left, stalkTop) ) ,sceneTransform().inverted().map( QPointF(right, stalkTop) ) );
 
     /// draw the text label
     QRectF textRect;
@@ -93,6 +104,9 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
         painter->setPen( Qt::DashLine );
         painter->drawRect( selectionRect );
     }
+
+    painter->setPen( QColor(255,0,0) );
+    painter->drawRect( boundingRect() );
 }
 
 void ConstituentGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -116,6 +130,20 @@ void ConstituentGraphicsItem::dropEvent(QGraphicsSceneDragDropEvent *event)
     }
 }
 
+int ConstituentGraphicsItem::maxDepth() const
+{
+    int depth = 0;
+    foreach( QGraphicsItem* item , mDaughters )
+    {
+        ConstituentGraphicsItem * con = qgraphicsitem_cast<ConstituentGraphicsItem*>(item);
+        if( con != 0 )
+        {
+            depth = qMax( depth , con->maxDepth() );
+        }
+    }
+    return depth + 1;
+}
+
 SyntacticAnalysisElement *ConstituentGraphicsItem::element()
 {
     return mElement;
@@ -124,4 +152,9 @@ SyntacticAnalysisElement *ConstituentGraphicsItem::element()
 const SyntacticAnalysisElement *ConstituentGraphicsItem::element() const
 {
     return mElement;
+}
+
+int ConstituentGraphicsItem::type() const
+{
+    return Type;
 }

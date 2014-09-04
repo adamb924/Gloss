@@ -22,6 +22,11 @@ SyntacticAnalysisElement *MorphemeGraphicsItem::element()
     return mElement;
 }
 
+int MorphemeGraphicsItem::type() const
+{
+    return Type;
+}
+
 void MorphemeGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QMimeData *data = new QMimeData;

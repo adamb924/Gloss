@@ -14,6 +14,9 @@ public:
 
     SyntacticAnalysisElement* element();
 
+    enum { Type = UserType + 2 };
+    int type() const;
+
 private:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
