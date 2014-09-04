@@ -35,7 +35,7 @@ void LingEdit::setTextBit( const TextBit & bit )
 
 void LingEdit::focusInEvent ( QFocusEvent * e )
 {
-    QWidget::focusInEvent(e);
+    QLineEdit::focusInEvent(e);
 
     // http://msdn.microsoft.com/en-us/goglobal/bb896001
     QProcess switchInput;
@@ -47,7 +47,7 @@ void LingEdit::focusInEvent ( QFocusEvent * e )
 
 void LingEdit::focusOutEvent ( QFocusEvent * e )
 {
-    QWidget::focusOutEvent(e);
+    QLineEdit::focusOutEvent(e);
 
     refreshStyle();
 }
