@@ -63,7 +63,6 @@ public:
 
     void writeTextTo(const QString & path, bool verboseOutput, bool glossNamespace);
 
-    //! @todo There is probably a better way to write the interface for this method.
     void saveText(bool verboseOutput, bool glossNamespace, bool saveAnyway);
 
     Text::MergeTranslationResult mergeTranslation(const QString & filename, const WritingSystem & ws );
