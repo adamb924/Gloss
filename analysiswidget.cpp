@@ -115,8 +115,7 @@ void AnalysisWidget::enterAnalysis()
         if( leDialog.exec() == QDialog::Accepted )
         {
             createInitializedLayout( leDialog.morphologicalAnalysis() );
-            /// @todo check that this works. emit 0 so that the concordance actually
-            /// does change this gloss item
+            /// emit 0 so that the concordance actually does change this gloss item
             emit morphologicalAnalysisChanged( 0, leDialog.morphologicalAnalysis() );
         }
     }
@@ -147,8 +146,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         mDbAdapter->setMorphologicalAnalysis( textBit().id(), analysis );
 
         createInitializedLayout( analysis );
-        /// @todo check that this works. emit 0 so that the concordance actually
-        /// does change this gloss item
+        /// emit 0 so that the concordance actually does change this gloss item
         emit morphologicalAnalysisChanged( 0, analysis );
     }
 }
@@ -200,8 +198,7 @@ void AnalysisWidget::linkToOther()
             qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
             MorphologicalAnalysis * monomorphemic = new MorphologicalAnalysis( textBit() );
             monomorphemic->addAllomorph( mDbAdapter->allomorphFromId(allomorphId) );
-            /// @todo check that this works. emit 0 so that the concordance actually
-            /// does change this gloss item
+            /// emit 0 so that the concordance actually does change this gloss item
             emit morphologicalAnalysisChanged( 0, monomorphemic );
         }
     }
