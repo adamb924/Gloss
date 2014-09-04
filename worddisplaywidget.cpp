@@ -452,7 +452,7 @@ void WordDisplayWidget::addSearchSubmenu(QMenu *menu)
 void WordDisplayWidget::newInterpretation()
 {
     qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
-    mGlossItem->setInterpretation(id, true); // true since there are no forms in the database, and so the fields need to be cleared
+    mGlossItem->setInterpretation(id);
     fillData();
 }
 
@@ -462,7 +462,7 @@ void WordDisplayWidget::duplicateInterpretation()
     TextBitHash glosses = *mGlossItem->glosses();
 
     qlonglong id = mDbAdapter->newInterpretation( mGlossItem->baselineText() );
-    mGlossItem->setInterpretation(id, true); // true since there are no forms in the database, and so the fields need to be cleared
+    mGlossItem->setInterpretation(id);
 
     TextBitHashIterator iter(textForms);
     while( iter.hasNext() )
@@ -610,7 +610,7 @@ void WordDisplayWidget::mousePressEvent ( QMouseEvent * event )
 
 void WordDisplayWidget::selectDifferentCandidate(QAction *action)
 {
-    mGlossItem->setInterpretation( action->data().toLongLong() , true ); // true because the widget should start with at least some fields filled in
+    mGlossItem->setInterpretation( action->data().toLongLong() );
 }
 
 void WordDisplayWidget::selectDifferentGloss(QAction *action)
@@ -749,7 +749,7 @@ void WordDisplayWidget::editBaselineTextKeepAnnotations()
         {
             if( QMessageBox::Yes == QMessageBox::question(this, tr("Use existing interpretation?"), tr("There is at least one interpretation for that text already. Would you like to use it instead of creating a new one?"), QMessageBox::Yes | QMessageBox::No , QMessageBox::Yes ) )
             {
-                mGlossItem->setInterpretation( candidates.first(), true );
+                mGlossItem->setInterpretation( candidates.first() );
                 return;
             }
         }
@@ -887,7 +887,7 @@ void WordDisplayWidget::cycleInterpretation()
         position++;
         if( position == candidates.count() )
             position = 0;
-        mGlossItem->setInterpretation( candidates.at(position) , true );
+        mGlossItem->setInterpretation( candidates.at(position) );
     }
 }
 

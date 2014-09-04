@@ -71,7 +71,7 @@ void GlossItem::resetBaselineText( const TextBit & baselineBit )
     emit baselineTextChanged(mTextForms.value(mBaselineWritingSystem));
 }
 
-void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
+void GlossItem::setInterpretation(qlonglong id)
 {
     if( mId != id )
     {
@@ -81,30 +81,22 @@ void GlossItem::setInterpretation(qlonglong id, bool takeFormsFromDatabase)
 
         mId = id;
 
-        if( takeFormsFromDatabase )
+        mTextForms.clear();
+        mGlosses.clear();
+
+        // doing it in this roundabout way makes sure that the proper signals are emitted
+        TextBitHashIterator tfIter(mDbAdapter->guessInterpretationTextForms(mId));
+        while(tfIter.hasNext())
         {
-            mTextForms.clear();
-            mGlosses.clear();
-
-            // doing it in this roundabout way makes sure that the proper signals are emitted
-            TextBitHashIterator tfIter(mDbAdapter->guessInterpretationTextForms(mId));
-            while(tfIter.hasNext())
-            {
-                tfIter.next();
-                setTextForm( tfIter.value() );
-            }
-
-            TextBitHashIterator tfGlosses = mDbAdapter->guessInterpretationGlosses(mId);
-            while(tfGlosses.hasNext())
-            {
-                tfGlosses.next();
-                setGloss( tfGlosses.value() );
-            }
+            tfIter.next();
+            setTextForm( tfIter.value() );
         }
-        /// @todo As the function is currently being called, this branch is never used
-        else
+
+        TextBitHashIterator tfGlosses = mDbAdapter->guessInterpretationGlosses(mId);
+        while(tfGlosses.hasNext())
         {
-            loadStringsFromDatabase();
+            tfGlosses.next();
+            setGloss( tfGlosses.value() );
         }
 
         emit fieldsChanged();
@@ -249,13 +241,13 @@ void GlossItem::guessInterpretation()
     if( candidates.count() == 0 )
     {
         if( mTextForms.count() > 0)
-            setInterpretation( mDbAdapter->newInterpretation(mTextForms,mGlosses) , true ); // true because they'll all be blank
+            setInterpretation( mDbAdapter->newInterpretation(mTextForms,mGlosses) ); // true because they'll all be blank
         else
-            setInterpretation( mDbAdapter->newInterpretation(baselineText()) , true ); // true because they'll all be blank
+            setInterpretation( mDbAdapter->newInterpretation(baselineText()) ); // true because they'll all be blank
     }
     else
     {
-        setInterpretation( candidates.at(0), true );  // true because the user hadn't had a chance to specify
+        setInterpretation( candidates.at(0) );  // true because the user hadn't had a chance to specify
     }
     setApprovalStatus(GlossItem::Unapproved);
 }
@@ -393,16 +385,7 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
         if( mDbAdapter->textFormHasMorphologicalAnalysis( tfIter.value().id() ) )
         {
             MorphologicalAnalysis * databaseMA = mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() );
-            if( mMorphologicalAnalyses.contains(tfIter.key()) )
-            {
-                mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
-                emit morphologicalAnalysisChanged( this, mMorphologicalAnalyses.value(tfIter.key()) );
-            }
-            else
-            {
-                /// @todo As this method is currently called, this branch should never be reached
-                mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
-            }
+            mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
         }
     }
 }
@@ -420,9 +403,8 @@ bool GlossItem::isPunctuation() const
     return true;
 }
 
-QList<WritingSystem> GlossItem::morphologicalAnalysisLanguages() const
+QList<WritingSystem> GlossItem::nonEmptyMorphologicalAnalysisLanguages() const
 {
-    /// @todo is there a reason this isn't just: return mMorphologicalAnalyses.keys();
     QList<WritingSystem> languages;
     QHashIterator<WritingSystem,MorphologicalAnalysis*> iter( mMorphologicalAnalyses );
 

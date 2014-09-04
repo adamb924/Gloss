@@ -48,8 +48,7 @@ public:
     void resetBaselineText( const TextBit & baselineBit );
 
     //! \brief Sets the id of this GlossItem (corresponding to the _id row of the Interpretations SQL table), and sets the data for the GlossItem accordingly. If \a takeFormsFromDatabase is true, the GlossItem is filled with values from the database.
-    /// @todo this method is always called with second parameter as "true"
-    void setInterpretation(qlonglong id, bool takeFormsFromDatabase );
+    void setInterpretation(qlonglong id );
 
     //! \brief Returns the id of the GlossItem (corresponding to the _id row of the Interpretations SQL table)
     qlonglong id() const;
@@ -88,15 +87,13 @@ public:
     WritingSystem baselineWritingSystem() const;
 
     //! \brief Returns the morphological analysis for the given writing system, or an empty one
-    /// @todo Any reason for this not to be const?
     MorphologicalAnalysis * morphologicalAnalysis(const WritingSystem & ws);
 
     //! \brief Returns the morphological analysis for the given writing system, or an empty one
-    /// @todo Any reason for this not to be const?
     const MorphologicalAnalysis * morphologicalAnalysis(const WritingSystem & ws) const;
 
     //! \brief Returns a list of languages for which there are morphological analyses
-    QList<WritingSystem> morphologicalAnalysisLanguages() const;
+    QList<WritingSystem> nonEmptyMorphologicalAnalysisLanguages() const;
 
     //! \brief Sets the morphological analysis for the given writing system
     void setMorphologicalAnalysis(MorphologicalAnalysis * analysis );

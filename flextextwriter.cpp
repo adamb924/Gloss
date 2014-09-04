@@ -242,7 +242,7 @@ bool FlexTextWriter::serializeGrammaticalElement(const SyntacticAnalysisElement 
 
 bool FlexTextWriter::serializeMorphemes(GlossItem *glossItem) const
 {
-    QList<WritingSystem> analysisLanguages = glossItem->morphologicalAnalysisLanguages();
+    QList<WritingSystem> analysisLanguages = glossItem->nonEmptyMorphologicalAnalysisLanguages();
     foreach( WritingSystem ws, analysisLanguages )
     {
         const MorphologicalAnalysis * analysis = glossItem->morphologicalAnalysis( ws );
