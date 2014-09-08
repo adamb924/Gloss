@@ -2,6 +2,7 @@
 
 #include "textbit.h"
 #include "allomorph.h"
+#include "syntacticanalysiselementmime.h"
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
@@ -29,9 +30,7 @@ int MorphemeGraphicsItem::type() const
 
 void MorphemeGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    QMimeData *data = new QMimeData;
-    data->setData("SyntacticAnalysisElement*", QByteArray((char*)mElement) );
-
+    SyntacticAnalysisElementMime *data = new SyntacticAnalysisElementMime(mElement);
     QDrag *drag = new QDrag(event->widget());
     drag->setMimeData(data);
     drag->start();

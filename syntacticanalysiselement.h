@@ -23,7 +23,7 @@ public:
     bool isTerminal() const;
     bool isConstituent() const;
     bool hasDescendant( const SyntacticAnalysisElement * element ) const;
-    bool removeElement(SyntacticAnalysisElement * element);
+    bool removeDescendant(SyntacticAnalysisElement * element);
     bool hasChild(SyntacticAnalysisElement *element ) const;
     void addChild(SyntacticAnalysisElement *element);
     void debug() const;

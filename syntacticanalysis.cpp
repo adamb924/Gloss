@@ -104,7 +104,7 @@ void SyntacticAnalysis::removeElement(SyntacticAnalysisElement *element)
         {
             if( mElements.at(i)->isConstituent() )
             {
-                if( mElements.at(i)->removeElement(element) )
+                if( mElements.at(i)->removeDescendant(element) )
                 {
                     continue;
                 }
@@ -116,6 +116,16 @@ void SyntacticAnalysis::removeElement(SyntacticAnalysisElement *element)
 SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
 {
     return mElementConcordance.value(guid, 0);
+}
+
+void SyntacticAnalysis::reparentElement(SyntacticAnalysisElement *element, SyntacticAnalysisElement *newParent)
+{
+    SyntacticAnalysisElement *oldParent = findParent(element);
+    if( oldParent != 0 )
+    {
+        oldParent->removeDescendant( element );
+    }
+    newParent->addChild( element );
 }
 
 QString SyntacticAnalysis::name() const

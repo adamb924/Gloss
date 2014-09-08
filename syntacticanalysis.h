@@ -1,11 +1,14 @@
 #ifndef SYNTACTICANALYSIS_H
 #define SYNTACTICANALYSIS_H
 
+#include <QObject>
 #include <QString>
 #include <QList>
 #include <QHash>
 
 #include "writingsystem.h"
+//#include "syntacticanalysiselement.h"
+#include <QUuid>
 
 class SyntacticAnalysisElement;
 class Text;
@@ -13,8 +16,10 @@ class Tab;
 class Allomorph;
 class QUuid;
 
-class SyntacticAnalysis
+class SyntacticAnalysis : public QObject
 {
+    Q_OBJECT
+
 public:
     SyntacticAnalysis(const QString & name, const WritingSystem & ws, const Text *text);
 
@@ -34,6 +39,9 @@ public:
     void debug() const;
 
     bool isEmpty() const;
+
+public slots:
+    void reparentElement(SyntacticAnalysisElement * element, SyntacticAnalysisElement * newParent);
 
 private:
 

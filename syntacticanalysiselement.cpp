@@ -63,7 +63,7 @@ bool SyntacticAnalysisElement::hasDescendant(const SyntacticAnalysisElement *ele
     return false;
 }
 
-bool SyntacticAnalysisElement::removeElement(SyntacticAnalysisElement *element)
+bool SyntacticAnalysisElement::removeDescendant(SyntacticAnalysisElement *element)
 {
     if( mElements.contains( element ) )
     {
@@ -74,7 +74,7 @@ bool SyntacticAnalysisElement::removeElement(SyntacticAnalysisElement *element)
     {
         for(int i=0; i<mElements.count(); i++)
         {
-            if( mElements.at(i)->removeElement(element) )
+            if( mElements.at(i)->removeDescendant(element) )
             {
                 return true;
             }

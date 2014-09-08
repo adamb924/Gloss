@@ -27,7 +27,6 @@ public:
 
 private:
     void setupBaseline();
-    void redrawSyntacticAnnotations();
     QGraphicsItem* addElementToScene(SyntacticAnalysisElement *element );
 
     QList<SyntacticAnalysisElement *> selectedElements();
@@ -38,6 +37,7 @@ protected:
     void keyReleaseEvent(QKeyEvent * event);
 
 private slots:
+    void redrawSyntacticAnnotations();
     void createConstituent();
     void removeConstituent();
     void analysisSelectionChanged(const QString & newSelection);

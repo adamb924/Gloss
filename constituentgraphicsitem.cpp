@@ -1,6 +1,7 @@
 #include "constituentgraphicsitem.h"
 
 #include "morphemegraphicsitem.h"
+#include "syntacticanalysiselementmime.h"
 
 #include <QPainter>
 #include <QFont>
@@ -10,7 +11,9 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QGraphicsSceneMouseEvent>
+
 #include "syntacticanalysiselement.h"
+#include "allomorph.h"
 
 #include <QtDebug>
 
@@ -124,10 +127,7 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
 
 void ConstituentGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    QMimeData *data = new QMimeData;
-    data->setData("SyntacticAnalysisElement*", QByteArray((char*)mElement) );
-    data->setText("Hello world");
-
+    SyntacticAnalysisElementMime *data = new SyntacticAnalysisElementMime(mElement);
     QDrag *drag = new QDrag(event->widget());
     drag->setMimeData(data);
     drag->start();
@@ -137,9 +137,12 @@ void ConstituentGraphicsItem::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
     if( event->source() != 0 ) /// if it's not coming from outside the application
     {
-        SyntacticAnalysisElement * origin = (SyntacticAnalysisElement *)event->mimeData()->data("SyntacticAnalysisElement*").data();
-        mElement->addChild(origin);
-        qDebug() << origin->allomorph();
+        const SyntacticAnalysisElementMime *data = qobject_cast<const SyntacticAnalysisElementMime*>(event->mimeData());
+        if( data != 0 )
+        {
+            SyntacticAnalysisElement * origin = data->element();
+            emit reparentElement( origin, mElement );
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 #ifndef CONSTITUENTGRAPHICSITEM_H
 #define CONSTITUENTGRAPHICSITEM_H
 
+#include <QObject>
 #include <QGraphicsItem>
 #include <QList>
 #include <QFont>
@@ -9,8 +10,11 @@
 class MorphemeGraphicsItem;
 class SyntacticAnalysisElement;
 
-class ConstituentGraphicsItem : public QGraphicsItem
+class ConstituentGraphicsItem : public QObject, public QGraphicsItem
 {
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+
 public:
     ConstituentGraphicsItem(const QString & label, const QList<QGraphicsItem*> daughters, SyntacticAnalysisElement * element, QGraphicsItem *parent = 0);
 
@@ -24,6 +28,7 @@ public:
     int type() const;
 
 signals:
+    void reparentElement( SyntacticAnalysisElement * element, SyntacticAnalysisElement * newParent );
 
 public slots:
 

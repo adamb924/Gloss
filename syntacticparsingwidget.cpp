@@ -155,8 +155,10 @@ QGraphicsItem *SyntacticParsingWidget::addElementToScene(SyntacticAnalysisElemen
             daughters << addElementToScene( element->elements()->at(i) );
         }
     }
-    QGraphicsItem * item = new ConstituentGraphicsItem( element->label(), daughters, element );
-    mConstiuencyItems << item;
+    ConstituentGraphicsItem * item = new ConstituentGraphicsItem( element->label(), daughters, element );
+    connect(item, SIGNAL(reparentElement(SyntacticAnalysisElement*,SyntacticAnalysisElement*)), mAnalysis, SLOT(reparentElement(SyntacticAnalysisElement*,SyntacticAnalysisElement*)) );
+    connect(item, SIGNAL(reparentElement(SyntacticAnalysisElement*,SyntacticAnalysisElement*)), this, SLOT(redrawSyntacticAnnotations()) );
+    mConstiuencyItems << (QGraphicsItem*)item;
     mScene->addItem(item);
     return item;
 }
