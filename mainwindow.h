@@ -80,6 +80,7 @@ private slots:
     int writingSystems();
     int projectOptions();
     void exportTexts();
+    void syntacticElements();
 
     ///@}
 

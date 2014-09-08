@@ -24,6 +24,7 @@
 #include "viewconfigurationdialog.h"
 #include "projectoptionsdialog.h"
 #include "exporttextsdialog.h"
+#include "closedvocabularydialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -109,6 +110,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionConfigure_views, SIGNAL(triggered()), this, SLOT(viewConfigurationDialog()) );
 
     connect( ui->actionOptions, SIGNAL(triggered()), this, SLOT(projectOptions()) );
+
+    connect( ui->actionSyntactic_elements, SIGNAL(triggered()), this, SLOT(syntacticElements()) );
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -619,6 +622,12 @@ void MainWindow::exportTexts()
             }
         }
     }
+}
+
+void MainWindow::syntacticElements()
+{
+    ClosedVocabularyDialog dlg(mProject);
+    dlg.exec();
 }
 
 void MainWindow::deleteText()

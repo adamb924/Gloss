@@ -122,6 +122,7 @@
     </widget>
     <addaction name="actionOptions"/>
     <addaction name="actionWriting_systems"/>
+    <addaction name="actionSyntactic_elements"/>
     <addaction name="actionDelete_text"/>
     <addaction name="menuMemory_mode"/>
     <addaction name="separator"/>
@@ -489,6 +490,11 @@
   <action name="actionTest_3">
    <property name="text">
     <string>test</string>
+   </property>
+  </action>
+  <action name="actionSyntactic_elements">
+   <property name="text">
+    <string>Syntactic elements...</string>
    </property>
   </action>
  </widget>
