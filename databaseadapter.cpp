@@ -73,6 +73,9 @@ void DatabaseAdapter::createTables()
 
     if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
+
+    if( !q.exec("create table if not exists SyntacticConstituents ( _id integer primary key autoincrement, Name text, Abbreviation text, KeySequence text );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
 }
 
 QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBit & bit) const

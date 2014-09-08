@@ -19,6 +19,7 @@ public:
 
     WritingSystem writingSystem() const;
     QString name() const;
+    bool closedVocabulary() const;
 
 private:
     Ui::CreateSyntacticAnalysisDialog *ui;

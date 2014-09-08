@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>123</height>
+    <width>431</width>
+    <height>150</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,6 +37,13 @@
        </item>
        <item>
         <widget class="WritingSystemCombo" name="writingSystem"/>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="closedVocabulary">
+         <property name="text">
+          <string>Closed vocabulary</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

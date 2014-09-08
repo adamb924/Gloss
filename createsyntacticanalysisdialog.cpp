@@ -23,3 +23,8 @@ QString CreateSyntacticAnalysisDialog::name() const
 {
     return ui->name->text();
 }
+
+bool CreateSyntacticAnalysisDialog::closedVocabulary() const
+{
+    return ui->closedVocabulary->isChecked();
+}

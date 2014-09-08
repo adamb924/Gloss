@@ -21,7 +21,7 @@ class SyntacticAnalysis : public QObject
     Q_OBJECT
 
 public:
-    SyntacticAnalysis(const QString & name, const WritingSystem & ws, const Text *text);
+    SyntacticAnalysis(const QString & name, const WritingSystem & ws, const Text *text, bool closedVocabulary);
 
     void createConstituent(const QString &label, QList<SyntacticAnalysisElement*> elements);
 
@@ -39,6 +39,8 @@ public:
     void debug() const;
 
     bool isEmpty() const;
+
+    bool closedVocabulary() const;
 
 public slots:
     void reparentElement(SyntacticAnalysisElement * element, SyntacticAnalysisElement * newParent);
@@ -60,6 +62,7 @@ private:
 private:
     QString mName;
     WritingSystem mWritingSystem;
+    bool mClosedVocabulary;
     QList<SyntacticAnalysisElement*> mElements;
     QHash<QUuid, SyntacticAnalysisElement*> mElementConcordance;
 };

@@ -253,7 +253,7 @@ void SyntacticParsingWidget::newAnalysis()
     CreateSyntacticAnalysisDialog dlg(mProject->dbAdapter()->writingSystems());
     if( dlg.exec() )
     {
-        mAnalysis = new SyntacticAnalysis(dlg.name(), dlg.writingSystem(), mText);
+        mAnalysis = new SyntacticAnalysis(dlg.name(), dlg.writingSystem(), mText, dlg.closedVocabulary() );
         mText->syntacticAnalyses()->insert( dlg.name() , mAnalysis );
         ui->comboBox->insertItem(0, dlg.name());
         ui->comboBox->setCurrentIndex(0);

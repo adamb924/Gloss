@@ -8,9 +8,10 @@
 
 #include <QtDebug>
 
-SyntacticAnalysis::SyntacticAnalysis(const QString &name, const WritingSystem &ws, const Text * text)
+SyntacticAnalysis::SyntacticAnalysis(const QString &name, const WritingSystem &ws, const Text * text, bool closedVocabulary)
     : mName(name),
-      mWritingSystem(ws)
+      mWritingSystem(ws),
+      mClosedVocabulary(closedVocabulary)
 {
     for(int i=0; i<text->phrases()->count(); i++)
     {
@@ -152,6 +153,11 @@ void SyntacticAnalysis::debug() const
 bool SyntacticAnalysis::isEmpty() const
 {
     return mElements.count() == 0;
+}
+
+bool SyntacticAnalysis::closedVocabulary() const
+{
+    return mClosedVocabulary;
 }
 
 bool SyntacticAnalysis::allTerminals(QList<SyntacticAnalysisElement *> elements) const
