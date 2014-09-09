@@ -25,6 +25,8 @@ InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, 
 {
     mBottomSpacing = new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding);
 
+    mLines.clear();
+
     setLinesToDefault();
 
     mCurrentLine = -1;
@@ -232,7 +234,6 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
     QLayout *layout = mLineLayouts.value(lineNumber);
     if( layout != 0 )
     {
-
         QWidget *lineLabel = mLineLabels.take(lineNumber);
         if( lineLabel != 0 )
         {
@@ -324,8 +325,9 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
             wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
         }
 
+        /// @todo This seems to be the bug
         // add another list to mWordDisplayWidgets if necessary
-        if( !( i < mWordDisplayWidgets.count() ) )
+        while( i >= mWordDisplayWidgets.count() )
             mWordDisplayWidgets.append( QList<QWidget*>() );
         mWordDisplayWidgets[i].append(wdw);
         flowLayout->addWidget(wdw);
@@ -386,8 +388,11 @@ void InterlinearDisplayWidget::setLinesToDefault()
 
 void InterlinearDisplayWidget::setLines( const QList<int> lines )
 {
-    for(int i=0; i<mLines.count(); i++)
-        clearWidgetsFromLine(mLines.at(i));
+    QList<int> currentLines = mLineLayouts.keys();
+    for(int i=0; i<currentLines.count(); i++)
+    {
+        clearWidgetsFromLine(currentLines.at(i));
+    }
     mLines = lines;
     qDeleteAll(mLineLayouts);
     mLineLayouts.clear();
