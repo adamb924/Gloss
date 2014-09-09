@@ -56,16 +56,6 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Name</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="name"/>
-       </item>
-       <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
           <string>Abbreviation</string>
@@ -73,7 +63,25 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="abbreviation"/>
+        <widget class="QLineEdit" name="abbreviation">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Name</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="name">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_3">
@@ -83,7 +91,23 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="keystroke"/>
+        <widget class="QLineEdit" name="keystroke">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="inputMask">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>32767</number>
+         </property>
+         <property name="placeholderText">
+          <string>e.g., T, Shift+T, Ctrl+T, lt+T</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer">

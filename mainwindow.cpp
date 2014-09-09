@@ -142,6 +142,11 @@ void MainWindow::addTableMenuItems()
 
     ui->menuView_Edit_SQL_Tables->addSeparator();
     tables.clear();
+    tables << "SyntacticConstituents";
+    addTableMenuItems(tables);
+
+    ui->menuView_Edit_SQL_Tables->addSeparator();
+    tables.clear();
     tables << "GlossIndex" << "InterpretationIndex" << "TextFormIndex";
     addTableMenuItems(tables);
 }
