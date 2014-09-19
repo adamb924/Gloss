@@ -24,6 +24,11 @@ MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other
 {
 }
 
+MorphologicalAnalysis::~MorphologicalAnalysis()
+{
+    qDeleteAll(mAllomorphs);
+}
+
 MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnalysis & other)
 {
     mWritingSystem = other.mWritingSystem;
