@@ -150,6 +150,11 @@ void GlossItem::setTextForm(const TextBit & textForm)
         if( textUpdate )
             mDbAdapter->clearMorphologicalAnalysis(textForm.id());
 
+        if( mMorphologicalAnalyses.contains( textForm.writingSystem() ) )
+        {
+            delete mMorphologicalAnalyses.take( textForm.writingSystem() );
+        }
+
         mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() ) );
 
         emit fieldsChanged();
@@ -318,6 +323,11 @@ void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
     if( !mMorphologicalAnalyses.contains(analysis->writingSystem()) ||
               !mMorphologicalAnalyses.value( analysis->writingSystem() )->equalExceptGuid( *analysis ) )
     {
+        if( mMorphologicalAnalyses.contains(analysis->writingSystem()) )
+        {
+            delete mMorphologicalAnalyses.take( analysis->writingSystem() );
+        }
+
         mMorphologicalAnalyses.insert( analysis->writingSystem() , analysis );
         emit fieldsChanged();
         MorphologicalAnalysis *ma = mMorphologicalAnalyses.value( analysis->writingSystem() );
@@ -384,6 +394,11 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
         tfIter.next();
         if( mDbAdapter->textFormHasMorphologicalAnalysis( tfIter.value().id() ) )
         {
+            if( mMorphologicalAnalyses.contains( tfIter.value().writingSystem() ) )
+            {
+                delete mMorphologicalAnalyses.take( tfIter.value().writingSystem() );
+            }
+
             MorphologicalAnalysis * databaseMA = mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() );
             mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
         }
