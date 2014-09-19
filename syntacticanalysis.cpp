@@ -75,8 +75,8 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
             mElements.insert( minIndex, tmp );
             mElementConcordance.insert( tmp->allomorph()->guid() , tmp );
         }
-
     }
+    emit modified();
 }
 
 const QList<SyntacticAnalysisElement *> *SyntacticAnalysis::elements() const
@@ -90,6 +90,7 @@ void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
     if( element->isTerminal() )
     {
         mElementConcordance.insert( element->allomorph()->guid() , element );
+        emit modified();
     }
 }
 
@@ -112,20 +113,24 @@ void SyntacticAnalysis::removeElement(SyntacticAnalysisElement *element)
             }
         }
     }
+    emit modified();
 }
 
 void SyntacticAnalysis::setName(const QString &name)
 {
     mName = name;
+    emit modified();
 }
 
 void SyntacticAnalysis::setWritingSystem(const WritingSystem &ws)
 {
     mWritingSystem = ws;
+    emit modified();
 }
 
 void SyntacticAnalysis::setClosedVocabulary(bool closed)
 {
+    emit modified();
     mClosedVocabulary = closed;
 }
 
@@ -145,6 +150,7 @@ void SyntacticAnalysis::reparentElement(QList<SyntacticAnalysisElement*> element
         }
         newParent->addChild( element );
     }
+    emit modified();
 }
 
 QString SyntacticAnalysis::name() const

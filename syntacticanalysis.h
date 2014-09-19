@@ -46,6 +46,9 @@ public:
 
     bool closedVocabulary() const;
 
+signals:
+    void modified();
+
 public slots:
     void reparentElement(QList<SyntacticAnalysisElement *> elements, SyntacticAnalysisElement * newParent);
 

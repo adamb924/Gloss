@@ -184,6 +184,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     WritingSystem ws = mDbAdapter->writingSystem( attr.value( "http://www.adambaker.org/gloss.php","lang").toString() );
                     bool closedVocabulary = attr.hasAttribute("http://www.adambaker.org/gloss.php", "closed-vocabulary") && attr.value("http://www.adambaker.org/gloss.php", "closed-vocabulary").toString() == "yes" ? true : false;
                     currentSyntacticAnalysis = new SyntacticAnalysis(name, ws, mText, closedVocabulary );
+                    QObject::connect( currentSyntacticAnalysis, SIGNAL(modified()), mText, SLOT(markAsChanged()) );
                     mText->syntacticAnalyses()->insert(name, currentSyntacticAnalysis);
                 }
             }

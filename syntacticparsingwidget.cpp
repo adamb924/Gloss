@@ -285,7 +285,9 @@ void SyntacticParsingWidget::newAnalysis()
     if( dlg.exec() )
     {
         mAnalysis = new SyntacticAnalysis(dlg.name(), dlg.writingSystem(), mText, dlg.closedVocabulary() );
+        connect( mAnalysis, SIGNAL(modified()), mText, SLOT(markAsChanged()) );
         mText->syntacticAnalyses()->insert( dlg.name() , mAnalysis );
+        mText->markAsChanged();
         ui->comboBox->insertItem(0, dlg.name());
         ui->comboBox->setCurrentIndex(0);
         redrawSyntacticAnnotations();
