@@ -157,6 +157,26 @@ SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
     return mElementConcordance.value(guid, 0);
 }
 
+void SyntacticAnalysis::refreshText(const Text *text)
+{
+    QList<QUuid> guids = mElementConcordance.keys();
+    for(int i=0; i<text->phrases()->count(); i++)
+    {
+        const Phrase * phrase = text->phrases()->at(i);
+        for(int j=0; j<phrase->glossItemCount(); j++)
+        {
+            const MorphologicalAnalysis * ma = phrase->glossItemAt(j)->morphologicalAnalysis(mWritingSystem);
+            for(int k=0; k<ma->allomorphCount(); k++)
+            {
+                if( !guids.contains( ma->allomorph(k)->guid() ) )
+                {
+                    addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k) ) );
+                }
+            }
+        }
+    }
+}
+
 void SyntacticAnalysis::reparentElement(QList<SyntacticAnalysisElement*> elements, SyntacticAnalysisElement *newParent)
 {
     foreach(SyntacticAnalysisElement * element, elements)

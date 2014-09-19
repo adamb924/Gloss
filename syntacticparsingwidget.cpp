@@ -338,6 +338,7 @@ void SyntacticParsingWidget::saveTextVerbose()
 
 void SyntacticParsingWidget::refreshText()
 {
+    mAnalysis->refreshText(mText);
     setupBaseline();
     redrawSyntacticAnnotations();
 }

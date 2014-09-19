@@ -37,6 +37,8 @@ public:
 
     SyntacticAnalysisElement *elementFromGuid(const QUuid & guid);
 
+    void refreshText(const Text *text);
+
     QString name() const;
 
     WritingSystem writingSystem() const;
