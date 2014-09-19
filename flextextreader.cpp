@@ -182,7 +182,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 {
                     QString name = attr.value("http://www.adambaker.org/gloss.php","name").toString();
                     WritingSystem ws = mDbAdapter->writingSystem( attr.value( "http://www.adambaker.org/gloss.php","lang").toString() );
-                    bool closedVocabulary = attr.hasAttribute("closed-vocabulary") && attr.value("closed-vocabulary").toString() == "yes" ? true : false;
+                    bool closedVocabulary = attr.hasAttribute("http://www.adambaker.org/gloss.php", "closed-vocabulary") && attr.value("http://www.adambaker.org/gloss.php", "closed-vocabulary").toString() == "yes" ? true : false;
                     currentSyntacticAnalysis = new SyntacticAnalysis(name, ws, mText, closedVocabulary );
                     mText->syntacticAnalyses()->insert(name, currentSyntacticAnalysis);
                 }
