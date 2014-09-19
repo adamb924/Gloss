@@ -53,6 +53,7 @@ SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, con
     connect( ui->addButton, SIGNAL(clicked()), this, SLOT(newAnalysis()));
     connect( ui->deleteButton, SIGNAL(clicked()), this, SLOT(deleteAnalysis()) );
     connect( ui->editButton, SIGNAL(clicked()), this, SLOT(editAnalysis()) );
+    connect( ui->refreshButton, SIGNAL(clicked()), this, SLOT(refreshText()) );
 
     ui->editButton->setEnabled( ui->comboBox->count() > 0 );
 }
@@ -91,7 +92,7 @@ void SyntacticParsingWidget::setupBaseline()
                 if( lines->at(k).type() == InterlinearItemType::Analysis )
                 {
                     MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
-                    for(int m=0; m<ma->allomorphCount(); m++)
+                    for(int m=0; m<ma->allomorphCount(); m++) /// for each allomorph
                     {
                         SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
                         MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m)->textBitForConcatenation(), element );
@@ -328,4 +329,8 @@ void SyntacticParsingWidget::saveTextVerbose()
     mText->saveText(true, true, true);
 }
 
-
+void SyntacticParsingWidget::refreshText()
+{
+    setupBaseline();
+    redrawSyntacticAnnotations();
+}

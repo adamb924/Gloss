@@ -48,6 +48,7 @@ private slots:
     void deleteAnalysis();
     void saveText();
     void saveTextVerbose();
+    void refreshText();
 
 private:
     Ui::SyntacticParsingWidget *ui;
