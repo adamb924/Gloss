@@ -48,7 +48,7 @@ void ClosedVocabularyDialog::add()
     QSqlRecord r = mModel->record();
     if( !mModel->insertRecord(-1, r) )
     {
-        qDebug() << "ClosedVocabularyDialog::add() Could not insert row." << mModel->lastError();
+        qWarning() << "ClosedVocabularyDialog::add() Could not insert row." << mModel->lastError();
     }
 
     QModelIndex index = mModel->index( mModel->rowCount()-1, 0);
@@ -92,7 +92,7 @@ void ClosedVocabularyDialog::updateDatabaseRecord()
     r.setValue( "KeySequence" , ui->keystroke->text() );
     if( !mModel->setRecord(mCurrentRow, r) )
     {
-        qDebug() << "ClosedVocabularyDialog::updateDatabaseRecord() Could not set record, row" << mCurrentRow;
+        qWarning() << "ClosedVocabularyDialog::updateDatabaseRecord() Could not set record, row" << mCurrentRow;
     }
 }
 
@@ -105,6 +105,6 @@ void ClosedVocabularyDialog::finalizeDatabase()
 {
     if( ! mModel->submitAll() )
     {
-        qDebug() << "ClosedVocabularyDialog::finalizeDatabase()" << mModel->lastError();
+        qWarning() << "ClosedVocabularyDialog::finalizeDatabase()" << mModel->lastError();
     }
 }
