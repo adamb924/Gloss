@@ -57,8 +57,8 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
     }
     else if( bAreSisters )
     {
-        qDebug() << "Elements are sisters" << findParent(elements[0]);
-        findParent(elements[0])->replaceWithConstituent(type, elements);
+        qDebug() << "Elements are sisters" << elements[0]->parent();
+        elements[0]->parent()->replaceWithConstituent(type, elements);
     }
     else /// at least some of the nodes are constituents
     {
@@ -112,25 +112,14 @@ void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
     }
 }
 
-void SyntacticAnalysis::removeElement(SyntacticAnalysisElement *element)
+void SyntacticAnalysis::removeConstituentElement(SyntacticAnalysisElement *element)
 {
-    if( mElements.contains(element) )
+    if( element->parent() != 0 )
     {
-        mElements.removeAll(element);
+        element->parent()->removeChild( element );
     }
-    else
-    {
-        for(int i=0; i<mElements.count(); i++)
-        {
-            if( mElements.at(i)->isConstituent() )
-            {
-                if( mElements.at(i)->removeDescendant(element) )
-                {
-                    continue;
-                }
-            }
-        }
-    }
+    mElements.removeAll(element);
+    delete element;
     emit modified();
 }
 
@@ -181,10 +170,9 @@ void SyntacticAnalysis::reparentElement(QList<SyntacticAnalysisElement*> element
 {
     foreach(SyntacticAnalysisElement * element, elements)
     {
-        SyntacticAnalysisElement *oldParent = findParent(element);
-        if( oldParent != 0 )
+        if( element->parent() != 0 )
         {
-            oldParent->removeDescendant( element );
+            element->parent()->removeChild( element );
         }
         newParent->addChild( element );
     }
@@ -247,15 +235,9 @@ bool SyntacticAnalysis::anyHaveParents(QList<SyntacticAnalysisElement *> element
 {
     for(int i=0; i<elements.count(); i++)
     {
-        for(int j=0; j<mElements.count(); j++)
+        if( elements.at(i)->parent() != 0 )
         {
-            if( !mElements.at(j)->isTerminal() )
-            {
-                if( mElements.at(j)->hasDescendant(elements.at(i)) )
-                {
-                    return true;
-                }
-            }
+            return true;
         }
     }
     return false;
@@ -267,30 +249,17 @@ bool SyntacticAnalysis::areSisters(QList<SyntacticAnalysisElement *> elements)
     {
         return true;
     }
-    const SyntacticAnalysisElement * firstParent = findParent( elements.first() );
+    const SyntacticAnalysisElement * firstParent = elements.first()->parent();
     if( firstParent == 0 )
     {
         return false;
     }
     for(int i=1; i<elements.count(); i++)
     {
-        if( ! firstParent->hasChild( elements.at(i) ) )
+        if( elements.at(i) != firstParent )
         {
             return false;
         }
     }
     return true;
-}
-
-SyntacticAnalysisElement *SyntacticAnalysis::findParent(SyntacticAnalysisElement *element)
-{
-    for(int i=0; i<mElements.count(); i++)
-    {
-        SyntacticAnalysisElement * putative = mElements.at(i)->findParent(element);
-        if( putative != 0 )
-        {
-            return putative;
-        }
-    }
-    return 0;
 }

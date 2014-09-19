@@ -239,7 +239,10 @@ void SyntacticParsingWidget::removeConstituent()
     QList<SyntacticAnalysisElement *> elements = selectedElements();
     foreach( SyntacticAnalysisElement * e, elements)
     {
-        mAnalysis->removeElement( e );
+        if( e->isConstituent() )
+        {
+            mAnalysis->removeConstituentElement( e );
+        }
     }
     redrawSyntacticAnnotations();
 }

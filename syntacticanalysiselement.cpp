@@ -26,6 +26,10 @@ SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType & type, c
 
 SyntacticAnalysisElement::~SyntacticAnalysisElement()
 {
+    for(int i=0; i<mElements.count(); i++)
+    {
+        mElements[i]->setParent(0);
+    }
     if( mParent != 0 )
     {
         mParent->removeChild(this);
@@ -52,6 +56,11 @@ const QList<SyntacticAnalysisElement *> *SyntacticAnalysisElement::elements() co
     return &mElements;
 }
 
+SyntacticAnalysisElement *SyntacticAnalysisElement::parent()
+{
+    return mParent;
+}
+
 bool SyntacticAnalysisElement::isTerminal() const
 {
     return mType == SyntacticAnalysisElement::Terminal;
@@ -60,38 +69,6 @@ bool SyntacticAnalysisElement::isTerminal() const
 bool SyntacticAnalysisElement::isConstituent() const
 {
     return mType == SyntacticAnalysisElement::Consituent;
-}
-
-bool SyntacticAnalysisElement::hasDescendant(const SyntacticAnalysisElement *element) const
-{
-    for(int i=0; i<mElements.count(); i++)
-    {
-        if( mElements.at(i) == element || mElements.at(i)->hasDescendant(element) )
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool SyntacticAnalysisElement::removeDescendant(SyntacticAnalysisElement *element)
-{
-    if( mElements.contains( element ) )
-    {
-        mElements.removeAll(element);
-        return true;
-    }
-    else
-    {
-        for(int i=0; i<mElements.count(); i++)
-        {
-            if( mElements.at(i)->removeDescendant(element) )
-            {
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 void SyntacticAnalysisElement::removeChild(SyntacticAnalysisElement *element)
@@ -130,46 +107,6 @@ void SyntacticAnalysisElement::debug() const
 void SyntacticAnalysisElement::setParent(SyntacticAnalysisElement *parent)
 {
     mParent = parent;
-}
-
-SyntacticAnalysisElement *SyntacticAnalysisElement::findParent(SyntacticAnalysisElement *element)
-{
-    if( mElements.contains(element) )
-    {
-        return this;
-    }
-    else
-    {
-        for(int i=0; i<mElements.count(); i++)
-        {
-            SyntacticAnalysisElement * putative = mElements.at(i)->findParent(element);
-            if( putative != 0 )
-            {
-                return putative;
-            }
-        }
-    }
-    return 0;
-}
-
-const SyntacticAnalysisElement *SyntacticAnalysisElement::findParent(SyntacticAnalysisElement *element) const
-{
-    if( mElements.contains(element) )
-    {
-        return this;
-    }
-    else
-    {
-        for(int i=0; i<mElements.count(); i++)
-        {
-            const SyntacticAnalysisElement * putative = mElements.at(i)->findParent(element);
-            if( putative != 0 )
-            {
-                return putative;
-            }
-        }
-    }
-    return 0;
 }
 
 void SyntacticAnalysisElement::replaceWithConstituent(const SyntacticType &type, QList<SyntacticAnalysisElement *> &elements)

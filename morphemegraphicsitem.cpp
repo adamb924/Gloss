@@ -35,8 +35,6 @@ void MorphemeGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QList<QGraphicsItem *> items = scene()->selectedItems();
     QList<SyntacticAnalysisElement *> selection;
 
-    qDebug() << "MorphemeGraphicsItem::mousePressEvent" << mElement;
-
     if( items.isEmpty() )
     {
         selection.append(mElement);

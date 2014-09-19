@@ -29,7 +29,7 @@ public:
     const QList<SyntacticAnalysisElement*>* elements() const;
 
     void addBaselineElement(SyntacticAnalysisElement * element);
-    void removeElement(SyntacticAnalysisElement * element);
+    void removeConstituentElement(SyntacticAnalysisElement * element);
 
     void setName(const QString & name);
     void setWritingSystem(const WritingSystem & ws);
@@ -66,9 +66,6 @@ private:
 
     //! \brief Returns true if the elements are all sisters, otherwise returns false. Returns true if there are fewer than two elements
     bool areSisters(QList<SyntacticAnalysisElement *> elements);
-
-    //! \brief Returns the address of the object if it has \a element as a child, or tries to find it in its descendants. If no parent is found, returns 0.
-    SyntacticAnalysisElement *findParent(SyntacticAnalysisElement *element );
 
 private:
     QString mName;

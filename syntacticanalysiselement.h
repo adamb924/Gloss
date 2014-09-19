@@ -23,20 +23,14 @@ public:
     const Allomorph * allomorph() const;
     QList<SyntacticAnalysisElement *> *elements();
     const QList<SyntacticAnalysisElement *> *elements() const;
+    SyntacticAnalysisElement *parent();
     bool isTerminal() const;
     bool isConstituent() const;
-    bool hasDescendant( const SyntacticAnalysisElement * element ) const;
-    bool removeDescendant(SyntacticAnalysisElement * element);
     void removeChild(SyntacticAnalysisElement * element);
     bool hasChild(SyntacticAnalysisElement *element ) const;
     void addChild(SyntacticAnalysisElement *element);
     void debug() const;
     void setParent(SyntacticAnalysisElement * parent);
-
-    //! \brief Returns the address of the object if it has \a element as a child, or tries to find it in its descendants
-    const SyntacticAnalysisElement * findParent(SyntacticAnalysisElement *element ) const;
-    SyntacticAnalysisElement * findParent(SyntacticAnalysisElement *element );
-
     void replaceWithConstituent(const SyntacticType &type, QList<SyntacticAnalysisElement *> &elements);
 
 private:
