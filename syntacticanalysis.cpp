@@ -256,7 +256,7 @@ bool SyntacticAnalysis::areSisters(QList<SyntacticAnalysisElement *> elements)
     }
     for(int i=1; i<elements.count(); i++)
     {
-        if( elements.at(i) != firstParent )
+        if( elements.at(i)->parent() != firstParent )
         {
             return false;
         }
