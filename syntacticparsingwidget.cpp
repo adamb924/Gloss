@@ -68,6 +68,7 @@ void SyntacticParsingWidget::setupBaseline()
     if( mAnalysis == 0 ) return;
 
     mScene->clear();
+    mConstiuencyItems.clear();
     mGraphicsItemAllomorphHash.clear();
     qreal x = mInterWordDistance;
     for(int i=0; i<mText->phrases()->count(); i++) /// for each phrase
@@ -143,11 +144,16 @@ void SyntacticParsingWidget::redrawSyntacticAnnotations()
 
     for(int i=0; i < mAnalysis->elements()->count(); i++ ) // for each element of the analysis
     {
-        addElementToScene( mAnalysis->elements()->at(i) );
+        if( mAnalysis->elements()->at(i)->isConstituent() )
+        {
+            addConstituentElementToScene( mAnalysis->elements()->at(i) );
+        }
     }
+
+
 }
 
-QGraphicsItem *SyntacticParsingWidget::addElementToScene(SyntacticAnalysisElement *element)
+QGraphicsItem *SyntacticParsingWidget::addConstituentElementToScene(SyntacticAnalysisElement *element)
 {
     QList<QGraphicsItem*> daughters;
     for(int i=0; i<element->elements()->count(); i++)
@@ -158,9 +164,10 @@ QGraphicsItem *SyntacticParsingWidget::addElementToScene(SyntacticAnalysisElemen
         }
         else /// constituent
         {
-            daughters << addElementToScene( element->elements()->at(i) );
+            daughters << addConstituentElementToScene( element->elements()->at(i) );
         }
     }
+
     ConstituentGraphicsItem * item = new ConstituentGraphicsItem( element->label(), daughters, element );
     connect(item, SIGNAL(reparentElement(QList<SyntacticAnalysisElement*>,SyntacticAnalysisElement*)), mAnalysis, SLOT(reparentElement(QList<SyntacticAnalysisElement*>,SyntacticAnalysisElement*)) );
     connect(item, SIGNAL(reparentElement(QList<SyntacticAnalysisElement*>,SyntacticAnalysisElement*)), this, SLOT(redrawSyntacticAnnotations()) );

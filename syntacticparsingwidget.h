@@ -29,7 +29,7 @@ public:
 
 private:
     void setupBaseline();
-    QGraphicsItem* addElementToScene(SyntacticAnalysisElement *element );
+    QGraphicsItem* addConstituentElementToScene(SyntacticAnalysisElement *element );
 
     QList<SyntacticAnalysisElement *> selectedElements();
 
