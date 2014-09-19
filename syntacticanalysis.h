@@ -47,7 +47,7 @@ public:
     bool closedVocabulary() const;
 
 public slots:
-    void reparentElement(SyntacticAnalysisElement * element, SyntacticAnalysisElement * newParent);
+    void reparentElement(QList<SyntacticAnalysisElement *> elements, SyntacticAnalysisElement * newParent);
 
 private:
 

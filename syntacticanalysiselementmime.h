@@ -2,6 +2,7 @@
 #define SYNTACTICANALYSISELEMENTMIME_H
 
 #include <QMimeData>
+#include <QList>
 
 class SyntacticAnalysisElement;
 
@@ -9,16 +10,17 @@ class SyntacticAnalysisElementMime : public QMimeData
 {
     Q_OBJECT
 public:
-    SyntacticAnalysisElementMime(SyntacticAnalysisElement * element);
+    SyntacticAnalysisElementMime(SyntacticAnalysisElement * elements);
+    SyntacticAnalysisElementMime(const QList<SyntacticAnalysisElement *> & elements);
 
-    SyntacticAnalysisElement * element() const;
+    QList<SyntacticAnalysisElement *> elements() const;
 
 signals:
 
 public slots:
 
 private:
-    SyntacticAnalysisElement * mElement;
+    QList<SyntacticAnalysisElement *> mElements;
 
 };
 

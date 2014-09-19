@@ -3,12 +3,14 @@
 #include "textbit.h"
 #include "allomorph.h"
 #include "syntacticanalysiselementmime.h"
+#include "constituentgraphicsitem.h"
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QMimeData>
 #include <QDrag>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsScene>
 
 MorphemeGraphicsItem::MorphemeGraphicsItem(const TextBit & bit, SyntacticAnalysisElement *element, QGraphicsItem * parent)
     : QGraphicsSimpleTextItem( bit.text(), parent),
@@ -30,7 +32,34 @@ int MorphemeGraphicsItem::type() const
 
 void MorphemeGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    SyntacticAnalysisElementMime *data = new SyntacticAnalysisElementMime(mElement);
+    QList<QGraphicsItem *> items = scene()->selectedItems();
+    QList<SyntacticAnalysisElement *> selection;
+
+    if( items.isEmpty() )
+    {
+        selection.append(mElement);
+    }
+    else
+    {
+        foreach(QGraphicsItem * item, items)
+        {
+            MorphemeGraphicsItem * mgi = qgraphicsitem_cast<MorphemeGraphicsItem*>(item);
+            if( mgi != 0 )
+            {
+                selection.append( mgi->element() );
+            }
+            else
+            {
+                ConstituentGraphicsItem * cgi = qgraphicsitem_cast<ConstituentGraphicsItem*>(item);
+                if ( cgi != 0 )
+                {
+                    selection.append( cgi->element() );
+                }
+            }
+        }
+    }
+
+    SyntacticAnalysisElementMime *data = new SyntacticAnalysisElementMime(selection);
     QDrag *drag = new QDrag(event->widget());
     drag->setMimeData(data);
     drag->start();

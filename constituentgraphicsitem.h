@@ -28,7 +28,7 @@ public:
     int type() const;
 
 signals:
-    void reparentElement( SyntacticAnalysisElement * element, SyntacticAnalysisElement * newParent );
+    void reparentElement( QList<SyntacticAnalysisElement *> elements, SyntacticAnalysisElement * newParent );
 
 public slots:
 

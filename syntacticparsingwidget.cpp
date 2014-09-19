@@ -161,8 +161,8 @@ QGraphicsItem *SyntacticParsingWidget::addElementToScene(SyntacticAnalysisElemen
         }
     }
     ConstituentGraphicsItem * item = new ConstituentGraphicsItem( element->label(), daughters, element );
-    connect(item, SIGNAL(reparentElement(SyntacticAnalysisElement*,SyntacticAnalysisElement*)), mAnalysis, SLOT(reparentElement(SyntacticAnalysisElement*,SyntacticAnalysisElement*)) );
-    connect(item, SIGNAL(reparentElement(SyntacticAnalysisElement*,SyntacticAnalysisElement*)), this, SLOT(redrawSyntacticAnnotations()) );
+    connect(item, SIGNAL(reparentElement(QList<SyntacticAnalysisElement*>,SyntacticAnalysisElement*)), mAnalysis, SLOT(reparentElement(QList<SyntacticAnalysisElement*>,SyntacticAnalysisElement*)) );
+    connect(item, SIGNAL(reparentElement(QList<SyntacticAnalysisElement*>,SyntacticAnalysisElement*)), this, SLOT(redrawSyntacticAnnotations()) );
     mConstiuencyItems << (QGraphicsItem*)item;
     mScene->addItem(item);
     return item;

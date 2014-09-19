@@ -134,14 +134,17 @@ SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
     return mElementConcordance.value(guid, 0);
 }
 
-void SyntacticAnalysis::reparentElement(SyntacticAnalysisElement *element, SyntacticAnalysisElement *newParent)
+void SyntacticAnalysis::reparentElement(QList<SyntacticAnalysisElement*> elements, SyntacticAnalysisElement *newParent)
 {
-    SyntacticAnalysisElement *oldParent = findParent(element);
-    if( oldParent != 0 )
+    foreach(SyntacticAnalysisElement * element, elements)
     {
-        oldParent->removeDescendant( element );
+        SyntacticAnalysisElement *oldParent = findParent(element);
+        if( oldParent != 0 )
+        {
+            oldParent->removeDescendant( element );
+        }
+        newParent->addChild( element );
     }
-    newParent->addChild( element );
 }
 
 QString SyntacticAnalysis::name() const

@@ -1,11 +1,16 @@
 #include "syntacticanalysiselementmime.h"
 
-SyntacticAnalysisElementMime::SyntacticAnalysisElementMime(SyntacticAnalysisElement * element) :
-    mElement(element)
+SyntacticAnalysisElementMime::SyntacticAnalysisElementMime(SyntacticAnalysisElement * element)
+{
+    mElements.append( element );
+}
+
+SyntacticAnalysisElementMime::SyntacticAnalysisElementMime(const QList<SyntacticAnalysisElement *> &elements) :
+    mElements(elements)
 {
 }
 
-SyntacticAnalysisElement *SyntacticAnalysisElementMime::element() const
+QList<SyntacticAnalysisElement *> SyntacticAnalysisElementMime::elements() const
 {
-    return mElement;
+    return mElements;
 }

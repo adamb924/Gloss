@@ -11,6 +11,7 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsScene>
 
 #include "syntacticanalysiselement.h"
 #include "allomorph.h"
@@ -127,7 +128,34 @@ void ConstituentGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
 
 void ConstituentGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    SyntacticAnalysisElementMime *data = new SyntacticAnalysisElementMime(mElement);
+    QList<QGraphicsItem *> items = scene()->selectedItems();
+    QList<SyntacticAnalysisElement *> selection;
+
+    if( items.isEmpty() )
+    {
+        selection.append(mElement);
+    }
+    else
+    {
+        foreach(QGraphicsItem * item, items)
+        {
+            MorphemeGraphicsItem * mgi = qgraphicsitem_cast<MorphemeGraphicsItem*>(item);
+            if( mgi != 0 )
+            {
+                selection.append( mgi->element() );
+            }
+            else
+            {
+                ConstituentGraphicsItem * cgi = qgraphicsitem_cast<ConstituentGraphicsItem*>(item);
+                if ( cgi != 0 )
+                {
+                    selection.append( cgi->element() );
+                }
+            }
+        }
+    }
+
+    SyntacticAnalysisElementMime *data = new SyntacticAnalysisElementMime(selection);
     QDrag *drag = new QDrag(event->widget());
     drag->setMimeData(data);
     drag->start();
@@ -140,8 +168,7 @@ void ConstituentGraphicsItem::dropEvent(QGraphicsSceneDragDropEvent *event)
         const SyntacticAnalysisElementMime *data = qobject_cast<const SyntacticAnalysisElementMime*>(event->mimeData());
         if( data != 0 )
         {
-            SyntacticAnalysisElement * origin = data->element();
-            emit reparentElement( origin, mElement );
+            emit reparentElement( data->elements() , mElement );
         }
     }
 }
