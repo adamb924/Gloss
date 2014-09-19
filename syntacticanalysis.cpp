@@ -5,13 +5,16 @@
 #include "text.h"
 #include "phrase.h"
 #include "glossitem.h"
+#include "project.h"
+#include "databaseadapter.h"
 
 #include <QtDebug>
 
 SyntacticAnalysis::SyntacticAnalysis(const QString &name, const WritingSystem &ws, const Text * text, bool closedVocabulary)
     : mName(name),
       mWritingSystem(ws),
-      mClosedVocabulary(closedVocabulary)
+      mClosedVocabulary(closedVocabulary),
+      mDbAdapter(text->project()->dbAdapter())
 {
     for(int i=0; i<text->phrases()->count(); i++)
     {
@@ -27,7 +30,7 @@ SyntacticAnalysis::SyntacticAnalysis(const QString &name, const WritingSystem &w
     }
 }
 
-void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticAnalysisElement*> elements)
+void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<SyntacticAnalysisElement*> elements)
 {
     if( elements.isEmpty() ) return;
 
@@ -38,11 +41,14 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
 
     qDebug() << bAllTerminals << bNoneHaveParents << bAreSisters << bAnyHaveParents;
 
+    SyntacticAnalysisElement *newElement = 0;
+
     if( bNoneHaveParents ) /// if all of the elements are terminal nodes, we just add that to the analysis
     {
         /// create a new element with containing \a elements
-        SyntacticAnalysisElement *tmp = new SyntacticAnalysisElement(label, elements );
-        mElements << tmp;
+        newElement = new SyntacticAnalysisElement(type, elements );
+        mElements << newElement;
+
         /// remove each of \a elements from the baseline
         foreach( SyntacticAnalysisElement * e, elements )
         {
@@ -52,7 +58,7 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
     else if( bAreSisters )
     {
         qDebug() << "Elements are sisters" << findParent(elements[0]);
-        findParent(elements[0])->replaceWithConstituent(label, elements);
+        findParent(elements[0])->replaceWithConstituent(type.abbreviation(), elements);
     }
     else /// at least some of the nodes are constituents
     {
@@ -71,9 +77,19 @@ void SyntacticAnalysis::createConstituent(const QString &label, QList<SyntacticA
                 minIndex = qMin( minIndex , mElements.indexOf( element ) );
                 mElements.removeAll( element );
             }
-            SyntacticAnalysisElement * tmp = new SyntacticAnalysisElement( label , elements );
-            mElements.insert( minIndex, tmp );
-            mElementConcordance.insert( tmp->allomorph()->guid() , tmp );
+            newElement = new SyntacticAnalysisElement( type , elements );
+            mElements.insert( minIndex, newElement );
+            mElementConcordance.insert( newElement->allomorph()->guid() , newElement );
+        }
+    }
+    if( newElement != 0 )
+    {
+        /// add an automatic parent, if one is specified
+        if( !type.automaticParent().isEmpty() )
+        {
+            QList<SyntacticAnalysisElement*> thisList;
+            thisList << newElement;
+            createConstituent( mDbAdapter->syntacticType( type.automaticParent() ) , thisList );
         }
     }
     emit modified();

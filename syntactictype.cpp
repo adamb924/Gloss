@@ -55,6 +55,6 @@ QDebug operator<<(QDebug dbg, const SyntacticType &key)
     if( key.isNull() )
         dbg.nospace() << "SyntacticType(null)";
     else
-        dbg.nospace() << "SyntacticType(" << key.name() << ", " << key.abbreviation() << ", " <<  key.keySequence().toString() << ")";
+        dbg.nospace() << "SyntacticType( Name: " << key.name() << ", Abbreviation: " << key.abbreviation() << ", Shortcut: " <<  key.keySequence().toString() << ", Automatic Parent: " << key.automaticParent() << ")";
     return dbg.maybeSpace();
 }

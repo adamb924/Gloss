@@ -7,7 +7,6 @@
 #include <QHash>
 
 #include "writingsystem.h"
-//#include "syntacticanalysiselement.h"
 #include <QUuid>
 
 class SyntacticAnalysisElement;
@@ -15,6 +14,8 @@ class Text;
 class Tab;
 class Allomorph;
 class QUuid;
+class SyntacticType;
+class DatabaseAdapter;
 
 class SyntacticAnalysis : public QObject
 {
@@ -23,7 +24,7 @@ class SyntacticAnalysis : public QObject
 public:
     SyntacticAnalysis(const QString & name, const WritingSystem & ws, const Text *text, bool closedVocabulary);
 
-    void createConstituent(const QString &label, QList<SyntacticAnalysisElement*> elements);
+    void createConstituent(const SyntacticType &type, QList<SyntacticAnalysisElement*> elements);
 
     const QList<SyntacticAnalysisElement*>* elements() const;
 
@@ -72,6 +73,7 @@ private:
     bool mClosedVocabulary;
     QList<SyntacticAnalysisElement*> mElements;
     QHash<QUuid, SyntacticAnalysisElement*> mElementConcordance;
+    const DatabaseAdapter * mDbAdapter;
 };
 
 #endif // SYNTACTICANALYSIS_H

@@ -213,13 +213,13 @@ void SyntacticParsingWidget::createConstituent(const SyntacticType & type)
                                                  tr("Label:"), QLineEdit::Normal,tr(""), &ok);
             if (ok && !label.isEmpty())
             {
-                mAnalysis->createConstituent( label , elements );
+                mAnalysis->createConstituent( mProject->dbAdapter()->syntacticType( label ) , elements );
                 redrawSyntacticAnnotations();
             }
         }
         else
         {
-            mAnalysis->createConstituent( type.abbreviation() , elements );
+            mAnalysis->createConstituent( type , elements );
             redrawSyntacticAnnotations();
         }
     }

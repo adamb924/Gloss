@@ -8,7 +8,7 @@ class SyntacticType
 {
 public:
     SyntacticType();
-    SyntacticType(const QString & abbreviation);
+    explicit SyntacticType(const QString & abbreviation);
     SyntacticType(const QString & name, const QString & abbreviation, const QKeySequence & keySequence, const QString & automaticParent);
 
     QString name() const;
