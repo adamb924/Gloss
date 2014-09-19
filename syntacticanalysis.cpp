@@ -58,7 +58,7 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
     else if( bAreSisters )
     {
         qDebug() << "Elements are sisters" << findParent(elements[0]);
-        findParent(elements[0])->replaceWithConstituent(type.abbreviation(), elements);
+        findParent(elements[0])->replaceWithConstituent(type, elements);
     }
     else /// at least some of the nodes are constituents
     {

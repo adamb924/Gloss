@@ -6,18 +6,29 @@
 
 SyntacticAnalysisElement::SyntacticAnalysisElement(const Allomorph * allomorph)
     : mAllomorph(allomorph),
-      mType(SyntacticAnalysisElement::Terminal)
+      mType(SyntacticAnalysisElement::Terminal),
+      mParent(0)
 {
 }
 
 SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType & type, const QList<SyntacticAnalysisElement *> &elements)
     : mAllomorph(0),
       mSyntacticType(type),
-      mType(SyntacticAnalysisElement::Consituent)
+      mType(SyntacticAnalysisElement::Consituent),
+      mParent(0)
 {
     for(int i=0; i<elements.count(); i++)
     {
         mElements << elements[i];
+        elements[i]->setParent(this);
+    }
+}
+
+SyntacticAnalysisElement::~SyntacticAnalysisElement()
+{
+    if( mParent != 0 )
+    {
+        mParent->removeChild(this);
     }
 }
 
@@ -83,6 +94,11 @@ bool SyntacticAnalysisElement::removeDescendant(SyntacticAnalysisElement *elemen
     return false;
 }
 
+void SyntacticAnalysisElement::removeChild(SyntacticAnalysisElement *element)
+{
+    mElements.removeAll(element);
+}
+
 bool SyntacticAnalysisElement::hasChild( SyntacticAnalysisElement * element ) const
 {
     return mElements.contains(element);
@@ -90,6 +106,7 @@ bool SyntacticAnalysisElement::hasChild( SyntacticAnalysisElement * element ) co
 
 void SyntacticAnalysisElement::addChild(SyntacticAnalysisElement *element)
 {
+    element->setParent(this);
     mElements.append(element);
 }
 
@@ -108,6 +125,11 @@ void SyntacticAnalysisElement::debug() const
         }
         qWarning() << "SyntacticAnalysisElement End Constituent" << mSyntacticType.abbreviation();
     }
+}
+
+void SyntacticAnalysisElement::setParent(SyntacticAnalysisElement *parent)
+{
+    mParent = parent;
 }
 
 SyntacticAnalysisElement *SyntacticAnalysisElement::findParent(SyntacticAnalysisElement *element)
@@ -150,7 +172,7 @@ const SyntacticAnalysisElement *SyntacticAnalysisElement::findParent(SyntacticAn
     return 0;
 }
 
-void SyntacticAnalysisElement::replaceWithConstituent(const QString &label, QList<SyntacticAnalysisElement *> &elements)
+void SyntacticAnalysisElement::replaceWithConstituent(const SyntacticType &type, QList<SyntacticAnalysisElement *> &elements)
 {
     int minIndex = mElements.indexOf( elements.first() );
     QListIterator<SyntacticAnalysisElement*> iter(elements);
@@ -160,7 +182,7 @@ void SyntacticAnalysisElement::replaceWithConstituent(const QString &label, QLis
         minIndex = qMin( minIndex , mElements.indexOf( element ) );
         mElements.removeAll( element );
     }
-    mElements.insert( minIndex, new SyntacticAnalysisElement( label , elements ) );
+    mElements.insert( minIndex, new SyntacticAnalysisElement( type , elements ) );
 }
 
 
