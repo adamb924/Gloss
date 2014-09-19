@@ -80,6 +80,7 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
             newElement = new SyntacticAnalysisElement( type , elements );
             mElements.insert( minIndex, newElement );
             mElementConcordance.insert( newElement->allomorph()->guid() , newElement );
+            connect( newElement->allomorph(), SIGNAL(allomorphDestroyed(Allomorph*)), this, SLOT(removeAllomorphFromAnalysis(Allomorph*)) );
         }
     }
     if( newElement != 0 )
@@ -106,6 +107,7 @@ void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
     if( element->isTerminal() )
     {
         mElementConcordance.insert( element->allomorph()->guid() , element );
+        connect( element->allomorph(), SIGNAL(allomorphDestroyed(Allomorph*)), this, SLOT(removeAllomorphFromAnalysis(Allomorph*)) );
         emit modified();
     }
 }
@@ -167,6 +169,15 @@ void SyntacticAnalysis::reparentElement(QList<SyntacticAnalysisElement*> element
         newParent->addChild( element );
     }
     emit modified();
+}
+
+void SyntacticAnalysis::removeAllomorphFromAnalysis(Allomorph *allomorph)
+{
+    SyntacticAnalysisElement * element = mElementConcordance.value( allomorph->guid(), 0 );
+    if( element != 0 )
+    {
+        delete element;
+    }
 }
 
 QString SyntacticAnalysis::name() const

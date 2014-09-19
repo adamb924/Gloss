@@ -14,8 +14,10 @@
 #include <QRegExp>
 #include <QUuid>
 
-class Allomorph
+class Allomorph : public QObject
 {
+    Q_OBJECT
+
 public:
     enum Type { Stem,Prefix,Suffix,Infix,BoundStem,Proclitic,Enclitic,Simulfix,Suprafix,Null };
 
@@ -24,6 +26,7 @@ public:
     Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type , QUuid guid = QUuid());
     Allomorph(const Allomorph & other);
     Allomorph& operator=(const Allomorph & other);
+    ~Allomorph();
 
     //! \brief Returns true if all members of \a other are identical (including the GUID)
     bool operator==(const Allomorph & other) const;
@@ -104,6 +107,9 @@ public:
 
     //! \brief Returns \a string with punctuation stripped out
     static QString stripPunctuation( const QString & string );
+
+signals:
+    void allomorphDestroyed(Allomorph * allomorph);
 
 private:
     Type mType;

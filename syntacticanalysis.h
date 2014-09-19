@@ -52,6 +52,7 @@ signals:
 
 public slots:
     void reparentElement(QList<SyntacticAnalysisElement *> elements, SyntacticAnalysisElement * newParent);
+    void removeAllomorphFromAnalysis(Allomorph * allomorph);
 
 private:
 

@@ -23,6 +23,7 @@ public:
     MorphologicalAnalysis(const TextBit & textForm);
     MorphologicalAnalysis(qlonglong textFormId, const WritingSystem & ws);
     MorphologicalAnalysis(const MorphologicalAnalysis & other);
+    ~MorphologicalAnalysis();
 
     MorphologicalAnalysis& operator=(const MorphologicalAnalysis & other);
     MorphologicalAnalysis *copyWithNewGuids() const;

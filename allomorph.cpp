@@ -47,6 +47,11 @@ Allomorph& Allomorph::operator=(const Allomorph & other)
     return *this;
 }
 
+Allomorph::~Allomorph()
+{
+    emit allomorphDestroyed(this);
+}
+
 bool Allomorph::operator==(const Allomorph & other) const
 {
     return mType == other.mType && mTextBit == other.mTextBit && mId == other.mId && mGlosses == other.mGlosses && mGuid == other.mGuid;
