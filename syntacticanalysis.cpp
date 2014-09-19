@@ -114,6 +114,21 @@ void SyntacticAnalysis::removeElement(SyntacticAnalysisElement *element)
     }
 }
 
+void SyntacticAnalysis::setName(const QString &name)
+{
+    mName = name;
+}
+
+void SyntacticAnalysis::setWritingSystem(const WritingSystem &ws)
+{
+    mWritingSystem = ws;
+}
+
+void SyntacticAnalysis::setClosedVocabulary(bool closed)
+{
+    mClosedVocabulary = closed;
+}
+
 SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
 {
     return mElementConcordance.value(guid, 0);

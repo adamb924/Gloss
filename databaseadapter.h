@@ -16,6 +16,7 @@
 #include "interlinearitemtype.h"
 #include "allomorph.h"
 #include "annotationtype.h"
+#include "syntactictype.h"
 
 class WritingSystem;
 class MorphologicalAnalysis;
@@ -225,6 +226,9 @@ public:
     QStringList suggestLexicalEntryGlosses( qlonglong lexicalEntryId , const WritingSystem & ws ) const;
 
     void loadWritingSystems();
+    void loadSyntacticTypes();
+
+    SyntacticType syntacticType(const QKeySequence & keySequence) const;
 
 private:
     QString mFilename;
@@ -232,6 +236,7 @@ private:
     QList<WritingSystem> mWritingSystems;
     QHash<qlonglong, WritingSystem> mWritingSystemByRowId;
     QHash<QString, WritingSystem> mWritingSystemByFlexString;
+    QHash<QKeySequence, SyntacticType> mSyntacticTypes;
 
 signals:
 

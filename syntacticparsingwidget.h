@@ -13,6 +13,8 @@ class SyntacticAnalysis;
 class SyntacticAnalysisElement;
 class Allomorph;
 
+#include "syntactictype.h"
+
 namespace Ui {
 class SyntacticParsingWidget;
 }
@@ -38,10 +40,11 @@ protected:
 
 private slots:
     void redrawSyntacticAnnotations();
-    void createConstituent();
+    void createConstituent(const SyntacticType &type = SyntacticType());
     void removeConstituent();
     void analysisSelectionChanged(const QString & newSelection);
     void newAnalysis();
+    void editAnalysis();
     void deleteAnalysis();
     void saveText();
     void saveTextVerbose();

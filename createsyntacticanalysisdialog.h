@@ -4,6 +4,7 @@
 #include <QDialog>
 
 class WritingSystem;
+class SyntacticAnalysis;
 
 namespace Ui {
 class CreateSyntacticAnalysisDialog;
@@ -15,6 +16,7 @@ class CreateSyntacticAnalysisDialog : public QDialog
 
 public:
     CreateSyntacticAnalysisDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
+    CreateSyntacticAnalysisDialog(const SyntacticAnalysis * analysis, const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
     ~CreateSyntacticAnalysisDialog();
 
     WritingSystem writingSystem() const;

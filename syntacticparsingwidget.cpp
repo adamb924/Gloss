@@ -24,6 +24,8 @@
 #include "databaseadapter.h"
 #include "linenumbergraphicsitem.h"
 
+#include "ui_createsyntacticanalysisdialog.h"
+
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SyntacticParsingWidget),
@@ -50,6 +52,9 @@ SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, con
 
     connect( ui->addButton, SIGNAL(clicked()), this, SLOT(newAnalysis()));
     connect( ui->deleteButton, SIGNAL(clicked()), this, SLOT(deleteAnalysis()) );
+    connect( ui->editButton, SIGNAL(clicked()), this, SLOT(editAnalysis()) );
+
+    ui->editButton->setEnabled( ui->comboBox->count() > 0 );
 }
 
 SyntacticParsingWidget::~SyntacticParsingWidget()
@@ -163,20 +168,58 @@ QGraphicsItem *SyntacticParsingWidget::addElementToScene(SyntacticAnalysisElemen
     return item;
 }
 
-void SyntacticParsingWidget::createConstituent()
+void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
+{
+    if( mAnalysis == 0) return;
+
+    if( event->key() == Qt::Key_Delete )
+    {
+        removeConstituent();
+    }
+    else if ( event->key() == Qt::Key_Insert )
+    {
+        createConstituent();
+    }
+
+    QKeySequence key = QKeySequence( event->modifiers() | event->key() );
+    if( mAnalysis->closedVocabulary() )
+    {
+        createConstituent( mProject->dbAdapter()->syntacticType( key ) );
+    }
+    else
+    {
+        if( event->key() == Qt::Key_A )
+        {
+            createConstituent();
+        }
+        else if ( event->key() == Qt::Key_X )
+        {
+            removeConstituent();
+        }
+    }
+}
+
+void SyntacticParsingWidget::createConstituent(const SyntacticType & type)
 {
     if( mAnalysis == 0 ) return;
 
     QList<SyntacticAnalysisElement *> elements = selectedElements();
-
     if( !elements.isEmpty() )
     {
-        bool ok;
-        QString label = QInputDialog::getText(this, tr("New constituent"),
-                                             tr("Label:"), QLineEdit::Normal,tr(""), &ok);
-        if (ok && !label.isEmpty())
+        if( type.isNull() )
         {
-            mAnalysis->createConstituent( label , elements );
+            bool ok;
+            QString label = QInputDialog::getText(this, tr("New constituent"),
+                                                 tr("Label:"), QLineEdit::Normal,tr(""), &ok);
+            if (ok && !label.isEmpty())
+            {
+                mAnalysis->createConstituent( label , elements );
+                redrawSyntacticAnnotations();
+            }
+        }
+        else
+        {
+            mAnalysis->createConstituent( type.abbreviation() , elements );
             redrawSyntacticAnnotations();
         }
     }
@@ -226,18 +269,6 @@ void SyntacticParsingWidget::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 
-void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
-{
-    if( event->key() == Qt::Key_A )
-    {
-        createConstituent();
-    }
-    else if ( event->key() == Qt::Key_X )
-    {
-        removeConstituent();
-    }
-}
-
 void SyntacticParsingWidget::analysisSelectionChanged(const QString &newSelection)
 {
     if( mText->syntacticAnalyses()->contains(newSelection) )
@@ -258,6 +289,19 @@ void SyntacticParsingWidget::newAnalysis()
         ui->comboBox->insertItem(0, dlg.name());
         ui->comboBox->setCurrentIndex(0);
         redrawSyntacticAnnotations();
+        ui->editButton->setEnabled( true );
+    }
+}
+
+void SyntacticParsingWidget::editAnalysis()
+{
+    CreateSyntacticAnalysisDialog dlg(mAnalysis, mProject->dbAdapter()->writingSystems());
+    if( dlg.exec() )
+    {
+        mAnalysis->setName( dlg.name() );
+        mAnalysis->setWritingSystem( dlg.writingSystem() );
+        mAnalysis->setClosedVocabulary( dlg.closedVocabulary() );
+        redrawSyntacticAnnotations();
     }
 }
 
@@ -268,6 +312,7 @@ void SyntacticParsingWidget::deleteAnalysis()
     {
         delete mText->syntacticAnalyses()->take(name);
         ui->comboBox->removeItem( ui->comboBox->currentIndex() );
+        ui->editButton->setEnabled( ui->comboBox->count() > 0 );
     }
 }
 

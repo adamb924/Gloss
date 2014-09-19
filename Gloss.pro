@@ -97,7 +97,8 @@ SOURCES += main.cpp\
     createsyntacticanalysisdialog.cpp \
     linenumbergraphicsitem.cpp \
     syntacticanalysiselementmime.cpp \
-    closedvocabularydialog.cpp
+    closedvocabularydialog.cpp \
+    syntactictype.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -185,7 +186,8 @@ HEADERS  += mainwindow.h \
     createsyntacticanalysisdialog.h \
     linenumbergraphicsitem.h \
     syntacticanalysiselementmime.h \
-    closedvocabularydialog.h
+    closedvocabularydialog.h \
+    syntactictype.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \

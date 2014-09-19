@@ -30,6 +30,10 @@ public:
     void addBaselineElement(SyntacticAnalysisElement * element);
     void removeElement(SyntacticAnalysisElement * element);
 
+    void setName(const QString & name);
+    void setWritingSystem(const WritingSystem & ws);
+    void setClosedVocabulary(bool closed);
+
     SyntacticAnalysisElement *elementFromGuid(const QUuid & guid);
 
     QString name() const;

@@ -632,7 +632,10 @@ void MainWindow::exportTexts()
 void MainWindow::syntacticElements()
 {
     ClosedVocabularyDialog dlg(mProject);
-    dlg.exec();
+    if( dlg.exec() )
+    {
+        mProject->dbAdapter()->loadSyntacticTypes();
+    }
 }
 
 void MainWindow::deleteText()

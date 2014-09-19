@@ -30,6 +30,7 @@ DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
     }
 
     loadWritingSystems();
+    loadSyntacticTypes();
 }
 
 DatabaseAdapter::~DatabaseAdapter()
@@ -1076,6 +1077,26 @@ void DatabaseAdapter::loadWritingSystems()
         mWritingSystemByRowId.insert( q.value(0).toLongLong(), ws );
         mWritingSystemByFlexString.insert( q.value(3).toString(), ws );
     }
+}
+
+void DatabaseAdapter::loadSyntacticTypes()
+{
+    mSyntacticTypes.clear();
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select Name, Abbreviation, KeySequence from SyntacticConstituents;");
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::loadSyntacticTypes" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+    {
+        SyntacticType type( q.value(0).toString(), q.value(1).toString(), QKeySequence( q.value(2).toString() ) );
+        mSyntacticTypes.insert( type.keySequence(), type );
+    }
+}
+
+SyntacticType DatabaseAdapter::syntacticType(const QKeySequence &keySequence) const
+{
+    return mSyntacticTypes.value(keySequence, SyntacticType() );
 }
 
 TextBitHash DatabaseAdapter::lexicalEntryCitationFormsForAllomorph(qlonglong allomorphId) const
