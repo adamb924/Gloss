@@ -229,6 +229,7 @@ public:
     void loadSyntacticTypes();
 
     SyntacticType syntacticType(const QKeySequence & keySequence) const;
+    SyntacticType syntacticType(const QString & abbreviation) const;
 
 private:
     QString mFilename;
@@ -237,6 +238,7 @@ private:
     QHash<qlonglong, WritingSystem> mWritingSystemByRowId;
     QHash<QString, WritingSystem> mWritingSystemByFlexString;
     QHash<QKeySequence, SyntacticType> mSyntacticTypes;
+    QHash<QString, SyntacticType> mSyntacticTypesByAbbreviation;
 
 signals:
 

@@ -10,9 +10,9 @@ SyntacticAnalysisElement::SyntacticAnalysisElement(const Allomorph * allomorph)
 {
 }
 
-SyntacticAnalysisElement::SyntacticAnalysisElement(const QString & label, const QList<SyntacticAnalysisElement *> &elements)
+SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType & type, const QList<SyntacticAnalysisElement *> &elements)
     : mAllomorph(0),
-      mLabel(label),
+      mSyntacticType(type),
       mType(SyntacticAnalysisElement::Consituent)
 {
     for(int i=0; i<elements.count(); i++)
@@ -23,7 +23,7 @@ SyntacticAnalysisElement::SyntacticAnalysisElement(const QString & label, const 
 
 QString SyntacticAnalysisElement::label() const
 {
-    return mLabel;
+    return mSyntacticType.abbreviation();
 }
 
 const Allomorph *SyntacticAnalysisElement::allomorph() const
@@ -101,12 +101,12 @@ void SyntacticAnalysisElement::debug() const
     }
     else /// constituent
     {
-        qWarning() << "SyntacticAnalysisElement Begin Constituent" << mLabel;
+        qWarning() << "SyntacticAnalysisElement Begin Constituent" << mSyntacticType.abbreviation();
         for(int i=0; i<mElements.count(); i++)
         {
             mElements.at(i)->debug();
         }
-        qWarning() << "SyntacticAnalysisElement End Constituent" << mLabel;
+        qWarning() << "SyntacticAnalysisElement End Constituent" << mSyntacticType.abbreviation();
     }
 }
 

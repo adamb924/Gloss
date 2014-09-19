@@ -1082,6 +1082,7 @@ void DatabaseAdapter::loadWritingSystems()
 void DatabaseAdapter::loadSyntacticTypes()
 {
     mSyntacticTypes.clear();
+    mSyntacticTypesByAbbreviation.clear();
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select Name, Abbreviation, KeySequence from SyntacticConstituents;");
@@ -1091,12 +1092,18 @@ void DatabaseAdapter::loadSyntacticTypes()
     {
         SyntacticType type( q.value(0).toString(), q.value(1).toString(), QKeySequence( q.value(2).toString() ) );
         mSyntacticTypes.insert( type.keySequence(), type );
+        mSyntacticTypesByAbbreviation.insert( type.abbreviation(), type );
     }
 }
 
 SyntacticType DatabaseAdapter::syntacticType(const QKeySequence &keySequence) const
 {
     return mSyntacticTypes.value(keySequence, SyntacticType() );
+}
+
+SyntacticType DatabaseAdapter::syntacticType(const QString &abbreviation) const
+{
+    return mSyntacticTypesByAbbreviation.value(abbreviation, SyntacticType() );
 }
 
 TextBitHash DatabaseAdapter::lexicalEntryCitationFormsForAllomorph(qlonglong allomorphId) const

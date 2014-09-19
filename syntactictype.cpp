@@ -6,6 +6,11 @@ SyntacticType::SyntacticType()
 {
 }
 
+SyntacticType::SyntacticType(const QString &abbreviation) :
+    mAbbreviation(abbreviation)
+{
+}
+
 SyntacticType::SyntacticType(const QString & name, const QString & abbreviation, const QKeySequence & keySequence) :
     mName(name),
     mAbbreviation(abbreviation),

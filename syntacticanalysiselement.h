@@ -5,6 +5,8 @@ class Allomorph;
 class QString;
 class SyntacticAnalysisElement;
 
+#include "syntactictype.h"
+
 #include <QList>
 #include <QString>
 
@@ -14,7 +16,7 @@ public:
     enum Type { Consituent , Terminal };
 
     SyntacticAnalysisElement(const Allomorph * allomorph);
-    SyntacticAnalysisElement(const QString & label, const QList<SyntacticAnalysisElement *> & elements);
+    SyntacticAnalysisElement(const SyntacticType &type, const QList<SyntacticAnalysisElement *> & elements);
 
     QString label() const;
     const Allomorph * allomorph() const;
@@ -36,7 +38,7 @@ public:
 
 private:
     const Allomorph *mAllomorph;
-    QString mLabel;
+    SyntacticType mSyntacticType;
     SyntacticAnalysisElement::Type mType;
     QList<SyntacticAnalysisElement *> mElements;
 };

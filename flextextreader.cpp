@@ -193,7 +193,15 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","label") )
                 {
                     QString label = attr.value("http://www.adambaker.org/gloss.php","label").toString();
-                    SyntacticAnalysisElement * newElement = new SyntacticAnalysisElement(label, QList<SyntacticAnalysisElement*>() );
+                    SyntacticAnalysisElement * newElement;
+                    if( currentSyntacticAnalysis->closedVocabulary() )
+                    {
+                        newElement = new SyntacticAnalysisElement( mDbAdapter->syntacticType(label), QList<SyntacticAnalysisElement*>() );
+                    }
+                    else
+                    {
+                        newElement = new SyntacticAnalysisElement( SyntacticType(label), QList<SyntacticAnalysisElement*>() );
+                    }
                     if( elementStack.isEmpty() )
                     {
                         currentSyntacticAnalysis->addBaselineElement(newElement);
