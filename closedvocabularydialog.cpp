@@ -34,6 +34,8 @@ ClosedVocabularyDialog::ClosedVocabularyDialog(Project * prj, QWidget *parent) :
     connect( ui->name, SIGNAL(editingFinished()), this, SLOT(updateDatabaseRecord()) );
     connect( ui->keystroke, SIGNAL(editingFinished()), this, SLOT(validateKeystroke()) );
     connect( ui->keystroke, SIGNAL(editingFinished()), this, SLOT(updateDatabaseRecord()) );
+    connect( ui->parentCheckBox, SIGNAL(toggled(bool)), this, SLOT(updateDatabaseRecord()) );
+    connect( ui->parentComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateDatabaseRecord()) );
 
     connect( ui->parentCheckBox, SIGNAL(toggled(bool)), ui->parentComboBox, SLOT(setEnabled(bool)) );
     ui->parentCheckBox->setEnabled(false);
@@ -88,6 +90,7 @@ void ClosedVocabularyDialog::changeRow(const QModelIndex &index)
     ui->name->setText( r.value("Name").toString() );
     ui->abbreviation->setText( r.value("Abbreviation").toString() );
     ui->keystroke->setText( r.value("KeySequence").toString() );
+
     if( r.value("AutomaticParent").toString().isEmpty() )
     {
         ui->parentCheckBox->setChecked(false);
@@ -106,6 +109,7 @@ void ClosedVocabularyDialog::changeRow(const QModelIndex &index)
 
 void ClosedVocabularyDialog::updateDatabaseRecord()
 {
+    if( mCurrentRow < 0 ) return;
     QSqlRecord r = mModel->record(mCurrentRow);
     r.setValue( "Name" , ui->name->text() );
     r.setValue( "Abbreviation" , ui->abbreviation->text() );
