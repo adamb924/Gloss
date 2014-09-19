@@ -18,6 +18,7 @@ ClosedVocabularyDialog::ClosedVocabularyDialog(Project * prj, QWidget *parent) :
 
     mModel = new QSqlTableModel( this, mDatabase );
     mModel->setTable("SyntacticConstituents");
+    mModel->setEditStrategy( QSqlTableModel::OnManualSubmit );
     mModel->select();
 
     ui->listView->setModel(mModel);
@@ -33,6 +34,8 @@ ClosedVocabularyDialog::ClosedVocabularyDialog(Project * prj, QWidget *parent) :
     connect( ui->name, SIGNAL(editingFinished()), this, SLOT(updateDatabaseRecord()) );
     connect( ui->keystroke, SIGNAL(editingFinished()), this, SLOT(validateKeystroke()) );
     connect( ui->keystroke, SIGNAL(editingFinished()), this, SLOT(updateDatabaseRecord()) );
+
+    connect( this, SIGNAL(accepted()), this, SLOT(finalizeDatabase()) );
 }
 
 ClosedVocabularyDialog::~ClosedVocabularyDialog()
@@ -42,10 +45,15 @@ ClosedVocabularyDialog::~ClosedVocabularyDialog()
 
 void ClosedVocabularyDialog::add()
 {
-    mModel->insertRow(0);
-    QModelIndex index = mModel->index(0,2);
+    QSqlRecord r = mModel->record();
+    if( !mModel->insertRecord(-1, r) )
+    {
+        qDebug() << "ClosedVocabularyDialog::add() Could not insert row." << mModel->lastError();
+    }
+
+    QModelIndex index = mModel->index( mModel->rowCount()-1, 0);
     ui->listView->setCurrentIndex( index );
-    changeRow(index);
+    changeRow( index );
     ui->abbreviation->setFocus();
 }
 
@@ -82,10 +90,21 @@ void ClosedVocabularyDialog::updateDatabaseRecord()
     r.setValue( "Name" , ui->name->text() );
     r.setValue( "Abbreviation" , ui->abbreviation->text() );
     r.setValue( "KeySequence" , ui->keystroke->text() );
-    mModel->setRecord(mCurrentRow, r);
+    if( !mModel->setRecord(mCurrentRow, r) )
+    {
+        qDebug() << "ClosedVocabularyDialog::updateDatabaseRecord() Could not set record, row" << mCurrentRow;
+    }
 }
 
 void ClosedVocabularyDialog::validateKeystroke()
 {
     ui->keystroke->setText( QKeySequence(ui->keystroke->text()).toString() );
+}
+
+void ClosedVocabularyDialog::finalizeDatabase()
+{
+    if( ! mModel->submitAll() )
+    {
+        qDebug() << "ClosedVocabularyDialog::finalizeDatabase()" << mModel->lastError();
+    }
 }

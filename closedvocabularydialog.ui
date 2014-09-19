@@ -105,7 +105,7 @@
           <number>32767</number>
          </property>
          <property name="placeholderText">
-          <string>e.g., T, Shift+T, Ctrl+T, lt+T</string>
+          <string>e.g., T, Shift+T, Ctrl+T, Alt+T</string>
          </property>
         </widget>
        </item>

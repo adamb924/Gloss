@@ -27,6 +27,7 @@ private slots:
 
     void updateDatabaseRecord();
     void validateKeystroke();
+    void finalizeDatabase();
 
 private:
     Ui::ClosedVocabularyDialog *ui;
