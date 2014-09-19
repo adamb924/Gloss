@@ -35,6 +35,13 @@ ClosedVocabularyDialog::ClosedVocabularyDialog(Project * prj, QWidget *parent) :
     connect( ui->keystroke, SIGNAL(editingFinished()), this, SLOT(validateKeystroke()) );
     connect( ui->keystroke, SIGNAL(editingFinished()), this, SLOT(updateDatabaseRecord()) );
 
+    connect( ui->parentCheckBox, SIGNAL(toggled(bool)), ui->parentComboBox, SLOT(setEnabled(bool)) );
+    ui->parentCheckBox->setEnabled(false);
+    ui->parentComboBox->setEnabled(false);
+
+    ui->parentComboBox->setModel(mModel);
+    ui->parentComboBox->setModelColumn( 2 );
+
     connect( this, SIGNAL(accepted()), this, SLOT(finalizeDatabase()) );
 }
 
@@ -65,9 +72,11 @@ void ClosedVocabularyDialog::remove()
         ui->name->setText("");
         ui->abbreviation->setText("");
         ui->keystroke->setText("");
+
         ui->name->setEnabled(false);
         ui->abbreviation->setEnabled(false);
         ui->keystroke->setEnabled(false);
+        ui->parentCheckBox->setEnabled(false);
         mModel->select();
     }
 }
@@ -79,9 +88,20 @@ void ClosedVocabularyDialog::changeRow(const QModelIndex &index)
     ui->name->setText( r.value("Name").toString() );
     ui->abbreviation->setText( r.value("Abbreviation").toString() );
     ui->keystroke->setText( r.value("KeySequence").toString() );
+    if( r.value("AutomaticParent").toString().isEmpty() )
+    {
+        ui->parentCheckBox->setChecked(false);
+    }
+    else
+    {
+        ui->parentCheckBox->setChecked(true);
+        ui->parentComboBox->setCurrentText( r.value("AutomaticParent").toString() );
+    }
+
     ui->name->setEnabled(true);
     ui->abbreviation->setEnabled(true);
     ui->keystroke->setEnabled(true);
+    ui->parentCheckBox->setEnabled(true);
 }
 
 void ClosedVocabularyDialog::updateDatabaseRecord()
@@ -90,6 +110,14 @@ void ClosedVocabularyDialog::updateDatabaseRecord()
     r.setValue( "Name" , ui->name->text() );
     r.setValue( "Abbreviation" , ui->abbreviation->text() );
     r.setValue( "KeySequence" , ui->keystroke->text() );
+    if( ui->parentCheckBox->isChecked() )
+    {
+        r.setValue( "AutomaticParent" , ui->parentComboBox->currentText() );
+    }
+    else
+    {
+        r.setValue( "AutomaticParent" , "" );
+    }
     if( !mModel->setRecord(mCurrentRow, r) )
     {
         qWarning() << "ClosedVocabularyDialog::updateDatabaseRecord() Could not set record, row" << mCurrentRow;

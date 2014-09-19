@@ -11,10 +11,11 @@ SyntacticType::SyntacticType(const QString &abbreviation) :
 {
 }
 
-SyntacticType::SyntacticType(const QString & name, const QString & abbreviation, const QKeySequence & keySequence) :
+SyntacticType::SyntacticType(const QString & name, const QString & abbreviation, const QKeySequence & keySequence, const QString &automaticParent) :
     mName(name),
     mAbbreviation(abbreviation),
-    mKeySequence(keySequence)
+    mKeySequence(keySequence),
+    mAutomaticParent(automaticParent)
 {
 }
 
@@ -31,6 +32,11 @@ QString SyntacticType::abbreviation() const
 QKeySequence SyntacticType::keySequence() const
 {
     return mKeySequence;
+}
+
+QString SyntacticType::automaticParent() const
+{
+    return mAutomaticParent;
 }
 
 bool SyntacticType::isNull() const

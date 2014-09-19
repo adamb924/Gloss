@@ -75,7 +75,7 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists WritingSystems ( _id integer primary key autoincrement, Name text, Abbreviation text, FlexString text, KeyboardCommand text, Direction integer, FontFamily text, FontSize text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
-    if( !q.exec("create table if not exists SyntacticConstituents ( _id integer primary key autoincrement, Name text, Abbreviation text, KeySequence text );") )
+    if( !q.exec("create table if not exists SyntacticConstituents ( _id integer primary key autoincrement, Name text, Abbreviation text, KeySequence text, AutomaticParent text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 }
 
@@ -1085,12 +1085,12 @@ void DatabaseAdapter::loadSyntacticTypes()
     mSyntacticTypesByAbbreviation.clear();
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select Name, Abbreviation, KeySequence from SyntacticConstituents;");
+    q.prepare("select Name, Abbreviation, KeySequence, AutomaticParent from SyntacticConstituents;");
     if( !q.exec()  )
         qWarning() << "DatabaseAdapter::loadSyntacticTypes" << q.lastError().text() << q.executedQuery();
     while( q.next() )
     {
-        SyntacticType type( q.value(0).toString(), q.value(1).toString(), QKeySequence( q.value(2).toString() ) );
+        SyntacticType type( q.value(0).toString(), q.value(1).toString(), QKeySequence( q.value(2).toString() ), q.value(3).toString() );
         mSyntacticTypes.insert( type.keySequence(), type );
         mSyntacticTypesByAbbreviation.insert( type.abbreviation(), type );
     }

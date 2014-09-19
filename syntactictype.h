@@ -9,11 +9,12 @@ class SyntacticType
 public:
     SyntacticType();
     SyntacticType(const QString & abbreviation);
-    SyntacticType(const QString & name, const QString & abbreviation, const QKeySequence & keySequence);
+    SyntacticType(const QString & name, const QString & abbreviation, const QKeySequence & keySequence, const QString & automaticParent);
 
     QString name() const;
     QString abbreviation() const;
     QKeySequence keySequence() const;
+    QString automaticParent() const;
 
     bool isNull() const;
 
@@ -21,6 +22,7 @@ private:
     QString mName;
     QString mAbbreviation;
     QKeySequence mKeySequence;
+    QString mAutomaticParent;
 };
 
 QDebug operator<<(QDebug dbg, const SyntacticType &key);
