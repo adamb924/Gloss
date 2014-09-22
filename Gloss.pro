@@ -76,7 +76,6 @@ SOURCES += main.cpp\
     annotationform.cpp \
     annotationmodel.cpp \
     interval.cpp \
-    writingsystemsform.cpp \
     viewconfigurationdialog.cpp \
     viewsmodel.cpp \
     tabsmodel.cpp \
@@ -98,7 +97,8 @@ SOURCES += main.cpp\
     syntacticanalysiselementmime.cpp \
     closedvocabularydialog.cpp \
     syntactictype.cpp \
-    syntacticanalysisoptionsdialog.cpp
+    syntacticanalysisoptionsdialog.cpp \
+    writingsystemseditdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -165,7 +165,6 @@ HEADERS  += mainwindow.h \
     annotationform.h \
     annotationmodel.h \
     interval.h \
-    writingsystemsform.h \
     viewconfigurationdialog.h \
     viewsmodel.h \
     tabsmodel.h \
@@ -187,7 +186,8 @@ HEADERS  += mainwindow.h \
     syntacticanalysiselementmime.h \
     closedvocabularydialog.h \
     syntactictype.h \
-    syntacticanalysisoptionsdialog.h
+    syntacticanalysisoptionsdialog.h \
+    writingsystemseditdialog.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -210,7 +210,6 @@ FORMS    += mainwindow.ui \
     editwithsuggestionsdialog.ui \
     searchform.ui \
     annotationform.ui \
-    writingsystemsform.ui \
     viewconfigurationdialog.ui \
     writingsystemdialog.ui \
     itemeditdialog.ui \
@@ -219,7 +218,8 @@ FORMS    += mainwindow.ui \
     exporttextsdialog.ui \
     syntacticparsingwidget.ui \
     closedvocabularydialog.ui \
-    syntacticanalysisoptionsdialog.ui
+    syntacticanalysisoptionsdialog.ui \
+    writingsystemseditdialog.ui
 
 LIBS += -L./ \
     -lquazip \
