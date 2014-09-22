@@ -51,7 +51,6 @@ bool Project::create(QString filename)
 
     mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
     mDbAdapter = new DatabaseAdapter(mDatabasePath);
-    mDbAdapter->createTables();
 
     return true;
 }

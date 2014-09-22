@@ -29,6 +29,8 @@ DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
         return;
     }
 
+    createTables();
+
     loadWritingSystems();
     loadSyntacticTypes();
 }

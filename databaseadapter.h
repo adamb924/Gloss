@@ -121,9 +121,6 @@ public:
     //! \brief Returns the filename of the database (not the full path)
     QString dbFilename() const;
 
-    //! \brief Creates the tables for the first time
-    void createTables();
-
     //! \brief Returns true of an interpretation with _id \a id exists, otherwise false
     bool interpretationExists(qlonglong id) const;
 
@@ -231,7 +228,10 @@ public:
     SyntacticType syntacticType(const QKeySequence & keySequence) const;
     SyntacticType syntacticType(const QString & abbreviation) const;
 
-private:
+private:    
+    //! \brief Creates the tables; all tables are created with "create if not exists" -- so it's fine to call this in the constructor
+    void createTables();
+
     QString mFilename;
 
     QList<WritingSystem> mWritingSystems;
