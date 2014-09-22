@@ -5,7 +5,7 @@
 
 
 Allomorph::Allomorph(QUuid guid) :
-    mType(Allomorph::Null), mTextBit( TextBit() ), mId(-1), mGuid(guid)
+    QObject(), mType(Allomorph::Null), mTextBit( TextBit() ), mId(-1), mGuid(guid)
 {
     if( mGuid.isNull() )
     {
@@ -14,7 +14,7 @@ Allomorph::Allomorph(QUuid guid) :
 }
 
 Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type , QUuid guid) :
-    mType(type), mTextBit(bit), mId(id), mGuid(guid)
+    QObject(), mType(type), mTextBit(bit), mId(id), mGuid(guid)
 {
     if( mGuid.isNull() )
     {
@@ -23,7 +23,7 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type , QUuid guid) 
 }
 
 Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type, QUuid guid  ) :
-    mType(type), mTextBit(bit), mId(id), mGuid(guid)
+    QObject(), mType(type), mTextBit(bit), mId(id), mGuid(guid)
 {
     mGlosses.unite(glosses);
     if( mGuid.isNull() )
@@ -33,7 +33,7 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
 }
 
 Allomorph::Allomorph(const Allomorph & other) :
-    mType(other.mType), mTextBit(other.mTextBit), mId(other.mId), mGlosses(other.mGlosses), mGuid(other.mGuid)
+    QObject(), mType(other.mType), mTextBit(other.mTextBit), mId(other.mId), mGlosses(other.mGlosses), mGuid(other.mGuid)
 {
 }
 
