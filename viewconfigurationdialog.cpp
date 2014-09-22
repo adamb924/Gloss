@@ -17,6 +17,7 @@
 #include "databaseadapter.h"
 #include "writingsystemdialog.h"
 #include "itemeditdialog.h"
+#include "tabeditdialog.h"
 
 ViewConfigurationDialog::ViewConfigurationDialog(Project *project, QWidget *parent) :
     QDialog(parent),
@@ -92,11 +93,10 @@ void ViewConfigurationDialog::addTab()
 {
     if( mTabsModel != 0 )
     {
-        bool ok;
-        QString	name = QInputDialog::getText(this, tr("New tab name"), tr("Enter a name for the tab"), QLineEdit::Normal, QString(), &ok );
-        if(ok)
+        TabEditDialog dlg;
+        if( dlg.exec() )
         {
-            mTabsModel->addTab( name );
+            mTabsModel->addTab( dlg.name(), dlg.type()  );
         }
     }
 }
@@ -212,7 +212,14 @@ void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const Q
         mPhrasalGlossesModel = new PhrasalGlossesModel(mTab);
         ui->phrasalGlossView->setModel(mPhrasalGlossesModel);
 
-        setItemWidgetsEnabled(true);
+        if( mTab->type() == Tab::InterlinearDisplay )
+        {
+            setItemWidgetsEnabled(true);
+        }
+        else
+        {
+            setItemWidgetsEnabled(false);
+        }
     }
     else
     {

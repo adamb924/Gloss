@@ -98,7 +98,8 @@ SOURCES += main.cpp\
     closedvocabularydialog.cpp \
     syntactictype.cpp \
     syntacticanalysisoptionsdialog.cpp \
-    writingsystemseditdialog.cpp
+    writingsystemseditdialog.cpp \
+    tabeditdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -187,7 +188,8 @@ HEADERS  += mainwindow.h \
     closedvocabularydialog.h \
     syntactictype.h \
     syntacticanalysisoptionsdialog.h \
-    writingsystemseditdialog.h
+    writingsystemseditdialog.h \
+    tabeditdialog.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -219,7 +221,8 @@ FORMS    += mainwindow.ui \
     syntacticparsingwidget.ui \
     closedvocabularydialog.ui \
     syntacticanalysisoptionsdialog.ui \
-    writingsystemseditdialog.ui
+    writingsystemseditdialog.ui \
+    tabeditdialog.ui
 
 LIBS += -L./ \
     -lquazip \

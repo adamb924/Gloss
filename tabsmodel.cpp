@@ -61,10 +61,10 @@ void TabsModel::moveDown(int index)
     }
 }
 
-void TabsModel::addTab(const QString &name)
+void TabsModel::addTab(const QString &name, Tab::TabType type)
 {
     QAbstractListModel::beginInsertRows(QModelIndex(), mView->tabs()->count(), mView->tabs()->count() );
-    mView->tabs()->append(new Tab(name));
+    mView->tabs()->append(new Tab(name, type));
     QAbstractListModel::endInsertRows();
 }
 

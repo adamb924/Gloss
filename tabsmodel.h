@@ -9,6 +9,8 @@
 
 #include <QAbstractListModel>
 
+#include "tab.h"
+
 class View;
 
 class TabsModel : public QAbstractListModel
@@ -26,7 +28,7 @@ public:
     void moveUp(int index);
     void moveDown(int index);
 
-    void addTab(const QString & name);
+    void addTab(const QString & name, Tab::TabType type);
     void removeTab(const QModelIndex & index);
 
 private:
