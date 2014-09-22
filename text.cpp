@@ -358,8 +358,15 @@ bool Text::playSoundForLine( int lineNumber )
 {
     if( mSound == 0 )
     {
-        QMessageBox::warning(0, tr("Error"), tr("This text has no associated sound file.") );
-        return false;
+        if( QFileInfo::exists(mAudioFileURL.toLocalFile()) )
+        {
+            mSound = new Sound(mAudioFileURL);
+        }
+        else
+        {
+            QMessageBox::warning(0, tr("Error"), tr("The path to the file does not appear to be valid (%1).").arg(mAudioFileURL.toLocalFile()) );
+            return false;
+        }
     }
     if( !mPhrases.at(lineNumber)->interval()->isValid() )
     {
