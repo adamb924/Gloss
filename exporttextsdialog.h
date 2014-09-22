@@ -1,3 +1,9 @@
+/*!
+  \class ExportTextsDialog
+  \ingroup GUI
+  \brief This is a dialog box for setting options for exporting texts. It is instantiated in MainWindow. The associated UI file is exporttextsdialog.ui.
+*/
+
 #ifndef EXPORTTEXTSDIALOG_H
 #define EXPORTTEXTSDIALOG_H
 

@@ -1,5 +1,5 @@
 /*!
-  \class SyntacticAnalysisElement
+  \class SyntacticAnalysisElementMime
   \ingroup SyntaxGUI
   \brief This subclass of QMimeData provides a way to pass a list of SyntacticAnalysisElement objects pointers in mime data. It is used in ConstituentGraphicsItem and MorphemeGraphicsItem.
 */

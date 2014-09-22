@@ -2,8 +2,6 @@
   \class WritingSystemDialog
   \ingroup GUI
   \brief This is a dialog box containing a WritingSystemCombo widget. The associated UI file is writingsystemdialog.ui.
-
-  This class does not seem to be used at the moment.
 */
 
 #ifndef WRITINGSYSTEMDIALOG_H
