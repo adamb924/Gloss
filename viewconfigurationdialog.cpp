@@ -212,14 +212,7 @@ void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const Q
         mPhrasalGlossesModel = new PhrasalGlossesModel(mTab);
         ui->phrasalGlossView->setModel(mPhrasalGlossesModel);
 
-        if( mTab->type() == Tab::InterlinearDisplay )
-        {
-            setItemWidgetsEnabled(true);
-        }
-        else
-        {
-            setItemWidgetsEnabled(false);
-        }
+        setItemWidgetsEnabled(true);
     }
     else
     {
