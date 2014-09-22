@@ -94,11 +94,11 @@ SOURCES += main.cpp\
     syntacticanalysis.cpp \
     syntacticanalysiselement.cpp \
     constituentgraphicsitem.cpp \
-    createsyntacticanalysisdialog.cpp \
     linenumbergraphicsitem.cpp \
     syntacticanalysiselementmime.cpp \
     closedvocabularydialog.cpp \
-    syntactictype.cpp
+    syntactictype.cpp \
+    syntacticanalysisoptionsdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -183,11 +183,11 @@ HEADERS  += mainwindow.h \
     syntacticanalysis.h \
     syntacticanalysiselement.h \
     constituentgraphicsitem.h \
-    createsyntacticanalysisdialog.h \
     linenumbergraphicsitem.h \
     syntacticanalysiselementmime.h \
     closedvocabularydialog.h \
-    syntactictype.h
+    syntactictype.h \
+    syntacticanalysisoptionsdialog.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -218,8 +218,8 @@ FORMS    += mainwindow.ui \
     annotationeditordialog.ui \
     exporttextsdialog.ui \
     syntacticparsingwidget.ui \
-    createsyntacticanalysisdialog.ui \
-    closedvocabularydialog.ui
+    closedvocabularydialog.ui \
+    syntacticanalysisoptionsdialog.ui
 
 LIBS += -L./ \
     -lquazip \

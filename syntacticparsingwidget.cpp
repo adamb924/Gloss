@@ -20,11 +20,9 @@
 #include "syntacticanalysis.h"
 #include "constituentgraphicsitem.h"
 #include "syntacticanalysiselement.h"
-#include "createsyntacticanalysisdialog.h"
+#include "syntacticanalysisoptionsdialog.h"
 #include "databaseadapter.h"
 #include "linenumbergraphicsitem.h"
-
-#include "ui_createsyntacticanalysisdialog.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -292,7 +290,7 @@ void SyntacticParsingWidget::analysisSelectionChanged(const QString &newSelectio
 
 void SyntacticParsingWidget::newAnalysis()
 {
-    CreateSyntacticAnalysisDialog dlg(mProject->dbAdapter()->writingSystems());
+    SyntacticAnalysisOptionsDialog dlg(mProject->dbAdapter()->writingSystems());
     if( dlg.exec() )
     {
         mAnalysis = new SyntacticAnalysis(dlg.name(), dlg.writingSystem(), mText, dlg.closedVocabulary() );
@@ -308,7 +306,7 @@ void SyntacticParsingWidget::newAnalysis()
 
 void SyntacticParsingWidget::editAnalysis()
 {
-    CreateSyntacticAnalysisDialog dlg(mAnalysis, mProject->dbAdapter()->writingSystems());
+    SyntacticAnalysisOptionsDialog dlg(mAnalysis, mProject->dbAdapter()->writingSystems());
     if( dlg.exec() )
     {
         mAnalysis->setName( dlg.name() );
