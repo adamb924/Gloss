@@ -1,6 +1,7 @@
 #include "closedvocabularydialog.h"
 #include "ui_closedvocabularydialog.h"
 
+#include <QSqlDatabase>
 #include <QSqlTableModel>
 
 #include "project.h"
@@ -14,9 +15,7 @@ ClosedVocabularyDialog::ClosedVocabularyDialog(Project * prj, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    mDatabase = QSqlDatabase::database(mProject->dbAdapter()->dbFilename());
-
-    mModel = new QSqlTableModel( this, mDatabase );
+    mModel = new QSqlTableModel( this, QSqlDatabase::database(mProject->dbAdapter()->dbFilename()) );
     mModel->setTable("SyntacticConstituents");
     mModel->setEditStrategy( QSqlTableModel::OnManualSubmit );
     mModel->select();
@@ -43,8 +42,6 @@ ClosedVocabularyDialog::ClosedVocabularyDialog(Project * prj, QWidget *parent) :
 
     ui->parentComboBox->setModel(mModel);
     ui->parentComboBox->setModelColumn( 2 );
-
-    connect( this, SIGNAL(accepted()), this, SLOT(finalizeDatabase()) );
 }
 
 ClosedVocabularyDialog::~ClosedVocabularyDialog()
@@ -79,6 +76,8 @@ void ClosedVocabularyDialog::remove()
         ui->abbreviation->setEnabled(false);
         ui->keystroke->setEnabled(false);
         ui->parentCheckBox->setEnabled(false);
+
+        mModel->submitAll();
         mModel->select();
     }
 }
@@ -133,10 +132,18 @@ void ClosedVocabularyDialog::validateKeystroke()
     ui->keystroke->setText( QKeySequence(ui->keystroke->text()).toString() );
 }
 
-void ClosedVocabularyDialog::finalizeDatabase()
+void ClosedVocabularyDialog::accept()
 {
     if( ! mModel->submitAll() )
     {
         qWarning() << "ClosedVocabularyDialog::finalizeDatabase()" << mModel->lastError();
     }
+    mModel->database().commit();
+    QDialog::accept();
+}
+
+void ClosedVocabularyDialog::reject()
+{
+    mModel->database().rollback();
+    QDialog::reject();
 }

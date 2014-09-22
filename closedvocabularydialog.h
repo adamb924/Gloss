@@ -10,10 +10,8 @@
 #define CLOSEDVOCABULARYDIALOG_H
 
 #include <QDialog>
-#include <QSqlDatabase>
 
 class Project;
-class QSqlQueryModel;
 class QSqlTableModel;
 
 namespace Ui {
@@ -28,6 +26,10 @@ public:
     ClosedVocabularyDialog(Project * prj, QWidget *parent = 0);
     ~ClosedVocabularyDialog();
 
+public slots:
+    void accept();
+    void reject();
+
 private slots:
     void add();
     void remove();
@@ -35,13 +37,11 @@ private slots:
 
     void updateDatabaseRecord();
     void validateKeystroke();
-    void finalizeDatabase();
 
 private:
     Ui::ClosedVocabularyDialog *ui;
     Project * mProject;
     QSqlTableModel *mModel;
-    QSqlDatabase mDatabase;
     int mCurrentRow;
 };
 
