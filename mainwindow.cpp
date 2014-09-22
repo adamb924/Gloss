@@ -693,7 +693,7 @@ void MainWindow::searchForInterpretationById(qlonglong id)
     }
     else
     {
-        if( !mProject->dbAdapter()->textIndicesExist() )
+        if( mProject->dbAdapter()->textIndicesShouldBeUpdated( mProject->textNames() ) )
         {
             if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
                 return;
@@ -722,7 +722,7 @@ void MainWindow::searchForTextFormById(qlonglong id)
     }
     else
     {
-        if( !mProject->dbAdapter()->textIndicesExist() )
+        if( mProject->dbAdapter()->textIndicesShouldBeUpdated( mProject->textNames() ) )
         {
             if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
                 return;
@@ -752,7 +752,7 @@ void MainWindow::searchForGlossById(qlonglong id)
     }
     else
     {
-        if( !mProject->dbAdapter()->textIndicesExist() )
+        if( mProject->dbAdapter()->textIndicesShouldBeUpdated( mProject->textNames() ) )
         {
             if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
                 return;
@@ -765,7 +765,7 @@ void MainWindow::searchForGlossById(qlonglong id)
 
 void MainWindow::searchForLexicalEntryById(qlonglong id)
 {
-    if( !mProject->dbAdapter()->textIndicesExist() )
+    if( mProject->dbAdapter()->textIndicesShouldBeUpdated( mProject->textNames() ) )
     {
         if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("Searching for lexical entries requires the index to be buildt. This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
             return;
@@ -783,7 +783,7 @@ void MainWindow::searchForLexicalEntryById(qlonglong id)
 
 void MainWindow::searchForAllomorphById(qlonglong id)
 {
-    if( !mProject->dbAdapter()->textIndicesExist() )
+    if( mProject->dbAdapter()->textIndicesShouldBeUpdated( mProject->textNames() ) )
     {
         if( QMessageBox::Cancel == QMessageBox::information(this, tr("Patience..."), tr("Searching for lexical entries requires the index to be buildt. This is your first search, so the text index needs to be built. It will be slow this one time, and after that it will be quite fast."), QMessageBox::Ok | QMessageBox::Cancel , QMessageBox::Ok ) )
             return;
@@ -1425,6 +1425,14 @@ void MainWindow::toggleSearchDock()
 {
     if( mSearchDock != 0 )
         delete mSearchDock;
+
+    if( mProject->dbAdapter()->textIndicesShouldBeUpdated( mProject->textNames() ) )
+    {
+        if( QMessageBox::question(this, tr("Build indices?"), tr("It looks like more texts have been added since the index was build. Shall I rebuild the index?")) == QMessageBox::Yes )
+        {
+            mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
+        }
+    }
 
     SearchForm * searchForm = new SearchForm(mProject->dbAdapter(), this);
     searchForm->setXmlTextWarning( ui->actionSearch_files_instead_of_index->isChecked() );

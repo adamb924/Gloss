@@ -1211,17 +1211,61 @@ QStringList DatabaseAdapter::grammaticalTags(qlonglong lexicalEntryId) const
     return tags;
 }
 
-bool DatabaseAdapter::textIndicesExist() const
+bool DatabaseAdapter::textIndicesShouldBeUpdated( const QStringList & textNames ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
+    QSet<QString> texts = textNames.toSet();
+
     if( !q.exec("select count(name) from sqlite_master where type='table' and (name='TextFormIndex' or name='GlossIndex' or name='InterpretationIndex' );") )
+    {
+        return true;
+    }
+    else
+    {
+        if( ! q.next() )
+        {
+            return true;
+        }
+        if( q.value(0).toInt() != 3 )
+        {
+            return true;
+        }
+    }
+
+    if( !tableContainsAllTexts("TextFormIndex", texts ) )
+        return false;
+
+    if( !tableContainsAllTexts("GlossIndex", texts ) )
+        return false;
+
+    if( !tableContainsAllTexts("InterpretationIndex", texts ) )
+        return false;
+
+    return true;
+}
+
+bool DatabaseAdapter::tableContainsAllTexts(const QString &tableName, const QSet<QString> &texts) const
+{
+    QSet<QString> databaseTexts;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+
+    if( !q.exec( tr("select distinct(TextName) from %1;").arg(tableName)  ) )
     {
         qWarning() << q.lastError().text() << q.executedQuery();
         return false;
     }
-    if( ! q.next() )
+    while( q.next() )
+    {
+        databaseTexts << q.value(0).toString();
+    }
+    if( !databaseTexts.contains( texts ) )
+    {
+        return true;
+    }
+    else
+    {
         return false;
-    return q.value(0).toInt() == 3;
+    }
 }
 
 void DatabaseAdapter::createTextIndices( const QSet<QString> * filePaths ) const

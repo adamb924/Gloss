@@ -184,7 +184,8 @@ public:
     QStringList grammaticalTagsForAllomorph(qlonglong allomorphId) const;
     QStringList grammaticalTags(qlonglong lexicalEntryId) const;
 
-    bool textIndicesExist() const;
+    bool textIndicesShouldBeUpdated(const QStringList &textNames ) const;
+    bool tableContainsAllTexts(const QString & tableName, const QSet<QString> & texts) const;
     void createTextIndices( const QSet<QString> * filePaths ) const;
     void createIndex( const QString & tableName, const QString & queryString, const QSet<QString> * filePaths ) const;
     void createTextFormIndex( const QSet<QString> * filePaths ) const;

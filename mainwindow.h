@@ -177,7 +177,6 @@ private slots:
     //! \deprecated The functionality provided by this has been moved to SearchForm.
     void searchForAllomorphById();
 
-
 private:
     void createSearchResultDock(QStandardItemModel * model, const QString & reminder);
     ///@}
