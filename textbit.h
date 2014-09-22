@@ -9,13 +9,11 @@
 #ifndef TEXTBIT_H
 #define TEXTBIT_H
 
-#include <QObject>
 #include <QString>
 #include "writingsystem.h"
 
-class TextBit : public QObject
+class TextBit
 {
-    Q_OBJECT
 public:
     TextBit();
     TextBit(const QString & text, const WritingSystem & ws, qlonglong id = -1 );
@@ -33,7 +31,6 @@ public:
     bool isNull() const;
     bool isValid() const;
 
-public slots:
     void setText(const QString & text);
     void setWritingSystem(const WritingSystem & ws);
     void setId(qlonglong id);
