@@ -395,11 +395,10 @@ void MainWindow::importEaf()
             if( ok )
             {
                 QStringList files = dialog.selectedFiles();
-                bool openText = files.count() == 1;
 
                 if( files.count() == 1 )
                 {
-                    if ( importEaf( files.first(), tierId, ws , true ) )
+                    if ( importEaf( files.first(), tierId, ws ) )
                     {
                         QMessageBox::information(this, tr("Eaf file imported"), tr("%1 has been successfully imported").arg(files.first()));
                     }
@@ -419,7 +418,7 @@ void MainWindow::importEaf()
                         progress.setValue(i);
                         if( QFile::exists(files.at(i)))
                         {
-                            if( importEaf( files.at(i), tierId, ws , openText ) )
+                            if( importEaf( files.at(i), tierId, ws ) )
                                 successes++;
                             else
                                 failures++;
@@ -435,7 +434,7 @@ void MainWindow::importEaf()
     }
 }
 
-bool MainWindow::importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText)
+bool MainWindow::importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws)
 {
     QFileInfo info(filepath);
     QString name = info.baseName();
@@ -469,17 +468,6 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
         default:
             QMessageBox::information(0, tr("Failure!"), tr("The merge into %1 has failed.").arg( filepath ));
             break;
-        }
-
-        if( openText )
-        {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
-            ui->mdiArea->addSubWindow(subWindow);
-            subWindow->show();
-        }
-        else
-        {
-            mProject->saveAndCloseText(text);
         }
         return true;
     }

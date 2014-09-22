@@ -93,7 +93,7 @@ private slots:
     void importPlainText();
     void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText);
     void importEaf();
-    bool importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws, bool openText);
+    bool importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws);
     void openText();
     void deleteText();
     void mergeTranslations();
