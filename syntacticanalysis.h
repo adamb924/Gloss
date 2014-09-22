@@ -1,3 +1,9 @@
+/*!
+  \class SyntacticAnalysis
+  \ingroup Data
+  \brief A data class containing a syntactic analysis of a Text. The most important member is the list of SyntacticAnalysisElement objects. Other methods provide means for modifying the syntactic analysis. SyntacticAnalysis objects are contained in the Text object.
+*/
+
 #ifndef SYNTACTICANALYSIS_H
 #define SYNTACTICANALYSIS_H
 

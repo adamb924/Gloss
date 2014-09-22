@@ -1,3 +1,15 @@
+/*!
+  \class SyntacticAnalysisElement
+  \ingroup Data
+  \brief A data class representing a syntactic analysis constituent, which either has daughter elements, or is terminal.
+
+    If the element is a terminal element, then allomorph() returns a pointer to the corresponding Allomorph object.
+
+    If the element is a constituent element, then mSyntacticType (SyntacticType) contains information about the element, and elements() returns a list of daugher SyntacticAnalysisElement objects.
+
+    A SyntacticAnalysis object contains a list of SyntacticAnalysisElement objects.
+*/
+
 #ifndef SYNTACTICANALYSISELEMENT_H
 #define SYNTACTICANALYSISELEMENT_H
 

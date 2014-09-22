@@ -18,6 +18,8 @@
  \defgroup Search Performing searches
 
  \defgroup IO Input/output functions
+
+ \defgroup SyntaxGUI Interface for syntactic analysis
  */
 
 #include <QtWidgets/QApplication>

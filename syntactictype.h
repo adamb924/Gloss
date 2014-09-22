@@ -1,3 +1,9 @@
+/*!
+  \class SyntacticType
+  \ingroup Data
+  \brief A data class representing the type of a syntactic analysis constituent. Used widely, it is crucially the property of SyntacticAnalysisElement. Each SyntacticType object corresponds to a row in the database table SyntacticConstituents.
+*/
+
 #ifndef SYNTACTICTYPE_H
 #define SYNTACTICTYPE_H
 

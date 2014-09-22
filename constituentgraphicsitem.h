@@ -1,3 +1,9 @@
+/*!
+  \class ConstituentGraphicsItem
+  \ingroup SyntaxGUI
+  \brief This class provides a graphics item (QGraphicsItem) for displaying a syntactic constituent. It is used in SyntacticParsingWidget.
+*/
+
 #ifndef CONSTITUENTGRAPHICSITEM_H
 #define CONSTITUENTGRAPHICSITEM_H
 

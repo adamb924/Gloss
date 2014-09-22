@@ -1,3 +1,11 @@
+/*!
+  \class ClosedVocabularyDialog
+  \ingroup SyntaxGUI
+  \brief This is a dialog for editing a set of vocabulary -- the possible syntactic constiuents in a syntactic analysis.
+
+  The associated UI file is closedvocabularydialog.ui.
+*/
+
 #ifndef CLOSEDVOCABULARYDIALOG_H
 #define CLOSEDVOCABULARYDIALOG_H
 

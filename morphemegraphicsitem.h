@@ -1,3 +1,9 @@
+/*!
+  \class MorphemeGraphicsItem
+  \ingroup SyntaxGUI
+  \brief This class provides a graphics item (QGraphicsItem) for displaying a morpheme. It is used in SyntacticParsingWidget.
+*/
+
 #ifndef MORPHEMEGRAPHICSITEM_H
 #define MORPHEMEGRAPHICSITEM_H
 

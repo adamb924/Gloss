@@ -1,3 +1,11 @@
+/*!
+  \class LineNumberGraphicsItem
+  \ingroup SyntaxGUI
+  \brief This class provides a graphics item (QGraphicsItem) for displaying the line number in a text. It is used in SyntacticParsingWidget.
+
+  This class is for displaying line numbers in a syntactic analysis view. Line numbers displayed in an interlinear text view are InterlinearLineLabel objects.
+*/
+
 #ifndef LINENUMBERGRAPHICSITEM_H
 #define LINENUMBERGRAPHICSITEM_H
 

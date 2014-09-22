@@ -1,3 +1,11 @@
+/*!
+  \class SyntacticParsingWidget
+  \ingroup SyntaxGUI
+  \brief This class provides a user interface for producing syntactic annotations. From the user's perspective, it is one of the tabs that appears in a text window. It is used in TextDisplayWidget.
+
+  The associated UI file is syntacticparsingwidget.ui.
+*/
+
 #ifndef SYNTACTICPARSINGWIDGET_H
 #define SYNTACTICPARSINGWIDGET_H
 
