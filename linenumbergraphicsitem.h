@@ -18,6 +18,7 @@ class QGraphicsSceneMouseEvent;
 class LineNumberGraphicsItem : public QObject, public QGraphicsItem
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 
 public:
     LineNumberGraphicsItem(int lineNumber);
