@@ -71,8 +71,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionBulk_merge_EAF, SIGNAL(triggered()), this, SLOT(bulkMergeEaf()));
     connect(ui->actionMerge_EAF, SIGNAL(triggered()), this, SLOT(mergeEaf()));
 
-    connect(ui->actionSearch_gloss_items, SIGNAL(triggered()), this, SLOT(searchGlossItems()));
-    connect(ui->actionSubstring_search_gloss_items, SIGNAL(triggered()), this, SLOT(substringSearchGlossItems()));
     connect(ui->actionRaw_XQuery, SIGNAL(triggered()), this, SLOT(rawXQuery()));
     connect(ui->actionInterpreation_by_id, SIGNAL(triggered()), this, SLOT(searchForInterpretationById()));
     connect(ui->actionGloss_by_id, SIGNAL(triggered()), this, SLOT(searchForGlossById()));
@@ -676,26 +674,6 @@ void MainWindow::mergeTranslations()
     }
 }
 
-void MainWindow::searchGlossItems()
-{
-    // Launch a dialog requesting input
-    GenericTextInputDialog dialog(mProject->dbAdapter(), this);
-    dialog.setWindowTitle(tr("Enter a search string"));
-    if( dialog.exec() == QDialog::Accepted )
-    {
-        // Do the search of the texts
-        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "declare variable $path external; "
-                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and text()='%2']] "
-                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
-                                "let $count := string( count( $x/descendant::item[@lang='%1' and text()='%2'] ) ) "
-                                "order by number($x/item[@type='segnum']/text()) "
-                                "return   string-join( ($line-number, $count) , ',') ").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
-        createSearchResultDock(model, tr("Containing exact string '%1'").arg(dialog.text()) );
-    }
-}
-
 void MainWindow::searchForInterpretationById(qlonglong id)
 {
     QStandardItemModel *model;
@@ -910,26 +888,6 @@ void MainWindow::searchForAllomorphById()
     int id = QInputDialog::getInt ( this, tr("Search by allomorph ID"), tr("Allomorph ID"), 1, -2147483647, 2147483647, 1, &ok );
     if( ok )
         searchForAllomorphById(id);
-}
-
-void MainWindow::substringSearchGlossItems()
-{
-    // Launch a dialog requesting input
-    GenericTextInputDialog dialog(mProject->dbAdapter(), this);
-    dialog.setWindowTitle(tr("Enter a search string"));
-    if( dialog.exec() == QDialog::Accepted )
-    {
-        // Do the search of the texts
-        QString query = QString("declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
-                                "declare variable $path external; "
-                                "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::item[@lang='%1' and contains( text(), '%2') ]] "
-                                "let $line-number := string( $x/item[@type='segnum']/text() ) "
-                                "let $count := string( count( $x/descendant::word[@lang='%1' and contains( text(), '%2') ] ) ) "
-                                "order by number($x/item[@type='segnum']/text()) "
-                                "return   string-join( ($line-number, $count) , ',') ").arg(dialog.writingSystem().flexString()).arg(dialog.text());
-        XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
-        createSearchResultDock(model, tr("Items containing substring '%1'").arg(dialog.text()));
-    }
 }
 
 void MainWindow::createSearchResultDock(QStandardItemModel * model, const QString & reminder)

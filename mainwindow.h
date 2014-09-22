@@ -163,12 +163,6 @@ private slots:
     void editLineWithContext( const QString & textName , int lineNumber, const QList<Focus> & foci );
 
     //! \deprecated The functionality provided by this has been moved to SearchForm.
-    void searchGlossItems();
-
-    //! \deprecated The functionality provided by this has been moved to SearchForm.
-    void substringSearchGlossItems();
-
-    //! \deprecated The functionality provided by this has been moved to SearchForm.
     void searchForInterpretationById();
 
     //! \deprecated The functionality provided by this has been moved to SearchForm.
