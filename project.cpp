@@ -1207,16 +1207,17 @@ void Project::serializeConfigurationXml()
             stream.writeAttribute("name", tab->name() );
             stream.writeAttribute("type", Tab::getTypeString(tab->type()) );
 
-            for(int k=0; k < tab->interlinearLines().keys().count(); k++)
+            for(int k=0; k < tab->interlinearLineKeys().count(); k++)
             {
-                WritingSystem ws = tab->interlinearLines().keys().at(k);
+                WritingSystem ws = tab->interlinearLineKeys().at(k);
 
                 stream.writeStartElement("item-type");
                 stream.writeAttribute("baseline-writing-system", ws.flexString() );
 
-                for(int l=0; l < tab->interlinearLines().value(ws)->count(); l++)
+                InterlinearItemTypeList lines =  tab->interlinearLines(ws);
+                for(int l=0; l < lines.count(); l++)
                 {
-                    InterlinearItemType type = tab->interlinearLines().value(ws)->at(l);
+                    InterlinearItemType type = lines.at(l);
 
                     stream.writeEmptyElement("interlinear-line");
                     stream.writeAttribute("type", type.typeXmlString() );

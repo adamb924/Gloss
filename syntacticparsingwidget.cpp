@@ -83,14 +83,14 @@ void SyntacticParsingWidget::setupBaseline()
             qreal y=0;
 
             GlossItem *glossItem = mText->phrases()->at(i)->glossItems()->at(j);
-            InterlinearItemTypeList *lines = mTab->interlinearLines().value( glossItem->baselineWritingSystem() );
-            for(int k=0; k<lines->count(); k++) /// for each interlinear line
+            InterlinearItemTypeList lines = mTab->interlinearLines(glossItem->baselineWritingSystem());
+            for(int k=0; k<lines.count(); k++) /// for each interlinear line
             {
                 qreal lineLength = 0;
                 qreal lineHeight = 0;
-                if( lines->at(k).type() == InterlinearItemType::Analysis )
+                if( lines.at(k).type() == InterlinearItemType::Analysis )
                 {
-                    MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
+                    MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines.at(k).writingSystem() );
                     for(int m=0; m<ma->allomorphCount(); m++) /// for each allomorph
                     {
                         SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
@@ -107,19 +107,19 @@ void SyntacticParsingWidget::setupBaseline()
                         mGraphicsItemAllomorphHash.insert(ma->allomorph(m), item);
                     }
                 }
-                else if ( lines->at(k).type() == InterlinearItemType::ImmutableText )
+                else if ( lines.at(k).type() == InterlinearItemType::ImmutableText )
                 {
-                    QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->textForm( lines->at(k).writingSystem() ).text() );
-                    item->setFont( lines->at(k).writingSystem().font() );
+                    QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->textForm( lines.at(k).writingSystem() ).text() );
+                    item->setFont( lines.at(k).writingSystem().font() );
                     item->setPos(x, y);
                     mScene->addItem(item);
                     lineHeight = item->boundingRect().height();
                     lineLength = item->boundingRect().width();
                 }
-                else if ( lines->at(k).type() == InterlinearItemType::ImmutableGloss )
+                else if ( lines.at(k).type() == InterlinearItemType::ImmutableGloss )
                 {
-                    QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->gloss( lines->at(k).writingSystem() ).text() );
-                    item->setFont( lines->at(k).writingSystem().font() );
+                    QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->gloss( lines.at(k).writingSystem() ).text() );
+                    item->setFont( lines.at(k).writingSystem().font() );
                     item->setPos(x, y);
                     mScene->addItem(item);
                     lineHeight = item->boundingRect().height();

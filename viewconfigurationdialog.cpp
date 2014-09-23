@@ -179,7 +179,7 @@ void ViewConfigurationDialog::viewChanged(const QItemSelection &selected, const 
 void ViewConfigurationDialog::populateWritingSystemCombo()
 {
     ui->itemWritingSystemsCombo->clear();
-    QList<WritingSystem> availableWS = mTab->interlinearLines().keys();
+    QList<WritingSystem> availableWS = mTab->interlinearLineKeys();
     for(int i=0; i<availableWS.count(); i++)
     {
         ui->itemWritingSystemsCombo->addItem( availableWS.at(i).name() );
@@ -247,7 +247,7 @@ void ViewConfigurationDialog::editItem(const QModelIndex &index)
     if( mTab == 0 ) return;
     ItemEditDialog dialog(mProject->dbAdapter()->writingSystems(), this);
     dialog.setWritingSystem( currentWritingSystem(), false );
-    dialog.setType( mTab->interlinearLines().value( currentWritingSystem() )->at( index.row() ) );
+    dialog.setType( mTab->interlinearLines(currentWritingSystem()).at( index.row() ) );
     dialog.exec();
     if( dialog.result() == QDialog::Accepted )
     {
@@ -263,7 +263,7 @@ WritingSystem ViewConfigurationDialog::currentWritingSystem() const
     }
     else
     {
-        return mTab->interlinearLines().keys().at( ui->itemWritingSystemsCombo->currentIndex() );
+        return mTab->interlinearLineKeys().at( ui->itemWritingSystemsCombo->currentIndex() );
     }
 }
 

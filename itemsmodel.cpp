@@ -8,9 +8,9 @@ ItemsModel::ItemsModel(Tab *tab, WritingSystem &ws, QObject *parent) :
 
 void ItemsModel::addItem(InterlinearItemType type, const WritingSystem & ws)
 {
-    if( mTab->interlinearLines().keys().contains(ws) )
+    if( mTab->interlinearLineKeys().contains(ws) )
     {
-        QAbstractListModel::beginInsertRows(QModelIndex(), mTab->interlinearLines().value(ws)->count(), mTab->interlinearLines().value(ws)->count() );
+        QAbstractListModel::beginInsertRows(QModelIndex(), mTab->interlinearLines(ws).count(), mTab->interlinearLines(ws).count() );
     }
     else
     {
@@ -42,9 +42,9 @@ int ItemsModel::columnCount(const QModelIndex &parent) const
 int ItemsModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    if( mTab->interlinearLines().keys().contains( mWritingSystem ) )
+    if( mTab->interlinearLineKeys().contains( mWritingSystem ) )
     {
-        return mTab->interlinearLines().value(mWritingSystem)->count();
+        return mTab->interlinearLines(mWritingSystem).count();
     }
     else
     {
@@ -56,7 +56,7 @@ QVariant ItemsModel::data(const QModelIndex &index, int role) const
 {
     if ( role == Qt::DisplayRole )
     {
-        return tr("%1 (%2)").arg( mTab->interlinearLines().value(mWritingSystem)->at( index.row() ).typeString() ).arg( mTab->interlinearLines().value(mWritingSystem)->at( index.row() ).writingSystem().name() );
+        return tr("%1 (%2)").arg( mTab->interlinearLines(mWritingSystem).at( index.row() ).typeString() ).arg( mTab->interlinearLines(mWritingSystem).at( index.row() ).writingSystem().name() );
     }
     return QVariant();
 }
@@ -73,17 +73,17 @@ void ItemsModel::moveUp(const WritingSystem & ws, int index)
     if( index > 0 )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index, index, QModelIndex(), index-1);
-        mTab->interlinearLines()[ws]->swap( index, index-1 );
+        mTab->interlinearLineSwap( ws, index, index-1 );
         QAbstractItemModel::endMoveRows();
     }
 }
 
 void ItemsModel::moveDown(const WritingSystem & ws, int index)
 {
-    if( index+1 < mTab->interlinearLines().value(ws)->count() )
+    if( index+1 < mTab->interlinearLines(ws).count() )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index+1, index+1, QModelIndex(), index);
-        mTab->interlinearLines()[ws]->swap( index, index+1 );
+        mTab->interlinearLineSwap( ws, index, index+1 );
         QAbstractItemModel::endMoveRows();
     }
 }

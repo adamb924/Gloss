@@ -70,7 +70,12 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
 
 QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
 {
-    FlowLayout *flowLayout = new FlowLayout( mTab->interlinearLines().value( mText->baselineWritingSystem())->first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
+    InterlinearItemTypeList lines = mTab->interlinearLines(mText->baselineWritingSystem());
+    if( lines.isEmpty() )
+    {
+        return new FlowLayout( Qt::LeftToRight, 0, 5 , 5 , 5 );
+    }
+    FlowLayout *flowLayout = new FlowLayout( lines.first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
     mLineLayouts.insert(lineNumber, flowLayout);
     mLayout->addLayout(flowLayout);
     return flowLayout;
@@ -196,7 +201,10 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i , QVBoxLayout * phras
         LingEdit *edit = new LingEdit( bit , this);
         phrasalGlossLayout->addWidget(edit);
 
-        edit->matchTextAlignmentTo( mTab->interlinearLines().value( mText->baselineWritingSystem())->first().writingSystem().layoutDirection() );
+        InterlinearItemTypeList lines = mTab->interlinearLines(mText->baselineWritingSystem());
+        if( lines.isEmpty() ) continue;
+
+        edit->matchTextAlignmentTo( lines.first().writingSystem().layoutDirection() );
         connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
 
         mPhrasalGlossEdits.insert( i , edit );

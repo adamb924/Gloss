@@ -61,14 +61,29 @@ void Tab::setPhrasalGloss(int index, const InterlinearItemType &type)
     mPhrasalGlossLines.replace(index, type);
 }
 
-QHash<WritingSystem,InterlinearItemTypeList*> Tab::interlinearLines() const
+InterlinearItemTypeList Tab::interlinearLines(const WritingSystem &ws) const
 {
-    return mInterlinearLines;
+    if( mInterlinearLines.contains(ws) )
+    {
+        return * mInterlinearLines.value(ws);
+    }
+    else
+    {
+        return InterlinearItemTypeList();
+    }
 }
 
-QHash<WritingSystem,InterlinearItemTypeList*> Tab::interlinearLines()
+QList<WritingSystem> Tab::interlinearLineKeys() const
 {
-    return mInterlinearLines;
+    return mInterlinearLines.keys();
+}
+
+void Tab::interlinearLineSwap(const WritingSystem &ws, int i, int j)
+{
+    if( mInterlinearLines.contains(ws) )
+    {
+        mInterlinearLines[ws]->swap(i,j);
+    }
 }
 
 const InterlinearItemTypeList* Tab::phrasalGlossLines() const

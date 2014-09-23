@@ -29,7 +29,7 @@ WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, c
 
     setObjectName("WordDisplayWidget");
 
-    mGlossLines = *mTab->interlinearLines().value( mGlossItem->baselineWritingSystem() );
+    mGlossLines = mTab->interlinearLines(mGlossItem->baselineWritingSystem());
 
     setupLayout();
 
@@ -51,6 +51,8 @@ WordDisplayWidget::~WordDisplayWidget()
 
 void WordDisplayWidget::setupLayout()
 {
+    if( mGlossLines.isEmpty() ) return;
+
     QHBoxLayout *hLayout = new QHBoxLayout;
 
     mAnnotationMarks = new AnnotationMarkWidget( *(mProject->annotationTypes()) , mGlossItem );
