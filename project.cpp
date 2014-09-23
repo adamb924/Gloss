@@ -138,8 +138,7 @@ QDir Project::getTempDir() const
 
 QString Project::tempDirName() const
 {
-    QString hash = QString(QCryptographicHash::hash(mProjectPath.toUtf8(),QCryptographicHash::Md5).toHex());
-    return QString("gloss-%1").arg( hash );
+    return QString("gloss-%1").arg( QFileInfo(mProjectPath).fileName() );
 }
 
 void Project::readTextPaths()
