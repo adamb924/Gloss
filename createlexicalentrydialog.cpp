@@ -14,14 +14,13 @@
 CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, const GlossItem *glossItem, const Project *project, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CreateLexicalEntryDialog),
-    mProject(project)
+    mProject(project),
+    mDbAdapter(mProject->dbAdapter()),
+    mGlossItem(glossItem),
+    mAllomorph(0),
+    mIsMonomorphemic(false),
+    mLexicalEntryId(lexicalEntryId)
 {
-    mDbAdapter = mProject->dbAdapter();
-    mAllomorph = 0;
-    mGlossItem = glossItem;
-    mIsMonomorphemic = false;
-    mLexicalEntryId = lexicalEntryId;
-
     ui->setupUi(this);
     fillData();
 
@@ -37,15 +36,13 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, con
 CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog),
-        mProject(project)
+        mProject(project),
+        mDbAdapter(mProject->dbAdapter()),
+        mGlossItem(glossItem),
+        mAllomorph(allomorph),
+        mIsMonomorphemic(isMonomorphemic),
+        mLexicalEntryId(-1)
 {
-    mDbAdapter = mProject->dbAdapter();
-    mAllomorph = allomorph;
-    mGlossItem = glossItem;
-    mIsMonomorphemic = isMonomorphemic;
-
-    mLexicalEntryId = -1;
-
     ui->setupUi(this);
     fillData();
 

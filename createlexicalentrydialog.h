@@ -40,8 +40,8 @@ signals:
 
 private:
     Ui::CreateLexicalEntryDialog *ui;
-    const DatabaseAdapter * mDbAdapter;
     const Project * mProject;
+    const DatabaseAdapter * mDbAdapter;
     const GlossItem * mGlossItem;
     const Allomorph * mAllomorph;
     bool mIsMonomorphemic;
