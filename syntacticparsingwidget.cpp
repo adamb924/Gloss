@@ -291,6 +291,12 @@ void SyntacticParsingWidget::analysisSelectionChanged(const QString &newSelectio
         redrawSyntacticAnnotations();
         maybeDisable();
     }
+    else
+    {
+        mScene->clear();
+        mConstiuencyItems.clear();
+        mGraphicsItemAllomorphHash.clear();
+    }
 }
 
 void SyntacticParsingWidget::newAnalysis()
