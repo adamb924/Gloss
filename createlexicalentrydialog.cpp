@@ -39,13 +39,13 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, boo
 CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool hideGuessButton, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog),
-        mHideGuessButton(hideGuessButton),
         mProject(project),
         mDbAdapter(mProject->dbAdapter()),
         mGlossItem(glossItem),
         mAllomorph(allomorph),
         mIsMonomorphemic(isMonomorphemic),
-        mLexicalEntryId(-1)
+        mLexicalEntryId(-1),
+        mHideGuessButton(hideGuessButton)
 {
     ui->setupUi(this);
 
