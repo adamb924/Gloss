@@ -21,7 +21,7 @@ WritingSystemsEditDialog::WritingSystemsEditDialog(Project *prj, QWidget *parent
     mModel->database().transaction();
 
     mModel->setTable("WritingSystems");
-    mModel->setEditStrategy( QSqlTableModel::OnManualSubmit );
+    mModel->setEditStrategy( QSqlTableModel::OnRowChange );
     mModel->select();
 
     ui->listView->setModel(mModel);
@@ -42,6 +42,10 @@ WritingSystemsEditDialog::WritingSystemsEditDialog(Project *prj, QWidget *parent
     connect( ui->fontFamilyLineEdit, SIGNAL(editingFinished()), this, SLOT(updateDatabaseRecord()) );
     connect( ui->fontSizeLineEdit, SIGNAL(editingFinished()), this, SLOT(updateDatabaseRecord()) );
     connect( ui->textDirectionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateDatabaseRecord()) );
+
+    connect( ui->keyboardSwitchFileLineEdit, SIGNAL(textChanged(QString)), this, SLOT(updateDatabaseRecord()) );
+    connect( ui->fontFamilyLineEdit, SIGNAL(textChanged(QString)), this, SLOT(updateDatabaseRecord()) );
+    connect( ui->fontSizeLineEdit, SIGNAL(textChanged(QString)), this, SLOT(updateDatabaseRecord()) );
 
     QRegularExpression rx("([a-zA-Z]|-)+");
     QValidator *validator = new QRegularExpressionValidator(rx, this);
@@ -127,6 +131,7 @@ void WritingSystemsEditDialog::updateDatabaseRecord()
 {
     if( mCurrentRow < 0 ) return;
     QSqlRecord r = mModel->record(mCurrentRow);
+
     r.setValue( "Name" , ui->nameLineEdit->text() );
     r.setValue( "Abbreviation" , ui->abbreviationLineEdit->text() );
     r.setValue( "FlexString" , ui->flexStringLineEdit->text() );
@@ -135,18 +140,22 @@ void WritingSystemsEditDialog::updateDatabaseRecord()
     r.setValue( "FontSize" , ui->fontSizeLineEdit->text() );
     r.setValue( "Direction" , ui->textDirectionComboBox->currentText() == tr("Left-to-right") ? Qt::LeftToRight : Qt::RightToLeft );
 
+    r.setGenerated( "Name" , true );
+    r.setGenerated( "Abbreviation" , true );
+    r.setGenerated( "FlexString" , true );
+    r.setGenerated( "KeyboardCommand" , true );
+    r.setGenerated( "FontFamily" , true );
+    r.setGenerated( "FontSize" , true );
+    r.setGenerated( "Direction" , true );
+
     if( !mModel->setRecord(mCurrentRow, r) )
     {
-        qWarning() << "WritingSystemsEditDialog::updateDatabaseRecord() Could not set record, row" << mCurrentRow;
+        qWarning() << "WritingSystemsEditDialog::updateDatabaseRecord() Could not set record, row" << mCurrentRow << mModel->lastError();
     }
 }
 
 void WritingSystemsEditDialog::accept()
 {
-    if( ! mModel->submitAll() )
-    {
-        qWarning() << "WritingSystemsEditDialog::finalizeDatabase()" << mModel->lastError();
-    }
     mModel->database().commit();
     QDialog::accept();
 }

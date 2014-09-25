@@ -121,6 +121,12 @@ void ClosedVocabularyDialog::updateDatabaseRecord()
     {
         r.setValue( "AutomaticParent" , "" );
     }
+
+    r.setGenerated( "Name" , true );
+    r.setGenerated( "Abbreviation" , true );
+    r.setGenerated( "KeySequence" , true );
+    r.setGenerated( "AutomaticParent" , true );
+
     if( !mModel->setRecord(mCurrentRow, r) )
     {
         qWarning() << "ClosedVocabularyDialog::updateDatabaseRecord() Could not set record, row" << mCurrentRow;

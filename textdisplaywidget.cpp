@@ -50,7 +50,7 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
     if( count() == 1 )
         tabBar()->hide();
 
-    setWindowTitle(mText->name());
+    setWindowTitle(tr("%1 [%2]").arg(mText->name()).arg(view->name()));
 }
 
 TextDisplayWidget::~TextDisplayWidget()
