@@ -16,6 +16,7 @@
 class Allomorph;
 class QString;
 class SyntacticAnalysisElement;
+class DatabaseAdapter;
 
 #include "syntactictype.h"
 
@@ -27,8 +28,9 @@ class SyntacticAnalysisElement
 public:
     enum Type { Consituent , Terminal };
 
-    SyntacticAnalysisElement(const Allomorph * allomorph);
-    SyntacticAnalysisElement(const SyntacticType &type, const QList<SyntacticAnalysisElement *> & elements);
+    SyntacticAnalysisElement(const Allomorph * allomorph, const DatabaseAdapter * dbAdapter);
+    SyntacticAnalysisElement(const SyntacticType &type, const QList<SyntacticAnalysisElement *> & elements, const DatabaseAdapter * dbAdapter);
+    SyntacticAnalysisElement(const SyntacticType &type, SyntacticAnalysisElement * soleChild, const DatabaseAdapter * dbAdapter );
     ~SyntacticAnalysisElement();
 
     QString label() const;
@@ -44,6 +46,7 @@ public:
     void debug() const;
     void setParent(SyntacticAnalysisElement * parent);
     void replaceWithConstituent(const SyntacticType &type, QList<SyntacticAnalysisElement *> &elements);
+    SyntacticType type() const;
 
 private:
     const Allomorph *mAllomorph;
@@ -51,6 +54,7 @@ private:
     SyntacticAnalysisElement::Type mType;
     QList<SyntacticAnalysisElement *> mElements;
     SyntacticAnalysisElement * mParent;
+    const DatabaseAdapter * mDbAdapter;
 };
 
 QDebug operator<<(QDebug dbg, const SyntacticAnalysisElement &key);

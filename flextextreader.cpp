@@ -197,11 +197,11 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     SyntacticAnalysisElement * newElement;
                     if( currentSyntacticAnalysis->closedVocabulary() )
                     {
-                        newElement = new SyntacticAnalysisElement( mDbAdapter->syntacticType(label), QList<SyntacticAnalysisElement*>() );
+                        newElement = new SyntacticAnalysisElement( mDbAdapter->syntacticType(label), QList<SyntacticAnalysisElement*>(), mDbAdapter );
                     }
                     else
                     {
-                        newElement = new SyntacticAnalysisElement( SyntacticType(label), QList<SyntacticAnalysisElement*>() );
+                        newElement = new SyntacticAnalysisElement( SyntacticType(label), QList<SyntacticAnalysisElement*>(), mDbAdapter );
                     }
                     if( elementStack.isEmpty() )
                     {

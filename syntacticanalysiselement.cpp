@@ -1,27 +1,41 @@
 #include "syntacticanalysiselement.h"
 
 #include "allomorph.h"
+#include "databaseadapter.h"
 
 #include <QtDebug>
 
-SyntacticAnalysisElement::SyntacticAnalysisElement(const Allomorph * allomorph)
+SyntacticAnalysisElement::SyntacticAnalysisElement(const Allomorph * allomorph, const DatabaseAdapter *dbAdapter)
     : mAllomorph(allomorph),
       mType(SyntacticAnalysisElement::Terminal),
-      mParent(0)
+      mParent(0),
+      mDbAdapter(dbAdapter)
 {
 }
 
-SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType & type, const QList<SyntacticAnalysisElement *> &elements)
+SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType & type, const QList<SyntacticAnalysisElement *> &elements, const DatabaseAdapter * dbAdapter)
     : mAllomorph(0),
       mSyntacticType(type),
       mType(SyntacticAnalysisElement::Consituent),
-      mParent(0)
+      mParent(0),
+      mDbAdapter(dbAdapter)
 {
     for(int i=0; i<elements.count(); i++)
     {
         mElements << elements[i];
         elements[i]->setParent(this);
     }
+}
+
+SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType &type, SyntacticAnalysisElement * soleChild, const DatabaseAdapter * dbAdapter )
+    : mAllomorph(0),
+      mSyntacticType(type),
+      mType(SyntacticAnalysisElement::Consituent),
+      mParent(0),
+      mDbAdapter(dbAdapter)
+{
+    mElements << soleChild;
+    soleChild->setParent(this);
 }
 
 SyntacticAnalysisElement::~SyntacticAnalysisElement()
@@ -119,7 +133,17 @@ void SyntacticAnalysisElement::replaceWithConstituent(const SyntacticType &type,
         minIndex = qMin( minIndex , mElements.indexOf( element ) );
         mElements.removeAll( element );
     }
-    mElements.insert( minIndex, new SyntacticAnalysisElement( type , elements ) );
+    SyntacticAnalysisElement * topElement = new SyntacticAnalysisElement( type , elements, mDbAdapter );
+    while( !topElement->type().automaticParent().isEmpty() )
+    {
+        topElement = new SyntacticAnalysisElement( mDbAdapter->syntacticType( topElement->type().automaticParent() ) , topElement, mDbAdapter );
+    }
+    mElements.insert( minIndex, topElement );
+}
+
+SyntacticType SyntacticAnalysisElement::type() const
+{
+    return mSyntacticType;
 }
 
 

@@ -94,6 +94,10 @@ void SyntacticParsingWidget::setupBaseline()
                     for(int m=0; m<ma->allomorphCount(); m++) /// for each allomorph
                     {
                         SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
+                        if(element == 0)
+                        {
+                            qWarning() << "SyntacticAnalysis::elementFromGuid returned zero for" << ma->allomorph(m)->guid();
+                        }
                         MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m)->textBitForConcatenation(), element );
                         item->setPos(x + lineLength, y);
                         mScene->addItem(item);

@@ -24,7 +24,7 @@ SyntacticAnalysis::SyntacticAnalysis(const QString &name, const WritingSystem &w
             const MorphologicalAnalysis * ma = phrase->glossItemAt(j)->morphologicalAnalysis(mWritingSystem);
             for(int k=0; k<ma->allomorphCount(); k++)
             {
-                addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k) ) );
+                addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k), mDbAdapter ) );
             }
         }
     }
@@ -46,7 +46,7 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
     if( bNoneHaveParents ) /// if all of the elements are terminal nodes, we just add that to the analysis
     {
         /// create a new element with containing \a elements
-        newElement = new SyntacticAnalysisElement(type, elements );
+        newElement = new SyntacticAnalysisElement(type, elements, mDbAdapter );
         mElements << newElement;
 
         /// remove each of \a elements from the baseline
@@ -57,7 +57,6 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
     }
     else if( bAreSisters )
     {
-        qDebug() << "Elements are sisters" << elements[0]->parent();
         elements[0]->parent()->replaceWithConstituent(type, elements);
     }
     else /// at least some of the nodes are constituents
@@ -77,7 +76,7 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
                 minIndex = qMin( minIndex , mElements.indexOf( element ) );
                 mElements.removeAll( element );
             }
-            newElement = new SyntacticAnalysisElement( type , elements );
+            newElement = new SyntacticAnalysisElement( type , elements, mDbAdapter );
             mElements.insert( minIndex, newElement );
             mElementConcordance.insert( newElement->allomorph()->guid() , newElement );
             connect( newElement->allomorph(), SIGNAL(allomorphDestroyed(Allomorph*)), this, SLOT(removeAllomorphFromAnalysis(Allomorph*)) );
@@ -90,7 +89,7 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
         {
             QList<SyntacticAnalysisElement*> thisList;
             thisList << newElement;
-            createConstituent( mDbAdapter->syntacticType( type.automaticParent() ) , thisList );
+            createConstituent( mDbAdapter->syntacticType( type.automaticParent() ), thisList );
         }
     }
     emit modified();
@@ -159,7 +158,7 @@ void SyntacticAnalysis::refreshText(const Text *text)
             {
                 if( !guids.contains( ma->allomorph(k)->guid() ) )
                 {
-                    addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k) ) );
+                    addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k), mDbAdapter ) );
                 }
             }
         }
