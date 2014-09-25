@@ -132,7 +132,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         if( dialog.exec() == QDialog::Accepted )
             lexicalEntryId = dialog.lexicalEntryId();
     }
-    else // lexicalEntryId != -1
+    if( lexicalEntryId != -1 ) /// i.e., if it is *still* -1
     {
         qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
         Allomorph *allomorph = mDbAdapter->allomorphFromId(allomorphId);
