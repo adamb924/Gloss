@@ -80,7 +80,7 @@ void WritingSystemsEditDialog::remove()
     {
         if( ! mModel->removeRow(mCurrentRow) )
         {
-            qDebug() << "WritingSystemsEditDialog::remove()" << mModel->lastError();
+            qWarning() << "WritingSystemsEditDialog::remove()" << mModel->lastError();
         }
         ui->nameLineEdit->setText("");
         ui->abbreviationLineEdit->setText("");
