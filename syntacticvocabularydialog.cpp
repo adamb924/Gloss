@@ -1,5 +1,5 @@
-#include "closedvocabularydialog.h"
-#include "ui_closedvocabularydialog.h"
+#include "syntacticvocabularydialog.h"
+#include "ui_syntacticvocabularydialog.h"
 
 #include <QSqlDatabase>
 #include <QSqlTableModel>
@@ -7,9 +7,9 @@
 #include "project.h"
 #include "databaseadapter.h"
 
-ClosedVocabularyDialog::ClosedVocabularyDialog(Project * prj, QWidget *parent) :
+SyntacticVocabularyDialog::SyntacticVocabularyDialog(Project * prj, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ClosedVocabularyDialog),
+    ui(new Ui::SyntacticVocabularyDialog),
     mProject(prj),
     mCurrentRow(-1)
 {
@@ -44,12 +44,12 @@ ClosedVocabularyDialog::ClosedVocabularyDialog(Project * prj, QWidget *parent) :
     ui->parentComboBox->setModelColumn( 2 );
 }
 
-ClosedVocabularyDialog::~ClosedVocabularyDialog()
+SyntacticVocabularyDialog::~SyntacticVocabularyDialog()
 {
     delete ui;
 }
 
-void ClosedVocabularyDialog::add()
+void SyntacticVocabularyDialog::add()
 {
     QSqlRecord r = mModel->record();
     if( !mModel->insertRecord(-1, r) )
@@ -63,7 +63,7 @@ void ClosedVocabularyDialog::add()
     ui->abbreviation->setFocus();
 }
 
-void ClosedVocabularyDialog::remove()
+void SyntacticVocabularyDialog::remove()
 {
     if( mCurrentRow != -1 )
     {
@@ -82,7 +82,7 @@ void ClosedVocabularyDialog::remove()
     }
 }
 
-void ClosedVocabularyDialog::changeRow(const QModelIndex &index)
+void SyntacticVocabularyDialog::changeRow(const QModelIndex &index)
 {
     mCurrentRow = index.row();
     QSqlRecord r = mModel->record(mCurrentRow);
@@ -106,7 +106,7 @@ void ClosedVocabularyDialog::changeRow(const QModelIndex &index)
     ui->parentCheckBox->setEnabled(true);
 }
 
-void ClosedVocabularyDialog::updateDatabaseRecord()
+void SyntacticVocabularyDialog::updateDatabaseRecord()
 {
     if( mCurrentRow < 0 ) return;
     QSqlRecord r = mModel->record(mCurrentRow);
@@ -133,12 +133,12 @@ void ClosedVocabularyDialog::updateDatabaseRecord()
     }
 }
 
-void ClosedVocabularyDialog::validateKeystroke()
+void SyntacticVocabularyDialog::validateKeystroke()
 {
     ui->keystroke->setText( QKeySequence(ui->keystroke->text()).toString() );
 }
 
-void ClosedVocabularyDialog::accept()
+void SyntacticVocabularyDialog::accept()
 {
     if( ! mModel->submitAll() )
     {
@@ -148,7 +148,7 @@ void ClosedVocabularyDialog::accept()
     QDialog::accept();
 }
 
-void ClosedVocabularyDialog::reject()
+void SyntacticVocabularyDialog::reject()
 {
     mModel->database().rollback();
     QDialog::reject();

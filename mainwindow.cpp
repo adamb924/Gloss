@@ -23,7 +23,7 @@
 #include "viewconfigurationdialog.h"
 #include "projectoptionsdialog.h"
 #include "exporttextsdialog.h"
-#include "closedvocabularydialog.h"
+#include "syntacticvocabularydialog.h"
 #include "writingsystemseditdialog.h"
 
 #include <QtWidgets>
@@ -613,7 +613,7 @@ void MainWindow::exportTexts()
 
 void MainWindow::syntacticElements()
 {
-    ClosedVocabularyDialog dlg(mProject);
+    SyntacticVocabularyDialog dlg(mProject);
     if( dlg.exec() )
     {
         mProject->dbAdapter()->loadSyntacticTypes();

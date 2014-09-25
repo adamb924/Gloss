@@ -3,7 +3,7 @@
   \ingroup SyntaxGUI
   \brief This is a dialog for editing a set of vocabulary -- the possible syntactic constiuents in a syntactic analysis.
 
-  The associated UI file is closedvocabularydialog.ui.
+  The associated UI file is syntacticvocabularydialog.ui.
 */
 
 #ifndef CLOSEDVOCABULARYDIALOG_H
@@ -15,16 +15,16 @@ class Project;
 class QSqlTableModel;
 
 namespace Ui {
-class ClosedVocabularyDialog;
+class SyntacticVocabularyDialog;
 }
 
-class ClosedVocabularyDialog : public QDialog
+class SyntacticVocabularyDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    ClosedVocabularyDialog(Project * prj, QWidget *parent = 0);
-    ~ClosedVocabularyDialog();
+    SyntacticVocabularyDialog(Project * prj, QWidget *parent = 0);
+    ~SyntacticVocabularyDialog();
 
 public slots:
     void accept();
@@ -39,7 +39,7 @@ private slots:
     void validateKeystroke();
 
 private:
-    Ui::ClosedVocabularyDialog *ui;
+    Ui::SyntacticVocabularyDialog *ui;
     Project * mProject;
     QSqlTableModel *mModel;
     int mCurrentRow;
