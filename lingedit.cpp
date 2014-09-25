@@ -25,6 +25,7 @@ LingEdit::~LingEdit()
 
 void LingEdit::setTextBit( const TextBit & bit )
 {
+    mTextBit.setText( text() );
     if( mTextBit != bit )
     {
         mTextBit = bit;
