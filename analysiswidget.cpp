@@ -123,23 +123,19 @@ void AnalysisWidget::enterAnalysis()
 
 void AnalysisWidget::createMonomorphemicLexicalEntry()
 {
-    qlonglong lexicalEntryId;
-
-    lexicalEntryId = selectCandidateLexicalEntry();
-
-    Allomorph *allomorph = new Allomorph( -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
+    qlonglong lexicalEntryId = selectCandidateLexicalEntry();
     if( lexicalEntryId == -1 )
     {
+        Allomorph *allomorph = new Allomorph( -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
         CreateLexicalEntryDialog dialog( allomorph, true, mGlossItem, mProject, this);
         connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
         if( dialog.exec() == QDialog::Accepted )
             lexicalEntryId = dialog.lexicalEntryId();
     }
-
-    if( lexicalEntryId != -1 )
+    else // lexicalEntryId != -1
     {
         qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
-        allomorph = mDbAdapter->allomorphFromId(allomorphId);
+        Allomorph *allomorph = mDbAdapter->allomorphFromId(allomorphId);
 
         MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textBit() );
         analysis->addAllomorph( allomorph );
