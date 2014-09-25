@@ -99,7 +99,8 @@ SOURCES += main.cpp\
     syntacticanalysisoptionsdialog.cpp \
     writingsystemseditdialog.cpp \
     tabeditdialog.cpp \
-    syntacticvocabularydialog.cpp
+    syntacticvocabularydialog.cpp \
+    lexiconlineform.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -189,7 +190,8 @@ HEADERS  += mainwindow.h \
     syntacticanalysisoptionsdialog.h \
     writingsystemseditdialog.h \
     tabeditdialog.h \
-    syntacticvocabularydialog.h
+    syntacticvocabularydialog.h \
+    lexiconlineform.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -222,7 +224,8 @@ FORMS    += mainwindow.ui \
     syntacticanalysisoptionsdialog.ui \
     writingsystemseditdialog.ui \
     tabeditdialog.ui \
-    syntacticvocabularydialog.ui
+    syntacticvocabularydialog.ui \
+    lexiconlineform.ui
 
 LIBS += -L./ \
     -lquazip \

@@ -10,8 +10,9 @@
 #include "glossitem.h"
 #include "textbit.h"
 #include "project.h"
+#include "lexiconlineform.h"
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, const GlossItem *glossItem, const Project *project, QWidget *parent) :
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, bool hideGuessButton, const GlossItem *glossItem, const Project *project, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CreateLexicalEntryDialog),
     mProject(project),
@@ -19,10 +20,12 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, con
     mGlossItem(glossItem),
     mAllomorph(0),
     mIsMonomorphemic(false),
-    mLexicalEntryId(lexicalEntryId)
+    mLexicalEntryId(lexicalEntryId),
+    mHideGuessButton(hideGuessButton)
 {
     ui->setupUi(this);
-    fillData();
+
+    fillFromDatabase();
 
     ui->grammaticalInformation->setWritingSystem( mProject->metaLanguage() );
 
@@ -33,9 +36,10 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, con
     setWindowTitle(tr("Edit lexical entry"));
 }
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent) :
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool hideGuessButton, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog),
+        mHideGuessButton(hideGuessButton),
         mProject(project),
         mDbAdapter(mProject->dbAdapter()),
         mGlossItem(glossItem),
@@ -44,7 +48,8 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, 
         mLexicalEntryId(-1)
 {
     ui->setupUi(this);
-    fillData();
+
+    guessAppropriateValues();
 
     ui->grammaticalInformation->setWritingSystem( mProject->metaLanguage() );
 
@@ -66,37 +71,40 @@ qlonglong CreateLexicalEntryDialog::lexicalEntryId() const
     return mLexicalEntryId;
 }
 
-void CreateLexicalEntryDialog::fillData()
-{
-    if( mLexicalEntryId == -1 )
-        guessAppropriateValues();
-    else
-        fillFromDatabase();
-}
-
 void CreateLexicalEntryDialog::guessAppropriateValues()
 {
     QList<WritingSystem> glosses = *( mProject->lexicalEntryGlossFields() );
     foreach( WritingSystem ws , glosses )
     {
-        LingEdit *edit = new LingEdit( TextBit("", ws) );
-        ui->glossLayout->addWidget(edit);
-        mGlossEdits << edit;
-        if( mAllomorph->isStem() && mGlossItem->glosses()->contains(ws) )
-            edit->setText( mGlossItem->glosses()->value(ws).text() );
+        LexiconLineForm *form = new LexiconLineForm( mGlossItem->glosses()->value(ws, TextBit("", ws) ), mAllomorph->isStem() && mGlossItem->glosses()->contains(ws), mHideGuessButton );
+        ui->glossLayout->addWidget(form);
+        mGlossEdits << form;
     }
 
     QList<WritingSystem> citationForms =  *(mProject->lexicalEntryCitationFormFields());
     foreach( WritingSystem ws , citationForms )
     {
-        LingEdit *edit = new LingEdit( TextBit("", ws) );
-        ui->citationFormLayout->addWidget(edit);
-        mCitationFormEdits << edit;
-
-        if ( ws == mAllomorph->writingSystem()  )
-            edit->setText( mAllomorph->text() );
+        bool autoFill = false;
+        TextBit guess = TextBit("", ws);
+        if ( ws == mAllomorph->writingSystem() )
+        {
+            guess = mAllomorph->textBit();
+            autoFill = true;
+        }
         else if ( mIsMonomorphemic )
-            edit->setText( mGlossItem->textForms()->value(ws).text() );
+        {
+            guess = mGlossItem->textForms()->value(ws);
+            autoFill = true;
+        }
+        else
+        {
+            guess = mGlossItem->textForms()->value(ws, TextBit("", ws) );
+            autoFill = false;
+        }
+
+        LexiconLineForm *form = new LexiconLineForm( guess, autoFill, mHideGuessButton );
+        ui->citationFormLayout->addWidget(form);
+        mCitationFormEdits << form;
     }
 }
 
@@ -107,10 +115,9 @@ void CreateLexicalEntryDialog::fillFromDatabase()
 
     foreach( WritingSystem ws , glosses )
     {
-        LingEdit *edit = new LingEdit( TextBit("", ws) );
-        ui->glossLayout->addWidget(edit);
-        mGlossEdits << edit;
-        edit->setText( glossValues.value( ws ).text() );
+        LexiconLineForm *form = new LexiconLineForm( glossValues.value( ws ), true, mHideGuessButton );
+        ui->glossLayout->addWidget(form);
+        mGlossEdits << form;
     }
 
     QList<WritingSystem> citationForms = *(mProject->lexicalEntryCitationFormFields());
@@ -118,11 +125,9 @@ void CreateLexicalEntryDialog::fillFromDatabase()
 
     foreach( WritingSystem ws , citationForms )
     {
-        LingEdit *edit = new LingEdit( TextBit("", ws) );
-        ui->citationFormLayout->addWidget(edit);
-        mCitationFormEdits << edit;
-
-        edit->setText( citationFormValues.value(ws).text() );
+        LexiconLineForm *form = new LexiconLineForm( citationFormValues.value(ws), true, mHideGuessButton );
+        ui->citationFormLayout->addWidget(form);
+        mCitationFormEdits << form;
     }
 
     QStringList tags = mDbAdapter->grammaticalTags(mLexicalEntryId);

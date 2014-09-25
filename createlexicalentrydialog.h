@@ -15,6 +15,7 @@ class GlossItem;
 class LingEdit;
 class Allomorph;
 class Project;
+class LexiconLineForm;
 
 #include "allomorph.h"
 
@@ -27,8 +28,8 @@ class CreateLexicalEntryDialog : public QDialog
     Q_OBJECT
 
 public:
-    CreateLexicalEntryDialog(qlonglong lexicalEntryId, const GlossItem *glossItem, const Project *project, QWidget *parent = 0);
-    CreateLexicalEntryDialog(const Allomorph * allomorph, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent = 0);
+    CreateLexicalEntryDialog(qlonglong lexicalEntryId, bool hideGuessButton, const GlossItem *glossItem, const Project *project, QWidget *parent = 0);
+    CreateLexicalEntryDialog(const Allomorph * allomorph, bool hideGuessButton, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent = 0);
     ~CreateLexicalEntryDialog();
 
     qlonglong lexicalEntryId() const;
@@ -47,15 +48,14 @@ private:
     bool mIsMonomorphemic;
 
     qlonglong mLexicalEntryId;
+    bool mHideGuessButton;
 
-    QList<LingEdit*> mGlossEdits;
-    QList<LingEdit*> mCitationFormEdits;
+    QList<LexiconLineForm*> mGlossEdits;
+    QList<LexiconLineForm*> mCitationFormEdits;
 
 private slots:
-    void fillData();
     void guessAppropriateValues();
     void fillFromDatabase();
-
 
     void createLexicalEntry();
     void changeLexicalEntry();
