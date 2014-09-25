@@ -208,11 +208,6 @@ void SyntacticAnalysis::debug() const
     }
 }
 
-bool SyntacticAnalysis::isEmpty() const
-{
-    return mElements.count() == 0;
-}
-
 bool SyntacticAnalysis::closedVocabulary() const
 {
     return mClosedVocabulary;

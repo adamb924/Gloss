@@ -51,8 +51,6 @@ public:
 
     void debug() const;
 
-    bool isEmpty() const;
-
     bool closedVocabulary() const;
 
 signals:
