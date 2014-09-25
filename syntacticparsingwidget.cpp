@@ -96,7 +96,7 @@ void SyntacticParsingWidget::setupBaseline()
                         SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
                         if(element == 0)
                         {
-                            qWarning() << "SyntacticAnalysis::elementFromGuid returned zero for" << ma->allomorph(m)->guid();
+                            continue;
                         }
                         MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m)->textBitForConcatenation(), element );
                         item->setPos(x + lineLength, y);
@@ -289,6 +289,7 @@ void SyntacticParsingWidget::analysisSelectionChanged(const QString &newSelectio
         mAnalysis = mText->syntacticAnalyses()->value(newSelection);
         setupBaseline();
         redrawSyntacticAnnotations();
+        maybeDisable();
     }
 }
 
@@ -305,6 +306,7 @@ void SyntacticParsingWidget::newAnalysis()
         ui->comboBox->setCurrentIndex(0);
         redrawSyntacticAnnotations();
         ui->editButton->setEnabled( true );
+        maybeDisable();
     }
 }
 
@@ -314,9 +316,15 @@ void SyntacticParsingWidget::editAnalysis()
     if( dlg.exec() )
     {
         mAnalysis->setName( dlg.name() );
-        mAnalysis->setWritingSystem( dlg.writingSystem() );
         mAnalysis->setClosedVocabulary( dlg.closedVocabulary() );
-        redrawSyntacticAnnotations();
+        if( mAnalysis->writingSystem() != dlg.writingSystem() )
+        {
+            mAnalysis->setWritingSystem( dlg.writingSystem() );
+            mAnalysis->refreshText(mText);
+            setupBaseline();
+            redrawSyntacticAnnotations();
+        }
+        maybeDisable();
     }
 }
 
@@ -346,4 +354,16 @@ void SyntacticParsingWidget::refreshText()
     mAnalysis->refreshText(mText);
     setupBaseline();
     redrawSyntacticAnnotations();
+}
+
+void SyntacticParsingWidget::maybeDisable()
+{
+    if( mAnalysis == 0 || mAnalysis->hasNoBaselineElements() )
+    {
+        ui->graphicsView->setEnabled(false);
+    }
+    else
+    {
+        ui->graphicsView->setEnabled(true);
+    }
 }

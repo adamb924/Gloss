@@ -49,6 +49,8 @@ public:
 
     WritingSystem writingSystem() const;
 
+    bool hasNoBaselineElements() const;
+
     void debug() const;
 
     bool closedVocabulary() const;
@@ -61,7 +63,6 @@ public slots:
     void removeAllomorphFromAnalysis(Allomorph * allomorph);
 
 private:
-
     //! \brief Returns true if all of the elements are terminal elements, otherwise returns false
     bool allTerminals(QList<SyntacticAnalysisElement *> elements) const;
 

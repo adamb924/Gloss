@@ -59,6 +59,8 @@ private slots:
     void refreshText();
 
 private:
+    void maybeDisable();
+
     Ui::SyntacticParsingWidget *ui;
     Text *mText;
     const Tab *mTab;

@@ -197,6 +197,11 @@ WritingSystem SyntacticAnalysis::writingSystem() const
     return mWritingSystem;
 }
 
+bool SyntacticAnalysis::hasNoBaselineElements() const
+{
+    return mElementConcordance.isEmpty();
+}
+
 void SyntacticAnalysis::debug() const
 {
     for(int i=0; i<mElements.count(); i++)
