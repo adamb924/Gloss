@@ -29,14 +29,16 @@ public:
     enum Type { Consituent , Terminal };
 
     SyntacticAnalysisElement(const Allomorph * allomorph, const DatabaseAdapter * dbAdapter);
-    SyntacticAnalysisElement(const SyntacticType &type, const QList<SyntacticAnalysisElement *> & elements, const DatabaseAdapter * dbAdapter);
+    SyntacticAnalysisElement(const SyntacticType &type, const QList<SyntacticAnalysisElement *> & children, const DatabaseAdapter * dbAdapter);
     SyntacticAnalysisElement(const SyntacticType &type, SyntacticAnalysisElement * soleChild, const DatabaseAdapter * dbAdapter );
     ~SyntacticAnalysisElement();
 
     QString label() const;
     const Allomorph * allomorph() const;
-    QList<SyntacticAnalysisElement *> *elements();
-    const QList<SyntacticAnalysisElement *> *elements() const;
+    QList<SyntacticAnalysisElement *> *children();
+    const QList<SyntacticAnalysisElement *> *children() const;
+    bool hasChild() const;
+    bool hasParent() const;
     SyntacticAnalysisElement *parent();
     bool isTerminal() const;
     bool isConstituent() const;
@@ -45,7 +47,7 @@ public:
     void addChild(SyntacticAnalysisElement *element);
     void debug() const;
     void setParent(SyntacticAnalysisElement * parent);
-    void replaceWithConstituent(const SyntacticType &type, QList<SyntacticAnalysisElement *> &elements);
+    void replaceWithConstituent(const SyntacticType &type, QList<SyntacticAnalysisElement *> &children);
     SyntacticType type() const;
 
 private:

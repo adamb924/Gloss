@@ -232,9 +232,9 @@ bool FlexTextWriter::serializeGrammaticalElement(const SyntacticAnalysisElement 
     {
         stream->writeStartElement("http://www.adambaker.org/gloss.php","constituent");
         writeNamespaceAttribute("label", element->label() );
-        for(int i=0; i<element->elements()->count(); i++)
+        for(int i=0; i<element->children()->count(); i++)
         {
-            serializeGrammaticalElement( element->elements()->at(i) );
+            serializeGrammaticalElement( element->children()->at(i) );
         }
         stream->writeEndElement(); // constituent
     }

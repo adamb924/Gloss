@@ -113,9 +113,24 @@ void SyntacticAnalysis::addBaselineElement(SyntacticAnalysisElement *element)
 
 void SyntacticAnalysis::removeConstituentElement(SyntacticAnalysisElement *element)
 {
-    if( element->parent() != 0 )
+    if( element->isTerminal() ) return; // you don't delete terminal elements
+    if( element->hasParent() )
     {
-        element->parent()->removeChild( element );
+        SyntacticAnalysisElement * parent = element->parent();
+        foreach( SyntacticAnalysisElement * child, * element->children() )
+        {
+            parent->addChild( child );
+            element->removeChild(child);
+        }
+        parent->removeChild(element);
+    }
+    else // no parent, add the children to the base element array
+    {
+        foreach( SyntacticAnalysisElement * child, * element->children() )
+        {
+            element->removeChild(child);
+            mElements.append( child );
+        }
     }
     mElements.removeAll(element);
     delete element;

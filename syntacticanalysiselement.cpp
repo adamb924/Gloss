@@ -60,14 +60,24 @@ const Allomorph *SyntacticAnalysisElement::allomorph() const
     return mAllomorph;
 }
 
-QList<SyntacticAnalysisElement *> *SyntacticAnalysisElement::elements()
+QList<SyntacticAnalysisElement *> *SyntacticAnalysisElement::children()
 {
     return &mElements;
 }
 
-const QList<SyntacticAnalysisElement *> *SyntacticAnalysisElement::elements() const
+const QList<SyntacticAnalysisElement *> *SyntacticAnalysisElement::children() const
 {
     return &mElements;
+}
+
+bool SyntacticAnalysisElement::hasChild() const
+{
+    return mElements.count() > 0;
+}
+
+bool SyntacticAnalysisElement::hasParent() const
+{
+    return mParent != 0;
 }
 
 SyntacticAnalysisElement *SyntacticAnalysisElement::parent()
@@ -152,6 +162,6 @@ QDebug operator<<(QDebug dbg, const SyntacticAnalysisElement &key)
     if( key.isTerminal() )
         dbg.nospace() << "SyntacticAnalysisElement (terminal)" << * key.allomorph();
     else
-        dbg.nospace() << "SyntacticAnalysisElement (constituent)" << * key.elements();
+        dbg.nospace() << "SyntacticAnalysisElement (constituent)" << * key.children();
     return dbg.maybeSpace();
 }

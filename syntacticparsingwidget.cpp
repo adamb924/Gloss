@@ -158,15 +158,15 @@ void SyntacticParsingWidget::redrawSyntacticAnnotations()
 QGraphicsItem *SyntacticParsingWidget::addConstituentElementToScene(SyntacticAnalysisElement *element)
 {
     QList<QGraphicsItem*> daughters;
-    for(int i=0; i<element->elements()->count(); i++)
+    for(int i=0; i<element->children()->count(); i++)
     {
-        if( element->elements()->at(i)->isTerminal() ) /// terminal
+        if( element->children()->at(i)->isTerminal() ) /// terminal
         {
-            daughters << mGraphicsItemAllomorphHash.value(element->elements()->at(i)->allomorph());
+            daughters << mGraphicsItemAllomorphHash.value(element->children()->at(i)->allomorph());
         }
         else /// constituent
         {
-            daughters << addConstituentElementToScene( element->elements()->at(i) );
+            daughters << addConstituentElementToScene( element->children()->at(i) );
         }
     }
 
@@ -243,6 +243,10 @@ void SyntacticParsingWidget::removeConstituent()
     {
         mAnalysis->removeConstituentElement( elements.first() );
         redrawSyntacticAnnotations();
+    }
+    else
+    {
+        mScene->clearSelection();
     }
 }
 
