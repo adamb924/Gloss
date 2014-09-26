@@ -66,6 +66,8 @@ private:
 
     QStringList textsWithOpenWindows();
 
+    void setAppropriateWindowTitle();
+
     /** @name Project Methods
      * These methods pertain to IO operations on projects, and project settings.
      */

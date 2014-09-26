@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    setWindowTitle(tr("Gloss"));
+    setAppropriateWindowTitle();
 
     connect(ui->actionNew_Project, SIGNAL(triggered()), this, SLOT(newProject()));
     connect(ui->actionOpen_Project, SIGNAL(triggered()), this, SLOT(openProject()));
@@ -209,7 +209,7 @@ void MainWindow::newProject()
 
     mProject->serializeConfigurationXml();
 
-    setWindowTitle( tr("Gloss - %1").arg(filename) );
+    setAppropriateWindowTitle();
     setProjectActionsEnabled(true);
     refreshViewsMenu();
 }
@@ -225,7 +225,7 @@ void MainWindow::openProject()
         mProject = new Project(this);
         if( mProject->readFromFile(filename) )
         {
-            setWindowTitle( tr("Gloss - %1").arg(filename) );
+            setAppropriateWindowTitle();
             setProjectActionsEnabled(true);
         }
         else
@@ -281,7 +281,7 @@ void MainWindow::projectClose()
     delete mProject;
     mProject = 0;
     setProjectActionsEnabled(false);
-    setWindowTitle(tr("Gloss"));
+    setAppropriateWindowTitle();
 }
 
 
@@ -1288,6 +1288,18 @@ QStringList MainWindow::textsWithOpenWindows()
     foreach( QMdiSubWindow * window , ui->mdiArea->subWindowList() )
         textNames << window->windowTitle();
     return textNames;
+}
+
+void MainWindow::setAppropriateWindowTitle()
+{
+    if( mProject == 0 )
+    {
+        setWindowTitle(tr("Gloss"));
+    }
+    else
+    {
+        setWindowTitle( tr("Gloss - %1").arg(QFileInfo(mProject->projectPath()).fileName()) );
+    }
 }
 
 void MainWindow::editLexicon()
