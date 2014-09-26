@@ -186,19 +186,19 @@ void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
     {
         removeConstituent();
     }
-    else if ( event->key() == Qt::Key_Insert )
-    {
-        createConstituent();
-    }
 
-    QKeySequence key = QKeySequence( event->modifiers() | event->key() );
     if( mAnalysis->closedVocabulary() )
     {
-        createConstituent( mProject->dbAdapter()->syntacticType( key ) );
+        QKeySequence key = QKeySequence( event->modifiers() | event->key() );
+        SyntacticType type = mProject->dbAdapter()->syntacticType( key );
+        if( !type.isNull() )
+        {
+            createConstituent( type );
+        }
     }
     else
     {
-        if( event->key() == Qt::Key_A )
+        if( event->key() == Qt::Key_A || event->key() == Qt::Key_Insert )
         {
             createConstituent();
         }
