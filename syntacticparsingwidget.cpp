@@ -239,14 +239,11 @@ void SyntacticParsingWidget::createConstituent(const SyntacticType & type)
 void SyntacticParsingWidget::removeConstituent()
 {
     QList<SyntacticAnalysisElement *> elements = selectedElements();
-    foreach( SyntacticAnalysisElement * e, elements)
+    if( elements.count() == 1 )
     {
-        if( e->isConstituent() )
-        {
-            mAnalysis->removeConstituentElement( e );
-        }
+        mAnalysis->removeConstituentElement( elements.first() );
+        redrawSyntacticAnnotations();
     }
-    redrawSyntacticAnnotations();
 }
 
 QList<SyntacticAnalysisElement *> SyntacticParsingWidget::selectedElements()
