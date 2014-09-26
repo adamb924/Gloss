@@ -38,7 +38,7 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
     mTextDisplayWidget = new TextDisplayWidget( mText, mProject, mType, makeLines(), QList<Focus>(), this );
     ui->ildLayout->addWidget(mTextDisplayWidget);
 
-    setWindowTitle(mText->name());
+    setWindowTitle(tr("%1 [%2]").arg(mText->name()).arg(mProject->view(type)->name()));
 }
 
 InterlinearChunkEditor::~InterlinearChunkEditor()
