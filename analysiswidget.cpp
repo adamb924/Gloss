@@ -18,6 +18,7 @@ AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analy
 
     mLayout = new QVBoxLayout;
     mLayout->setSpacing(0);
+    mLayout->setContentsMargins(0,0,0,0);
     setLayout(mLayout);
 
     setupLayout();
