@@ -155,7 +155,7 @@ void GlossItem::setTextForm(const TextBit & textForm)
             delete mMorphologicalAnalyses.take( textForm.writingSystem() );
         }
 
-        mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id() ) );
+        mMorphologicalAnalyses.insert( ws , mDbAdapter->morphologicalAnalysisFromTextFormId( textForm.id(), mConcordance ) );
 
         emit fieldsChanged();
         emit textFormChanged(textForm);
@@ -310,12 +310,12 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
 
 MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws)
 {
-    return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
+    return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws), mConcordance) );
 }
 
 const MorphologicalAnalysis * GlossItem::morphologicalAnalysis(const WritingSystem & ws) const
 {
-    return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws)) );
+    return mMorphologicalAnalyses.value(ws, new MorphologicalAnalysis(mTextForms.value(ws), mConcordance) );
 }
 
 void GlossItem::setMorphologicalAnalysis( MorphologicalAnalysis * analysis )
@@ -399,7 +399,7 @@ void GlossItem::loadMorphologicalAnalysesFromDatabase()
                 delete mMorphologicalAnalyses.take( tfIter.value().writingSystem() );
             }
 
-            MorphologicalAnalysis * databaseMA = mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id() );
+            MorphologicalAnalysis * databaseMA = mDbAdapter->morphologicalAnalysisFromTextFormId( tfIter.value().id(), mConcordance );
             mMorphologicalAnalyses.insert( tfIter.key() , databaseMA );
         }
     }

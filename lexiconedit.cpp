@@ -14,7 +14,7 @@
 
 #include <QSortFilterProxyModel>
 
-LexiconEdit::LexiconEdit(const Project * project, QWidget *parent) :
+LexiconEdit::LexiconEdit(Project * project, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LexiconEdit),
     mProject(project)
@@ -56,7 +56,7 @@ LexiconEdit::LexiconEdit(const Project * project, QWidget *parent) :
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), allomorphModel, SLOT(setLexicalEntry(qlonglong)) );
     connect( ui->lexiconTable, SIGNAL(lexicalEntrySelected(qlonglong)), ui->allomorphTable, SLOT(resizeColumnsToContents()) );
 
-    MorphologicalAnalysisModel *analysisModel = new MorphologicalAnalysisModel( mDbAdapter , this );
+    MorphologicalAnalysisModel *analysisModel = new MorphologicalAnalysisModel( mDbAdapter );
 
     connect( ui->glossWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setGlossWritingSystem(WritingSystem)) );
     connect( ui->textWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setTextFormWritingSystem(WritingSystem)) );

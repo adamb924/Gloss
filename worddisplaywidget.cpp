@@ -16,7 +16,7 @@
 #include <QtDebug>
 #include <QActionGroup>
 
-WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const Tab * tab, const Project * project, QWidget *parent) :
+WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const Tab * tab, Project * project, QWidget *parent) :
     QFrame(parent),
     mProject(project),
     mTab(tab),

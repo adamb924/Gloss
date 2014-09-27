@@ -1,5 +1,7 @@
 #include "allomorph.h"
 
+#include "concordance.h"
+
 #include <QRegExp>
 #include <QtDebug>
 
@@ -13,8 +15,8 @@ Allomorph::Allomorph(QUuid guid) :
     }
 }
 
-Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type , QUuid guid) :
-    QObject(), mType(type), mTextBit(bit), mId(id), mGuid(guid)
+Allomorph::Allomorph(qlonglong id, qlonglong lexicalEntryId, const TextBit & bit, Type type , QUuid guid) :
+    QObject(), mType(type), mTextBit(bit), mId(id), mLexicalEntryId(lexicalEntryId), mGuid(guid)
 {
     if( mGuid.isNull() )
     {
@@ -22,8 +24,8 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, Type type , QUuid guid) 
     }
 }
 
-Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type, QUuid guid  ) :
-    QObject(), mType(type), mTextBit(bit), mId(id), mGuid(guid)
+Allomorph::Allomorph(qlonglong id, qlonglong lexicalEntryId, const TextBit & bit, const TextBitHash & glosses , Type type, QUuid guid  ) :
+    QObject(), mType(type), mTextBit(bit), mId(id), mLexicalEntryId(lexicalEntryId), mGuid(guid)
 {
     mGlosses.unite(glosses);
     if( mGuid.isNull() )
@@ -33,7 +35,7 @@ Allomorph::Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glos
 }
 
 Allomorph::Allomorph(const Allomorph & other) :
-    QObject(), mType(other.mType), mTextBit(other.mTextBit), mId(other.mId), mGlosses(other.mGlosses), mGuid(other.mGuid)
+    QObject(), mType(other.mType), mTextBit(other.mTextBit), mId(other.mId), mLexicalEntryId(other.mLexicalEntryId), mGlosses(other.mGlosses), mGuid(other.mGuid)
 {
 }
 
@@ -41,6 +43,7 @@ Allomorph& Allomorph::operator=(const Allomorph & other)
 {
     mType = other.mType;
     mId = other.mId;
+    mLexicalEntryId = other.mLexicalEntryId;
     mTextBit = other.mTextBit;
     mGlosses = other.mGlosses;
     mGuid = other.mGuid;
@@ -50,6 +53,13 @@ Allomorph& Allomorph::operator=(const Allomorph & other)
 Allomorph::~Allomorph()
 {
     emit allomorphDestroyed(this);
+}
+
+void Allomorph::connectToConcordance(Concordance *concordance)
+{
+    concordance->insertIntoAllomorphConcordance( this );
+    connect( this, SIGNAL(allomorphDestroyed(Allomorph*)), concordance, SLOT(removeFromAllomorphConcordance(Allomorph*)) );
+    connect( this, SIGNAL(glossesChanged(Allomorph*)), concordance, SLOT(updateAllomorphTextForms(Allomorph*)) );
 }
 
 bool Allomorph::operator==(const Allomorph & other) const
@@ -124,6 +134,11 @@ qlonglong Allomorph::id() const
     return mId;
 }
 
+qlonglong Allomorph::lexicalEntryId() const
+{
+    return mLexicalEntryId;
+}
+
 void Allomorph::setId(qlonglong id)
 {
     mId = id;
@@ -136,7 +151,11 @@ TextBit Allomorph::gloss(const WritingSystem & ws) const
 
 void Allomorph::setGlosses(const TextBitHash & glosses)
 {
-    mGlosses = glosses;
+    if( mGlosses != glosses )
+    {
+        mGlosses = glosses;
+        emit glossesChanged(this);
+    }
 }
 
 QList<WritingSystem> Allomorph::glossLanguages() const

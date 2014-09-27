@@ -9,9 +9,12 @@
 #ifndef MORPHOLOGICALANALYSIS_H
 #define MORPHOLOGICALANALYSIS_H
 
+#include <QObject>
 #include <QList>
 
 #include "allomorph.h"
+
+class Concordance;
 
 typedef QListIterator<Allomorph> AllomorphIterator;
 typedef QListIterator<Allomorph*> AllomorphPointerIterator;
@@ -19,10 +22,10 @@ typedef QListIterator<Allomorph*> AllomorphPointerIterator;
 class MorphologicalAnalysis
 {
 public:
-    MorphologicalAnalysis();
-    MorphologicalAnalysis(const TextBit & textForm);
-    MorphologicalAnalysis(qlonglong textFormId, const WritingSystem & ws);
-    MorphologicalAnalysis(const MorphologicalAnalysis & other);
+    MorphologicalAnalysis(Concordance * concordance);
+    MorphologicalAnalysis(const TextBit & textForm, Concordance *concordance);
+    MorphologicalAnalysis(qlonglong textFormId, const WritingSystem & ws, Concordance * concordance);
+    MorphologicalAnalysis(const MorphologicalAnalysis & other, Concordance *concordance);
     ~MorphologicalAnalysis();
 
     MorphologicalAnalysis& operator=(const MorphologicalAnalysis & other);
@@ -65,11 +68,17 @@ public:
     //! \brief Returns the \a i th allomorph of the analysis
     const Allomorph* allomorph(int i) const;
 
+    //! \brief Returns the index of the allomorph with allomorph id \a id, or -1 if that allomorph is not in the analysis
+    int indexFromId(qlonglong id) const;
+
+    //! \brief Returns a pointer to the the allomorph with allomorph id \a id, or a null pointer if that allomorph is not in the analysis
+    Allomorph *allomorphFromId(qlonglong id) const;
+
 private:
     qlonglong mTextFormId;
     WritingSystem mWritingSystem;
     QList<Allomorph*> mAllomorphs;
-
+    Concordance * mConcordance;
 };
 
 QDebug operator<<(QDebug dbg, const MorphologicalAnalysis &key);

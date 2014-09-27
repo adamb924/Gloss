@@ -32,7 +32,7 @@ class LexiconEdit : public QMainWindow
     Q_OBJECT
 
 public:
-    LexiconEdit(const Project *project, QWidget *parent = 0);
+    LexiconEdit(Project *project, QWidget *parent = 0);
     ~LexiconEdit();
 
 signals:
@@ -48,7 +48,7 @@ private:
     LexiconModel * mLexiconModel;
     QSortFilterProxyModel * mLexiconProxyModel;
     const DatabaseAdapter * mDbAdapter;
-    const Project * mProject;
+    Project * mProject;
 };
 
 #endif // LEXICONEDIT_H

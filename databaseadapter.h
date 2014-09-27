@@ -20,6 +20,7 @@
 
 class WritingSystem;
 class MorphologicalAnalysis;
+class Concordance;
 
 class DatabaseAdapter : public QObject
 {
@@ -153,7 +154,7 @@ public:
     void setMorphologicalAnalysis( qlonglong textFormId, const MorphologicalAnalysis * morphologicalAnalysis ) const;
 
     //! \brief Returns the morphological analysis associated with the given TextForm id. The analysis is empty if none is found in the database.
-    MorphologicalAnalysis * morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const;
+    MorphologicalAnalysis * morphologicalAnalysisFromTextFormId( qlonglong textFormId, Concordance * concordance ) const;
 
     void clearMorphologicalAnalysis( qlonglong textFormId ) const;
 

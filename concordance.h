@@ -53,12 +53,21 @@ public slots:
     //! \brief Updates gloss items with \a textFormId so that they contain \a analysis
     void updateGlossItemMorphologicalAnalysis(const GlossItem * originator, const MorphologicalAnalysis *analysis );
 
+    void insertIntoAllomorphConcordance( Allomorph * allomorph );
+
+    void removeFromAllomorphConcordance( Allomorph * allomorph );
+
+    void updateAllomorphTextForms( Allomorph * allomorph );
+
 private:
     //! \brief GlossItem objects, indexed by text form id
     QMultiHash<qlonglong,GlossItem*> mGlossItemsByTextFormId;
 
     //! \brief GlossItem objects, indexed by gloss form id
     QMultiHash<qlonglong,GlossItem*> mGlossItemsByGlossId;
+
+    //! \brief Allomorph objects, indexed by lexicalEntryId
+    QMultiHash<qlonglong,Allomorph*> mAllomorphsByLexicalEntryId;
 };
 
 #endif // CONCORDANCE_H

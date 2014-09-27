@@ -24,7 +24,7 @@ class AnalysisWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const Project *project, QWidget *parent = 0);
+    AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, Project *project, QWidget *parent = 0);
 
 signals:
     void morphologicalAnalysisChanged(const GlossItem * originator, const MorphologicalAnalysis * analysis);
@@ -34,7 +34,7 @@ public slots:
     void setupLayout();
 
 private:
-    const Project *mProject;
+    Project *mProject;
     GlossItem *mGlossItem;
     WritingSystem mWritingSystem;
 

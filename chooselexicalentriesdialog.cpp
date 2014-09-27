@@ -10,13 +10,13 @@
 #include <QtWidgets>
 #include <QtDebug>
 
-ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, const Project *project, QWidget *parent) :
+ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, Project *project, QWidget *parent) :
     QDialog(parent), mProject(project)
 {
     mDbAdapter = mProject->dbAdapter();
     mParseString = parseString;
     mGlossItem = glossItem;
-    mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem() );
+    mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem(), mProject->concordance() );
 
     fillMorphologicalAnalysis();
     setupLayout();
@@ -44,14 +44,14 @@ void ChooseLexicalEntriesDialog::commitChangesToDatabase()
 
 void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
 {
-    mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem() );
+    mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem(), mProject->concordance() );
 
     QStringList bits = mParseString.text().split(QRegExp("\\s"), QString::SkipEmptyParts );
     QStringListIterator iter(bits);
     while(iter.hasNext())
     {
         QString text = iter.next();
-        mAnalysis->addAllomorph(new Allomorph( -1, TextBit( Allomorph::stripPunctuation(text) , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
+        mAnalysis->addAllomorph(new Allomorph( -1, -1, TextBit( Allomorph::stripPunctuation(text) , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
     }
 }
 

@@ -980,10 +980,10 @@ void DatabaseAdapter::setMorphologicalAnalysis( qlonglong textFormId, const Morp
     }
 }
 
-MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId ) const
+MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( qlonglong textFormId, Concordance * concordance ) const
 {
     TextBit textForm = textFormFromId(textFormId);
-    MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textForm );
+    MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textForm, concordance );
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select LexicalEntryId,Form,WritingSystem,LexicalEntry.MorphologicalCategory,Allomorph._id from MorphologicalAnalysisMembers,Allomorph,LexicalEntry on TextFormId=:TextFormId and MorphologicalAnalysisMembers.AllomorphId=Allomorph._id and Allomorph.LexicalEntryId=LexicalEntry._id;");
@@ -995,7 +995,7 @@ MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( ql
         TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
         TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
         qlonglong allomorphId = q.value(4).toLongLong();
-        analysis->addAllomorph(new Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) ) );
+        analysis->addAllomorph(new Allomorph(allomorphId, lexicalEntryId, bit, glosses , Allomorph::getType( q.value(3).toString() ) ) );
     }
     return analysis;
 }
@@ -1034,7 +1034,7 @@ Allomorph *DatabaseAdapter::allomorphFromId( qlonglong allomorphId ) const
             qlonglong lexicalEntryId = q.value(0).toLongLong();
             TextBit bit( q.value(1).toString(), writingSystem( q.value(2).toLongLong() ) );
             TextBitHash glosses = lexicalItemGlosses(lexicalEntryId);
-            return new Allomorph(allomorphId, bit, glosses , Allomorph::getType( q.value(3).toString() ) );
+            return new Allomorph(allomorphId, lexicalEntryId, bit, glosses , Allomorph::getType( q.value(3).toString() ) );
         }
     }
     qWarning() << "DatabaseAdapter::allomorphFromId"  << allomorphId << q.lastError().text() << q.executedQuery();

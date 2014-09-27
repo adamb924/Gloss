@@ -80,3 +80,25 @@ void Concordance::updateGlossItemMorphologicalAnalysis(const GlossItem * origina
         }
     }
 }
+
+void Concordance::insertIntoAllomorphConcordance(Allomorph *allomorph)
+{
+    mAllomorphsByLexicalEntryId.insert( allomorph->lexicalEntryId(), allomorph );
+}
+
+void Concordance::removeFromAllomorphConcordance(Allomorph *allomorph)
+{
+    mAllomorphsByLexicalEntryId.remove( allomorph->lexicalEntryId(), allomorph );
+}
+
+void Concordance::updateAllomorphTextForms(Allomorph *allomorph)
+{
+    QList<Allomorph*> allomorphList = mAllomorphsByLexicalEntryId.values( allomorph->lexicalEntryId() );
+    foreach( Allomorph * a, allomorphList )
+    {
+        if( a != allomorph ) // save a few cycles
+        {
+            a->setGlosses( allomorph->glosses() );
+        }
+    }
+}

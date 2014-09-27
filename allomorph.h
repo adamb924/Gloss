@@ -14,6 +14,8 @@
 #include <QRegExp>
 #include <QUuid>
 
+class Concordance;
+
 class Allomorph : public QObject
 {
     Q_OBJECT
@@ -22,11 +24,13 @@ public:
     enum Type { Stem,Prefix,Suffix,Infix,BoundStem,Proclitic,Enclitic,Simulfix,Suprafix,Null };
 
     Allomorph(QUuid guid = QUuid());
-    Allomorph(qlonglong id, const TextBit & bit, Type type, QUuid guid = QUuid() );
-    Allomorph(qlonglong id, const TextBit & bit, const TextBitHash & glosses , Type type , QUuid guid = QUuid());
+    Allomorph(qlonglong id, qlonglong lexicalEntryId, const TextBit & bit, Type type, QUuid guid = QUuid() );
+    Allomorph(qlonglong id, qlonglong lexicalEntryId, const TextBit & bit, const TextBitHash & glosses , Type type , QUuid guid = QUuid());
     Allomorph(const Allomorph & other);
     Allomorph& operator=(const Allomorph & other);
     ~Allomorph();
+
+    void connectToConcordance(Concordance * concordance);
 
     //! \brief Returns true if all members of \a other are identical (including the GUID)
     bool operator==(const Allomorph & other) const;
@@ -78,6 +82,8 @@ public:
     //! \brief Returns the id of the allomorph
     qlonglong id() const;
 
+    qlonglong lexicalEntryId() const;
+
     //! \brief Set the id of the allomorph to \a id
     void setId(qlonglong id);
 
@@ -110,11 +116,13 @@ public:
 
 signals:
     void allomorphDestroyed(Allomorph * allomorph);
+    void glossesChanged(Allomorph * allomorph);
 
 private:
     Type mType;
     TextBit mTextBit;
     qlonglong mId;
+    qlonglong mLexicalEntryId;
     TextBitHash mGlosses;
     QUuid mGuid;
 };

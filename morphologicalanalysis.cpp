@@ -4,23 +4,23 @@
 #include <QStringList>
 #include <QDebug>
 
-MorphologicalAnalysis::MorphologicalAnalysis() :
-    mTextFormId(-1), mWritingSystem(WritingSystem())
+MorphologicalAnalysis::MorphologicalAnalysis(Concordance *concordance) :
+    mTextFormId(-1), mWritingSystem(WritingSystem()), mConcordance(concordance)
 {
 }
 
-MorphologicalAnalysis::MorphologicalAnalysis(const TextBit & textForm) :
-    mTextFormId(textForm.id()), mWritingSystem(textForm.writingSystem())
+MorphologicalAnalysis::MorphologicalAnalysis(const TextBit & textForm, Concordance * concordance) :
+    mTextFormId(textForm.id()), mWritingSystem(textForm.writingSystem()), mConcordance(concordance)
 {
 }
 
-MorphologicalAnalysis::MorphologicalAnalysis(qlonglong textFormId, const WritingSystem & ws) :
-    mTextFormId(textFormId), mWritingSystem(ws)
+MorphologicalAnalysis::MorphologicalAnalysis(qlonglong textFormId, const WritingSystem & ws, Concordance *concordance) :
+    mTextFormId(textFormId), mWritingSystem(ws), mConcordance(concordance)
 {
 }
 
-MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other) :
-    mTextFormId(other.mTextFormId), mWritingSystem(other.mWritingSystem), mAllomorphs(other.mAllomorphs)
+MorphologicalAnalysis::MorphologicalAnalysis(const MorphologicalAnalysis & other, Concordance * concordance) :
+    mTextFormId(other.mTextFormId), mWritingSystem(other.mWritingSystem), mAllomorphs(other.mAllomorphs), mConcordance(concordance)
 {
 }
 
@@ -39,10 +39,10 @@ MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnaly
 
 MorphologicalAnalysis *MorphologicalAnalysis::copyWithNewGuids() const
 {
-    MorphologicalAnalysis *other = new MorphologicalAnalysis(mTextFormId, mWritingSystem);
+    MorphologicalAnalysis *other = new MorphologicalAnalysis(mTextFormId, mWritingSystem, mConcordance);
     for(int i=0; i<mAllomorphs.count(); i++)
     {
-        other->addAllomorph(new Allomorph(mAllomorphs.at(i)->id(), mAllomorphs.at(i)->textBit(), mAllomorphs.at(i)->glosses(), mAllomorphs.at(i)->type() ) );
+        other->addAllomorph( new Allomorph(mAllomorphs.at(i)->id(), mAllomorphs.at(i)->lexicalEntryId(), mAllomorphs.at(i)->textBit(), mAllomorphs.at(i)->glosses(), mAllomorphs.at(i)->type() ) );
     }
     return other;
 }
@@ -109,6 +109,7 @@ AllomorphPointerIterator MorphologicalAnalysis::allomorphIterator() const
 
 void MorphologicalAnalysis::addAllomorph(Allomorph * allomorph)
 {
+    allomorph->connectToConcordance( mConcordance );
     mAllomorphs.append(allomorph);
 }
 
@@ -125,6 +126,30 @@ Allomorph* MorphologicalAnalysis::allomorph(int i)
 const Allomorph* MorphologicalAnalysis::allomorph(int i) const
 {
     return mAllomorphs[i];
+}
+
+int MorphologicalAnalysis::indexFromId(qlonglong id) const
+{
+    for(int i=0; i<mAllomorphs.count(); i++)
+    {
+        if( mAllomorphs.at(i)->id() == id )
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+Allomorph *MorphologicalAnalysis::allomorphFromId(qlonglong id) const
+{
+    for(int i=0; i<mAllomorphs.count(); i++)
+    {
+        if( mAllomorphs.at(i)->id() == id )
+        {
+            return mAllomorphs[i];
+        }
+    }
+    return 0;
 }
 
 int MorphologicalAnalysis::allomorphCount() const

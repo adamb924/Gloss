@@ -32,7 +32,7 @@ class WordDisplayWidget : public QFrame
     Q_OBJECT
 
 public:
-    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const Tab * tab, const Project * project, QWidget *parent = 0);
+    WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, const Tab * tab, Project * project, QWidget *parent = 0);
     ~WordDisplayWidget();
 
     QHash<qlonglong, LingEdit*> textFormEdits() const;
@@ -80,7 +80,7 @@ private:
     void mouseDoubleClickEvent ( QMouseEvent * event );
     void mousePressEvent(QMouseEvent * event);
 
-    const Project * mProject;
+    Project * mProject;
     const Tab * mTab;
     const DatabaseAdapter *mDbAdapter;
     GlossItem *mGlossItem;

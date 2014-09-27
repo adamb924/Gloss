@@ -11,7 +11,7 @@
 #include "lexicalentrysearchdialog.h"
 #include "project.h"
 
-AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, const Project *project, QWidget *parent) :
+AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, Project *project, QWidget *parent) :
         QWidget(parent), mProject(project), mGlossItem(glossItem), mWritingSystem(analysisWs)
 {
     mDbAdapter = mProject->dbAdapter();
@@ -58,7 +58,13 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analy
 
     const QList<WritingSystem> *glossLines = mProject->lexicalEntryGlossFields();
     for(int i=0; i<glossLines->count(); i++)
+    {
         mLayout->addWidget( new ImmutableLabel( TextBit( analysis->glossSummary(glossLines->at(i)), mWritingSystem ), false, this ) );
+    }
+    for( int i=0; i<analysis->allomorphCount(); i++ )
+    {
+        connect( analysis->allomorph(i), SIGNAL(glossesChanged(Allomorph*)), this, SLOT(setupLayout()) );
+    }
 }
 
 void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -103,7 +109,15 @@ void AnalysisWidget::editLexicalEntry(QAction * action)
     }
 
     CreateLexicalEntryDialog dialog( lexicalEntryId, false, mGlossItem, mProject, this);
-    dialog.exec();
+    if( dialog.exec() )
+    {
+        Allomorph * a = mGlossItem->morphologicalAnalysis(mWritingSystem)->allomorphFromId( allomorphId );
+        if( a != 0 )
+        {
+            a->setGlosses( mDbAdapter->lexicalEntryGlossFormsForAllomorph( allomorphId ) );
+        }
+        setupLayout();
+    }
 }
 
 void AnalysisWidget::enterAnalysis()
@@ -125,9 +139,10 @@ void AnalysisWidget::enterAnalysis()
 void AnalysisWidget::createMonomorphemicLexicalEntry()
 {
     qlonglong lexicalEntryId = selectCandidateLexicalEntry();
+    /// @todo when is this ever invoked?
     if( lexicalEntryId == -1 )
     {
-        Allomorph *allomorph = new Allomorph( -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
+        Allomorph *allomorph = new Allomorph( -1, -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
         CreateLexicalEntryDialog dialog( allomorph, true, true, mGlossItem, mProject, this);
         connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
         if( dialog.exec() == QDialog::Accepted )
@@ -138,7 +153,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
         Allomorph *allomorph = mDbAdapter->allomorphFromId(allomorphId);
 
-        MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textBit() );
+        MorphologicalAnalysis * analysis = new MorphologicalAnalysis( textBit(), mProject->concordance() );
         analysis->addAllomorph( allomorph );
         mDbAdapter->setMorphologicalAnalysis( textBit().id(), analysis );
 
@@ -193,7 +208,7 @@ void AnalysisWidget::linkToOther()
         if( lexicalEntryId != -1 )
         {
             qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
-            MorphologicalAnalysis * monomorphemic = new MorphologicalAnalysis( textBit() );
+            MorphologicalAnalysis * monomorphemic = new MorphologicalAnalysis( textBit(), mProject->concordance() );
             monomorphemic->addAllomorph( mDbAdapter->allomorphFromId(allomorphId) );
             /// emit 0 so that the concordance actually does change this gloss item
             emit morphologicalAnalysisChanged( 0, monomorphemic );
