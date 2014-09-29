@@ -333,8 +333,6 @@ void MainWindow::importPlainText()
         if( ok )
         {
             QStringList files = dialog.selectedFiles();
-            bool openText = files.count() == 1;
-
             if( files.count() == 1 )
             {
                 importPlainText( files.first() , ws , true );
@@ -347,7 +345,7 @@ void MainWindow::importPlainText()
                 {
                     progress.setValue(i);
                     if( QFile::exists(files.at(i)))
-                        importPlainText( files.at(i) , ws , openText );
+                        importPlainText( files.at(i) , ws , false );
                     if( progress.wasCanceled() )
                         break;
                 }
@@ -373,7 +371,7 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         Text *text = mProject->newText(name, ws, content );
         if( openText )
         {
-            TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), QList<Focus>(), this);
+            InterlinearChunkEditor * subWindow = new InterlinearChunkEditor(text, mProject, View::Full, 3, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
