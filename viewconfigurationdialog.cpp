@@ -4,6 +4,7 @@
 #include <QtDebug>
 #include <QItemSelection>
 #include <QInputDialog>
+#include <QMessageBox>
 
 #include "project.h"
 #include "view.h"
@@ -338,4 +339,54 @@ void ViewConfigurationDialog::setItemWidgetsEnabled(bool enabled)
     ui->phrasalGlossDown->setEnabled(enabled);
     ui->addPhrasalGloss->setEnabled(enabled);
     ui->removePhrasalGloss->setEnabled(enabled);
+}
+
+void ViewConfigurationDialog::accept()
+{
+    if( viewsAreAcceptable() )
+    {
+        QDialog::accept();
+    }
+}
+
+bool ViewConfigurationDialog::viewsAreAcceptable()
+{
+    if( mProject->views()->isEmpty() )
+    {
+        QMessageBox::warning(this, tr("Error"), tr("You need at least one view.") );
+        return false;
+    }
+
+    for(int i=0; i < mProject->views()->count(); i++)
+    {
+        View * v = mProject->views()->at(i);
+
+        if( v->tabs()->isEmpty() )
+        {
+            QMessageBox::warning(this, tr("Error"), tr("Each view needs at least one tab for the view '%1' (or just delete the view).").arg(v->name()) );
+            return false;
+        }
+
+        for(int j=0; j < v->tabs()->count(); j++)
+        {
+            Tab * t = v->tabs()->at(j);
+            QList<WritingSystem> keys = t->interlinearLineKeys();
+
+            if( keys.isEmpty() )
+            {
+                QMessageBox::warning(this, tr("Error"), tr("You need to have at least one entry for the view, '%1' and the tab '%2.'").arg(v->name()).arg(t->name()) );
+                return false;
+            }
+
+            for(int k=0; k < keys.count(); k++)
+            {
+                if( t->interlinearLines(keys.at(k)).isEmpty() )
+                {
+                    QMessageBox::warning(this, tr("Error"), tr("For each tab and baseline type, you need to have at least one interlinear line for the view '%1,' tab  '%2,' and baseline '%3.'").arg(v->name()).arg(t->name()).arg(keys.at(k).name()) );
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
 }

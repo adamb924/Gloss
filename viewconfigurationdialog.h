@@ -59,8 +59,11 @@ private slots:
     void setTabWidgetsEnabled(bool enabled);
     void setItemWidgetsEnabled(bool enabled);
 
+    void accept();
+
 private:
     WritingSystem currentWritingSystem() const;
+    bool viewsAreAcceptable();
 
     Ui::ViewConfigurationDialog *ui;
 
