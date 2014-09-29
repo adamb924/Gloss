@@ -165,6 +165,7 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
     phrase->clearGlossItems();
 
     QStringList words = line.split(QRegExp("\\b+"),QString::SkipEmptyParts);
+
     for(int i=0; i<words.count(); i++)
     {
         words[i] = words.at(i).trimmed();
@@ -174,6 +175,26 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
             i--;
         }
     }
+
+    /// this awkward workaround is because I don't know how to customize \b to
+    /// avoid breaking words against the zero-width non-joiner, which should
+    /// not count as a word break, but which does in Qt regular expressions.
+    int index = words.indexOf(QRegExp("[\\x200C\\x200D]"));
+    while( index != -1 )
+    {
+        if( index == 0 || index == words.length() -1 )
+        {
+            continue;
+        }
+        else
+        {
+            words[index - 1] = words.at(index-1) + words.at(index) + words.at(index+1);
+            words.removeAt(index+1);
+            words.removeAt(index);
+        }
+        index = words.indexOf(QRegExp("[\\x200C\\x200D]"));
+    }
+
     for(int i=0; i<words.count(); i++)
     {
         phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
