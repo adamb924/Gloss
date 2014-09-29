@@ -21,7 +21,7 @@ WritingSystemsEditDialog::WritingSystemsEditDialog(Project *prj, QWidget *parent
     mModel->database().transaction();
 
     mModel->setTable("WritingSystems");
-    mModel->setEditStrategy( QSqlTableModel::OnRowChange );
+    mModel->setEditStrategy( QSqlTableModel::OnManualSubmit );
     mModel->select();
 
     ui->listView->setModel(mModel);
@@ -156,6 +156,10 @@ void WritingSystemsEditDialog::updateDatabaseRecord()
 
 void WritingSystemsEditDialog::accept()
 {
+    if( ! mModel->submitAll() )
+    {
+        qWarning() << "ClosedVocabularyDialog::finalizeDatabase()" << mModel->lastError();
+    }
     mModel->database().commit();
     QDialog::accept();
 }
