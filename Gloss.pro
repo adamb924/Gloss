@@ -9,7 +9,6 @@ QT       += widgets sql xml xmlpatterns multimedia
 TARGET = Gloss
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     flowlayout.cpp \
@@ -227,14 +226,10 @@ FORMS    += mainwindow.ui \
     syntacticvocabularydialog.ui \
     lexiconlineform.ui
 
+unix:INCLUDEPATH += "/usr/include/libxml2"
+
 LIBS += -L./ \
     -lquazip \
-    -llibexslt \
-    -llibxslt \
-    -llibxml2 \
-    -liconv
-
-RESOURCES +=
-
-QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
-QMAKE_CFLAGS_WARN_OFF -= -Wunused-parameter
+    -lexslt \
+    -lxslt \
+    -lxml2
