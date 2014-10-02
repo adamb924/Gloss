@@ -230,6 +230,9 @@ public:
     SyntacticType syntacticType(const QKeySequence & keySequence) const;
     SyntacticType syntacticType(const QString & abbreviation) const;
 
+    bool multipleTextFormsAvailable(qlonglong interpretationId, const WritingSystem & ws) const;
+    bool multipleGlossesAvailable(qlonglong interpretationId, const WritingSystem & ws) const;
+
 private:    
     //! \brief Creates the tables; all tables are created with "create if not exists" -- so it's fine to call this in the constructor
     void createTables();

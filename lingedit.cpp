@@ -2,17 +2,19 @@
 
 #include <QProcess>
 #include <QtDebug>
+#include <QKeyEvent>
+#include <QColor>
 
 #include "textbit.h"
 
 LingEdit::LingEdit(QWidget *parent) :
-    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(TextBit())
+    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(TextBit()), mSpecialBorder(false)
 {
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
 
 LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
-    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(bit)
+    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(bit), mSpecialBorder(false)
 {
     setWritingSystem( mTextBit.writingSystem() );
     setText( mTextBit.text() );
@@ -51,6 +53,15 @@ void LingEdit::focusOutEvent ( QFocusEvent * e )
     QLineEdit::focusOutEvent(e);
 
     refreshStyle();
+}
+
+void LingEdit::keyPressEvent(QKeyEvent *event)
+{
+    QLineEdit::keyPressEvent(event);
+    if( event->key() == Qt::Key_Insert )
+    {
+        emit insertPressed( mTextBit.writingSystem() );
+    }
 }
 
 void LingEdit::textChanged()
@@ -97,14 +108,27 @@ void LingEdit::updateMatchingTextBit( const TextBit & bit )
 
 void LingEdit::refreshStyle()
 {
-    QString borderColor = "#f0f0f0";
-    if( hasFocus() )
-        borderColor = "#c0c0c0";
-    setStyleSheet(QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid %3; }").arg(mTextBit.writingSystem().fontFamily()).arg( mOverrideFontSize == -1 ? mTextBit.writingSystem().fontSize() : mOverrideFontSize ).arg(borderColor));
+    setStyleSheet( QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid %3; %4 }")
+                   .arg(mTextBit.writingSystem().fontFamily())
+                   .arg( mOverrideFontSize == -1 ? mTextBit.writingSystem().fontSize() : mOverrideFontSize )
+                   .arg( hasFocus() ? "#c0c0c0" : "#f0f0f0" )
+                   .arg( mSpecialBorder && hasFocus() ? "border-left-color: #0000ff;" : mSpecialBorder ? "border-left-color: #aaaaff;" : "" ) );
 }
 
 void LingEdit::setFontSize(int fontSize)
 {
-    mOverrideFontSize = fontSize;
-    refreshStyle();
+    if( mOverrideFontSize != fontSize )
+    {
+        mOverrideFontSize = fontSize;
+        refreshStyle();
+    }
+}
+
+void LingEdit::setSpecialBorder(bool special)
+{
+    if( mSpecialBorder != special )
+    {
+        mSpecialBorder = special;
+        refreshStyle();
+    }
 }

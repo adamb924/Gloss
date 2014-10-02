@@ -30,18 +30,22 @@ public:
 
     void setFontSize(int fontSize);
 
-private:
+    void setSpecialBorder(bool special);
 
+private:
     void focusInEvent ( QFocusEvent * e );
     void focusOutEvent ( QFocusEvent * e );
+    void keyPressEvent(QKeyEvent * event);
 
     int mOverrideFontSize;
     TextBit mTextBit;
+    bool mSpecialBorder;
 
     void refreshStyle();
 
 signals:
     void stringChanged( const TextBit & , LingEdit *);
+    void insertPressed( const WritingSystem & ws );
 
 public slots:
     void textChanged();

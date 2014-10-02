@@ -13,7 +13,11 @@ Concordance::Concordance(QObject *parent) :
 
 void Concordance::removeGlossItemFromConcordance( QObject * item )
 {
-    QListIterator<qlonglong> keys( mGlossItemsByTextFormId.keys( (GlossItem*)item ) );
+    QListIterator<qlonglong> keys( mGlossItemsByInterpretationId.keys( (GlossItem*)item ) );
+    while(keys.hasNext())
+        mGlossItemsByInterpretationId.remove( keys.next(), (GlossItem*)item );
+
+    keys = QListIterator<qlonglong>( mGlossItemsByTextFormId.keys( (GlossItem*)item ) );
     while(keys.hasNext())
         mGlossItemsByTextFormId.remove( keys.next(), (GlossItem*)item );
 
@@ -64,6 +68,8 @@ void Concordance::updateGlossItemGlossConcordance( GlossItem * item, qlonglong g
 {
     mGlossItemsByGlossId.remove( glossId, item );
     mGlossItemsByGlossId.insert( glossId, item );
+
+    mGlossItemsByInterpretationId.insert( item->id(), item );
 }
 
 void Concordance::updateGlossItemMorphologicalAnalysis(const GlossItem * originator, const MorphologicalAnalysis * analysis)
@@ -86,6 +92,12 @@ void Concordance::insertIntoAllomorphConcordance(Allomorph *allomorph)
     mAllomorphsByLexicalEntryId.insert( allomorph->lexicalEntryId(), allomorph );
 }
 
+void Concordance::updateGlossItemConcordance(GlossItem *item)
+{
+    mGlossItemsByInterpretationId.remove( mGlossItemsByInterpretationId.key(item), item );
+    mGlossItemsByInterpretationId.insert( item->id() , item );
+}
+
 void Concordance::removeFromAllomorphConcordance(Allomorph *allomorph)
 {
     mAllomorphsByLexicalEntryId.remove( allomorph->lexicalEntryId(), allomorph );
@@ -101,4 +113,19 @@ void Concordance::updateAllomorphTextForms(Allomorph *allomorph)
             a->setGlosses( allomorph->glosses() );
         }
     }
+}
+
+void Concordance::updateTextFormNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
+{
+    QList<GlossItem*> glossItems = mGlossItemsByInterpretationId.values( interpretationId );
+    qDebug() << interpretationId << glossItems << ws << multipleAvailable;
+    foreach(GlossItem *glossItem, glossItems)
+        glossItem->setMultipleTextFormsAvailable( ws, multipleAvailable );
+}
+
+void Concordance::updateGlossNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
+{
+    QList<GlossItem*> glossItems = mGlossItemsByInterpretationId.values( interpretationId );
+    foreach(GlossItem *glossItem, glossItems)
+        glossItem->setMultipleGlossesAvailable( ws, multipleAvailable );
 }

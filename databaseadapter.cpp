@@ -1108,6 +1108,34 @@ SyntacticType DatabaseAdapter::syntacticType(const QString &abbreviation) const
     return mSyntacticTypesByAbbreviation.value(abbreviation, SyntacticType() );
 }
 
+bool DatabaseAdapter::multipleTextFormsAvailable(qlonglong interpretationId, const WritingSystem &ws) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select count(_id) from TextForms where InterpretationId=:InterpretationId and WritingSystem=:WritingSystem;");
+    q.bindValue(":InterpretationId",interpretationId);
+    q.bindValue(":WritingSystem",ws.id());
+    if( !q.exec() || !q.next() )
+    {
+        qWarning() << "DatabaseAdapter::multipleTextFormsAvailable" << q.lastError().text() << q.executedQuery();
+        return false;
+    }
+    return q.value(0).toInt() > 1;
+}
+
+bool DatabaseAdapter::multipleGlossesAvailable(qlonglong interpretationId, const WritingSystem &ws) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select count(_id) from Glosses where InterpretationId=:InterpretationId and WritingSystem=:WritingSystem;");
+    q.bindValue(":InterpretationId",interpretationId);
+    q.bindValue(":WritingSystem",ws.id());
+    if( !q.exec() || !q.next() )
+    {
+        qWarning() << "DatabaseAdapter::multipleGlossesAvailable" << q.lastError().text() << q.executedQuery();
+        return false;
+    }
+    return q.value(0).toInt() > 1;
+}
+
 TextBitHash DatabaseAdapter::lexicalEntryCitationFormsForAllomorph(qlonglong allomorphId) const
 {
     TextBitHash forms;

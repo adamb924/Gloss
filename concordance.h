@@ -28,12 +28,40 @@ public:
 signals:
 
 public slots:
+    /** @name Inserting concordance items
+     * Inserts new items into the concordance
+     */
+    ///@{
+    void insertIntoAllomorphConcordance( Allomorph * allomorph );
+
+    void updateGlossItemConcordance( GlossItem * item );
+
+    //! \brief Insert \a item into the GlossItem by TextForm id concordance, indexed by \a textFormId. If \a item was previouly indexed by another id, that is removed.
+    void updateGlossItemTextFormConcordance( GlossItem * item, qlonglong textFormId );
+
+    //! \brief Insert \a item into the GlossItem by gloss id concordance, indexed by \a glossId. If \a item was previouly indexed by another id, that is removed.
+    void updateGlossItemGlossConcordance( GlossItem * item, qlonglong glossId );
+
+    ///@}
+
+    /** @name Removing Concordance items
+     * Remove items from the concordance when they are no longer applicable.
+     */
+    ///@{
+
     //! \brief Removes \a item from the GlossItem concordance and the GlossItem by TextForm id concordance.
     void removeGlossItemFromConcordance( QObject * item );
 
     void removeGlossItemTextFormIdPair(GlossItem *item , qlonglong textFormId );
 
     void removeGlossItemGlossIdPair(GlossItem *item , qlonglong glossId );
+
+    void removeFromAllomorphConcordance( Allomorph * allomorph );
+
+    /** @name Update methods
+     * These methods are the reason for the concordance
+     */
+    ///@{
 
     //! Updates all widgets displaying the gloss indicated by \a bit (and its id())
     void updateGloss( const TextBit & bit );
@@ -44,22 +72,21 @@ public slots:
     //! \brief Alert all GlossItems in the concordance that an alternate interpretation is available
     void updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId );
 
-    //! \brief Insert \a item into the GlossItem by TextForm id concordance, indexed by \a textFormId. If \a item was previouly indexed by another id, that is removed.
-    void updateGlossItemTextFormConcordance( GlossItem * item, qlonglong textFormId );
-
-    //! \brief Insert \a item into the GlossItem by gloss id concordance, indexed by \a glossId. If \a item was previouly indexed by another id, that is removed.
-    void updateGlossItemGlossConcordance( GlossItem * item, qlonglong glossId );
-
     //! \brief Updates gloss items with \a textFormId so that they contain \a analysis
     void updateGlossItemMorphologicalAnalysis(const GlossItem * originator, const MorphologicalAnalysis *analysis );
 
-    void insertIntoAllomorphConcordance( Allomorph * allomorph );
-
-    void removeFromAllomorphConcordance( Allomorph * allomorph );
-
     void updateAllomorphTextForms( Allomorph * allomorph );
 
+    void updateTextFormNumber(bool multipleAvailable , qlonglong interpretationId , const WritingSystem &ws);
+
+    void updateGlossNumber(bool multipleAvailable, qlonglong interpretationId , const WritingSystem &ws );
+
+    ///@}
+
 private:
+    //! \brief GlossItem objects, indexed by interpretation id
+    QMultiHash<qlonglong,GlossItem*> mGlossItemsByInterpretationId;
+
     //! \brief GlossItem objects, indexed by text form id
     QMultiHash<qlonglong,GlossItem*> mGlossItemsByTextFormId;
 

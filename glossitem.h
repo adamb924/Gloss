@@ -71,9 +71,6 @@ public:
     //! \brief Set the candidate status of the GlossItem to \a status.
     void setCandidateNumber(CandidateNumber status);
 
-    //! \brief Set the candidate number status from what is stored in the database.
-    void setCandidateNumberFromDatabase();
-
     //! \brief Set the approval status of the GlossItem to \a status.
     void setApprovalStatus(ApprovalStatus status);
 
@@ -131,12 +128,22 @@ public:
     //! \brief Returns true if the object represents punctuation; otherwise false.
     bool isPunctuation() const;
 
+    bool multipleTextFormsAvailable( const WritingSystem & ws ) const;
+    bool multipleGlossesAvailable( const WritingSystem & ws ) const;
+
+    void setMultipleTextFormsAvailable(const WritingSystem & ws, bool multiple);
+    void setMultipleGlossesAvailable( const WritingSystem & ws, bool multiple );
+
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
     void candidateNumberChanged(GlossItem::CandidateNumber status);
 
     //! \brief Emitted when the candidate status of the GlossItem changes
     void candidateNumberChanged( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId );
+
+    void textFormNumberChanged( bool multipleAvailable, qlonglong interpretationId, const WritingSystem & ws);
+
+    void glossNumberChanged( bool multipleAvailable, qlonglong interpretationId, const WritingSystem & ws);
 
     //! \brief Emitted when the approval status of the GlossItem changes
     void approvalStatusChanged(GlossItem::ApprovalStatus status);
@@ -182,6 +189,17 @@ private:
     //! \brief Resets the concordance's entries for this GlossItem (by text form and gloss)
     void updateGlossItemConcordance();
 
+    //! \brief Set the candidate number status from what is stored in the database.
+    void setCandidateNumberFromDatabase();
+
+    void setTextFormNumberFromDatabase();
+
+    void setGlossNumberFromDatabase();
+
+    void setTextFormNumberFromDatabase(const WritingSystem & ws);
+
+    void setGlossNumberFromDatabase(const WritingSystem & ws);
+
     QHash<WritingSystem,MorphologicalAnalysis*> mMorphologicalAnalyses;
 
     QHash<QString,TextBit> mAnnotations;
@@ -197,6 +215,8 @@ private:
 
     TextBitHash mTextForms;
     TextBitHash mGlosses;
+    QHash<WritingSystem,bool> mMultipleTextForms;
+    QHash<WritingSystem,bool> mMultipleGlosses;
 };
 
 #endif // GLOSSITEM_H

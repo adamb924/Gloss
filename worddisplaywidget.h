@@ -137,6 +137,9 @@ private slots:
     void newGloss(const WritingSystem & ws);
     void newTextForm(const WritingSystem & ws);
 
+    void setTextFormNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws);
+    void setGlossNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws);
+
     void changeFollowingToMatchTextForm(QAction *action);
     void changeFollowingToMatchGloss(QAction *action);
 

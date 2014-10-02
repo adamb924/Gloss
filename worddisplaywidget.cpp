@@ -40,6 +40,9 @@ WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, c
     connect( this, SIGNAL(requestTextFormSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForTextFormById(qlonglong) ));
     connect( this, SIGNAL(requestGlossSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForGlossById(qlonglong) ));
 
+    connect( mGlossItem, SIGNAL(glossNumberChanged(bool,qlonglong,WritingSystem)), this, SLOT(setGlossNumber(bool,qlonglong,WritingSystem)) );
+    connect( mGlossItem, SIGNAL(textFormNumberChanged(bool,qlonglong,WritingSystem)), this, SLOT(setTextFormNumber(bool,qlonglong,WritingSystem)) );
+
     setupShortcuts();
 
     fillData();
@@ -168,6 +171,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
 
     // update the gloss item
     connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setGloss(TextBit)) );
+    connect(edit, SIGNAL(insertPressed(WritingSystem)), this, SLOT(newGloss(WritingSystem)));
 
     return edit;
 }
@@ -183,6 +187,7 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
 
     // update the gloss item
     connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setTextForm(TextBit)) );
+    connect(edit, SIGNAL(insertPressed(WritingSystem)), this, SLOT(newTextForm(WritingSystem)));
 
     return edit;
 }
@@ -535,6 +540,7 @@ void WordDisplayWidget::newGloss(const WritingSystem & ws)
         qlonglong id = mDbAdapter->newGloss( mGlossItem->id() , newGloss );
         newGloss.setId(id);
         mGlossItem->setGloss( newGloss );
+        mGlossEdits.value(ws)->setSpecialBorder(true);
         fillData();
     }
 }
@@ -550,8 +556,19 @@ void WordDisplayWidget::newTextForm(const WritingSystem & ws)
         qlonglong id = mDbAdapter->newTextForm( mGlossItem->id() , newGloss );
         newGloss.setId(id);
         mGlossItem->setTextForm( newGloss );
+        mTextFormEdits.value(ws)->setSpecialBorder(true);
         fillData();
     }
+}
+
+void WordDisplayWidget::setTextFormNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
+{
+    mTextFormEdits[ws]->setSpecialBorder(multipleAvailable);
+}
+
+void WordDisplayWidget::setGlossNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
+{
+    mGlossEdits[ws]->setSpecialBorder(multipleAvailable);
 }
 
 
@@ -580,9 +597,11 @@ void WordDisplayWidget::fillData()
             {
             case InterlinearItemType::Text:
                 mTextFormEdits[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->textForm(mGlossLines.at(i).writingSystem()) );
+                mTextFormEdits[mGlossLines.at(i).writingSystem()]->setSpecialBorder( mGlossItem->multipleTextFormsAvailable( mGlossLines.at(i).writingSystem() ) );
                 break;
             case InterlinearItemType::Gloss:
                 mGlossEdits[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->gloss( mGlossLines.at(i).writingSystem() ) );
+                mGlossEdits[mGlossLines.at(i).writingSystem()]->setSpecialBorder( mGlossItem->multipleGlossesAvailable( mGlossLines.at(i).writingSystem() ) );
                 break;
             case InterlinearItemType::ImmutableText:
                 mImmutableLines[mGlossLines.at(i).writingSystem()]->setTextBit( mGlossItem->textForm( mGlossLines.at(i).writingSystem() ) );

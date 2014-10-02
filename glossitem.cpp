@@ -43,6 +43,8 @@ GlossItem::GlossItem(const WritingSystem & ws, const QSet<qlonglong> & textForms
         mGlosses.insert( gloss.writingSystem() , gloss );
     }
 
+    mConcordance->updateGlossItemConcordance( this );
+
     setCandidateNumberFromDatabase();
     updateGlossItemConcordance();
 }
@@ -81,6 +83,8 @@ void GlossItem::setInterpretation(qlonglong id)
 
         mId = id;
 
+        mConcordance->updateGlossItemConcordance( this );
+
         mTextForms.clear();
         mGlosses.clear();
 
@@ -111,6 +115,8 @@ void GlossItem::setGloss(const TextBit & gloss)
 
         mDbAdapter->updateGloss(gloss);
         mGlosses.insert( gloss.writingSystem(), gloss );
+
+        setGlossNumberFromDatabase( gloss.writingSystem() );
 
         mConcordance->updateGlossItemGlossConcordance( this, gloss.id() );
 
@@ -144,6 +150,10 @@ void GlossItem::setTextForm(const TextBit & textForm)
 
         mDbAdapter->updateTextForm(textForm);
         mTextForms.insert( ws , textForm );
+
+        qDebug() << "GlossItem::setTextForm";
+
+        setTextFormNumberFromDatabase( ws );
 
         mConcordance->updateGlossItemTextFormConcordance( this, textForm.id() );
 
@@ -213,6 +223,34 @@ void GlossItem::setCandidateNumberFromDatabase()
         setCandidateNumber(GlossItem::MultipleOption);
     else
         setCandidateNumber(GlossItem::SingleOption);
+    setTextFormNumberFromDatabase();
+    setGlossNumberFromDatabase();
+}
+
+void GlossItem::setTextFormNumberFromDatabase()
+{
+    foreach(WritingSystem ws, mTextForms.keys() )
+    {
+        setTextFormNumberFromDatabase( ws );
+    }
+}
+
+void GlossItem::setGlossNumberFromDatabase()
+{
+    foreach(WritingSystem ws, mGlosses.keys() )
+    {
+        setGlossNumberFromDatabase( ws );
+    }
+}
+
+void GlossItem::setTextFormNumberFromDatabase(const WritingSystem &ws)
+{
+    setMultipleTextFormsAvailable( ws, mDbAdapter->multipleTextFormsAvailable( mId , ws ) );
+}
+
+void GlossItem::setGlossNumberFromDatabase(const WritingSystem &ws)
+{
+    setMultipleGlossesAvailable( ws, mDbAdapter->multipleGlossesAvailable( mId , ws ) );
 }
 
 void GlossItem::setApprovalStatus(ApprovalStatus status)
@@ -418,6 +456,34 @@ bool GlossItem::isPunctuation() const
     return true;
 }
 
+bool GlossItem::multipleTextFormsAvailable(const WritingSystem &ws) const
+{
+    return mMultipleTextForms.value(ws, false);
+}
+
+bool GlossItem::multipleGlossesAvailable(const WritingSystem &ws) const
+{
+    return mMultipleGlosses.value(ws, false);
+}
+
+void GlossItem::setMultipleTextFormsAvailable(const WritingSystem &ws, bool multiple)
+{
+    if( mMultipleTextForms.value(ws) != multiple )
+    {
+        mMultipleTextForms[ws] = multiple;
+        emit textFormNumberChanged(multiple, mId, ws );
+    }
+}
+
+void GlossItem::setMultipleGlossesAvailable(const WritingSystem &ws, bool multiple)
+{
+    if( mMultipleGlosses.value(ws) != multiple )
+    {
+        mMultipleGlosses[ws] = multiple;
+        emit glossNumberChanged(multiple, mId, ws );
+    }
+}
+
 QList<WritingSystem> GlossItem::nonEmptyMorphologicalAnalysisLanguages() const
 {
     QList<WritingSystem> languages;
@@ -439,6 +505,8 @@ Concordance* GlossItem::concordance()
 
 void GlossItem::updateGlossItemConcordance()
 {
+    mConcordance->updateGlossItemConcordance( this );
+
     mConcordance->removeGlossItemFromConcordance(this);
     TextBitHashIterator iter(mTextForms);
     while(iter.hasNext())
@@ -527,6 +595,8 @@ void GlossItem::connectToConcordance()
 {
     connect( this, SIGNAL(destroyed(QObject*)), mConcordance, SLOT(removeGlossItemFromConcordance(QObject*)), Qt::UniqueConnection);
     connect( this, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), mConcordance, SLOT(updateInterpretationsAvailableForGlossItem(GlossItem::CandidateNumber,qlonglong)), Qt::UniqueConnection);
+    connect( this, SIGNAL(textFormNumberChanged(bool,qlonglong,const WritingSystem&)), mConcordance, SLOT(updateTextFormNumber(bool,qlonglong,const WritingSystem&)));
+    connect( this, SIGNAL(glossNumberChanged(bool,qlonglong,const WritingSystem&)), mConcordance, SLOT(updateGlossNumber(bool,qlonglong,const WritingSystem&)) );
     connect( this, SIGNAL(textFormChanged(TextBit)), mConcordance, SLOT(updateTextForm(TextBit)), Qt::UniqueConnection);
     connect( this, SIGNAL(glossChanged(TextBit)), mConcordance, SLOT(updateGloss(TextBit)), Qt::UniqueConnection);
     connect( this, SIGNAL(morphologicalAnalysisChanged(const GlossItem*,const MorphologicalAnalysis*)), mConcordance, SLOT(updateGlossItemMorphologicalAnalysis(const GlossItem*,const MorphologicalAnalysis*)), Qt::UniqueConnection);
