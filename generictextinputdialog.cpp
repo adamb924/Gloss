@@ -48,6 +48,12 @@ GenericTextInputDialog::~GenericTextInputDialog()
     delete ui;
 }
 
+void GenericTextInputDialog::suggestInput(const TextBit &bit)
+{
+    ui->textEdit->setTextBit( bit );
+    ui->textEdit->setSelection( 0, ui->textEdit->text().length() );
+}
+
 void GenericTextInputDialog::fillWritingSystems()
 {
     for(int i=0; i<mWritingSystems.count(); i++)

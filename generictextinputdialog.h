@@ -28,6 +28,8 @@ public:
     GenericTextInputDialog(const TextBit & bit, QWidget *parent = 0);
     ~GenericTextInputDialog();
 
+    void suggestInput( const TextBit & bit );
+
     QString text() const;
     TextBit textBit() const;
     WritingSystem writingSystem() const;

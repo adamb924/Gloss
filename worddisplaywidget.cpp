@@ -528,6 +528,7 @@ void WordDisplayWidget::newGloss(const WritingSystem & ws)
 {
     GenericTextInputDialog dialog( ws , this );
     dialog.setWindowTitle(tr("New %1 gloss").arg(ws.name()));
+    dialog.suggestInput( mGlossEdits.value(ws)->textBit() );
     if( dialog.exec() == QDialog::Accepted )
     {
         TextBit newGloss = dialog.textBit();
@@ -542,6 +543,7 @@ void WordDisplayWidget::newTextForm(const WritingSystem & ws)
 {
     GenericTextInputDialog dialog( ws , this );
     dialog.setWindowTitle(tr("New %1 text form").arg(ws.name()));
+    dialog.suggestInput( mTextFormEdits.value(ws)->textBit() );
     if( dialog.exec() == QDialog::Accepted )
     {
         TextBit newGloss = dialog.textBit();
