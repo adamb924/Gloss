@@ -203,7 +203,7 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
     mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
-    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
+    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
 
     return immutableLabel;
 }
@@ -220,7 +220,7 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
     mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
-    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
+    connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
 
     return immutableLabel;
 }
@@ -563,11 +563,13 @@ void WordDisplayWidget::newTextForm(const WritingSystem & ws)
 
 void WordDisplayWidget::setTextFormNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
 {
+    Q_UNUSED(interpretationId);
     mTextFormEdits[ws]->setSpecialBorder(multipleAvailable);
 }
 
 void WordDisplayWidget::setGlossNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
 {
+    Q_UNUSED(interpretationId);
     mGlossEdits[ws]->setSpecialBorder(multipleAvailable);
 }
 

@@ -136,10 +136,7 @@ public:
 
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
-    void candidateNumberChanged(GlossItem::CandidateNumber status);
-
-    //! \brief Emitted when the candidate status of the GlossItem changes
-    void candidateNumberChanged( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId );
+    void candidateNumberChanged( GlossItem::CandidateNumber mCandidateNumber, qlonglong interpretationId );
 
     void textFormNumberChanged( bool multipleAvailable, qlonglong interpretationId, const WritingSystem & ws);
 

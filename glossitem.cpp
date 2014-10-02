@@ -212,8 +212,7 @@ void GlossItem::setCandidateNumber(CandidateNumber status)
     if( mCandidateNumber != status )
     {
         mCandidateNumber = status;
-        emit candidateNumberChanged(mCandidateNumber);
-        emit candidateNumberChanged( mCandidateNumber, baselineText().id() );
+        emit candidateNumberChanged( mCandidateNumber, mId );
     }
 }
 

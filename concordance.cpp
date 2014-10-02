@@ -51,9 +51,9 @@ void Concordance::updateTextForm( const TextBit & bit )
         glossItem->setTextFormText(bit);
 }
 
-void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId )
+void Concordance::updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong interpretationID )
 {
-    QList<GlossItem*> itemList = mGlossItemsByTextFormId.values( textFormId );
+    QList<GlossItem*> itemList = mGlossItemsByInterpretationId.values( interpretationID );
     foreach(GlossItem *item, itemList)
         item->setCandidateNumber( mCandidateNumber );
 }

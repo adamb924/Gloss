@@ -70,7 +70,7 @@ public slots:
     void updateTextForm( const TextBit & bit );
 
     //! \brief Alert all GlossItems in the concordance that an alternate interpretation is available
-    void updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong textFormId );
+    void updateInterpretationsAvailableForGlossItem( GlossItem::CandidateNumber mCandidateNumber, qlonglong interpretationID );
 
     //! \brief Updates gloss items with \a textFormId so that they contain \a analysis
     void updateGlossItemMorphologicalAnalysis(const GlossItem * originator, const MorphologicalAnalysis *analysis );
