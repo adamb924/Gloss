@@ -251,7 +251,10 @@ void MainWindow::closeProject()
 
 void MainWindow::closeProjectWithoutSaving()
 {
-    projectClose();
+    if( QMessageBox::question(this, tr("Really?"), tr("Are you sure you want to lose any changes you made?")) == QMessageBox::Yes )
+    {
+        projectClose();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
