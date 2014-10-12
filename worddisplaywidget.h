@@ -71,7 +71,6 @@ private:
     AnalysisWidget* addAnalysisWidget( const InterlinearItemType & glossLine );
 
     QLabel *mBaselineWordLabel;
-    QList<InterlinearItemType> mGlossLines;
     QHash<WritingSystem, LingEdit*> mTextFormEdits;
     QHash<WritingSystem, LingEdit*> mGlossEdits;
     QHash<WritingSystem, ImmutableLabel*> mImmutableLines;
@@ -81,11 +80,11 @@ private:
     void mousePressEvent(QMouseEvent * event);
 
     Project * mProject;
-    const Tab * mTab;
     const DatabaseAdapter *mDbAdapter;
     GlossItem *mGlossItem;
     Concordance *mConcordance;
     Qt::Alignment mAlignment;
+    QList<InterlinearItemType> * mGlossLines;
 
 signals:
     void splitWidgetInTwo( GlossItem *glossItem, const TextBit & wordOne, const TextBit & wordTwo );

@@ -34,12 +34,9 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
 {
     if( elements.isEmpty() ) return;
 
-    bool bAllTerminals = allTerminals(elements);
     bool bAreSisters = areSisters(elements);
     bool bAnyHaveParents = anyHaveParents(elements);
     bool bNoneHaveParents = !bAnyHaveParents;
-
-    qDebug() << bAllTerminals << bNoneHaveParents << bAreSisters << bAnyHaveParents;
 
     SyntacticAnalysisElement *newElement = 0;
 

@@ -37,10 +37,9 @@ class AnnotationMarkWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AnnotationMarkWidget(const QList<AnnotationType> & annotationTypes, GlossItem * glossItem, QWidget *parent = 0);
+    AnnotationMarkWidget(const QList<AnnotationType> * annotationTypes, const GlossItem * glossItem, QWidget *parent = 0);
 
 signals:
-    void annotationActivated( GlossItem * item , const QString & string );
     void annotationActivated( const QString & string );
 
 public slots:
@@ -50,8 +49,8 @@ private slots:
     void markActivated( Mark * mark );
 
 private:
-    GlossItem * mGlossItem;
-    QList<AnnotationType> mAnnotationTypes;
+    const GlossItem * mGlossItem;
+    const QList<AnnotationType> * mAnnotationTypes;
     QVBoxLayout * mLayout;
     QList<Mark*> mMarks;
 };

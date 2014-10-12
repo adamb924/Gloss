@@ -61,15 +61,15 @@ void Tab::setPhrasalGloss(int index, const InterlinearItemType &type)
     mPhrasalGlossLines.replace(index, type);
 }
 
-InterlinearItemTypeList Tab::interlinearLines(const WritingSystem &ws) const
+InterlinearItemTypeList * Tab::interlinearLines(const WritingSystem &ws) const
 {
     if( mInterlinearLines.contains(ws) )
     {
-        return * mInterlinearLines.value(ws);
+        return mInterlinearLines.value(ws);
     }
     else
     {
-        return InterlinearItemTypeList();
+        return new InterlinearItemTypeList();
     }
 }
 

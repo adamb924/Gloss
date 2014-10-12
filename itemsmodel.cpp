@@ -10,7 +10,7 @@ void ItemsModel::addItem(InterlinearItemType type, const WritingSystem & ws)
 {
     if( mTab->interlinearLineKeys().contains(ws) )
     {
-        QAbstractListModel::beginInsertRows(QModelIndex(), mTab->interlinearLines(ws).count(), mTab->interlinearLines(ws).count() );
+        QAbstractListModel::beginInsertRows(QModelIndex(), mTab->interlinearLines(ws)->count(), mTab->interlinearLines(ws)->count() );
     }
     else
     {
@@ -44,7 +44,7 @@ int ItemsModel::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent);
     if( mTab->interlinearLineKeys().contains( mWritingSystem ) )
     {
-        return mTab->interlinearLines(mWritingSystem).count();
+        return mTab->interlinearLines(mWritingSystem)->count();
     }
     else
     {
@@ -56,7 +56,7 @@ QVariant ItemsModel::data(const QModelIndex &index, int role) const
 {
     if ( role == Qt::DisplayRole )
     {
-        return tr("%1 (%2)").arg( mTab->interlinearLines(mWritingSystem).at( index.row() ).typeString() ).arg( mTab->interlinearLines(mWritingSystem).at( index.row() ).writingSystem().name() );
+        return tr("%1 (%2)").arg( mTab->interlinearLines(mWritingSystem)->at( index.row() ).typeString() ).arg( mTab->interlinearLines(mWritingSystem)->at( index.row() ).writingSystem().name() );
     }
     return QVariant();
 }
@@ -80,7 +80,7 @@ void ItemsModel::moveUp(const WritingSystem & ws, int index)
 
 void ItemsModel::moveDown(const WritingSystem & ws, int index)
 {
-    if( index+1 < mTab->interlinearLines(ws).count() )
+    if( index+1 < mTab->interlinearLines(ws)->count() )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index+1, index+1, QModelIndex(), index);
         mTab->interlinearLineSwap( ws, index, index+1 );

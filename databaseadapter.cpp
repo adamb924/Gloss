@@ -173,6 +173,23 @@ QHash<qlonglong,QString> DatabaseAdapter::interpretationTextForms(qlonglong inte
     return candidates;
 }
 
+TextBit DatabaseAdapter::interpretationTextForm(qlonglong interpretationId, qlonglong writingSystemId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id,Form from TextForms where InterpretationId=:InterpretationId and WritingSystem=:WritingSystem limit 1;");
+    q.bindValue(":InterpretationId",interpretationId);
+    q.bindValue(":WritingSystem",writingSystemId);
+
+    if( !q.exec() || !q.next() )
+    {
+        return newTextForm( interpretationId, writingSystemId );
+    }
+    else
+    {
+        return TextBit( q.value(1).toString(), mWritingSystemByRowId.value(writingSystemId), q.value(0).toLongLong() );
+    }
+}
+
 QHash<qlonglong,QString> DatabaseAdapter::interpretationGlosses(qlonglong interpretationId, qlonglong writingSystemId) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
@@ -189,7 +206,25 @@ QHash<qlonglong,QString> DatabaseAdapter::interpretationGlosses(qlonglong interp
     return candidates;
 }
 
-qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong writingSystemId) const
+TextBit DatabaseAdapter::interpretationGloss(qlonglong interpretationId, qlonglong writingSystemId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select _id,Form from Glosses where InterpretationId=:InterpretationId and WritingSystem=:WritingSystem limit 1;");
+    q.bindValue(":InterpretationId",interpretationId);
+    q.bindValue(":WritingSystem",writingSystemId);
+
+    if( !q.exec() || !q.next() )
+    {
+        return newGloss( interpretationId, writingSystemId );
+    }
+    else
+    {
+        return TextBit( q.value(1).toString(), mWritingSystemByRowId.value(writingSystemId), q.value(0).toLongLong() );
+    }
+
+}
+
+TextBit DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong writingSystemId) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("insert into TextForms (InterpretationId,WritingSystem) values (:InterpretationId,:WritingSystem);");
@@ -198,16 +233,16 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, qlonglong wri
 
     if(q.exec())
     {
-        return q.lastInsertId().toLongLong();
+        return TextBit("", mWritingSystemByRowId.value(writingSystemId), q.lastInsertId().toLongLong());
     }
     else
     {
         qWarning() << "DatabaseAdapter::newTextForm" << q.lastError().text() << q.executedQuery();
-        return -1;
+        return TextBit();
     }
 }
 
-qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit & bit) const
+TextBit DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit & bit) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
@@ -218,12 +253,14 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit
     if(q.exec())
     {
         if( q.next() )
-            return q.value(0).toLongLong();
+        {
+            return TextBit( bit.text(), bit.writingSystem(), q.value(0).toLongLong() );
+        }
     }
     else
     {
         qWarning() << "DatabaseAdapter::newTextForm" << q.lastError().text() << q.executedQuery();
-        return -1;
+        return TextBit();
     }
 
     q.prepare("insert into TextForms (InterpretationId,WritingSystem,Form) values (:InterpretationId,:WritingSystem,:Form);");
@@ -232,16 +269,16 @@ qlonglong DatabaseAdapter::newTextForm(qlonglong interpretationId, const TextBit
     q.bindValue(":Form",bit.text());
     if(q.exec())
     {
-        return q.lastInsertId().toLongLong();
+        return TextBit( bit.text(), bit.writingSystem(), q.lastInsertId().toLongLong() );
     }
     else
     {
         qWarning() << "DatabaseAdapter::newTextForm" << q.lastError().text() << q.executedQuery();
-        return -1;
+        return TextBit();
     }
 }
 
-qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writingSystemId) const
+TextBit DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writingSystemId) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("insert into Glosses (InterpretationId,WritingSystem) values (:InterpretationId,:WritingSystem);");
@@ -249,16 +286,16 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, qlonglong writin
     q.bindValue(":WritingSystem",writingSystemId);
     if(q.exec() )
     {
-        return q.lastInsertId().toLongLong();
+        return TextBit( "", mWritingSystemByRowId.value(writingSystemId), q.lastInsertId().toLongLong() );
     }
     else
     {
         qWarning() << "DatabaseAdapter::newGloss" << q.lastError().text() << q.executedQuery();
-        return -1;
+        return TextBit();
     }
 }
 
-qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & bit) const
+TextBit DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & bit) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
@@ -269,12 +306,12 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & 
     if(q.exec())
     {
         if( q.next() )
-            return q.value(0).toLongLong();
+            return TextBit( bit.text(), bit.writingSystem(), q.value(0).toLongLong() );
     }
     else
     {
         qWarning() << "DatabaseAdapter::newGloss" << q.lastError().text() << q.executedQuery();
-        return -1;
+        return TextBit();
     }
 
     q.prepare("insert into Glosses (InterpretationId,WritingSystem,Form) values (:InterpretationId,:WritingSystem,:Form);");
@@ -283,12 +320,12 @@ qlonglong DatabaseAdapter::newGloss(qlonglong interpretationId, const TextBit & 
     q.bindValue(":Form",bit.text());
     if(q.exec())
     {
-        return q.lastInsertId().toLongLong();
+        return TextBit( bit.text(), bit.writingSystem(), q.lastInsertId().toLongLong() );
     }
     else
     {
         qWarning() << "DatabaseAdapter::newGloss" << q.lastError().text() << q.executedQuery();
-        return -1;
+        return TextBit();
     }
 }
 

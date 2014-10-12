@@ -31,6 +31,13 @@ void ImmutableLabel::setApprovalStatus(GlossItem::ApprovalStatus status)
     updateStyle();
 }
 
+void ImmutableLabel::setCandidateNumberAndApprovalStatus(GlossItem::CandidateNumber number, GlossItem::ApprovalStatus status)
+{
+    mCandidateNumber = number;
+    mApprovalStatus = status;
+    updateStyle();
+}
+
 void ImmutableLabel::setTextBit(const TextBit & bit)
 {
     mTextBit = bit;

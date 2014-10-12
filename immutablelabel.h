@@ -26,6 +26,7 @@ signals:
 public slots:
     void setCandidateNumber(GlossItem::CandidateNumber status);
     void setApprovalStatus(GlossItem::ApprovalStatus status);
+    void setCandidateNumberAndApprovalStatus(GlossItem::CandidateNumber number, GlossItem::ApprovalStatus status);
     void setTextBit(const TextBit & bit);
 
 private:

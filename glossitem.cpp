@@ -151,8 +151,6 @@ void GlossItem::setTextForm(const TextBit & textForm)
         mDbAdapter->updateTextForm(textForm);
         mTextForms.insert( ws , textForm );
 
-        qDebug() << "GlossItem::setTextForm";
-
         setTextFormNumberFromDatabase( ws );
 
         mConcordance->updateGlossItemTextFormConcordance( this, textForm.id() );
@@ -311,17 +309,9 @@ TextBit GlossItem::textForm(const WritingSystem & ws)
 {
     if( !mTextForms.contains( ws ) )
     {
-        QHash<qlonglong,QString> possible = mDbAdapter->interpretationTextForms(mId, ws.id());
-        if( possible.count() > 0 )
-        {
-            qlonglong id = possible.keys().first();
-            setTextForm( TextBit( possible.value(id) , ws , id ));
-        }
-        else
-        {
-            qlonglong id = mDbAdapter->newTextForm(mId, ws.id());
-            setTextForm( mDbAdapter->textFormFromId(id) );
-        }
+        mTextForms[ws] = mDbAdapter->interpretationTextForm( mId, ws.id() );
+        /// @todo The above line is far more efficient, but does it work as well?
+//        setTextForm( mDbAdapter->interpretationTextForm( mId, ws.id() ) );
     }
     return mTextForms.value(ws);
 }
@@ -330,17 +320,9 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
 {
     if( !mGlosses.contains( ws ) )
     {
-        QHash<qlonglong,QString> possible = mDbAdapter->interpretationGlosses(mId, ws.id());
-        if( possible.count() > 0 )
-        {
-            qlonglong id = possible.keys().first();
-            setGloss( TextBit( possible.value(id) , ws, id ) );
-        }
-        else
-        {
-            qlonglong id = mDbAdapter->newGloss(mId, ws.id());
-            setGloss( mDbAdapter->glossFromId(id) );
-        }
+        mGlosses[ws] = mDbAdapter->interpretationGloss( mId , ws.id() );
+        /// @todo The above line is far more efficient, but does it work as well?
+//        setGloss( mDbAdapter->interpretationGloss( mId , ws.id() ) );
     }
     return mGlosses.value(ws);
 }
@@ -388,7 +370,7 @@ void GlossItem::loadStringsFromDatabase()
             if(textForms.count() > 0 )
                 fromTextForms.setId( textForms.keys().first() );
             else
-                fromTextForms.setId( mDbAdapter->newTextForm( mId, tfIter.value() ) );
+                fromTextForms.setId( mDbAdapter->newTextForm( mId, tfIter.value() ).id() );
         }
         else
         {
@@ -412,7 +394,7 @@ void GlossItem::loadStringsFromDatabase()
             if(glosses.count() > 0 )
                 fromGlosses.setId( glosses.keys().first() );
             else
-                fromGlosses.setId( mDbAdapter->newGloss( mId, gIter.value() ) );
+                fromGlosses.setId( mDbAdapter->newGloss( mId, gIter.value() ).id() );
         }
         else
         {

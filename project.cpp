@@ -1214,10 +1214,10 @@ void Project::serializeConfigurationXml()
                 stream.writeStartElement("item-type");
                 stream.writeAttribute("baseline-writing-system", ws.flexString() );
 
-                InterlinearItemTypeList lines =  tab->interlinearLines(ws);
-                for(int l=0; l < lines.count(); l++)
+                InterlinearItemTypeList * lines =  tab->interlinearLines(ws);
+                for(int l=0; l < lines->count(); l++)
                 {
-                    InterlinearItemType type = lines.at(l);
+                    InterlinearItemType type = lines->at(l);
 
                     stream.writeEmptyElement("interlinear-line");
                     stream.writeAttribute("type", type.typeXmlString() );

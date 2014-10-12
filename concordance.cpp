@@ -118,7 +118,6 @@ void Concordance::updateAllomorphTextForms(Allomorph *allomorph)
 void Concordance::updateTextFormNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
 {
     QList<GlossItem*> glossItems = mGlossItemsByInterpretationId.values( interpretationId );
-    qDebug() << interpretationId << glossItems << ws << multipleAvailable;
     foreach(GlossItem *glossItem, glossItems)
         glossItem->setMultipleTextFormsAvailable( ws, multipleAvailable );
 }

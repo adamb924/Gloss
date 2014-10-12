@@ -3,15 +3,13 @@
 #include "textbit.h"
 #include "glossitem.h"
 
-AnnotationMarkWidget::AnnotationMarkWidget(const QList<AnnotationType> & annotationTypes, GlossItem * glossItem, QWidget *parent) :
-    QWidget(parent)
+AnnotationMarkWidget::AnnotationMarkWidget(const QList<AnnotationType> *annotationTypes, const GlossItem *glossItem, QWidget *parent) :
+    QWidget(parent),
+    mGlossItem(glossItem),
+    mAnnotationTypes(annotationTypes)
 {
-    mAnnotationTypes = annotationTypes;
-    mGlossItem = glossItem;
-
     mLayout = new QVBoxLayout(this);
     setLayout(mLayout);
-
     setupLayout();
 }
 
@@ -20,14 +18,14 @@ void AnnotationMarkWidget::setupLayout()
     qDeleteAll(mMarks);
     mMarks.clear();
 
-    for(int i=0; i<mAnnotationTypes.count(); i++)
+    for(int i=0; i<mAnnotationTypes->count(); i++)
     {
-        Mark * mark = new Mark( mAnnotationTypes.at(i).mark(), this );
+        Mark * mark = new Mark( mAnnotationTypes->at(i).mark(), this );
 
-        TextBit annotation = mGlossItem->getAnnotation( mAnnotationTypes.at(i).label() );
+        TextBit annotation = mGlossItem->getAnnotation( mAnnotationTypes->at(i).label() );
         if( annotation.text().isEmpty() )
         {
-            mark->setToolTip( mAnnotationTypes.at(i).label() );
+            mark->setToolTip( mAnnotationTypes->at(i).label() );
             mark->setStyleSheet("QLabel { color: lightgray; }");
         }
         else
@@ -44,6 +42,5 @@ void AnnotationMarkWidget::setupLayout()
 
 void AnnotationMarkWidget::markActivated( Mark * mark )
 {
-    emit annotationActivated( mGlossItem , mAnnotationTypes.at( mMarks.indexOf(mark) ).label() );
-    emit annotationActivated( mAnnotationTypes.at( mMarks.indexOf(mark) ).label() );
+    emit annotationActivated( mAnnotationTypes->at( mMarks.indexOf(mark) ).label() );
 }

@@ -248,7 +248,7 @@ void ViewConfigurationDialog::editItem(const QModelIndex &index)
     if( mTab == 0 ) return;
     ItemEditDialog dialog(mProject->dbAdapter()->writingSystems(), this);
     dialog.setWritingSystem( currentWritingSystem(), false );
-    dialog.setType( mTab->interlinearLines(currentWritingSystem()).at( index.row() ) );
+    dialog.setType( mTab->interlinearLines(currentWritingSystem())->at( index.row() ) );
     dialog.exec();
     if( dialog.result() == QDialog::Accepted )
     {
@@ -380,7 +380,7 @@ bool ViewConfigurationDialog::viewsAreAcceptable()
 
             for(int k=0; k < keys.count(); k++)
             {
-                if( t->interlinearLines(keys.at(k)).isEmpty() )
+                if( t->interlinearLines(keys.at(k))->isEmpty() )
                 {
                     QMessageBox::warning(this, tr("Error"), tr("For each tab and baseline type, you need to have at least one interlinear line for the view '%1,' tab  '%2,' and baseline '%3.'").arg(v->name()).arg(t->name()).arg(keys.at(k).name()) );
                     return false;

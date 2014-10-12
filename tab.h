@@ -30,7 +30,7 @@ public:
     void removePhrasalGloss(int index);
     void setPhrasalGloss(int index, const InterlinearItemType & type);
 
-    InterlinearItemTypeList interlinearLines(const WritingSystem & ws) const;
+    InterlinearItemTypeList *interlinearLines(const WritingSystem & ws) const;
     QList<WritingSystem> interlinearLineKeys() const;
     void interlinearLineSwap(const WritingSystem & ws, int i, int j);
 
