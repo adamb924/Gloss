@@ -564,15 +564,20 @@ void WordDisplayWidget::newTextForm(const WritingSystem & ws)
 void WordDisplayWidget::setTextFormNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
 {
     Q_UNUSED(interpretationId);
-    mTextFormEdits[ws]->setSpecialBorder(multipleAvailable);
+    if( mTextFormEdits.contains(ws) )
+    {
+        mTextFormEdits[ws]->setSpecialBorder(multipleAvailable);
+    }
 }
 
 void WordDisplayWidget::setGlossNumber(bool multipleAvailable, qlonglong interpretationId, const WritingSystem &ws)
 {
     Q_UNUSED(interpretationId);
-    mGlossEdits[ws]->setSpecialBorder(multipleAvailable);
+    if( mGlossEdits.contains(ws) )
+    {
+        mGlossEdits[ws]->setSpecialBorder(multipleAvailable);
+    }
 }
-
 
 void WordDisplayWidget::newGloss(QAction *action)
 {
