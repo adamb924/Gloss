@@ -166,7 +166,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
 
     if( text->isValid() )
     {
-        text->saveText(false, true,false);
+        text->saveText(false, true,true);
         mTexts.insert(name, text);
         mTextPaths << filepathFromName(name);
         return text;
