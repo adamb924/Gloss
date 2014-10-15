@@ -429,7 +429,7 @@ bool GlossItem::isPunctuation() const
     QString text = baselineText().text();
     for( int i=0; i<text.length(); i++ )
     {
-        if( !text.at(i).isPunct() )
+        if( !text.at(i).isPunct() && !text.at(i).isSpace() )
         {
             return false;
         }
