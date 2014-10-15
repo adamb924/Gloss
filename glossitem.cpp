@@ -310,9 +310,9 @@ TextBit GlossItem::textForm(const WritingSystem & ws)
 {
     if( !mTextForms.contains( ws ) )
     {
-        mTextForms[ws] = mDbAdapter->interpretationTextForm( mId, ws.id() );
+//        mTextForms[ws] = mDbAdapter->interpretationTextForm( mId, ws.id() );
         /// @todo The above line is far more efficient, but does it work as well?
-//        setTextForm( mDbAdapter->interpretationTextForm( mId, ws.id() ) );
+        setTextForm( mDbAdapter->interpretationTextForm( mId, ws.id() ) );
     }
     return mTextForms.value(ws);
 }
@@ -321,9 +321,9 @@ TextBit GlossItem::gloss(const WritingSystem & ws)
 {
     if( !mGlosses.contains( ws ) )
     {
-        mGlosses[ws] = mDbAdapter->interpretationGloss( mId , ws.id() );
+//        mGlosses[ws] = mDbAdapter->interpretationGloss( mId , ws.id() );
         /// @todo The above line is far more efficient, but does it work as well?
-//        setGloss( mDbAdapter->interpretationGloss( mId , ws.id() ) );
+        setGloss( mDbAdapter->interpretationGloss( mId , ws.id() ) );
     }
     return mGlosses.value(ws);
 }
