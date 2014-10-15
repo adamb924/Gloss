@@ -16,6 +16,7 @@ GlossItem::GlossItem(const TextBit & baselineBit, Project *project, QObject *par
     mTextForms.insert(mBaselineWritingSystem, baselineBit );
     guessInterpretation();
     setCandidateNumberFromDatabase();
+    /// @todo should there be a call here to: updateGlossItemConcordance();
 }
 
 GlossItem::GlossItem(const WritingSystem & ws, const TextBitHash & textForms, const TextBitHash & glossForms, Project *project, QObject *parent) : QObject(parent),
