@@ -7,8 +7,17 @@
 ImmutableLabel::ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *parent) :
         QLabel(parent)
 {
-  setAlignment( Qt::AlignLeft );
-    setText(bit.text());
+    setAlignment( Qt::AlignLeft );
+
+    if( bit.writingSystem().layoutDirection() == Qt::RightToLeft )
+    {
+        setText( bit.text().prepend( QChar(0x202E) ) );
+    }
+    else
+    {
+        setText(bit.text());
+    }
+
     mTextBit = bit;
     mTechnicolor = technicolor;
     setToolTip(mTextBit.writingSystem().name());
