@@ -25,6 +25,7 @@
 #include "exporttextsdialog.h"
 #include "syntacticvocabularydialog.h"
 #include "writingsystemseditdialog.h"
+#include "importplaintextdialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -327,38 +328,51 @@ WritingSystem MainWindow::selectWritingSystem(const QString & message, bool *ok)
 
 void MainWindow::importPlainText()
 {
-    QFileDialog dialog( this, tr("Select file(s) to import"), QString(), "*.*" );
-    dialog.setFileMode(QFileDialog::ExistingFiles);
-    if( dialog.exec() == QDialog::Accepted )
+    ImportPlainTextDialog dlg(mProject->dbAdapter()->writingSystems());
+    if(dlg.exec())
     {
-        bool ok;
-        WritingSystem ws = selectWritingSystem(tr("Select the baseline writing system for these texts."), &ok);
-        if( ok )
+        WritingSystem ws = dlg.writingSystem();
+        QStringList files = dlg.filenames();
+        if( files.count() == 1 )
         {
-            QStringList files = dialog.selectedFiles();
-            if( files.count() == 1 )
+            if( dlg.customDelimiter() )
             {
-                importPlainText( files.first() , ws , true );
+                importPlainText( files.first() , ws , true, dlg.delimiter() );
             }
             else
             {
-                QProgressDialog progress("Importing texts...", "Cancel", 0, files.count(), this);
-                progress.setWindowModality(Qt::WindowModal);
-                for(int i=0; i<files.count(); i++)
-                {
-                    progress.setValue(i);
-                    if( QFile::exists(files.at(i)))
-                        importPlainText( files.at(i) , ws , false );
-                    if( progress.wasCanceled() )
-                        break;
-                }
-                progress.setValue(files.count());
+                importPlainText( files.first() , ws , true );
             }
+        }
+        else
+        {
+            QProgressDialog progress("Importing texts...", "Cancel", 0, files.count(), this);
+            progress.setWindowModality(Qt::WindowModal);
+            for(int i=0; i<files.count(); i++)
+            {
+                progress.setValue(i);
+                if( QFile::exists(files.at(i)))
+                {
+                    if( dlg.customDelimiter() )
+                    {
+                        importPlainText( files.at(i) , ws , false, dlg.delimiter() );
+                    }
+                    else
+                    {
+                        importPlainText( files.at(i) , ws , false );
+                    }
+                }
+                if( progress.wasCanceled() )
+                {
+                    break;
+                }
+            }
+            progress.setValue(files.count());
         }
     }
 }
 
-void MainWindow::importPlainText(const QString & filepath , const WritingSystem & ws, bool openText)
+void MainWindow::importPlainText(const QString & filepath , const WritingSystem & ws, bool openText, const QRegularExpression & re)
 {
     QFile file(filepath);
     if( file.open(QFile::ReadOnly) )
@@ -371,7 +385,7 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         QString content = stream.readAll();
         file.close();
 
-        Text *text = mProject->newText(name, ws, content );
+        Text *text = mProject->newText(name, ws, content, re );
         if( openText )
         {
             InterlinearChunkEditor * subWindow = new InterlinearChunkEditor(text, mProject, View::Full, 3, this);
@@ -455,7 +469,8 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
         query.setQuery(queryString);
         query.evaluateTo(&result);
 
-        Text *text = mProject->newText(name, ws, result.join("\n") );
+        /// @todo This is a stupid way to do this.
+        Text *text = mProject->newText(name, ws, result.join("\n"), QRegularExpression("[\\n\\r]+") );
 
         text->mergeEaf(filepath);
 

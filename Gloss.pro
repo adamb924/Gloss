@@ -99,7 +99,8 @@ SOURCES += main.cpp\
     writingsystemseditdialog.cpp \
     tabeditdialog.cpp \
     syntacticvocabularydialog.cpp \
-    lexiconlineform.cpp
+    lexiconlineform.cpp \
+    importplaintextdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -190,7 +191,8 @@ HEADERS  += mainwindow.h \
     writingsystemseditdialog.h \
     tabeditdialog.h \
     syntacticvocabularydialog.h \
-    lexiconlineform.h
+    lexiconlineform.h \
+    importplaintextdialog.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -224,7 +226,8 @@ FORMS    += mainwindow.ui \
     writingsystemseditdialog.ui \
     tabeditdialog.ui \
     syntacticvocabularydialog.ui \
-    lexiconlineform.ui
+    lexiconlineform.ui \
+    importplaintextdialog.ui
 
 unix:INCLUDEPATH += "/usr/include/libxml2"
 

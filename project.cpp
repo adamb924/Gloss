@@ -152,7 +152,7 @@ void Project::readTextPaths()
         mTextPaths << tempDir.absoluteFilePath(entries.at(i));
 }
 
-Text* Project::newText(const QString & name, const WritingSystem & ws, const QString & content )
+Text* Project::newText(const QString & name, const WritingSystem & ws, const QString & content, const QRegularExpression & delimiter )
 {
     if( mTexts.contains(name) )
     {
@@ -162,7 +162,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
 
     Text *text = new Text(ws,name,this);
 
-    text->setGlossItemsFromBaseline(content);
+    text->setGlossItemsFromBaseline(content, delimiter);
 
     if( text->isValid() )
     {

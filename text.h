@@ -90,7 +90,7 @@ public:
 
     void findGlossItemLocation(GlossItem *glossItem, int & line, int & position) const;
 
-    void setGlossItemsFromBaseline(const QString &content);
+    void setGlossItemsFromBaseline(const QString &content, const QRegularExpression &delimiter);
 
     QHash<QString, SyntacticAnalysis*>* syntacticAnalyses();
 

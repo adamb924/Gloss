@@ -27,6 +27,8 @@ class InterlinearChunkEditor;
 class Text;
 class TextBit;
 
+#include <QRegularExpression>
+
 namespace Ui {
     class MainWindow;
 }
@@ -93,7 +95,7 @@ private slots:
 private slots:
     void importFlexText();
     void importPlainText();
-    void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText);
+    void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText, const QRegularExpression & re = QRegularExpression("[\\n\\r]+") );
     void importEaf();
     bool importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws);
     void openText();

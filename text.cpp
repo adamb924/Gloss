@@ -119,9 +119,30 @@ void Text::clearGlossItems()
     mPhrases.clear();
 }
 
-void Text::setGlossItemsFromBaseline(const QString & content)
+void Text::setGlossItemsFromBaseline(const QString & content, const QRegularExpression & delimiter)
 {
-    QStringList lines = content.split(QRegExp("[\\n\\r]+"),QString::SkipEmptyParts);
+    QStringList lines;
+    int pos = 0;
+    QRegularExpressionMatch m = delimiter.match(content, pos);
+    if( m.hasMatch() )
+    {
+        do
+        {
+            lines << content.mid( pos, m.capturedEnd() - pos ).trimmed();
+            pos = m.capturedEnd();
+            m = delimiter.match(content, pos);
+        }
+        while( m.hasMatch() );
+        if( pos < content.length() - 1 )
+        {
+            lines << content.mid( pos ).trimmed();
+        }
+    }
+    else
+    {
+        lines << content;
+    }
+
     if( mPhrases.count() == lines.count() )
     {
         for(int i=0; i<lines.count(); i++)

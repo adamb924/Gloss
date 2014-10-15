@@ -58,7 +58,7 @@ public:
 
     void deleteText(QString textName);
 
-    Text* newText(const QString & name, const WritingSystem & ws, const QString &content = QString() );
+    Text* newText(const QString & name, const WritingSystem & ws, const QString &content, const QRegularExpression & delimiter);
     Text* importFlexText(const QString & filePath, const WritingSystem & ws);
     Text* textFromFlexText(const QString & filePath);
 
