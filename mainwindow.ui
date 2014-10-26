@@ -216,7 +216,7 @@
   </action>
   <action name="actionClose_Project">
    <property name="text">
-    <string>Close project and save</string>
+    <string>Save Project and Close</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F4</string>
