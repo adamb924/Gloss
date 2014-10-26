@@ -288,6 +288,11 @@ QString Allomorph::getTypeFormatTextString(const QString &text, Allomorph::Type 
     return text;
 }
 
+TextBit Allomorph::getTypeFormatTextBit(const TextBit &bit, Allomorph::Type t)
+{
+    return TextBit( getTypeFormatTextString( bit.text(), t ) , bit.writingSystem() );
+}
+
 Allomorph::Type Allomorph::typeFromFormattedString(const QString &string)
 {
     QRegExp rePrefix("^[^-].*-$");
@@ -319,6 +324,11 @@ Allomorph::Type Allomorph::typeFromFormattedString(const QString &string)
         return Allomorph::Stem;
 }
 
+Allomorph::Type Allomorph::typeFromFormattedString(const TextBit &bit)
+{
+    return typeFromFormattedString(bit.text());
+}
+
 QString Allomorph::stripPunctuation(const QString &string)
 {
     QString s = string;
@@ -328,6 +338,13 @@ QString Allomorph::stripPunctuation(const QString &string)
     s.replace("*","");
     s.replace("-","");
     return s;
+}
+
+TextBit Allomorph::stripPunctuationFromTextBit(const TextBit &bit)
+{
+    TextBit retVal = bit;
+    retVal.setText( stripPunctuation( bit.text()) );
+    return retVal;
 }
 
 QDebug operator<<(QDebug dbg, const Allomorph &key)

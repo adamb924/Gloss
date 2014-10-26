@@ -108,11 +108,20 @@ public:
     //! \brief Returns a string representation of \a text, as if it were an allomorph of type \a t
     static QString getTypeFormatTextString( const QString & text, Type t );
 
+    //! \brief Returns a string representation of \a bit, as if it were an allomorph of type \a t
+    static TextBit getTypeFormatTextBit( const TextBit & bit, Type t );
+
     //! \brief Returns the Type of an allomorph, given the string representation \a string
     static Type typeFromFormattedString(const QString & string);
 
+    //! \brief Returns the Type of an allomorph, given the string representation \a bit
+    static Type typeFromFormattedString(const TextBit & bit);
+
     //! \brief Returns \a string with punctuation stripped out
     static QString stripPunctuation( const QString & string );
+
+    //! \brief Returns \a bit with punctuation stripped out
+    static TextBit stripPunctuationFromTextBit(const TextBit &bit );
 
 signals:
     void allomorphDestroyed(Allomorph * allomorph);
