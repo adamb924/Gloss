@@ -29,7 +29,7 @@ class CreateLexicalEntryDialog : public QDialog
 
 public:
     CreateLexicalEntryDialog(qlonglong lexicalEntryId, bool hideGuessButton, const GlossItem *glossItem, const Project *project, QWidget *parent = 0);
-    CreateLexicalEntryDialog(const Allomorph * allomorph, bool hideGuessButton, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent = 0);
+    CreateLexicalEntryDialog(const TextBit & allomorphString, bool hideGuessButton, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent = 0);
     ~CreateLexicalEntryDialog();
 
     qlonglong lexicalEntryId() const;
@@ -41,10 +41,10 @@ signals:
 
 private:
     Ui::CreateLexicalEntryDialog *ui;
+    TextBit mAllomorphString;
     const Project * mProject;
     const DatabaseAdapter * mDbAdapter;
     const GlossItem * mGlossItem;
-    const Allomorph * mAllomorph;
     bool mIsMonomorphemic;
 
     qlonglong mLexicalEntryId;

@@ -6,18 +6,21 @@
 #include "lexicalentrysearchdialog.h"
 #include "project.h"
 
-LexicalEntryForm::LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const Project *project,  QWidget *parent) :
+LexicalEntryForm::LexicalEntryForm(const TextBit &allomorphString, const GlossItem *glossItem, const Project *project,  QWidget *parent) :
         QWidget(parent), ui(new Ui::LexicalEntryForm), mProject(project)
 {
     ui->setupUi(this);
-    mAllomorph = allomorph;
+
+    mAllomorphText = Allomorph::stripPunctuationFromTextBit(allomorphString);
+    mAllomorphType = Allomorph::typeFromFormattedString(allomorphString);
+
     mDbAdapter = mProject->dbAdapter();
     mGlossItem = glossItem;
 
     // the available types are whatever is available in the database, plus whatever the user entered
-    mTypes = mDbAdapter->getPossibleMorphologicalTypes( mAllomorph.textBit() );
+    mTypes = mDbAdapter->getPossibleMorphologicalTypes( mAllomorphText );
 
-    mTypes << mAllomorph.type();
+    mTypes << mAllomorphType;
 
     fillData();
 
@@ -33,7 +36,7 @@ LexicalEntryForm::~LexicalEntryForm()
 
 void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
 {
-    ui->formLabel->setText( mAllomorph.text() );
+    ui->formLabel->setText( mAllomorphText.text() );
 
     fillTypes();
 
@@ -41,7 +44,7 @@ void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
 
     int currentIndex = 0;
 
-    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mAllomorph.textBit(), mAllomorph.typeString() );
+    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( mAllomorphText, Allomorph::getTypeString(mAllomorphType) );
     QHashIterator<qlonglong,QString> iter(candidates);
 
     while(iter.hasNext())
@@ -65,7 +68,7 @@ void LexicalEntryForm::fillTypes()
         if( mTypes.contains( (Allomorph::Type)i ))
         {
             ui->morphemeType->addItem( Allomorph::getTypeString( (Allomorph::Type)i ) , i );
-            if( mAllomorph.type() == (Allomorph::Type)i )
+            if( mAllomorphType == (Allomorph::Type)i )
                 currentIndex = ui->morphemeType->count()-1;
         }
     }
@@ -75,14 +78,14 @@ void LexicalEntryForm::fillTypes()
 
 void LexicalEntryForm::newLexicalEntry()
 {
-    CreateLexicalEntryDialog dialog(&mAllomorph, false, false, mGlossItem, mProject, this);
+    CreateLexicalEntryDialog dialog( Allomorph::getTypeFormatTextBit( mAllomorphText, mAllomorphType ), false, false, mGlossItem, mProject, this);
     connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
     if( dialog.exec() == QDialog::Accepted )
     {
         qlonglong lexicalEntryId = dialog.lexicalEntryId();
         if( lexicalEntryId != -1 )
         {
-            mDbAdapter->addAllomorph( mAllomorph.textBit() , lexicalEntryId );
+            mDbAdapter->addAllomorph( mAllomorphText , lexicalEntryId );
             fillData( lexicalEntryId );
             emit entryChanged();
         }
@@ -98,9 +101,8 @@ void LexicalEntryForm::linkToOther()
         if( lexicalEntryId != -1 )
         {
             Allomorph::Type type = mDbAdapter->lexicalEntryMorphologicalType( lexicalEntryId );
-            mAllomorph.setType(type);
             mTypes << type;
-            mDbAdapter->addAllomorph( mAllomorph.textBit() , lexicalEntryId );
+            mDbAdapter->addAllomorph( mAllomorphText , lexicalEntryId );
             fillData(lexicalEntryId);
             emit entryChanged();
         }
@@ -117,14 +119,19 @@ qlonglong LexicalEntryForm::id() const
 
 TextBit LexicalEntryForm::textBit() const
 {
-    return mAllomorph.textBit();
+    return mAllomorphText;
+}
+
+Allomorph::Type LexicalEntryForm::type() const
+{
+    return mAllomorphType;
 }
 
 void LexicalEntryForm::setType(int index)
 {
-    if( index > -1 && mAllomorph.type() != (Allomorph::Type)ui->morphemeType->itemData(index).toInt() )
+    if( index > -1 && mAllomorphType != (Allomorph::Type)ui->morphemeType->itemData(index).toInt() )
     {
-        mAllomorph.setType(  (Allomorph::Type)ui->morphemeType->itemData(index).toInt() );
+        mAllomorphType = (Allomorph::Type)ui->morphemeType->itemData(index).toInt();
         fillData();
     }
 }

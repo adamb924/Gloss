@@ -34,21 +34,20 @@ signals:
 public slots:
 
 private:
-    const DatabaseAdapter * mDbAdapter;
     Project * mProject;
+    const DatabaseAdapter * mDbAdapter;
     TextBit mParseString;
-    MorphologicalAnalysis * mAnalysis;
+    QList<TextBit> mAllomorphStrings;
     QList<LexicalEntryForm*> mEntries;
     QDialogButtonBox *mButtonBox;
     QPushButton * mOk;
 
-    void fillMorphologicalAnalysis();
     void setupLayout();
     const GlossItem *mGlossItem;
 
-
 private slots:
-    void commitChangesToDatabase();
+    void commitChanges();
+    void rollbackChanges();
     void setAcceptable();
 };
 

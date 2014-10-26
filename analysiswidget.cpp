@@ -12,10 +12,8 @@
 #include "project.h"
 
 AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, Project *project, QWidget *parent) :
-        QWidget(parent), mProject(project), mGlossItem(glossItem), mWritingSystem(analysisWs)
+        QWidget(parent), mProject(project), mGlossItem(glossItem), mWritingSystem(analysisWs), mDbAdapter(mProject->dbAdapter())
 {
-    mDbAdapter = mProject->dbAdapter();
-
     mLayout = new QVBoxLayout;
     mLayout->setSpacing(0);
     mLayout->setContentsMargins(0,0,0,0);
@@ -129,9 +127,10 @@ void AnalysisWidget::enterAnalysis()
         connect( &leDialog, SIGNAL(rejected()), this, SLOT(enterAnalysis()) );
         if( leDialog.exec() == QDialog::Accepted )
         {
-            createInitializedLayout( leDialog.morphologicalAnalysis() );
+            MorphologicalAnalysis * analysis = leDialog.morphologicalAnalysis();
+            createInitializedLayout( analysis );
             /// emit 0 so that the concordance actually does change this gloss item
-            emit morphologicalAnalysisChanged( 0, leDialog.morphologicalAnalysis() );
+            emit morphologicalAnalysisChanged( 0, analysis );
         }
     }
 }
@@ -142,8 +141,7 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
     /// @todo when is this ever invoked?
     if( lexicalEntryId == -1 )
     {
-        Allomorph *allomorph = new Allomorph( -1, -1, textBit() , Allomorph::typeFromFormattedString( textBit().text() ) );
-        CreateLexicalEntryDialog dialog( allomorph, true, true, mGlossItem, mProject, this);
+        CreateLexicalEntryDialog dialog( textBit(), true, true, mGlossItem, mProject, this);
         connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
         if( dialog.exec() == QDialog::Accepted )
             lexicalEntryId = dialog.lexicalEntryId();

@@ -11,48 +11,49 @@
 #include <QtDebug>
 
 ChooseLexicalEntriesDialog::ChooseLexicalEntriesDialog(const TextBit & parseString, const GlossItem *glossItem, Project *project, QWidget *parent) :
-    QDialog(parent), mProject(project)
+    QDialog(parent),
+    mProject(project),
+    mDbAdapter(mProject->dbAdapter()),
+    mParseString(parseString),
+    mGlossItem(glossItem)
 {
-    mDbAdapter = mProject->dbAdapter();
-    mParseString = parseString;
-    mGlossItem = glossItem;
-    mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem(), mProject->concordance() );
+    QStringList pieces = parseString.text().split(" ");
+    for(int i=0; i<pieces.count(); i++)
+    {
+        mAllomorphStrings << TextBit( pieces.at(i) , parseString.writingSystem() );
+    }
 
-    fillMorphologicalAnalysis();
+    QSqlDatabase::database(mDbAdapter->dbFilename()).transaction();
+
     setupLayout();
 
-    connect( this, SIGNAL(accepted()), this, SLOT(commitChangesToDatabase()));
+    connect( this, SIGNAL(accepted()), this, SLOT(commitChanges()));
+    connect( this, SIGNAL(rejected()), this, SLOT(rollbackChanges()) );
 
     setWindowTitle(tr("Choose lexical entries"));
 }
 
 MorphologicalAnalysis * ChooseLexicalEntriesDialog::morphologicalAnalysis() const
 {
-    return mAnalysis;
-}
-
-void ChooseLexicalEntriesDialog::commitChangesToDatabase()
-{
-    for(int i=0; i<mAnalysis->allomorphCount(); i++)
+    MorphologicalAnalysis * analysis = new MorphologicalAnalysis(mParseString.id(), mParseString.writingSystem(), mProject->concordance() );
+    for(int i=0; i<mEntries.count(); i++)
     {
         qlonglong allomorphId = mDbAdapter->addAllomorph( mEntries.at(i)->textBit() , mEntries.at(i)->id() );
-        mAnalysis->allomorph(i)->setId(allomorphId);
-        mAnalysis->allomorph(i)->setGlosses( mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ) );
+        Allomorph * allomorph = new Allomorph( allomorphId, mEntries.at(i)->id(), mEntries.at(i)->textBit(), mDbAdapter->lexicalItemGlosses( mEntries.at(i)->id() ), mEntries.at(i)->type() );
+        analysis->addAllomorph( allomorph );
     }
-    mDbAdapter->setMorphologicalAnalysis( mParseString.id() , mAnalysis );
+    mDbAdapter->setMorphologicalAnalysis( mParseString.id(), analysis);
+    return analysis;
 }
 
-void ChooseLexicalEntriesDialog::fillMorphologicalAnalysis()
+void ChooseLexicalEntriesDialog::commitChanges()
 {
-    mAnalysis = new MorphologicalAnalysis( mParseString.id(), mParseString.writingSystem(), mProject->concordance() );
+    QSqlDatabase::database(mDbAdapter->dbFilename()).commit();
+}
 
-    QStringList bits = mParseString.text().split(QRegExp("\\s"), QString::SkipEmptyParts );
-    QStringListIterator iter(bits);
-    while(iter.hasNext())
-    {
-        QString text = iter.next();
-        mAnalysis->addAllomorph(new Allomorph( -1, -1, TextBit( Allomorph::stripPunctuation(text) , mParseString.writingSystem() ), Allomorph::typeFromFormattedString(text) ) );
-    }
+void ChooseLexicalEntriesDialog::rollbackChanges()
+{
+    QSqlDatabase::database(mDbAdapter->dbFilename()).rollback();
 }
 
 void ChooseLexicalEntriesDialog::setupLayout()
@@ -60,10 +61,9 @@ void ChooseLexicalEntriesDialog::setupLayout()
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
 
-    AllomorphPointerIterator iter = mAnalysis->allomorphIterator();
-    while(iter.hasNext())
+    for(int i=0; i<mAllomorphStrings.count(); i++)
     {
-        LexicalEntryForm *form = new LexicalEntryForm( *iter.next(), mGlossItem, mProject, this );
+        LexicalEntryForm *form = new LexicalEntryForm( mAllomorphStrings.at(i), mGlossItem, mProject, this );
         connect(form, SIGNAL(entryChanged()), this, SLOT(setAcceptable()) );
 
         layout->addWidget(form);

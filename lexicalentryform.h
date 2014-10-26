@@ -28,15 +28,17 @@ class LexicalEntryForm : public QWidget
     Q_OBJECT
 
 public:
-    LexicalEntryForm(const Allomorph & allomorph, const GlossItem *glossItem, const Project *project,  QWidget *parent = 0);
+    LexicalEntryForm(const TextBit & allomorphString, const GlossItem *glossItem, const Project *project,  QWidget *parent = 0);
     ~LexicalEntryForm();
 
     qlonglong id() const;
     TextBit textBit() const;
+    Allomorph::Type type() const;
 
 private:
     Ui::LexicalEntryForm *ui;
-    Allomorph mAllomorph;
+    TextBit mAllomorphText;
+    Allomorph::Type mAllomorphType;
     const DatabaseAdapter *mDbAdapter;
     const Project *mProject;
     const GlossItem *mGlossItem;

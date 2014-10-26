@@ -18,7 +18,6 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, boo
     mProject(project),
     mDbAdapter(mProject->dbAdapter()),
     mGlossItem(glossItem),
-    mAllomorph(0),
     mIsMonomorphemic(false),
     mLexicalEntryId(lexicalEntryId),
     mHideGuessButton(hideGuessButton)
@@ -36,13 +35,13 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, boo
     setWindowTitle(tr("Edit lexical entry"));
 }
 
-CreateLexicalEntryDialog::CreateLexicalEntryDialog(const Allomorph * allomorph, bool hideGuessButton, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent) :
+CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & allomorphString, bool hideGuessButton, bool isMonomorphemic, const GlossItem *glossItem, const Project *project, QWidget *parent) :
         QDialog(parent),
         ui(new Ui::CreateLexicalEntryDialog),
+        mAllomorphString(allomorphString),
         mProject(project),
         mDbAdapter(mProject->dbAdapter()),
         mGlossItem(glossItem),
-        mAllomorph(allomorph),
         mIsMonomorphemic(isMonomorphemic),
         mLexicalEntryId(-1),
         mHideGuessButton(hideGuessButton)
@@ -76,7 +75,9 @@ void CreateLexicalEntryDialog::guessAppropriateValues()
     QList<WritingSystem> glosses = *( mProject->lexicalEntryGlossFields() );
     foreach( WritingSystem ws , glosses )
     {
-        LexiconLineForm *form = new LexiconLineForm( mGlossItem->glosses()->value(ws, TextBit("", ws) ), mAllomorph->isStem() && mGlossItem->glosses()->contains(ws), mHideGuessButton );
+        Allomorph::Type type = Allomorph::typeFromFormattedString( mAllomorphString );
+        bool isStem = type == Allomorph::Stem || type == Allomorph::BoundStem;
+        LexiconLineForm *form = new LexiconLineForm( mGlossItem->glosses()->value(ws, TextBit("", ws) ), isStem && mGlossItem->glosses()->contains(ws), mHideGuessButton );
         ui->glossLayout->addWidget(form);
         mGlossEdits << form;
     }
@@ -86,9 +87,9 @@ void CreateLexicalEntryDialog::guessAppropriateValues()
     {
         bool autoFill = false;
         TextBit guess = TextBit("", ws);
-        if ( ws == mAllomorph->writingSystem() )
+        if ( ws == mAllomorphString.writingSystem() )
         {
-            guess = mAllomorph->textBit();
+            guess = Allomorph::stripPunctuationFromTextBit(mAllomorphString);
             autoFill = true;
         }
         else if ( mIsMonomorphemic )
@@ -145,7 +146,7 @@ void CreateLexicalEntryDialog::createLexicalEntry()
     for(int i=0; i<mCitationFormEdits.count(); i++)
         citationForms << mCitationFormEdits.at(i)->textBit();
 
-    mLexicalEntryId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), mAllomorph->type(), glosses, citationForms, grammaticalTags() );
+    mLexicalEntryId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), Allomorph::typeFromFormattedString(mAllomorphString), glosses, citationForms, grammaticalTags() );
 }
 
 void CreateLexicalEntryDialog::changeLexicalEntry()
