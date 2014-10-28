@@ -930,13 +930,25 @@ const View * Project::view(const View::Type type) const
 void Project::setView(int index)
 {
     if( index >= 0 && index < mViews.count() )
-        mCurrentInterlinearView = mViews.at(index);
+    {
+        if( mCurrentInterlinearView != mViews.at(index) )
+        {
+            mCurrentInterlinearView = mViews.at(index);
+            emit currentViewChanged(index);
+        }
+    }
 }
 
 void Project::setQuickView(int index)
 {
     if( index >= 0 && index < mViews.count() )
-        mCurrentQuickView = mViews.at(index);
+    {
+        if( mCurrentQuickView != mViews.at(index) )
+        {
+            mCurrentQuickView = mViews.at(index);
+            emit currentQuickViewChanged(index);
+        }
+    }
 }
 
 void Project::setView(QAction * action)

@@ -1386,6 +1386,9 @@ void MainWindow::setGuiElementsFromProject()
 
     /// Project Texts
     mTextCombo->addItems( mProject->textNames() );
+
+    connect( mProject, SIGNAL(currentViewChanged(int)), this, SLOT(setCurrentView(int)) );
+    connect( mProject, SIGNAL(currentQuickViewChanged(int)), this, SLOT(setCurrentQuickView(int)) );
 }
 
 void MainWindow::setupToolbar()
@@ -1431,6 +1434,18 @@ void MainWindow::quickViewChanged(int index)
     {
         mProject->setQuickView(index);
     }
+}
+
+void MainWindow::setCurrentView(int index)
+{
+    ui->menuCurrent_view->actions().at(index)->setChecked(true);
+    mViewCombo->setCurrentIndex(index);
+}
+
+void MainWindow::setCurrentQuickView(int index)
+{
+    ui->menuCurrent_quick_view->actions().at(index)->setChecked(true);
+    mQuickViewCombo->setCurrentIndex(index);
 }
 
 InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, int linesPerScreen)

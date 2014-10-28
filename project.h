@@ -131,6 +131,10 @@ public:
 
     void serializeConfigurationXml();
 
+signals:
+    void currentViewChanged(int index);
+    void currentQuickViewChanged(int index);
+
 public slots:
     void setView(int index);
     void setQuickView(int index);

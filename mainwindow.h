@@ -96,6 +96,9 @@ private slots:
     void viewChanged(int index);
     void quickViewChanged(int index);
 
+    void setCurrentView(int index);
+    void setCurrentQuickView(int index);
+
     ///@}
 
     /** @name Text Methods
