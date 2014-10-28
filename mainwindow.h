@@ -122,7 +122,7 @@ private slots:
     void bulkMergeEaf();
     void closeOpenTexts();
     void saveOpenTexts();
-    InterlinearChunkEditor * openTextInChunks(const QString & textName, int linesPerScreen);
+    InterlinearChunkEditor * openTextInChunks(const QString & textName, int linesPerScreen = 3);
     Text * textOfCurrentSubWindow();
 
     ///@}

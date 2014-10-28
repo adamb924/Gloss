@@ -503,7 +503,7 @@ void MainWindow::importFlexText()
             mProject->importFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
             Text *text = mProject->openedTexts()->value( Text::textNameFromPath(dialog.filename()) );
             if(text != 0)
-                openText(text->name());
+                openTextInChunks(text->name());
         }
     }
 }
@@ -1396,7 +1396,7 @@ void MainWindow::setupToolbar()
     /// Texts
     mTextCombo = new QComboBox(this);
     mTextCombo->setMinimumWidth(150);
-    connect(mTextCombo, SIGNAL(activated(QString)), this, SLOT(openText(QString)));
+    connect(mTextCombo, SIGNAL(activated(QString)), this, SLOT(openTextInChunks(QString)));
 
     /// Views
     mViewCombo = new QComboBox(this);
