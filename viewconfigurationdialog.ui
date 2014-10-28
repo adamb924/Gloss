@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>733</width>
-    <height>459</height>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -351,7 +351,10 @@
    <item>
     <widget class="QLabel" name="label_6">
      <property name="text">
-      <string>The changes you make will take effect with the next text you open.</string>
+      <string>Note that the first view in the list is the default view. The first tab in the list is the one that will be focused initially. The changes you make will take effect with the next text you open.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
