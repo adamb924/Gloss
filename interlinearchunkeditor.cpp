@@ -27,6 +27,8 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
     connect( ui->previousButton , SIGNAL(clicked()), this, SLOT(previous()) );
     connect( ui->nextButton, SIGNAL(clicked()), this, SLOT(next()) );
     connect( ui->buttonGoTo, SIGNAL(clicked()), this, SLOT(goTo()) );
+    connect( ui->beginningButton, SIGNAL(clicked()), this, SLOT(beginning()));
+    connect( ui->endButton, SIGNAL(clicked()), this, SLOT(end()) );
 
     // make the ranges
     QList<int> lines;
@@ -62,6 +64,16 @@ void InterlinearChunkEditor::goTo()
     int newPosition = QInputDialog::getInt(this, tr("Go to"), tr("Go to the chunk with line... (1-%1)").arg(mNPhrases), mPosition, 1, mNPhrases, 1, &ok );
     if( ok )
         moveToLine( newPosition );
+}
+
+void InterlinearChunkEditor::beginning()
+{
+    moveToLine( 0 );
+}
+
+void InterlinearChunkEditor::end()
+{
+    moveToLine( mNPhrases );
 }
 
 void InterlinearChunkEditor::moveToLine(int line)

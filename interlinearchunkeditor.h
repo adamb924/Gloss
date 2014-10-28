@@ -54,6 +54,8 @@ private slots:
     void next();
     void previous();
     void goTo();
+    void beginning();
+    void end();
 };
 
 #endif // INTERLINEARCHUNKEDITOR_H
