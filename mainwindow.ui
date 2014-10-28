@@ -158,6 +158,18 @@
    <addaction name="menuProject"/>
    <addaction name="menuGuts"/>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="separator"/>
+  </widget>
   <action name="actionNew_Project">
    <property name="text">
     <string>New Project</string>

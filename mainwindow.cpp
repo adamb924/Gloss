@@ -30,6 +30,7 @@
 #include <QtWidgets>
 #include <QtSql>
 #include <QStringList>
+#include <QComboBox>
 
 // these may move
 #include <QXmlQuery>
@@ -50,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mAnnotationDock = 0;
 
     ui->setupUi(this);
+    setupToolbar();
 
     setAppropriateWindowTitle();
 
@@ -212,7 +214,7 @@ void MainWindow::newProject()
 
     setAppropriateWindowTitle();
     setProjectActionsEnabled(true);
-    refreshViewsMenu();
+    setGuiElementsFromProject();
 }
 
 void MainWindow::openProject()
@@ -538,6 +540,8 @@ void MainWindow::setProjectActionsEnabled(bool enabled)
     ui->menuGuts->setEnabled(enabled);
     ui->menuProject->setEnabled(enabled);
     ui->menuSearch->setEnabled(enabled);
+
+    ui->toolBar->setEnabled(enabled);
 }
 
 void MainWindow::openText()
@@ -927,7 +931,7 @@ int MainWindow::viewConfigurationDialog()
     ViewConfigurationDialog dialog(mProject, this);
     int result = dialog.exec();
     if( result )
-        refreshViewsMenu();
+        setGuiElementsFromProject();
     return result;
 }
 
@@ -1325,10 +1329,20 @@ void MainWindow::editLexicon()
     edit->show();
 }
 
-void MainWindow::refreshViewsMenu()
+void MainWindow::setGuiElementsFromProject()
 {
+    /// View menus
     qDeleteAll(ui->menuCurrent_view->actions());
     qDeleteAll(ui->menuCurrent_quick_view->actions());
+
+    /// View combos
+    mViewCombo->clear();
+    mQuickViewCombo->clear();
+
+    /// Texts
+    mTextCombo->clear();
+
+    if( mProject == 0 ) return;
 
     QActionGroup * views = new QActionGroup(this);
 
@@ -1338,8 +1352,11 @@ void MainWindow::refreshViewsMenu()
         act->setCheckable(true);
         act->setData( i );
         views->addAction(act);
+
+        /// Combo
+        mViewCombo->addItem( mProject->views()->at(i)->name() );
     }
-    connect( views, SIGNAL(triggered(QAction*)), mProject, SLOT(setInterlinearView(QAction*)) );
+    connect( views, SIGNAL(triggered(QAction*)), mProject, SLOT(setView(QAction*)) );
 
     QActionGroup * interlinearViews = new QActionGroup(this);
 
@@ -1349,19 +1366,70 @@ void MainWindow::refreshViewsMenu()
         act->setCheckable(true);
         act->setData( i );
         interlinearViews->addAction(act);
+
+        /// Combo
+        mQuickViewCombo->addItem( mProject->views()->at(i)->name() );
     }
     connect( interlinearViews, SIGNAL(triggered(QAction*)), mProject, SLOT(setQuickView(QAction*)) );
 
     if( ui->menuCurrent_view->actions().count() > 0 )
     {
         ui->menuCurrent_view->actions().first()->setChecked(true);
-        mProject->setInterlinearView(ui->menuCurrent_view->actions().first());
+        mProject->setView(ui->menuCurrent_view->actions().first());
     }
 
     if( ui->menuCurrent_quick_view->actions().count() > 0 )
     {
         ui->menuCurrent_quick_view->actions().first()->setChecked(true);
         mProject->setQuickView(ui->menuCurrent_quick_view->actions().first());
+    }
+
+    /// Project Texts
+    mTextCombo->addItems( mProject->textNames() );
+}
+
+void MainWindow::setupToolbar()
+{
+    /// Texts
+    mTextCombo = new QComboBox(this);
+    mTextCombo->setMinimumWidth(150);
+    connect(mTextCombo, SIGNAL(activated(QString)), this, SLOT(openText(QString)));
+
+    /// Views
+    mViewCombo = new QComboBox(this);
+    mQuickViewCombo = new QComboBox(this);
+
+    mViewCombo->setMinimumWidth(100);
+    mQuickViewCombo->setMinimumWidth(100);
+
+    connect(mViewCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChanged(int)) );
+    connect(mQuickViewCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(quickViewChanged(int)) );
+
+    ui->toolBar->addWidget(new QLabel("Open Text: "));
+    ui->toolBar->addWidget(mTextCombo);
+    ui->toolBar->addSeparator();
+
+    ui->toolBar->addWidget(new QLabel("View: "));
+    ui->toolBar->addWidget(mViewCombo);
+    ui->toolBar->addSeparator();
+
+    ui->toolBar->addWidget(new QLabel("Quick view: "));
+    ui->toolBar->addWidget(mQuickViewCombo);
+}
+
+void MainWindow::viewChanged(int index)
+{
+    if( mProject != 0 )
+    {
+        mProject->setView(index);
+    }
+}
+
+void MainWindow::quickViewChanged(int index)
+{
+    if( mProject != 0 )
+    {
+        mProject->setQuickView(index);
     }
 }
 

@@ -132,7 +132,9 @@ public:
     void serializeConfigurationXml();
 
 public slots:
-    void setInterlinearView(QAction * action);
+    void setView(int index);
+    void setQuickView(int index);
+    void setView(QAction * action);
     void setQuickView(QAction * action);
     void setOverrideMediaPath(bool value);
 

@@ -915,7 +915,7 @@ void Project::parseConfigurationFile()
 
     maybeUpdateMediaPath();
 
-    mMainWindow->refreshViewsMenu();
+    mMainWindow->setGuiElementsFromProject();
     file->close();
 }
 
@@ -927,18 +927,26 @@ const View * Project::view(const View::Type type) const
         return mCurrentQuickView;
 }
 
-void Project::setInterlinearView(QAction * action)
+void Project::setView(int index)
 {
-    int index = action->data().toInt();
     if( index >= 0 && index < mViews.count() )
         mCurrentInterlinearView = mViews.at(index);
 }
 
-void Project::setQuickView(QAction * action)
+void Project::setQuickView(int index)
 {
-    int index = action->data().toInt();
     if( index >= 0 && index < mViews.count() )
         mCurrentQuickView = mViews.at(index);
+}
+
+void Project::setView(QAction * action)
+{
+    setView( action->data().toInt() );
+}
+
+void Project::setQuickView(QAction * action)
+{
+    setQuickView(action->data().toInt());
 }
 
 bool Project::overrideMediaPath() const

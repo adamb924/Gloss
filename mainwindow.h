@@ -26,6 +26,7 @@ class QStandardItemModel;
 class InterlinearChunkEditor;
 class Text;
 class TextBit;
+class QComboBox;
 
 #include <QRegularExpression>
 
@@ -42,7 +43,7 @@ public:
     ~MainWindow();
 
     //! \brief This creates the list of available views in the views submenu (in the MainWindow menu bar).
-    void refreshViewsMenu();
+    void setGuiElementsFromProject();
 
 private:
     Ui::MainWindow *ui;
@@ -53,7 +54,13 @@ private:
     QMenu *mInterlinearViewMenu;
     QMenu *mQuickViewMenu;
 
+    QComboBox * mTextCombo;
+    QComboBox * mViewCombo;
+    QComboBox * mQuickViewCombo;
+
     Project *mProject;
+
+    void setupToolbar();
 
     void addTableMenuItems();
     void addTableMenuItems(const QStringList & tableNames);
@@ -85,6 +92,9 @@ private slots:
     int projectOptions();
     void exportTexts();
     void syntacticElements();
+
+    void viewChanged(int index);
+    void quickViewChanged(int index);
 
     ///@}
 
