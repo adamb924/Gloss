@@ -494,11 +494,16 @@ TextBitHash DatabaseAdapter::guessInterpretationGlosses(qlonglong id) const
 {
     TextBitHash glosses;
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select Form,FlexString,Glosses._id from Glosses,WritingSystems where InterpretationId=:InterpretationId and WritingSystem=WritingSystems._id;");
+    q.prepare("select Form,WritingSystem,Glosses._id from Glosses where InterpretationId=:InterpretationId;");
     q.bindValue(":InterpretationId",id);
     if( q.exec() )
+    {
         while( q.next() )
-            glosses.insert( writingSystem( q.value(1).toString() ) , TextBit( q.value(0).toString() , writingSystem( q.value(1).toString() ) , q.value(2).toLongLong() ) );
+        {
+            WritingSystem ws = mWritingSystemByRowId.value( q.value(1).toUInt() , WritingSystem() );
+            glosses.insert( ws , TextBit( q.value(0).toString() , ws , q.value(2).toLongLong() ) );
+        }
+    }
     return glosses;
 }
 
@@ -506,11 +511,16 @@ TextBitHash DatabaseAdapter::guessInterpretationTextForms(qlonglong id) const
 {
     TextBitHash textForms;
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select Form,FlexString,TextForms._id from TextForms,WritingSystems where InterpretationId=:InterpretationId and WritingSystem=WritingSystems._id;");
+    q.prepare("select Form,WritingSystem,_id from TextForms where InterpretationId=:InterpretationId;");
     q.bindValue(":InterpretationId",id);
     if( q.exec() )
+    {
         while( q.next() )
-            textForms.insert( writingSystem( q.value(1).toString() ) , TextBit( q.value(0).toString() , writingSystem( q.value(1).toString() ) , q.value(2).toLongLong() ) );
+        {
+            WritingSystem ws = mWritingSystemByRowId.value( q.value(1).toUInt() , WritingSystem() );
+            textForms.insert( ws , TextBit( q.value(0).toString() , ws , q.value(2).toLongLong() ) );
+        }
+    }
     return textForms;
 }
 
