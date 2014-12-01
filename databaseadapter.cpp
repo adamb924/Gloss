@@ -511,7 +511,7 @@ TextBitHash DatabaseAdapter::guessInterpretationTextForms(qlonglong id) const
 {
     TextBitHash textForms;
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select Form,WritingSystem,_id from TextForms where InterpretationId=:InterpretationId order by length(Form) desc;");
+    q.prepare("select Form,WritingSystem,_id,min(length(Form)) from TextForms where InterpretationId=:InterpretationId group by WritingSystem;");
     q.bindValue(":InterpretationId",id);
     if( q.exec() )
     {
