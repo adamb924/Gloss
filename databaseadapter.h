@@ -142,6 +142,7 @@ public:
     QSet<Allomorph::Type> getPossibleMorphologicalTypes( const TextBit & bit ) const;
 
     Allomorph::Type lexicalEntryMorphologicalType( qlonglong lexicalEntryId ) const;
+    void setLexicalEntryMorphologicalType( qlonglong lexicalEntryId , Allomorph::Type type ) const;
 
     //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, treating \a bit as a search function.
     void searchLexicalEntries( const TextBit & bit , QHash<qlonglong,QString> * first , QHash<qlonglong,QString> * second ) const;

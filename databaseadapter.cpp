@@ -1778,3 +1778,13 @@ Allomorph::Type DatabaseAdapter::lexicalEntryMorphologicalType( qlonglong lexica
     else
         return Allomorph::Stem;
 }
+
+void DatabaseAdapter::setLexicalEntryMorphologicalType(qlonglong lexicalEntryId, Allomorph::Type type) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare( "update LexicalEntry set MorphologicalCategory=:MorphologicalCategory where _id=:LexicalEntryId;" );
+    q.bindValue(":LexicalEntryId", lexicalEntryId );
+    q.bindValue(":MorphologicalCategory", Allomorph::getTypeString(type) );
+    if( !q.exec() )
+        qWarning() << q.lastError().text() << q.executedQuery();
+}

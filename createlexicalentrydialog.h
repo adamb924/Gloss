@@ -53,6 +53,10 @@ private:
     QList<LexiconLineForm*> mGlossEdits;
     QList<LexiconLineForm*> mCitationFormEdits;
 
+    void addMorphemeTypes();
+
+    Allomorph::Type morphemeType() const;
+
 private slots:
     void guessAppropriateValues();
     void fillFromDatabase();

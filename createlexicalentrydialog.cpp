@@ -24,6 +24,8 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(qlonglong lexicalEntryId, boo
 {
     ui->setupUi(this);
 
+    addMorphemeTypes();
+
     fillFromDatabase();
 
     ui->grammaticalInformation->setWritingSystem( mProject->metaLanguage() );
@@ -48,9 +50,11 @@ CreateLexicalEntryDialog::CreateLexicalEntryDialog(const TextBit & allomorphStri
 {
     ui->setupUi(this);
 
+    addMorphemeTypes();
+
     guessAppropriateValues();
 
-    ui->grammaticalInformation->setWritingSystem( mProject->metaLanguage() );
+    ui->grammaticalInformation->setWritingSystem( mProject->metaLanguage() );    
 
     connect(this, SIGNAL(accepted()), this, SLOT(createLexicalEntry()));
 
@@ -65,6 +69,18 @@ CreateLexicalEntryDialog::~CreateLexicalEntryDialog()
     delete ui;
 }
 
+void CreateLexicalEntryDialog::addMorphemeTypes()
+{
+    QStringList morphemeTypes;
+    morphemeTypes << "Stem" << "Prefix" << "Suffix" << "Infix" << "BoundStem" << "Proclitic" << "Enclitic" << "Simulfix" << "Suprafix";
+    ui->morphemeTypeCombo->addItems(morphemeTypes);
+}
+
+Allomorph::Type CreateLexicalEntryDialog::morphemeType() const
+{
+    return Allomorph::getType( ui->morphemeTypeCombo->currentText() );
+}
+
 qlonglong CreateLexicalEntryDialog::lexicalEntryId() const
 {
     return mLexicalEntryId;
@@ -72,11 +88,14 @@ qlonglong CreateLexicalEntryDialog::lexicalEntryId() const
 
 void CreateLexicalEntryDialog::guessAppropriateValues()
 {
+    Allomorph::Type type = Allomorph::typeFromFormattedString( mAllomorphString );
+    bool isStem = type == Allomorph::Stem || type == Allomorph::BoundStem;
+
+    ui->morphemeTypeCombo->setCurrentText( Allomorph::getTypeString( type ) );
+
     QList<WritingSystem> glosses = *( mProject->lexicalEntryGlossFields() );
     foreach( WritingSystem ws , glosses )
     {
-        Allomorph::Type type = Allomorph::typeFromFormattedString( mAllomorphString );
-        bool isStem = type == Allomorph::Stem || type == Allomorph::BoundStem;
         LexiconLineForm *form = new LexiconLineForm( mGlossItem->glosses()->value(ws, TextBit("", ws) ), isStem && mGlossItem->glosses()->contains(ws), mHideGuessButton );
         ui->glossLayout->addWidget(form);
         mGlossEdits << form;
@@ -131,6 +150,8 @@ void CreateLexicalEntryDialog::fillFromDatabase()
         mCitationFormEdits << form;
     }
 
+    ui->morphemeTypeCombo->setCurrentText( Allomorph::getTypeString( mDbAdapter->lexicalEntryMorphologicalType(mLexicalEntryId) ) );
+
     QStringList tags = mDbAdapter->grammaticalTags(mLexicalEntryId);
     ui->grammaticalInformation->setText( tags.join(' ') );
 }
@@ -146,7 +167,7 @@ void CreateLexicalEntryDialog::createLexicalEntry()
     for(int i=0; i<mCitationFormEdits.count(); i++)
         citationForms << mCitationFormEdits.at(i)->textBit();
 
-    mLexicalEntryId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), Allomorph::typeFromFormattedString(mAllomorphString), glosses, citationForms, grammaticalTags() );
+    mLexicalEntryId = mDbAdapter->addLexicalEntry( ui->grammaticalInformation->text(), morphemeType(), glosses, citationForms, grammaticalTags() );
 }
 
 void CreateLexicalEntryDialog::changeLexicalEntry()
@@ -156,6 +177,8 @@ void CreateLexicalEntryDialog::changeLexicalEntry()
 
     for(int i=0; i<mCitationFormEdits.count(); i++)
         mDbAdapter->updateLexicalEntryCitationForm( mLexicalEntryId , mCitationFormEdits.at(i)->textBit() );
+
+    mDbAdapter->setLexicalEntryMorphologicalType( mLexicalEntryId, morphemeType() );
 
     mDbAdapter->setTagsForLexicalEntry( mLexicalEntryId , grammaticalTags() );
 }

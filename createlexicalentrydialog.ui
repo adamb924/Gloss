@@ -7,13 +7,23 @@
     <x>0</x>
     <y>0</y>
     <width>526</width>
-    <height>160</height>
+    <height>207</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Create lexical entry</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Morpheme Type</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="morphemeTypeCombo"/>
+   </item>
    <item>
     <widget class="QLabel" name="label">
      <property name="sizePolicy">
