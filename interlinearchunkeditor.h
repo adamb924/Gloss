@@ -50,6 +50,8 @@ private:
 
     void closeEvent(QCloseEvent *event);
 
+    void keyReleaseEvent(QKeyEvent * event);
+
 private slots:
     void next();
     void previous();

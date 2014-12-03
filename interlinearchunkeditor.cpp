@@ -125,6 +125,18 @@ void InterlinearChunkEditor::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
+void InterlinearChunkEditor::keyReleaseEvent(QKeyEvent *event)
+{
+    if( event->key() == Qt::Key_PageDown )
+    {
+        next();
+    } else if ( event->key() == Qt::Key_PageUp )
+    {
+        previous();
+    }
+    QWidget::keyReleaseEvent(event);
+}
+
 Text * InterlinearChunkEditor::text()
 {
     return mText;
