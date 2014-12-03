@@ -90,6 +90,7 @@ void LexicalEntryForm::newLexicalEntry()
             emit entryChanged();
         }
     }
+    ui->newForm->clearFocus();
 }
 
 void LexicalEntryForm::linkToOther()
