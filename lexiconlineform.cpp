@@ -39,5 +39,7 @@ void LexiconLineForm::fillInGuess()
     if( !mGuess.text().isEmpty() )
     {
         ui->edit->setTextBit( mGuess );
+        ui->edit->setFocus( Qt::OtherFocusReason );
+        ui->edit->setCursorPosition( ui->edit->text().length() );
     }
 }
