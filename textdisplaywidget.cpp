@@ -74,7 +74,10 @@ void TextDisplayWidget::closeEvent(QCloseEvent *event)
 void TextDisplayWidget::setLines(const QList<int> & lines)
 {
     for(int i=0; i<mIdwTabs.count(); i++)
+    {
         mIdwTabs.at(i)->setLines(lines);
+        mIdwTabs.at(i)->verticalScrollBar()->triggerAction(QScrollBar::SliderToMinimum);
+    }
 }
 
 void TextDisplayWidget::saveText()
