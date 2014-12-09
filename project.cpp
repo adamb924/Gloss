@@ -1142,15 +1142,15 @@ void Project::annotationTypesFromConfigurationFile()
     query.bindVariable("path", QVariant(QUrl::fromLocalFile(configurationXmlPath()).path(QUrl::FullyEncoded)));
     query.setQuery("declare variable $path external; "
                    "for $x in doc($path)/gloss-configuration/annotations/annotation "
-                   "return string-join( ($x/@name, $x/@mark , $x/@lang ) , ',') ");
+                   "return string-join( ($x/@name, $x/@mark , $x/@lang , $x/@header-lang ) , ',') ");
     query.evaluateTo(&result);
 
     for(int i=0; i<result.count(); i++)
     {
         QStringList split = result.at(i).split(",");
-        if( split.count() != 3 )
+        if( split.count() != 4 )
             continue;
-        mAnnotationTypes << AnnotationType(split.at(0),split.at(1), mDbAdapter->writingSystem(split.at(2)));
+        mAnnotationTypes << AnnotationType(split.at(0),split.at(1), mDbAdapter->writingSystem(split.at(2)), mDbAdapter->writingSystem(split.at(3)) );
     }
 }
 
@@ -1267,6 +1267,7 @@ void Project::serializeConfigurationXml()
         stream.writeAttribute("name", mAnnotationTypes.at(i).label() );
         stream.writeAttribute("mark", mAnnotationTypes.at(i).mark() );
         stream.writeAttribute("lang", mAnnotationTypes.at(i).writingSystem().flexString() );
+        stream.writeAttribute("header-lang", mAnnotationTypes.at(i).headerWritingSystem().flexString() );
     }
     stream.writeEndElement(); // annotations
 

@@ -19,6 +19,7 @@
 #include "textbit.h"
 #include "allomorph.h"
 #include "morphologicalanalysis.h"
+#include "annotation.h"
 
 class TextBit;
 class Project;
@@ -99,13 +100,13 @@ public:
     bool matchesFocus( const Focus & focus ) const;
 
     //! \brief Returns the annotation for the given \a key, or an empty TextBit if none exists
-    TextBit getAnnotation( const QString & key ) const;
+    Annotation getAnnotation( const QString & key ) const;
 
     //! \brief Sets the annotation for the given \a key to \a annotation
-    void setAnnotation( const QString & key, const TextBit & annotation );
+    void setAnnotation( const QString & key, const Annotation & annotation );
 
     //! \brief Returns all annotations associated with the GlossItem
-    QHashIterator<QString,TextBit> annotations() const;
+    QHashIterator<QString, Annotation> annotations() const;
 
     //! \brief Returns true if the GlossItem has at least one annotation, otherwise returns false
     bool hasAnnotations() const;
@@ -199,7 +200,7 @@ private:
 
     QHash<WritingSystem,MorphologicalAnalysis*> mMorphologicalAnalyses;
 
-    QHash<QString,TextBit> mAnnotations;
+    QHash<QString,Annotation> mAnnotations;
 
     CandidateNumber mCandidateNumber;
     ApprovalStatus mApprovalStatus;

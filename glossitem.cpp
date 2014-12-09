@@ -543,21 +543,21 @@ bool GlossItem::matchesFocus( const Focus & focus ) const
     return false;
 }
 
-TextBit GlossItem::getAnnotation( const QString & key ) const
+Annotation GlossItem::getAnnotation( const QString & key ) const
 {
-    return mAnnotations.value(key, TextBit() );
+    return mAnnotations.value(key, Annotation(TextBit()) );
 }
 
-void GlossItem::setAnnotation( const QString & key, const TextBit & annotation )
+void GlossItem::setAnnotation(const QString & key, const Annotation &annotation )
 {
     mAnnotations.insert(key, annotation);
     // this is sort of a cheap way to make sure the text is marked as changed
     emit approvalStatusChanged(mApprovalStatus);
 }
 
-QHashIterator<QString,TextBit> GlossItem::annotations() const
+QHashIterator<QString,Annotation> GlossItem::annotations() const
 {
-    return QHashIterator<QString,TextBit>(mAnnotations);
+    return QHashIterator<QString,Annotation>(mAnnotations);
 }
 
 bool GlossItem::hasAnnotations() const
@@ -568,7 +568,7 @@ bool GlossItem::hasAnnotations() const
 bool GlossItem::hasAnnotation( const QString & key ) const
 {
     if( mAnnotations.contains( key ) )
-        return ! mAnnotations.value(key).text().isEmpty();
+        return ! mAnnotations.value(key).annotation().text().isEmpty();
     else
         return false;
 }

@@ -49,7 +49,9 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     GlossItem::ApprovalStatus approvalStatus = GlossItem::Unapproved;
     WritingSystem glossItemBaselineWritingSystem;
 
-    QHash<QString,TextBit> annotations;
+    QHash<QString,Annotation> annotations;
+    TextBit annotationHeader, annotationText;
+    QString annotationKey;
     QSet<qlonglong> textFormIds;
     QSet<qlonglong> glossFormIds;
     QHash<QString,QList<QUuid> > morphGuids; /// the string here is a flextext string
@@ -140,12 +142,29 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             else if ( name == "annotation" && stream.namespaceUri().toString() == "http://www.adambaker.org/gloss.php" ) // <annotation>
             {
                 QXmlStreamAttributes attr = stream.attributes();
-                if( attr.hasAttribute("lang") && attr.hasAttribute("key") )
+                if( attr.hasAttribute("key") )
+                {
+                    annotationKey = attr.value("key").toString();
+                }
+            }
+            else if ( name == "annotation-header" && stream.namespaceUri().toString() == "http://www.adambaker.org/gloss.php" ) // <annotation>
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("lang") )
                 {
                     WritingSystem ws = mDbAdapter->writingSystem( attr.value("lang").toString() );
-                    QString key = attr.value("key").toString();
                     QString text = stream.readElementText();
-                    annotations.insert( key , TextBit(text, ws) );
+                    annotationHeader = TextBit( text, ws );
+                }
+            }
+            else if ( name == "annotation-text" && stream.namespaceUri().toString() == "http://www.adambaker.org/gloss.php" ) // <annotation>
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("lang") )
+                {
+                    WritingSystem ws = mDbAdapter->writingSystem( attr.value("lang").toString() );
+                    QString text = stream.readElementText();
+                    annotationText = TextBit( text, ws );
                 }
             }
             else if(name == "interlinear-text") // <interlinear-text>
@@ -230,7 +249,11 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
-            if(name == "word") // </word>
+            if ( name == "annotation" && stream.namespaceUri().toString() == "http://www.adambaker.org/gloss.php" ) // <annotation>
+            {
+                annotations.insert( annotationKey , Annotation( annotationHeader, annotationText ) );
+            }
+            else if(name == "word") // </word>
             {
                 GlossItem * glossItem = new GlossItem( glossItemBaselineWritingSystem.isNull() ? mText->mBaselineWritingSystem : glossItemBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject );
                 mText->mPhrases.last()->appendGlossItem(glossItem);
@@ -239,7 +262,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
 
                 glossItem->loadMorphologicalAnalysesFromDatabase();
 
-                QHashIterator<QString,TextBit> annIter(annotations);
+                QHashIterator<QString,Annotation> annIter(annotations);
                 while(annIter.hasNext())
                 {
                     annIter.next();

@@ -13,10 +13,12 @@ class AnnotationType
 {
 public:
     AnnotationType();
-    AnnotationType(const QString & label, const QString & mark, const WritingSystem & ws);
+    AnnotationType(const QString & label, const QString & mark, const WritingSystem & ws, const WritingSystem & headerWs);
 
     //! \brief Return the WritingSystem of the annotation
     WritingSystem writingSystem() const;
+
+    WritingSystem headerWritingSystem() const;
 
     //! \brief Return the label (i.e., the text) of the annotation
     QString label() const;
@@ -26,6 +28,7 @@ public:
 
 private:
     WritingSystem mWritingSystem;
+    WritingSystem mHeaderWritingSystem;
     QString mLabel;
     QString mMark;
 };

@@ -17,6 +17,7 @@ class GlossItem;
 class WritingSystem;
 class SyntacticAnalysis;
 class SyntacticAnalysisElement;
+class Annotation;
 
 class FlexTextWriter
 {
@@ -53,6 +54,8 @@ private:
 
     //! \brief Serialize the allomorph (i.e., <morph> in the XML stream) without including all of the database information
     bool serializeAllomorphNonverbose(const Allomorph & allomorph) const;
+
+    bool serializeAnnotation(const QString & key, const Annotation & annotation) const;
 
     //! \brief Serialize the languages.
     bool serializeLanguages() const;

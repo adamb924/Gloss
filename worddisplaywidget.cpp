@@ -11,6 +11,7 @@
 #include "mainwindow.h"
 #include "dealwithspacesdialog.h"
 #include "annotationmarkwidget.h"
+#include "annotationeditordialog.h"
 
 #include <QtWidgets>
 #include <QtDebug>
@@ -1011,17 +1012,15 @@ void WordDisplayWidget::editBaselineTextForm()
 
 void WordDisplayWidget::annotationMarkActivated( const QString & key )
 {
-    TextBit annotation = mGlossItem->getAnnotation( key );
-    if( annotation.text().isEmpty() )
-        annotation.setWritingSystem( mProject->annotationType(key).writingSystem() );
-    if( annotation.writingSystem().isNull() )
-        return;
+    Annotation annotation = mGlossItem->getAnnotation( key );
+    annotation.setWritingSystem( mProject->annotationType(key).writingSystem() );
+    annotation.setHeaderWritingSystem( mProject->annotationType(key).headerWritingSystem() );
 
-    GenericTextInputDialog dialog(annotation, this);
+    AnnotationEditorDialog dialog( annotation, mGlossItem->baselineText(), this );
     dialog.setWindowTitle(key);
     if( dialog.exec() == QDialog::Accepted )
     {
-        mGlossItem->setAnnotation( key , dialog.textBit() );
+        mGlossItem->setAnnotation( key , dialog.annotation() );
         mAnnotationMarks->setupLayout();
     }
 }

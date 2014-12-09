@@ -100,7 +100,9 @@ SOURCES += main.cpp\
     syntacticvocabularydialog.cpp \
     lexiconlineform.cpp \
     importplaintextdialog.cpp \
-    annotationtypeeditordialog.cpp
+    annotationtypeeditordialog.cpp \
+    annotation.cpp \
+    annotationeditordialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -192,7 +194,9 @@ HEADERS  += mainwindow.h \
     syntacticvocabularydialog.h \
     lexiconlineform.h \
     importplaintextdialog.h \
-    annotationtypeeditordialog.h
+    annotationtypeeditordialog.h \
+    annotation.h \
+    annotationeditordialog.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -227,7 +231,8 @@ FORMS    += mainwindow.ui \
     syntacticvocabularydialog.ui \
     lexiconlineform.ui \
     importplaintextdialog.ui \
-    annotationtypeeditordialog.ui
+    annotationtypeeditordialog.ui \
+    annotationeditordialog.ui
 
 unix:INCLUDEPATH += "/usr/include/libxml2"
 

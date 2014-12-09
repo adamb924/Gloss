@@ -8,6 +8,7 @@
 #include "project.h"
 #include "syntacticanalysis.h"
 #include "syntacticanalysiselement.h"
+#include "annotation.h"
 
 #include <QFile>
 #include <QXmlStreamWriter>
@@ -179,16 +180,11 @@ bool FlexTextWriter::serializeGlossItem(GlossItem *glossItem) const
     // custom annotations
     if( mIncludeGlossNamespace )
     {
-        QHashIterator<QString,TextBit> annIter = glossItem->annotations();
+        QHashIterator<QString,Annotation> annIter = glossItem->annotations();
         while ( annIter.hasNext() )
         {
             annIter.next();
-
-            stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation");
-            stream->writeAttribute("key", annIter.key() );
-            stream->writeAttribute("lang", annIter.value().writingSystem().flexString() );
-            stream->writeCharacters(annIter.value().text());
-            stream->writeEndElement();
+            serializeAnnotation( annIter.key(), annIter.value() );
         }
     }
     stream->writeEndElement(); // word
@@ -309,6 +305,26 @@ bool FlexTextWriter::serializeAllomorphNonverbose(const Allomorph &allomorph) co
     stream->writeEmptyElement("morph");
     writeNamespaceAttribute( "id", QString("%1").arg(allomorph.id()) );
     writeNamespaceAttribute( "guid" , allomorph.guid() );
+
+    return true;
+}
+
+bool FlexTextWriter::serializeAnnotation(const QString &key, const Annotation &annotation) const
+{
+    stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation");
+    stream->writeAttribute("key", key );
+
+    stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation-text");
+    stream->writeAttribute("lang", annotation.annotation().writingSystem().flexString() );
+    stream->writeCharacters(annotation.annotation().text());
+    stream->writeEndElement();
+
+    stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation-header");
+    stream->writeAttribute("lang", annotation.header().writingSystem().flexString() );
+    stream->writeCharacters(annotation.header().text());
+    stream->writeEndElement();
+
+    stream->writeEndElement(); // annotation
 
     return true;
 }
