@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AnnotationEditorDialog</class>
- <widget class="QDialog" name="AnnotationEditorDialog">
+ <class>AnnotationTypeEditorDialog</class>
+ <widget class="QDialog" name="AnnotationTypeEditorDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -68,7 +68,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>AnnotationEditorDialog</receiver>
+   <receiver>AnnotationTypeEditorDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -84,7 +84,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>AnnotationEditorDialog</receiver>
+   <receiver>AnnotationTypeEditorDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

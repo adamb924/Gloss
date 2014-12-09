@@ -1,20 +1,20 @@
-#include "annotationeditordialog.h"
+#include "annotationtypeeditordialog.h"
 #include "ui_annotationeditordialog.h"
 
 #include "annotationtype.h"
 
-AnnotationEditorDialog::AnnotationEditorDialog(const QList<WritingSystem> &writingSystems, QWidget *parent) :
+AnnotationTypeEditorDialog::AnnotationTypeEditorDialog(const QList<WritingSystem> &writingSystems, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::AnnotationEditorDialog)
+    ui(new Ui::AnnotationTypeEditorDialog)
 {
     ui->setupUi(this);
 
     ui->writingSystemCombo->setWritingSystems(writingSystems);
 }
 
-AnnotationEditorDialog::AnnotationEditorDialog(AnnotationType type, const QList<WritingSystem> &writingSystems, QWidget *parent) :
+AnnotationTypeEditorDialog::AnnotationTypeEditorDialog(AnnotationType type, const QList<WritingSystem> &writingSystems, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::AnnotationEditorDialog)
+    ui(new Ui::AnnotationTypeEditorDialog)
 {
     ui->setupUi(this);
 
@@ -26,12 +26,12 @@ AnnotationEditorDialog::AnnotationEditorDialog(AnnotationType type, const QList<
     ui->markEdit->setText( type.mark() );
 }
 
-AnnotationEditorDialog::~AnnotationEditorDialog()
+AnnotationTypeEditorDialog::~AnnotationTypeEditorDialog()
 {
     delete ui;
 }
 
-AnnotationType AnnotationEditorDialog::annotationType() const
+AnnotationType AnnotationTypeEditorDialog::annotationType() const
 {
     return AnnotationType(ui->nameEdit->text(), ui->markEdit->text(), ui->writingSystemCombo->currentWritingSystem() );
 }

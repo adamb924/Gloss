@@ -84,7 +84,6 @@ SOURCES += main.cpp\
     itemeditdialog.cpp \
     projectoptionsdialog.cpp \
     writingsystemlistmodel.cpp \
-    annotationeditordialog.cpp \
     annotationtypelistmodel.cpp \
     exporttextsdialog.cpp \
     syntacticparsingwidget.cpp \
@@ -100,7 +99,8 @@ SOURCES += main.cpp\
     tabeditdialog.cpp \
     syntacticvocabularydialog.cpp \
     lexiconlineform.cpp \
-    importplaintextdialog.cpp
+    importplaintextdialog.cpp \
+    annotationtypeeditordialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -176,7 +176,6 @@ HEADERS  += mainwindow.h \
     itemeditdialog.h \
     projectoptionsdialog.h \
     writingsystemlistmodel.h \
-    annotationeditordialog.h \
     annotationtypelistmodel.h \
     exporttextsdialog.h \
     syntacticparsingwidget.h \
@@ -192,7 +191,8 @@ HEADERS  += mainwindow.h \
     tabeditdialog.h \
     syntacticvocabularydialog.h \
     lexiconlineform.h \
-    importplaintextdialog.h
+    importplaintextdialog.h \
+    annotationtypeeditordialog.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -219,7 +219,6 @@ FORMS    += mainwindow.ui \
     writingsystemdialog.ui \
     itemeditdialog.ui \
     projectoptionsdialog.ui \
-    annotationeditordialog.ui \
     exporttextsdialog.ui \
     syntacticparsingwidget.ui \
     syntacticanalysisoptionsdialog.ui \
@@ -227,7 +226,8 @@ FORMS    += mainwindow.ui \
     tabeditdialog.ui \
     syntacticvocabularydialog.ui \
     lexiconlineform.ui \
-    importplaintextdialog.ui
+    importplaintextdialog.ui \
+    annotationtypeeditordialog.ui
 
 unix:INCLUDEPATH += "/usr/include/libxml2"
 

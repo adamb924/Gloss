@@ -4,7 +4,7 @@
 #include "databaseadapter.h"
 #include "writingsystemlistmodel.h"
 #include "writingsystemdialog.h"
-#include "annotationeditordialog.h"
+#include "annotationtypeeditordialog.h"
 #include "annotationtypelistmodel.h"
 
 #include <QFileDialog>
@@ -76,7 +76,7 @@ void ProjectOptionsDialog::mediaFolderChooser()
 
 void ProjectOptionsDialog::addAnnotation()
 {
-    AnnotationEditorDialog dialog(mProject->dbAdapter()->writingSystems());
+    AnnotationTypeEditorDialog dialog(mProject->dbAdapter()->writingSystems());
     if( dialog.exec() )
     {
         mAnnotationTypeModel->addAnnotationType(dialog.annotationType());
@@ -93,7 +93,7 @@ void ProjectOptionsDialog::removeAnnotation()
 
 void ProjectOptionsDialog::editAnnotation(const QModelIndex &index)
 {
-    AnnotationEditorDialog dialog( mProject->annotationTypes()->at(index.row()), mProject->dbAdapter()->writingSystems());
+    AnnotationTypeEditorDialog dialog( mProject->annotationTypes()->at(index.row()), mProject->dbAdapter()->writingSystems());
     if( dialog.exec() )
     {
         mAnnotationTypeModel->setAnnotationType( index, dialog.annotationType());
