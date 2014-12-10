@@ -1358,10 +1358,10 @@ void DatabaseAdapter::createIndex( const QString & tableName, const QString & qu
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
 
-    if( !q.exec( QString("drop table if exists %1;").arg(tableName) ) )
+    if( !q.exec( QString("create table if not exists %1 ( TextName text, LineNumber integer, Id integer );").arg(tableName) ) )
         qWarning() << q.lastError().text() << q.executedQuery();
 
-    if( !q.exec( QString("create table if not exists %1 ( TextName text, LineNumber integer, Id integer );").arg(tableName) ) )
+    if( !q.exec( QString("delete from %1;").arg(tableName) ) )
         qWarning() << q.lastError().text() << q.executedQuery();
 
     q.prepare( QString("insert into %1 (TextName,LineNumber,Id) values (:TextName,:LineNumber,:Id)").arg(tableName) );
