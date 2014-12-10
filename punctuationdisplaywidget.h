@@ -22,10 +22,9 @@ signals:
 
 private slots:
     void updateDisplay();
-
     void beginNewLineHere();
     void editBaselineTextForm();
-
+    void editBaselineText();
 };
 
 #endif // PUNCTUATIONDISPLAYWIDGET_H

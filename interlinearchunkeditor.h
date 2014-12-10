@@ -42,10 +42,8 @@ private:
 
     int mChunkSize;
     int mPosition;
-    int mNPhrases;
 
     void moveToPosition(int position);
-    void setButtonActivation();
     QList<int> makeLines();
 
     void closeEvent(QCloseEvent *event);
@@ -58,6 +56,7 @@ private slots:
     void goTo();
     void beginning();
     void end();
+    void setButtonActivation();
 };
 
 #endif // INTERLINEARCHUNKEDITOR_H

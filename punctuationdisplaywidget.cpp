@@ -14,6 +14,7 @@ PunctuationDisplayWidget::PunctuationDisplayWidget(GlossItem *glossItem, const D
 void PunctuationDisplayWidget::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu *menu = new QMenu(this);
+    menu->addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu->addAction(tr("Edit Text Form %1 (%2)").arg( mGlossItem->baselineText().id() ).arg( mGlossItem->baselineText().text() ), this, SLOT(editBaselineTextForm()));
     menu->addAction(tr("Begin new line here"), this, SLOT(beginNewLineHere()));
     menu->exec(event->globalPos());
@@ -37,5 +38,15 @@ void PunctuationDisplayWidget::editBaselineTextForm()
     {
         mDbAdapter->updateTextForm( dialog.textBit() );
         mGlossItem->setTextFormText( dialog.textBit() );
+    }
+}
+
+void PunctuationDisplayWidget::editBaselineText()
+{
+    GenericTextInputDialog dialog( mGlossItem->baselineText() , this );
+    dialog.setWindowTitle(tr("Edit baseline text (%1)").arg(mGlossItem->baselineText().writingSystem().name()));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mGlossItem->resetBaselineText( TextBit( dialog.text().trimmed() , mGlossItem->baselineWritingSystem() ) );
     }
 }

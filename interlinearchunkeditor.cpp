@@ -22,7 +22,6 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
     mType = type;
     mChunkSize = chunkSize;
     mPosition = 0;
-    mNPhrases = mText->phrases()->count();
 
     connect( ui->previousButton , SIGNAL(clicked()), this, SLOT(previous()) );
     connect( ui->nextButton, SIGNAL(clicked()), this, SLOT(next()) );
@@ -30,9 +29,11 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
     connect( ui->beginningButton, SIGNAL(clicked()), this, SLOT(beginning()));
     connect( ui->endButton, SIGNAL(clicked()), this, SLOT(end()) );
 
+    connect( text, SIGNAL(guiRefreshRequest()), this, SLOT(setButtonActivation()));
+
     // make the ranges
     QList<int> lines;
-    for( int i=mPosition; i < mPosition + mChunkSize && i < mNPhrases; i++ )
+    for( int i=mPosition; i < mPosition + mChunkSize && i < mText->phrases()->count(); i++ )
         lines << i;
 
     setButtonActivation();
@@ -61,7 +62,7 @@ void InterlinearChunkEditor::previous()
 void InterlinearChunkEditor::goTo()
 {
     bool ok;
-    int newPosition = QInputDialog::getInt(this, tr("Go to"), tr("Go to the chunk with line... (1-%1)").arg(mNPhrases), mPosition, 1, mNPhrases, 1, &ok );
+    int newPosition = QInputDialog::getInt(this, tr("Go to"), tr("Go to the chunk with line... (1-%1)").arg(mText->phrases()->count()), mPosition, 1, mText->phrases()->count(), 1, &ok );
     if( ok )
         moveToLine( newPosition );
 }
@@ -73,7 +74,7 @@ void InterlinearChunkEditor::beginning()
 
 void InterlinearChunkEditor::end()
 {
-    moveToLine( mNPhrases );
+    moveToLine( mText->phrases()->count() );
 }
 
 void InterlinearChunkEditor::moveToLine(int line)
@@ -88,7 +89,7 @@ void InterlinearChunkEditor::moveToPosition(int position)
     if( position < 0 )
         position = 0;
 
-    if( position >= mNPhrases )
+    if( position >= mText->phrases()->count() )
         return;
 
     mPosition = position;
@@ -105,7 +106,7 @@ void InterlinearChunkEditor::setButtonActivation()
     else
         ui->previousButton->setEnabled(true);
 
-    if( mPosition + mChunkSize >= mNPhrases )
+    if( mPosition + mChunkSize >= mText->phrases()->count() )
         ui->nextButton->setEnabled(false);
     else
         ui->nextButton->setEnabled(true);
@@ -114,7 +115,7 @@ void InterlinearChunkEditor::setButtonActivation()
 QList<int> InterlinearChunkEditor::makeLines()
 {
     QList<int> lines;
-    for( int i=mPosition; i < mPosition + mChunkSize && i < mNPhrases; i++ )
+    for( int i=mPosition; i < mPosition + mChunkSize && i < mText->phrases()->count(); i++ )
         lines << i;
     return lines;
 }
