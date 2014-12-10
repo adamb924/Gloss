@@ -23,6 +23,8 @@ public slots:
 private:
     WritingSystem mWritingSystem;
     void refreshStyle();
+
+    void focusInEvent ( QFocusEvent * e );
 };
 
 #endif // LINGTEXTEDIT_H

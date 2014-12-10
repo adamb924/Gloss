@@ -1,5 +1,7 @@
 #include "lingtextedit.h"
 
+#include <QProcess>
+
 LingTextEdit::LingTextEdit(QWidget *parent) :
     QTextEdit(parent)
 {
@@ -38,4 +40,14 @@ void LingTextEdit::refreshStyle()
     if( mWritingSystem.isNull() ) return;
     setStyleSheet( QString(" QTextEdit { font-family: %1; font-size: %2pt; border: 1px solid #000; }")
                    .arg(mWritingSystem.fontFamily()).arg( mWritingSystem.fontSize() ) );
+}
+
+void LingTextEdit::focusInEvent(QFocusEvent *e)
+{
+    QTextEdit::focusInEvent(e);
+
+    // http://msdn.microsoft.com/en-us/goglobal/bb896001
+    QProcess switchInput;
+    switchInput.start( mWritingSystem.keyboardCommand() );
+    switchInput.waitForFinished();
 }
