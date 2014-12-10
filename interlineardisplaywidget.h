@@ -20,6 +20,7 @@ class LingEdit;
 class TextBit;
 class InterlinearLineLabel;
 class WordDisplayWidget;
+class PunctuationDisplayWidget;
 class GlossItem;
 class Phrase;
 class Focus;
@@ -96,6 +97,7 @@ private:
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
     void addWordWidgets( int i , QLayout * flowLayout );
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item, Phrase *phrase);
+    PunctuationDisplayWidget* addPunctuationDisplayWidget(GlossItem *item);
 
 protected:
     QHash<int, QLayout*> mLineLayouts;

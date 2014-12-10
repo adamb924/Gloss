@@ -19,6 +19,7 @@
 #include "tab.h"
 #include "writingsystem.h"
 #include "immutablelabel.h"
+#include "punctuationdisplaywidget.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
     QScrollArea(parent), mTab(tab), mText(text), mProject(project), mMouseMode(InterlinearDisplayWidget::Normal)
@@ -326,7 +327,7 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
         QWidget *wdw;
         if( mText->phrases()->at(i)->glossItemAt(j)->isPunctuation() )
         {
-            wdw = new ImmutableLabel( mText->phrases()->at(i)->glossItemAt(j)->baselineText(), false , this);
+            wdw = addPunctuationDisplayWidget( mText->phrases()->at(i)->glossItemAt(j) );
         }
         else
         {
@@ -369,6 +370,13 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(leftClicked(WordDisplayWidget*)), this, SLOT(wdwClicked(WordDisplayWidget*)) );
 
     return wdw;
+}
+
+PunctuationDisplayWidget *InterlinearDisplayWidget::addPunctuationDisplayWidget(GlossItem *item)
+{
+    PunctuationDisplayWidget *pdw = new PunctuationDisplayWidget( item, mProject->dbAdapter() , this );
+    connect( pdw, SIGNAL(requestNewLineFromHere(GlossItem*)), mText, SLOT(newLineStartingHere(GlossItem*)) );
+    return pdw;
 }
 
 void InterlinearDisplayWidget::maybeFocus(QWidget * wdw)
