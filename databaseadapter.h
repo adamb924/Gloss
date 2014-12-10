@@ -238,7 +238,10 @@ public:
     bool multipleTextFormsAvailable(qlonglong interpretationId, const WritingSystem & ws) const;
     bool multipleGlossesAvailable(qlonglong interpretationId, const WritingSystem & ws) const;
 
-private:    
+    QList<WritingSystem> morphologicalAnalysisTextWritingSystems() const;
+    QList<WritingSystem> morphologicalAnalysisGlossWritingSystems() const;
+
+private:
     //! \brief Creates the tables; all tables are created with "create if not exists" -- so it's fine to call this in the constructor
     void createTables();
 

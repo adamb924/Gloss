@@ -1788,3 +1788,31 @@ void DatabaseAdapter::setLexicalEntryMorphologicalType(qlonglong lexicalEntryId,
     if( !q.exec() )
         qWarning() << q.lastError().text() << q.executedQuery();
 }
+
+QList<WritingSystem> DatabaseAdapter::morphologicalAnalysisTextWritingSystems() const
+{
+    QList<WritingSystem> writingSystems;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select distinct WritingSystem from Allomorph;");
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::morphologicalAnalysisAnalysisWritingSystems" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+    {
+        writingSystems << mWritingSystemByRowId.value( q.value(0).toLongLong() );
+    }
+    return writingSystems;
+}
+
+QList<WritingSystem> DatabaseAdapter::morphologicalAnalysisGlossWritingSystems() const
+{
+    QList<WritingSystem> writingSystems;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select distinct WritingSystem from LexicalEntryGloss;");
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::morphologicalAnalysisAnalysisWritingSystems" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+    {
+        writingSystems << mWritingSystemByRowId.value( q.value(0).toLongLong() );
+    }
+    return writingSystems;
+}

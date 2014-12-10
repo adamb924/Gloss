@@ -61,8 +61,8 @@ LexiconEdit::LexiconEdit(Project * project, QWidget *parent) :
     connect( ui->glossWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setGlossWritingSystem(WritingSystem)) );
     connect( ui->textWSCombo, SIGNAL(writingSystemSelected(WritingSystem)), analysisModel, SLOT(setTextFormWritingSystem(WritingSystem)) );
 
-    ui->glossWSCombo->setWritingSystems( mDbAdapter->writingSystems() );
-    ui->textWSCombo->setWritingSystems( mDbAdapter->writingSystems() );
+    ui->glossWSCombo->setWritingSystems( mDbAdapter->morphologicalAnalysisGlossWritingSystems() );
+    ui->textWSCombo->setWritingSystems( mDbAdapter->morphologicalAnalysisTextWritingSystems() );
 
     ui->glossWSCombo->setCurrentWritingSystem( mProject->defaultGlossLanguage() );
     ui->textWSCombo->setCurrentWritingSystem( mProject->defaultTextFormLanguage() );
