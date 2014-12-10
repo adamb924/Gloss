@@ -28,6 +28,7 @@ LingEdit::~LingEdit()
 void LingEdit::setTextBit( const TextBit & bit )
 {
     mTextBit.setText( text() );
+    setWritingSystem( bit.writingSystem() );
     if( mTextBit != bit )
     {
         mTextBit = bit;
@@ -88,11 +89,13 @@ void LingEdit::matchTextAlignmentTo( Qt::LayoutDirection target )
 
 void LingEdit::setWritingSystem( const WritingSystem & ws )
 {
-    mTextBit.setWritingSystem( ws );
-
-    refreshStyle();
-    setLayoutDirection(ws.layoutDirection());
-    setToolTip(ws.name());
+    if( mTextBit.writingSystem() != ws )
+    {
+        mTextBit.setWritingSystem( ws );
+        refreshStyle();
+        setLayoutDirection(ws.layoutDirection());
+        setToolTip(ws.name());
+    }
 }
 
 TextBit LingEdit::textBit() const
