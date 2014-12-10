@@ -364,6 +364,8 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(requestSetFollowingTextForms(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingTextForms(GlossItem*,WritingSystem)) );
     connect( wdw, SIGNAL(requestSetFollowingGlosses(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingGlosses(GlossItem*,WritingSystem)) );
 
+    connect( wdw, SIGNAL(requestNewLineFromHere(GlossItem*)), mText, SLOT(newLineStartingHere(GlossItem*)) );
+
     connect( wdw, SIGNAL(leftClicked(WordDisplayWidget*)), this, SLOT(wdwClicked(WordDisplayWidget*)) );
 
     return wdw;

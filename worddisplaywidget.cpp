@@ -242,6 +242,10 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     menu->addSeparator();
 
+    menu->addAction(tr("Begin new line here"), this, SLOT(beginNewLineHere()));
+
+    menu->addSeparator();
+
     // Approved button
     QAction *approved = new QAction(tr("Approved"),menu);
     approved->setCheckable(true);
@@ -1008,6 +1012,11 @@ void WordDisplayWidget::editBaselineTextForm()
         mDbAdapter->updateTextForm( dialog.textBit() );
         mGlossItem->setTextFormText( dialog.textBit() );
     }
+}
+
+void WordDisplayWidget::beginNewLineHere()
+{
+    emit requestNewLineFromHere( mGlossItem );
 }
 
 void WordDisplayWidget::annotationMarkActivated( const QString & key )

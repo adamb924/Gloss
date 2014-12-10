@@ -576,6 +576,26 @@ void Text::matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws 
     }
 }
 
+void Text::newLineStartingHere(GlossItem *glossItem)
+{
+    int startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+
+    Phrase * newPhrase = new Phrase( this, mProject);
+    newPhrase->connectToText();
+
+    int mx = mPhrases.at(startingPhrase)->glossItemCount() - startingGlossItem;
+    for(int i=0; i<mx; i++)
+    {
+        newPhrase->appendGlossItem( mPhrases[startingPhrase]->takeGlossItemAt(startingGlossItem) );
+    }
+
+    mPhrases.insert( startingPhrase + 1 , newPhrase ); /// because it's insertBefore
+
+    emit guiRefreshRequest();
+    markAsChanged();
+}
+
 void Text::baselineSearchReplace( const TextBit & search , const TextBit & replace )
 {
     for(int i=0; i < mPhrases.count(); i++ )

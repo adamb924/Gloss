@@ -93,6 +93,8 @@ signals:
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
 
+    void requestNewLineFromHere( GlossItem * glossItem );
+
     void requestInterpretationSearch(qlonglong id);
     void requestTextFormSearch(qlonglong id);
     void requestGlossSearch(qlonglong id);
@@ -167,6 +169,8 @@ private slots:
     void editBaselineTextMatchingFollowing();
 
     void editBaselineTextForm();
+
+    void beginNewLineHere();
 };
 
 #endif // WORDDISPLAYWIDGET_H

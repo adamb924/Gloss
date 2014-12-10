@@ -182,6 +182,11 @@ GlossItem* Phrase::glossItemAt(int index)
     return mGlossItems[index];
 }
 
+GlossItem *Phrase::takeGlossItemAt(int index)
+{
+    return mGlossItems.takeAt(index);
+}
+
 void Phrase::clearGlossItems()
 {
     qDeleteAll(mGlossItems);

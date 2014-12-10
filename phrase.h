@@ -52,6 +52,9 @@ public:
     //! \brief Returns the gloss item at \a index
     GlossItem* glossItemAt(int index);
 
+    //! \brief Returns the gloss item at \a index and removes it from the list
+    GlossItem* takeGlossItemAt(int index);
+
     //! \brief Remove all GlossItem objects from the Phrase
     void clearGlossItems();
 
