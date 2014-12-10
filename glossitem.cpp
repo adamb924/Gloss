@@ -568,7 +568,7 @@ bool GlossItem::hasAnnotations() const
 bool GlossItem::hasAnnotation( const QString & key ) const
 {
     if( mAnnotations.contains( key ) )
-        return ! mAnnotations.value(key).annotation().text().isEmpty();
+        return ! mAnnotations.value(key).text().text().isEmpty();
     else
         return false;
 }

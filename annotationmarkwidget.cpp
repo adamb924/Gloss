@@ -22,7 +22,7 @@ void AnnotationMarkWidget::setupLayout()
     {
         Mark * mark = new Mark( mAnnotationTypes->at(i).mark(), this );
 
-        TextBit annotation = mGlossItem->getAnnotation( mAnnotationTypes->at(i).label() ).annotation();
+        TextBit annotation = mGlossItem->getAnnotation( mAnnotationTypes->at(i).label() ).text();
         if( annotation.text().isEmpty() )
         {
             mark->setToolTip( mAnnotationTypes->at(i).label() );

@@ -44,7 +44,7 @@ QVariant AnnotationModel::data(const QModelIndex & index, int role ) const
 {
     if ( role == Qt::DisplayRole || role == Qt::EditRole )
     {
-        return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).annotation().text();
+        return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).text().text();
     }
     return QVariant();
 }
@@ -64,7 +64,7 @@ bool AnnotationModel::setData(const QModelIndex & index, const QVariant & value,
     {
         if( index.row() < mGlossItems.count() )
         {
-            TextBit annotation = mGlossItems.at( index.row() )->getAnnotation(mAnnotationLabel).annotation();
+            TextBit annotation = mGlossItems.at( index.row() )->getAnnotation(mAnnotationLabel).text();
             annotation.setText(value.toString());
             mGlossItems.at( index.row() )->setAnnotation( mAnnotationLabel, annotation );
         }

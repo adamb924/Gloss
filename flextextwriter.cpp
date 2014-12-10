@@ -315,8 +315,8 @@ bool FlexTextWriter::serializeAnnotation(const QString &key, const Annotation &a
     stream->writeAttribute("key", key );
 
     stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation-text");
-    stream->writeAttribute("lang", annotation.annotation().writingSystem().flexString() );
-    stream->writeCharacters(annotation.annotation().text());
+    stream->writeAttribute("lang", annotation.text().writingSystem().flexString() );
+    stream->writeCharacters(annotation.text().text());
     stream->writeEndElement();
 
     stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation-header");

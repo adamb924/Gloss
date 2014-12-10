@@ -7,17 +7,17 @@ class Annotation
 {
 public:
     Annotation();
-    Annotation(const TextBit & header, const TextBit & annotation);
-    Annotation(const TextBit & annotation);
+    Annotation(const TextBit & header, const TextBit & text);
+    Annotation(const TextBit & text);
 
     TextBit header() const;
-    TextBit annotation() const;
+    TextBit text() const;
     void setWritingSystem(const WritingSystem & ws);
     void setHeaderWritingSystem(const WritingSystem & ws);
 
 private:
     TextBit mHeader;
-    TextBit mAnnotation;
+    TextBit mText;
 };
 
 #endif // ANNOTATION_H

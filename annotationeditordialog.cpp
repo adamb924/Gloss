@@ -7,7 +7,7 @@ AnnotationEditorDialog::AnnotationEditorDialog(const Annotation &annotation, con
     mHint(hint)
 {
     ui->setupUi(this);
-    ui->textEdit->setTextBit( annotation.annotation() );
+    ui->textEdit->setTextBit( annotation.text() );
     ui->headerEdit->setTextBit( annotation.header() );
 
     connect(ui->guessButton, SIGNAL(clicked()), this, SLOT(guessButton()));
