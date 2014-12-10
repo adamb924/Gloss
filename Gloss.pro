@@ -102,7 +102,8 @@ SOURCES += main.cpp\
     importplaintextdialog.cpp \
     annotationtypeeditordialog.cpp \
     annotation.cpp \
-    annotationeditordialog.cpp
+    annotationeditordialog.cpp \
+    lingtextedit.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -196,7 +197,8 @@ HEADERS  += mainwindow.h \
     importplaintextdialog.h \
     annotationtypeeditordialog.h \
     annotation.h \
-    annotationeditordialog.h
+    annotationeditordialog.h \
+    lingtextedit.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \

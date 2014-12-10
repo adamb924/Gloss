@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>194</height>
+    <height>341</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
     </widget>
    </item>
    <item>
-    <widget class="LingEdit" name="annotationEdit"/>
+    <widget class="LingTextEdit" name="textEdit"/>
    </item>
    <item>
     <widget class="QLabel" name="label">
@@ -62,6 +62,11 @@
    <class>LingEdit</class>
    <extends>QLineEdit</extends>
    <header>lingedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LingTextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>lingtextedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
