@@ -89,13 +89,10 @@ void LingEdit::matchTextAlignmentTo( Qt::LayoutDirection target )
 
 void LingEdit::setWritingSystem( const WritingSystem & ws )
 {
-    if( mTextBit.writingSystem() != ws )
-    {
-        mTextBit.setWritingSystem( ws );
-        refreshStyle();
-        setLayoutDirection(ws.layoutDirection());
-        setToolTip(ws.name());
-    }
+    mTextBit.setWritingSystem( ws );
+    refreshStyle();
+    setLayoutDirection(ws.layoutDirection());
+    setToolTip(ws.name());
 }
 
 TextBit LingEdit::textBit() const
