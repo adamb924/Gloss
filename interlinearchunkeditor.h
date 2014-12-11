@@ -56,7 +56,7 @@ private slots:
     void goTo();
     void beginning();
     void end();
-    void setButtonActivation();
+    void refreshLayout();
 };
 
 #endif // INTERLINEARCHUNKEDITOR_H

@@ -29,9 +29,9 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
     connect( ui->beginningButton, SIGNAL(clicked()), this, SLOT(beginning()));
     connect( ui->endButton, SIGNAL(clicked()), this, SLOT(end()) );
 
-    connect( text, SIGNAL(guiRefreshRequest()), this, SLOT(setButtonActivation()));
+    connect( text, SIGNAL(guiRefreshRequest()), this, SLOT(refreshLayout()));
 
-    setButtonActivation();
+    refreshLayout();
 
     mTextDisplayWidget = new TextDisplayWidget( mText, mProject, mType, makeLines(), QList<Focus>(), this );
     ui->ildLayout->addWidget(mTextDisplayWidget);
@@ -89,13 +89,13 @@ void InterlinearChunkEditor::moveToPosition(int position)
 
     mPosition = position;
 
-    setButtonActivation();
-
-    mTextDisplayWidget->setLines( makeLines() );
+    refreshLayout();
 }
 
-void InterlinearChunkEditor::setButtonActivation()
+void InterlinearChunkEditor::refreshLayout()
 {
+    qDebug() << "InterlinearChunkEditor::refreshLayout()";
+
     if( mPosition - mChunkSize < 0 )
         ui->previousButton->setEnabled(false);
     else
@@ -105,6 +105,11 @@ void InterlinearChunkEditor::setButtonActivation()
         ui->nextButton->setEnabled(false);
     else
         ui->nextButton->setEnabled(true);
+
+    if( mTextDisplayWidget != 0 )
+    {
+        mTextDisplayWidget->setLines( makeLines() );
+    }
 }
 
 QList<int> InterlinearChunkEditor::makeLines()
