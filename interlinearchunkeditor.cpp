@@ -15,7 +15,7 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
 {
     ui->setupUi(this);
 
-    mTextTabWidget = 0;
+    mTextDisplayWidget = 0;
 
     mText = text;
     mProject = project;
@@ -33,8 +33,8 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
 
     refreshLayout();
 
-    mTextTabWidget = new TextTabWidget( mText, mProject, mType, makeLines(), QList<Focus>(), this );
-    ui->ildLayout->addWidget(mTextTabWidget);
+    mTextDisplayWidget = new TextTabWidget( mText, mProject, mType, makeLines(), QList<Focus>(), this );
+    ui->ildLayout->addWidget(mTextDisplayWidget);
 
     setWindowTitle(tr("%1 [%2]").arg(mText->name()).arg(mProject->view(type)->name()));
 }
@@ -106,9 +106,9 @@ void InterlinearChunkEditor::refreshLayout()
     else
         ui->nextButton->setEnabled(true);
 
-    if( mTextTabWidget != 0 )
+    if( mTextDisplayWidget != 0 )
     {
-        mTextTabWidget->setLines( makeLines() );
+        mTextDisplayWidget->setLines( makeLines() );
     }
 }
 
@@ -122,7 +122,7 @@ QList<int> InterlinearChunkEditor::makeLines()
 
 void InterlinearChunkEditor::closeEvent(QCloseEvent *event)
 {
-    mTextTabWidget->saveText();
+    mTextDisplayWidget->saveText();
     event->accept();
 }
 
@@ -145,5 +145,5 @@ Text * InterlinearChunkEditor::text()
 
 void InterlinearChunkEditor::setFocus( const QList<Focus> & foci )
 {
-    mTextTabWidget->setFocus(foci);
+    mTextDisplayWidget->setFocus(foci);
 }
