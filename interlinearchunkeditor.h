@@ -38,7 +38,7 @@ private:
     Text * mText;
     Project * mProject;
     View::Type mType;
-    TextTabWidget * mTextDisplayWidget;
+    TextTabWidget * mTextTabWidget;
 
     int mChunkSize;
     int mPosition;
