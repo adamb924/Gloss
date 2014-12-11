@@ -2,6 +2,8 @@
   \class InterlinearDisplayWidget
   \ingroup Interlinear
   \brief A widget for an interlinear text display. The widget's layout is populated with a series of FlowLayout layouts corresponding to phrases.
+
+  This widget will be contained by TextTabWidget.
 */
 
 #ifndef INTERLINEARDISPLAYWIDGET_H

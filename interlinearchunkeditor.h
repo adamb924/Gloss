@@ -1,7 +1,9 @@
 /*!
   \class InterlinearChunkEditor
   \ingroup Interlinear
-  \brief This in a widget for displaying a portion of an interlinear text, allowing the user to view a few lines at a time (which is helpful for efficiency). This is the lightweight version of TextDisplayWidget.
+  \brief This in a widget for displaying a portion of an interlinear text, allowing the user to view a few lines at a time (which is helpful for efficiency).
+
+  This class keeps track of which lines are being displayed. It contains an instance of TextTabWidget, and updates this as needed. (It contains a TextTabWidget instead of an InterlinearDisplayWidget, because users may have several tabs to choose from, displayed a few lines at a time.)
 */
 
 #ifndef INTERLINEARCHUNKEDITOR_H
