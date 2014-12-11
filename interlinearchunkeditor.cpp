@@ -31,11 +31,6 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
 
     connect( text, SIGNAL(guiRefreshRequest()), this, SLOT(setButtonActivation()));
 
-    // make the ranges
-    QList<int> lines;
-    for( int i=mPosition; i < mPosition + mChunkSize && i < mText->phrases()->count(); i++ )
-        lines << i;
-
     setButtonActivation();
 
     mTextDisplayWidget = new TextDisplayWidget( mText, mProject, mType, makeLines(), QList<Focus>(), this );
