@@ -11,7 +11,7 @@
 
 class Text;
 class Project;
-class TextDisplayWidget;
+class TextTabWidget;
 class Focus;
 
 #include "view.h"
@@ -38,7 +38,7 @@ private:
     Text * mText;
     Project * mProject;
     View::Type mType;
-    TextDisplayWidget * mTextDisplayWidget;
+    TextTabWidget * mTextDisplayWidget;
 
     int mChunkSize;
     int mPosition;

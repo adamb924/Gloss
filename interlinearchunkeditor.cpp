@@ -2,7 +2,7 @@
 #include "ui_interlinearchunkeditor.h"
 
 #include "text.h"
-#include "textdisplaywidget.h"
+#include "texttabwidget.h"
 
 #include <QInputDialog>
 #include <QLabel>
@@ -33,7 +33,7 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
 
     refreshLayout();
 
-    mTextDisplayWidget = new TextDisplayWidget( mText, mProject, mType, makeLines(), QList<Focus>(), this );
+    mTextDisplayWidget = new TextTabWidget( mText, mProject, mType, makeLines(), QList<Focus>(), this );
     ui->ildLayout->addWidget(mTextDisplayWidget);
 
     setWindowTitle(tr("%1 [%2]").arg(mText->name()).arg(mProject->view(type)->name()));

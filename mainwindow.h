@@ -21,7 +21,7 @@ class Project;
 class QAction;
 class WritingSystem;
 class QModelIndex;
-class TextDisplayWidget;
+class TextTabWidget;
 class QStandardItemModel;
 class InterlinearChunkEditor;
 class Text;
@@ -116,7 +116,7 @@ private slots:
     void mergeTranslations();
 
     //! \brief Opens a text with a TextDisplayWidget object.
-    TextDisplayWidget* openText(const QString & textName, const QList<Focus> & foci = QList<Focus>() );
+    TextTabWidget* openText(const QString & textName, const QList<Focus> & foci = QList<Focus>() );
     void bulkMergeTranslations();
     void mergeEaf();
     void bulkMergeEaf();

@@ -13,7 +13,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     flowlayout.cpp \
     project.cpp \
-    textdisplaywidget.cpp \
     interlineardisplaywidget.cpp \
     worddisplaywidget.cpp \
     writingsystem.cpp \
@@ -104,12 +103,12 @@ SOURCES += main.cpp\
     annotation.cpp \
     annotationeditordialog.cpp \
     lingtextedit.cpp \
-    punctuationdisplaywidget.cpp
+    punctuationdisplaywidget.cpp \
+    texttabwidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
     project.h \
-    textdisplaywidget.h \
     interlineardisplaywidget.h \
     worddisplaywidget.h \
     writingsystem.h \
@@ -200,7 +199,8 @@ HEADERS  += mainwindow.h \
     annotation.h \
     annotationeditordialog.h \
     lingtextedit.h \
-    punctuationdisplaywidget.h
+    punctuationdisplaywidget.h \
+    texttabwidget.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \

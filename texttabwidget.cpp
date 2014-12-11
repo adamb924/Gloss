@@ -1,4 +1,4 @@
-#include "textdisplaywidget.h"
+#include "texttabwidget.h"
 
 #include "databaseadapter.h"
 #include "text.h"
@@ -9,7 +9,7 @@
 #include <QLabel>
 #include <QMessageBox>
 
-TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci, QWidget *parent) :
+TextTabWidget::TextTabWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci, QWidget *parent) :
     QTabWidget(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -53,25 +53,25 @@ TextDisplayWidget::TextDisplayWidget(Text *text, Project *project, View::Type ty
     setWindowTitle(tr("%1 [%2]").arg(mText->name()).arg(view->name()));
 }
 
-TextDisplayWidget::~TextDisplayWidget()
+TextTabWidget::~TextTabWidget()
 {
     if( mProject->memoryMode() == Project::OneAtATime )
         mProject->closeText(mText);
 }
 
-void TextDisplayWidget::updatePhrasalGloss(int lineNumber, const TextBit &bit)
+void TextTabWidget::updatePhrasalGloss(int lineNumber, const TextBit &bit)
 {
     for(int i=0; i<mIdwTabs.count(); i++)
         mIdwTabs.at(i)->setPhrasalGloss(lineNumber, bit);
 }
 
-void TextDisplayWidget::closeEvent(QCloseEvent *event)
+void TextTabWidget::closeEvent(QCloseEvent *event)
 {
     saveText();
     event->accept();
 }
 
-void TextDisplayWidget::setLines(const QList<int> & lines)
+void TextTabWidget::setLines(const QList<int> & lines)
 {
     for(int i=0; i<mIdwTabs.count(); i++)
     {
@@ -80,17 +80,17 @@ void TextDisplayWidget::setLines(const QList<int> & lines)
     }
 }
 
-void TextDisplayWidget::saveText()
+void TextTabWidget::saveText()
 {
     mText->saveText(false,true,false);
 }
 
-Text * TextDisplayWidget::text()
+Text * TextTabWidget::text()
 {
     return mText;
 }
 
-void TextDisplayWidget::setFocus( const QList<Focus> & foci )
+void TextTabWidget::setFocus( const QList<Focus> & foci )
 {
     for(int i=0; i<mIdwTabs.count(); i++)
         mIdwTabs.at(i)->setFocus(foci);

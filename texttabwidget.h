@@ -1,5 +1,5 @@
 /*!
-  \class TextDisplayWidget
+  \class TextTabWidget
       \ingroup Interlinear
   \brief A QTabWidget subclass, containing various tabs of type InterlinearDisplayWidget. This can be instantiated for an QMdiSubWindow in MainWindow, or within InterlinearChunkEditor.
 */
@@ -17,13 +17,13 @@ class InterlinearDisplayWidget;
 #include "focus.h"
 #include "view.h"
 
-class TextDisplayWidget : public QTabWidget
+class TextTabWidget : public QTabWidget
 {
     Q_OBJECT
 
 public:
-    TextDisplayWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci = QList<Focus>(), QWidget *parent = 0);
-    ~TextDisplayWidget();
+    TextTabWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci = QList<Focus>(), QWidget *parent = 0);
+    ~TextTabWidget();
 
     void setLines(const QList<int> & lines);
     void saveText();

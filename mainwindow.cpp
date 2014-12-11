@@ -3,7 +3,7 @@
 
 #include "project.h"
 #include "databaseadapter.h"
-#include "textdisplaywidget.h"
+#include "texttabwidget.h"
 #include "importflextextdialog.h"
 #include "writingsystem.h"
 #include "mergetranslationdialog.h"
@@ -568,17 +568,17 @@ void MainWindow::openText()
     }
 }
 
-TextDisplayWidget* MainWindow::openText(const QString & textName, const QList<Focus> & foci)
+TextTabWidget* MainWindow::openText(const QString & textName, const QList<Focus> & foci)
 {
     Text *text;
-    TextDisplayWidget *subWindow = 0;
+    TextTabWidget *subWindow = 0;
     switch( mProject->openText(textName) )
     {
     case Project::Success:
         text = mProject->openedTexts()->value(textName, 0);
         if( text != 0 )
         {
-            subWindow = new TextDisplayWidget(text, mProject, View::Full, QList<int>(), foci, this);
+            subWindow = new TextTabWidget(text, mProject, View::Full, QList<int>(), foci, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
@@ -945,7 +945,7 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
         if( w->windowTitle() == textName )
         {
             ui->mdiArea->setActiveSubWindow(w);
-            TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
+            TextTabWidget* tdw = qobject_cast<TextTabWidget*>(w->widget());
             if( tdw != 0 )
             {
                 tdw->setFocus(foci);
@@ -1012,7 +1012,7 @@ void MainWindow::editLine( const QString & textName , int lineNumber, const QLis
     QList<int> lines;
     lines << lineNumber;
 
-    TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, lines, foci, 0);
+    TextTabWidget *subWindow = new TextTabWidget(text, mProject, View::Full, lines, foci, 0);
     subWindow->resize(850,250);
     subWindow->show();
 }
@@ -1041,7 +1041,7 @@ void MainWindow::editLineWithContext( const QString & textName , int lineNumber,
     if( lineNumber < text->phrases()->count()-1 )
         lines << lineNumber+1;
 
-    TextDisplayWidget *subWindow = new TextDisplayWidget(text, mProject, View::Full, lines, foci, 0);
+    TextTabWidget *subWindow = new TextTabWidget(text, mProject, View::Full, lines, foci, 0);
     subWindow->resize(850,250);
     subWindow->show();
 }
@@ -1578,7 +1578,7 @@ Text * MainWindow::textOfCurrentSubWindow()
     if( w == 0 )
         return 0;
 
-    TextDisplayWidget* tdw = qobject_cast<TextDisplayWidget*>(w->widget());
+    TextTabWidget* tdw = qobject_cast<TextTabWidget*>(w->widget());
     if( tdw != 0 )
     {
         return tdw->text();
