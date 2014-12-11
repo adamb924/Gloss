@@ -64,13 +64,13 @@ void WordDisplayWidget::setupLayout()
 
     if( mGlossLines->first().writingSystem().layoutDirection() == Qt::LeftToRight )
     {
-        hLayout->addWidget(mAnnotationMarks);
         hLayout->addLayout(vLayout);
+        hLayout->addWidget(mAnnotationMarks);
     }
     else
     {
-        hLayout->addLayout(vLayout);
         hLayout->addWidget(mAnnotationMarks);
+        hLayout->addLayout(vLayout);
     }
 
     setLayout(hLayout);
