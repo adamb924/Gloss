@@ -228,6 +228,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu *menu = new QMenu(this);
 
+    menu->addAction(tr("Copy baseline text"), this, SLOT(copyBaselineText()));
     menu->addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu->addAction(tr("Edit baseline text, keep annotations"), this, SLOT(editBaselineTextKeepAnnotations()));
     menu->addAction(tr("Match following to this interpretation"), this, SLOT(matchFollowingTextFormsToThis()));
@@ -703,6 +704,12 @@ void WordDisplayWidget::displayDatabaseReport()
     }
 
     QMessageBox::information(this, tr("Report"), reportString );
+}
+
+void WordDisplayWidget::copyBaselineText()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText( mGlossItem->baselineText().text() );
 }
 
 void WordDisplayWidget::editBaselineText()

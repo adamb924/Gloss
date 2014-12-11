@@ -158,6 +158,7 @@ private slots:
 
     void displayDatabaseReport();
 
+    void copyBaselineText();
     void editBaselineText();
     void editBaselineText(const QString & text);
     void editBaselineTextKeepAnnotations();
