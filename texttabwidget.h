@@ -4,8 +4,8 @@
   \brief A QTabWidget subclass, containing various tabs of type InterlinearDisplayWidget. This can be instantiated for an QMdiSubWindow in MainWindow, or within InterlinearChunkEditor.
 */
 
-#ifndef TEXTDISPLAYWIDGET_H
-#define TEXTDISPLAYWIDGET_H
+#ifndef TEXTTABWIDGET_H
+#define TEXTTABWIDGET_H
 
 #include <QTabWidget>
 
@@ -42,4 +42,4 @@ private slots:
     void updatePhrasalGloss( int lineNumber, const TextBit & bit);
 };
 
-#endif // TEXTDISPLAYWIDGET_H
+#endif // TEXTTABWIDGET_H

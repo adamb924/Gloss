@@ -5,7 +5,7 @@
 
   A MainWindow can have a single project open at a time.
 
-  Subwindows are texts of an opened project. These would typically be TextDisplayWidget objects (opened with openText()), but also InterlinearChunkEditor objects (opened with various methods).
+  Subwindows are texts of an opened project. These would typically be TextTabWidget objects (opened with openText()), but also InterlinearChunkEditor objects (opened with various methods).
 
   The layout, containing the menu, is mainwindow.ui.
 */
@@ -115,7 +115,7 @@ private slots:
     void deleteText();
     void mergeTranslations();
 
-    //! \brief Opens a text with a TextDisplayWidget object.
+    //! \brief Opens a text with a TextTabWidget object.
     TextTabWidget* openText(const QString & textName, const QList<Focus> & foci = QList<Focus>() );
     void bulkMergeTranslations();
     void mergeEaf();
