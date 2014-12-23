@@ -194,6 +194,11 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
 
+    if( technicolor )
+    {
+        connect( immutableLabel, SIGNAL(doubleClick(QMouseEvent*)), mGlossItem, SLOT(toggleApproval()) );
+    }
+
     return immutableLabel;
 }
 
@@ -208,6 +213,11 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
 
     connect( mGlossItem, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), immutableLabel, SLOT(setApprovalStatus(GlossItem::ApprovalStatus)) );
     connect( mGlossItem, SIGNAL(candidateNumberChanged(GlossItem::CandidateNumber,qlonglong)), immutableLabel, SLOT(setCandidateNumber(GlossItem::CandidateNumber)) );
+
+    if( technicolor )
+    {
+        connect( immutableLabel, SIGNAL(doubleClick(QMouseEvent*)), mGlossItem, SLOT(toggleApproval()) );
+    }
 
     return immutableLabel;
 }
@@ -608,12 +618,6 @@ void WordDisplayWidget::fillData()
             }
         }
     }
-}
-
-void WordDisplayWidget::mouseDoubleClickEvent ( QMouseEvent * event )
-{
-    Q_UNUSED(event);
-    mGlossItem->toggleApproval();
 }
 
 void WordDisplayWidget::mousePressEvent ( QMouseEvent * event )

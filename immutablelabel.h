@@ -22,6 +22,7 @@ public:
     ~ImmutableLabel();
 
 signals:
+    void doubleClick( QMouseEvent * event );
 
 public slots:
     void setCandidateNumber(GlossItem::CandidateNumber status);
@@ -36,6 +37,8 @@ private:
     bool mTechnicolor;
 
     void updateStyle();
+
+    void mouseDoubleClickEvent ( QMouseEvent * event );
 };
 
 #endif // IMMUTABLELABEL_H

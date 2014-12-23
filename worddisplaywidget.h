@@ -76,7 +76,6 @@ private:
     QHash<WritingSystem, ImmutableLabel*> mImmutableLines;
     QHash<WritingSystem, AnalysisWidget*> mAnalysisWidgets;
 
-    void mouseDoubleClickEvent ( QMouseEvent * event );
     void mousePressEvent(QMouseEvent * event);
 
     Project * mProject;
