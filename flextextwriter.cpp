@@ -311,20 +311,23 @@ bool FlexTextWriter::serializeAllomorphNonverbose(const Allomorph &allomorph) co
 
 bool FlexTextWriter::serializeAnnotation(const QString &key, const Annotation &annotation) const
 {
-    stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation");
-    stream->writeAttribute("key", key );
+    if( !annotation.text().text().isEmpty() )
+    {
+        stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation");
+        stream->writeAttribute("key", key );
 
-    stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation-text");
-    stream->writeAttribute("lang", annotation.text().writingSystem().flexString() );
-    stream->writeCharacters(annotation.text().text());
-    stream->writeEndElement();
+        stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation-text");
+        stream->writeAttribute("lang", annotation.text().writingSystem().flexString() );
+        stream->writeCharacters(annotation.text().text());
+        stream->writeEndElement();
 
-    stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation-header");
-    stream->writeAttribute("lang", annotation.header().writingSystem().flexString() );
-    stream->writeCharacters(annotation.header().text());
-    stream->writeEndElement();
+        stream->writeStartElement("http://www.adambaker.org/gloss.php", "annotation-header");
+        stream->writeAttribute("lang", annotation.header().writingSystem().flexString() );
+        stream->writeCharacters(annotation.header().text());
+        stream->writeEndElement();
 
-    stream->writeEndElement(); // annotation
+        stream->writeEndElement(); // annotation
+    }
 
     return true;
 }
