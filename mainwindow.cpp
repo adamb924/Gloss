@@ -942,25 +942,20 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
     while(iter.hasNext())
     {
         QMdiSubWindow* w = iter.next();
-        if( w->windowTitle() == textName )
+        TextTabWidget* ttw = qobject_cast<TextTabWidget*>(w->widget());
+        InterlinearChunkEditor* ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
+        if( ttw != 0 && ttw->text()->name() == textName )
         {
             ui->mdiArea->setActiveSubWindow(w);
-            TextTabWidget* tdw = qobject_cast<TextTabWidget*>(w->widget());
-            if( tdw != 0 )
-            {
-                tdw->setFocus(foci);
-                return;
-            }
-            InterlinearChunkEditor * ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
-            if( ice != 0 )
-            {
-                ice->moveToLine( lineNumber );
-                ice->setFocus(foci);
-                return;
-            }
+            ttw->setFocus(foci);
+            return;
         }
-
-
+        if( ice != 0 && ice->text()->name() == textName )
+        {
+            ice->moveToLine( lineNumber );
+            ice->setFocus(foci);
+            return;
+        }
     }
     // at this point the window must not exist
     InterlinearChunkEditor * ice = openTextInChunks( textName, 3 );
