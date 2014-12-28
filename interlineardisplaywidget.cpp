@@ -415,6 +415,13 @@ void InterlinearDisplayWidget::setLines( const QList<int> lines )
     qDeleteAll(mPhrasalGlossLayouts);
     mPhrasalGlossLayouts.clear();
     mLineLabels.clear();
+
+    // http://stackoverflow.com/questions/4272196/qt-remove-all-widgets-from-layout
+    QLayoutItem *wItem;
+    while( (wItem = mLayout->takeAt(0)) != 0)
+    {
+          delete wItem;
+    }
     setLayoutFromText();
 }
 
