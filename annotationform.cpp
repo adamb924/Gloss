@@ -25,13 +25,13 @@ AnnotationForm::AnnotationForm(Text *text, const Project *project, QWidget *pare
         ui->comboBox->addItem( annotationTypes->at(i).label() );
     }
 
-
     mAnnotationModel = new AnnotationModel(text, annotationTypes->first().label() );
     connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), mAnnotationModel, SLOT(setAnnotationType(QString)) );
-    ui->listView->setModel(mAnnotationModel);
-    ui->listView->setEditTriggers(QAbstractItemView::SelectedClicked);
+    connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(modelReset()) );
+    ui->treeView->setModel(mAnnotationModel);
+    ui->treeView->setEditTriggers(QAbstractItemView::SelectedClicked);
 
-    connect(ui->listView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(focusLine(QModelIndex)) );
+    connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(focusLine(QModelIndex)) );
 }
 
 AnnotationForm::~AnnotationForm()
@@ -54,4 +54,9 @@ void AnnotationForm::focusLine(const QModelIndex & index)
     foci << Focus( Focus::GlossItem,  (qlonglong)mAnnotationModel->glossItem(index) );
 
     emit focusTextPosition( mText->name(), line, foci );
+}
+
+void AnnotationForm::modelReset()
+{
+    ui->treeView->resizeColumnToContents(0);
 }

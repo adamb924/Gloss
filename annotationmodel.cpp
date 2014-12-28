@@ -37,14 +37,21 @@ int AnnotationModel::rowCount(const QModelIndex & parent ) const
 int AnnotationModel::columnCount(const QModelIndex & parent ) const
 {
     Q_UNUSED(parent);
-    return 1;
+    return 2;
 }
 
 QVariant AnnotationModel::data(const QModelIndex & index, int role ) const
 {
     if ( role == Qt::DisplayRole || role == Qt::EditRole )
     {
-        return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).text().text();
+        if( index.column() == 0 )
+        {
+            return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).header().text();
+        }
+        else if( index.column() == 1 )
+        {
+            return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).text().text();
+        }
     }
     return QVariant();
 }

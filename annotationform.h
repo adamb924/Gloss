@@ -39,6 +39,7 @@ private:
 
 private slots:
     void focusLine(const QModelIndex & index);
+    void modelReset();
 };
 
 #endif // ANNOTATIONFORM_H

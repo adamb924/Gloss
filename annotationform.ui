@@ -18,7 +18,14 @@
     <widget class="QComboBox" name="comboBox"/>
    </item>
    <item>
-    <widget class="QListView" name="listView"/>
+    <widget class="QTreeView" name="treeView">
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="headerHidden">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
