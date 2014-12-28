@@ -24,8 +24,6 @@
 InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
     QScrollArea(parent), mTab(tab), mText(text), mProject(project), mMouseMode(InterlinearDisplayWidget::Normal)
 {
-    mBottomSpacing = new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding);
-
     mLines.clear();
 
     setLinesToDefault();
@@ -77,6 +75,7 @@ QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
         return new FlowLayout( Qt::LeftToRight, 0, 5 , 5 , 5 );
     }
     FlowLayout *flowLayout = new FlowLayout( lines->first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
+
     mLineLayouts.insert(lineNumber, flowLayout);
     mLayout->addLayout(flowLayout);
     return flowLayout;
@@ -275,8 +274,6 @@ void InterlinearDisplayWidget::setLayoutFromText()
     if( mLines.isEmpty() )
         setLinesToDefault();
 
-    mLayout->removeItem(mBottomSpacing);
-
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mLines.count(), 0);
     progress.setWindowModality(Qt::WindowModal);
 
@@ -317,7 +314,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
     }
     progress.setValue(mLines.count());
 
-    mLayout->addSpacerItem( mBottomSpacing );
+    mLayout->addStretch(1);
 }
 
 void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )

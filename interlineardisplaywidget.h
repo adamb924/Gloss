@@ -94,8 +94,6 @@ private:
     void contextMenuEvent ( QContextMenuEvent * event );
     void keyPressEvent ( QKeyEvent * event );
 
-    QSpacerItem * mBottomSpacing;
-
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
     void addWordWidgets( int i , QLayout * flowLayout );
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item, Phrase *phrase);
