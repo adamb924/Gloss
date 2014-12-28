@@ -32,8 +32,10 @@ public:
 
 public slots:
     void setAnnotationType(const QString & label);
+    void loadGlossItems();
 
 private:
+
     Text * mText;
     QString mAnnotationLabel;
     QList<GlossItem*> mGlossItems;

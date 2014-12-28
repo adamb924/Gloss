@@ -161,6 +161,8 @@ signals:
     //! \brief Emitted when the morphological analysis for \a textFormId changes
     void morphologicalAnalysisChanged(const GlossItem * originator, const MorphologicalAnalysis * analysis);
 
+    void annotationsChanged();
+
 public slots:
     //! \brief Toggles the approval status of the GlossItem
     void toggleApproval();

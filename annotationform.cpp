@@ -26,6 +26,7 @@ AnnotationForm::AnnotationForm(Text *text, const Project *project, QWidget *pare
     }
 
     mAnnotationModel = new AnnotationModel(text, annotationTypes->first().label() );
+    connect( text, SIGNAL(annotationsChanged()), mAnnotationModel, SLOT(loadGlossItems()));
     connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), mAnnotationModel, SLOT(setAnnotationType(QString)) );
     connect( ui->comboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(modelReset()) );
     ui->treeView->setModel(mAnnotationModel);

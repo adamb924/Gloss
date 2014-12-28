@@ -12,14 +12,19 @@ AnnotationModel::AnnotationModel(Text * text , const QString & annotationLabel, 
 
 void AnnotationModel::setAnnotationType(const QString & label)
 {
+    mAnnotationLabel = label;
+    loadGlossItems();
+}
+
+void AnnotationModel::loadGlossItems()
+{
     beginResetModel();
     mGlossItems.clear();
-    mAnnotationLabel = label;
     for(int i=0; i<mText->phrases()->count(); i++)
     {
         for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
         {
-            if( mText->phrases()->at(i)->glossItemAt(j)->hasAnnotation(label) )
+            if( mText->phrases()->at(i)->glossItemAt(j)->hasAnnotation(mAnnotationLabel) )
             {
                 mGlossItems << mText->phrases()->at(i)->glossItemAt(j);
             }

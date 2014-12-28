@@ -551,8 +551,7 @@ Annotation GlossItem::getAnnotation( const QString & key ) const
 void GlossItem::setAnnotation(const QString & key, const Annotation &annotation )
 {
     mAnnotations.insert(key, annotation);
-    // this is sort of a cheap way to make sure the text is marked as changed
-    emit approvalStatusChanged(mApprovalStatus);
+    emit annotationsChanged();
 }
 
 QHashIterator<QString,Annotation> GlossItem::annotations() const

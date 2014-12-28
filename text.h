@@ -143,6 +143,7 @@ signals:
     void phraseRefreshNeeded( int lineNumber );
     void guiRefreshRequest();
     void phrasalGlossChanged( int lineNumber, const TextBit & bit);
+    void annotationsChanged();
 };
 
 #endif // TEXT_H

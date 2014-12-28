@@ -200,6 +200,8 @@ GlossItem* Phrase::connectGlossItem(GlossItem * item)
     /// these signals tell the Text (and then the Project) that the data have changed
     connect( item, SIGNAL(fieldsChanged()), mText, SLOT(markAsChanged()) );
     connect( item, SIGNAL(approvalStatusChanged(GlossItem::ApprovalStatus)), mText, SLOT(markAsChanged()) );
+    connect( item, SIGNAL(annotationsChanged()), mText, SLOT(markAsChanged()) );
+    connect( item, SIGNAL(annotationsChanged()), mText, SIGNAL(annotationsChanged()) );
 
     /// return the item as a convenience to the sender
     return item;
