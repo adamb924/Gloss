@@ -32,6 +32,9 @@ public:
 
     void setSpecialBorder(bool special);
 
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+
 private:
     void focusInEvent ( QFocusEvent * e );
     void focusOutEvent ( QFocusEvent * e );

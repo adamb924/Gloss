@@ -70,6 +70,7 @@ void LingEdit::textChanged()
     if( mTextBit.text() != text() )
     {
         mTextBit.setText(text());
+        updateGeometry();
         emit stringChanged( mTextBit, this );
     }
 }
@@ -131,4 +132,18 @@ void LingEdit::setSpecialBorder(bool special)
         mSpecialBorder = special;
         refreshStyle();
     }
+}
+
+QSize LingEdit::sizeHint() const
+{
+    QSize sizeHint = QLineEdit::sizeHint();
+    sizeHint.setWidth( fontMetrics().width(mTextBit.text()) + 10 );
+    return sizeHint;
+}
+
+QSize LingEdit::minimumSizeHint() const
+{
+    QSize sizeHint = QLineEdit::minimumSizeHint();
+    sizeHint.setWidth( fontMetrics().width(mTextBit.text()) + 10 );
+    return sizeHint;
 }

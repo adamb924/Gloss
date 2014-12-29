@@ -155,7 +155,6 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     TextBit gloss("", glossLine.writingSystem());
     LingEdit *edit = new LingEdit( gloss , this);
     edit->matchTextAlignmentTo( mGlossLines->first().writingSystem().layoutDirection() );
-    edit->setMaximumWidth(100);
 
     mGlossEdits.insert(glossLine.writingSystem(), edit);
 
@@ -171,7 +170,6 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
     TextBit textForm("", glossLine.writingSystem() );
     LingEdit *edit = new LingEdit(  textForm , this);
     edit->matchTextAlignmentTo( mGlossLines->first().writingSystem().layoutDirection() );
-    edit->setMaximumWidth(100);
 
     mTextFormEdits.insert(glossLine.writingSystem(), edit);
 
