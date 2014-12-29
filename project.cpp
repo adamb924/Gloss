@@ -1148,9 +1148,18 @@ void Project::annotationTypesFromConfigurationFile()
     for(int i=0; i<result.count(); i++)
     {
         QStringList split = result.at(i).split(",");
-        if( split.count() != 4 )
+        if( split.count() == 4 ) // current format
+        {
+            mAnnotationTypes << AnnotationType(split.at(0),split.at(1), mDbAdapter->writingSystem(split.at(2)), mDbAdapter->writingSystem(split.at(3)) );
+        }
+        else if( split.count() == 3 ) // the format when a header language wasn't specified
+        {
+            mAnnotationTypes << AnnotationType(split.at(0),split.at(1), mDbAdapter->writingSystem(split.at(2)), mDbAdapter->writingSystem(split.at(2)) );
+        }
+        else
+        {
             continue;
-        mAnnotationTypes << AnnotationType(split.at(0),split.at(1), mDbAdapter->writingSystem(split.at(2)), mDbAdapter->writingSystem(split.at(3)) );
+        }
     }
 }
 

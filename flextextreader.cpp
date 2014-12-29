@@ -146,6 +146,15 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 {
                     annotationKey = attr.value("key").toString();
                 }
+                if( attr.hasAttribute("lang") ) // if it has this attribute, it's an old-style annotation
+                {
+                    WritingSystem ws = mDbAdapter->writingSystem( attr.value("lang").toString() );
+                    QString text = stream.readElementText();
+                    annotationHeader = TextBit( "", ws ); // blank header by default, the text's WritingSystem by default
+                    annotationText = TextBit( text, ws );
+                    // in the old format, the close tag won't be read
+                    annotations.insert( annotationKey , Annotation( annotationHeader, annotationText ) );
+                }
             }
             else if ( name == "annotation-header" && stream.namespaceUri().toString() == "http://www.adambaker.org/gloss.php" ) // <annotation>
             {
