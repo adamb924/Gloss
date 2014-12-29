@@ -76,9 +76,18 @@ bool AnnotationModel::setData(const QModelIndex & index, const QVariant & value,
     {
         if( index.row() < mGlossItems.count() )
         {
-            TextBit annotation = mGlossItems.at( index.row() )->getAnnotation(mAnnotationLabel).text();
-            annotation.setText(value.toString());
-            mGlossItems.at( index.row() )->setAnnotation( mAnnotationLabel, annotation );
+            Annotation a = mGlossItems.at( index.row() )->getAnnotation(mAnnotationLabel);
+            TextBit h = a.header();
+            TextBit t = a.text();
+            if( index.column() == 0 ) // editting the header
+            {
+                h.setText( value.toString() );
+            }
+            else if ( index.column() == 1 ) // editting the text
+            {
+                t.setText( value.toString() );
+            }
+            mGlossItems.at( index.row() )->setAnnotation( mAnnotationLabel, Annotation(h,t) );
         }
     }
     return false;
