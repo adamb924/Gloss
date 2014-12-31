@@ -126,7 +126,7 @@ protected:
     //! \brief Add a line label for phrase \a i
     void addLineLabel( int i , QLayout * flowLayout  );
 
-    void maybeFocus(QWidget *wdw);
+    bool maybeFocus(QWidget *wdw);
 };
 
 #endif // INTERLINEARDISPLAYWIDGET_H

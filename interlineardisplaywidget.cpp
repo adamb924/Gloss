@@ -378,12 +378,12 @@ PunctuationDisplayWidget *InterlinearDisplayWidget::addPunctuationDisplayWidget(
     return pdw;
 }
 
-void InterlinearDisplayWidget::maybeFocus(QWidget * wdw)
+bool InterlinearDisplayWidget::maybeFocus(QWidget * wdw)
 {
     WordDisplayWidget * wdwRecast = qobject_cast<WordDisplayWidget*>(wdw);
     if( wdwRecast == 0  )
     {
-        return;
+        return false;
     }
     bool isFocused = false;
     for(int i=0; i<mFoci.count(); i++)
@@ -395,6 +395,7 @@ void InterlinearDisplayWidget::maybeFocus(QWidget * wdw)
         }
     }
     wdwRecast->setFocused(isFocused);
+    return isFocused;
 }
 
 void InterlinearDisplayWidget::setLinesToDefault()
@@ -437,11 +438,21 @@ void InterlinearDisplayWidget::setFocus( const QList<Focus> & foci )
 {
     mFoci = foci;
 
+    bool firstTime = true;
+
     for( int i=0; i<mWordDisplayWidgets.count(); i++ )
     {
         for( int j=0; j<mWordDisplayWidgets.at(i).count(); j++)
         {
-            maybeFocus( mWordDisplayWidgets.at(i).at(j) );
+            if( maybeFocus( mWordDisplayWidgets.at(i).at(j) ) )
+            {
+                if(firstTime)
+                {
+                    firstTime = false;
+                    qApp->processEvents();
+                    ensureWidgetVisible( mWordDisplayWidgets.at(i).at(j), 250 , 250 );
+                }
+            }
         }
     }
 }
