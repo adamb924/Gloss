@@ -920,8 +920,8 @@ void MainWindow::createSearchResultDock(QStandardItemModel * model, const QStrin
 
     connect( tree, SIGNAL(requestOpenText(QString,int,QList<Focus>)), this, SLOT(focusTextPosition(QString,int,QList<Focus>)));
     connect( tree, SIGNAL(requestPlaySound(QString,int)), this, SLOT(playSoundForLine(QString,int)) );
-    connect( tree, SIGNAL(requestEditLine(QString,int,QList<Focus>)), this, SLOT(editLine(QString,int,QList<Focus>)) );
-    connect( tree, SIGNAL(requestEditLineWithContext(QString,int,QList<Focus>)), this, SLOT(editLineWithContext(QString,int,QList<Focus>)) );
+    connect( tree, SIGNAL(requestEditLine(QString,int,QList<Focus>)), this, SLOT(focusTextPosition(QString,int,QList<Focus>)) );
+//    connect( tree, SIGNAL(requestEditLineWithContext(QString,int,QList<Focus>)), this, SLOT(editLineWithContext(QString,int,QList<Focus>)) );
 
     QWidget *intermediateWidget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(intermediateWidget);
@@ -952,19 +952,21 @@ int MainWindow::viewConfigurationDialog()
 void MainWindow::focusTextPosition( const QString & textName , int lineNumber, const QList<Focus> & foci )
 {
     QList<QMdiSubWindow*> windows = ui->mdiArea->subWindowList();
+
     QListIterator<QMdiSubWindow*> iter(windows);
     while(iter.hasNext())
     {
         QMdiSubWindow* w = iter.next();
         TextTabWidget* ttw = qobject_cast<TextTabWidget*>(w->widget());
         InterlinearChunkEditor* ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
+
         if( ttw != 0 && ttw->text()->name() == textName )
         {
             ui->mdiArea->setActiveSubWindow(w);
             ttw->setFocus(foci);
             return;
         }
-        if( ice != 0 && ice->text()->name() == textName )
+        else if( ice != 0 && ice->text()->name() == textName )
         {
             ice->moveToLine( lineNumber );
             ice->setFocus(foci);
@@ -998,61 +1000,6 @@ void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
     {
         mProject->playLine( textName, lineNumber );
     }
-
-}
-
-void MainWindow::editLine( const QString & textName , int lineNumber, const QList<Focus> & foci )
-{
-    if( lineNumber == -1 )
-        return;
-    mProject->openText(textName);
-    Text *text = mProject->openedTexts()->value(textName, 0);
-    if( text == 0)
-        return;
-
-    lineNumber--; // make it 0-indexed instead
-
-    if( lineNumber >= text->phrases()->count() )
-    {
-        QMessageBox::warning(this, tr("Error"), tr("%1 only has %2 phrases.").arg(text->name()).arg(text->phrases()->count()));
-        return;
-    }
-
-    QList<int> lines;
-    lines << lineNumber;
-
-    TextTabWidget *subWindow = new TextTabWidget(text, mProject, View::Full, lines, foci, 0);
-    subWindow->resize(850,250);
-    subWindow->show();
-}
-
-void MainWindow::editLineWithContext( const QString & textName , int lineNumber, const QList<Focus> & foci )
-{
-    if( lineNumber == -1 )
-        return;
-    mProject->openText(textName);
-    Text *text = mProject->openedTexts()->value(textName, 0);
-    if( text == 0)
-        return;
-
-    lineNumber--; // make it 0-indexed instead
-
-    if( lineNumber >= text->phrases()->count() )
-    {
-        QMessageBox::warning(this, tr("Error"), tr("%1 only has %2 phrases.").arg(text->name()).arg(text->phrases()->count()));
-        return;
-    }
-
-    QList<int> lines;
-    if( lineNumber > 0 )
-        lines << lineNumber-1;
-    lines << lineNumber;
-    if( lineNumber < text->phrases()->count()-1 )
-        lines << lineNumber+1;
-
-    TextTabWidget *subWindow = new TextTabWidget(text, mProject, View::Full, lines, foci, 0);
-    subWindow->resize(850,250);
-    subWindow->show();
 }
 
 void MainWindow::rawXQuery()

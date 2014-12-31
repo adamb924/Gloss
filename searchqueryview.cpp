@@ -23,7 +23,6 @@ void SearchQueryView::contextMenu( const QPoint & pos )
     {
         QMenu menu(this);
         menu.addAction(tr("Edit line"), this, SLOT(editLine()));
-        menu.addAction(tr("Edit line with context"), this, SLOT(editLineWithContext()));
         menu.addAction(tr("Open text"), this, SLOT(openText()));
         menu.addAction(tr("Play sound"), this, SLOT(playSound()));
         menu.exec( mapToGlobal(pos) );
@@ -72,13 +71,4 @@ void SearchQueryView::editLine()
     QList<Focus> foci;
     getDetails( currentIndex(), textName , lineNumber, foci );
     emit requestEditLine( textName, lineNumber, foci );
-}
-
-void SearchQueryView::editLineWithContext()
-{
-    QString textName;
-    int lineNumber;
-    QList<Focus> foci;
-    getDetails( currentIndex(), textName , lineNumber, foci );
-    emit requestEditLineWithContext( textName, lineNumber, foci );
 }

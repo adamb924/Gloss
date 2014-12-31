@@ -175,10 +175,6 @@ private slots:
     //! \brief Provide a dialog for the user to do a search-and-replace on the baseline texts of all open texts.
     void baselineSearchAndReplace();
 
-    void editLine( const QString & textName , int lineNumber, const QList<Focus> & foci );
-
-    void editLineWithContext( const QString & textName , int lineNumber, const QList<Focus> & foci );
-
     //! \deprecated The functionality provided by this has been moved to SearchForm.
     void searchForInterpretationById();
 
