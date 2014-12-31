@@ -25,9 +25,14 @@ public:
     //! \brief Return the index that is being focused. The interpretation of index() will depend on type().
     qlonglong index() const;
 
+    //! \brief Return a string representation of the type (Focus::Type) of the object.
+    QString typeString() const;
+
 private:
     Type mType;
     qlonglong mIndex;
 };
+
+QDebug operator<<(QDebug dbg, const Focus &key);
 
 #endif // FOCUS_H
