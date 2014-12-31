@@ -70,7 +70,7 @@ void ImmutableLabel::updateStyle()
     {
         color = "#ffffff";
     }
-    setStyleSheet(QString("QLabel { font-family: %1; font-size: %2pt; background-color: %3; }").arg(mTextBit.writingSystem().fontFamily()).arg(mTextBit.writingSystem().fontSize()).arg(color));
+    setStyleSheet(QString("QLabel { font-family: %1; font-size: %2pt; background-color: %3; border-radius: 8px; }").arg(mTextBit.writingSystem().fontFamily()).arg(mTextBit.writingSystem().fontSize()).arg(color));
 }
 
 void ImmutableLabel::mouseDoubleClickEvent(QMouseEvent *event)
