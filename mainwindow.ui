@@ -262,7 +262,7 @@
   </action>
   <action name="actionClose_project_without_saving">
    <property name="text">
-    <string>Close project without saving</string>
+    <string>Close project</string>
    </property>
   </action>
   <action name="actionMerge_translations_from_other_FlexText_file">

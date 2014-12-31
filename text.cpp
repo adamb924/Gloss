@@ -87,6 +87,10 @@ void Text::setComment(const QString & comment)
     mComment = comment;
 }
 
+bool Text::isChanged() const
+{
+    return mChanged;
+}
 
 WritingSystem Text::baselineWritingSystem() const
 {

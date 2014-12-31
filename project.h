@@ -131,6 +131,9 @@ public:
 
     void serializeConfigurationXml();
 
+    //! \brief Returns true if this project has been changed, or if any of the texts has been changed
+    bool isChanged() const;
+
 signals:
     void currentViewChanged(int index);
     void currentQuickViewChanged(int index);
@@ -146,6 +149,8 @@ public slots:
     void setDefaultGlossLanguage(const WritingSystem & ws);
     void setDefaultTextFormLanguage(const WritingSystem & ws);
     void setMediaFolder(const QString & folder);
+
+    void setChanged();
 
 private:
     QString mDatabasePath;
@@ -215,6 +220,7 @@ private:
 
     QString mProjectPath;
     Concordance mConcordance;
+    bool mChanged;
 };
 
 #endif // PROJECT_H

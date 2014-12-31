@@ -26,7 +26,7 @@
 #include "writingsystem.h"
 
 Project::Project(MainWindow * mainWindow) :
-    mMainWindow(mainWindow), mDatabaseFilename("sqlite3-database.db"), mDbAdapter(0), mOverrideMediaPath(false), mMemoryMode(Project::OneAtATime), mCurrentInterlinearView(0), mCurrentQuickView(0)
+    mMainWindow(mainWindow), mDatabaseFilename("sqlite3-database.db"), mDbAdapter(0), mOverrideMediaPath(false), mMemoryMode(Project::OneAtATime), mCurrentInterlinearView(0), mCurrentQuickView(0), mChanged(false)
 {
 }
 
@@ -169,6 +169,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
         text->saveText(false, true,true);
         mTexts.insert(name, text);
         mTextPaths << filepathFromName(name);
+        mChanged = true;
         return text;
     }
     else
@@ -297,6 +298,8 @@ bool Project::save()
         inFile.close();
     }
 
+    mChanged = false;
+
     return true;
 }
 
@@ -407,6 +410,8 @@ void Project::deleteText(QString textName)
     QFile f( path );
     if( ! f.remove() )
         qWarning() << f.errorString() << path ;
+
+    setChanged();
 }
 
 QString Project::projectPath() const
@@ -454,6 +459,8 @@ QString Project::doDatabaseCleanup()
     int analysisMembers = mDbAdapter->removeUnusedMorphologicalAnalysisMembers();
     int allomorphs = mDbAdapter->removeUnusedAllomorphs();
     int lexicalEntries = mDbAdapter->removeUnusedLexicalEntries();
+
+    setChanged();
 
     return tr("Removed: %1 unused interpretations, %2 unused glosses, %3 unused text forms, %4 morphological analysis members, %5 allomorphs, %6 lexical entries").arg(nRemovedInterpretations).arg(nRemovedGlosses).arg(nRemovedTextForms).arg(analysisMembers).arg(allomorphs).arg(lexicalEntries);
 }
@@ -991,6 +998,11 @@ void Project::setMediaFolder(const QString &folder)
     mMediaPath = QDir(folder);
 }
 
+void Project::setChanged()
+{
+    mChanged = true;
+}
+
 Project::MemoryMode Project::memoryMode() const
 {
     return mMemoryMode;
@@ -1299,4 +1311,19 @@ void Project::serializeConfigurationXml()
     stream.writeEndElement(); // gloss-configuration
 
     file->close();
+}
+
+bool Project::isChanged() const
+{
+    if( mChanged ) return true;
+    QHashIterator<QString,Text*> i(mTexts);
+    while(i.hasNext())
+    {
+        i.next();
+        if( i.value()->isChanged() )
+        {
+            return true;
+        }
+    }
+    return false;
 }

@@ -53,6 +53,8 @@ public:
     QString comment() const;
     void setComment(const QString & comment);
 
+    bool isChanged() const;
+
     WritingSystem baselineWritingSystem() const;
     void setBaselineWritingSystem(const WritingSystem & ws);
 

@@ -254,7 +254,9 @@ void MainWindow::closeProject()
 
 void MainWindow::closeProjectWithoutSaving()
 {
-    if( QMessageBox::question(this, tr("Really?"), tr("Are you sure you want to lose any changes you made?")) == QMessageBox::Yes )
+    if( mProject == 0 )
+        return;
+    if( !mProject->isChanged() || QMessageBox::question(this, tr("Really?"), tr("Close project without saving changes?")) == QMessageBox::Yes )
     {
         projectClose();
     }
@@ -514,6 +516,7 @@ void MainWindow::sqlTableView( QAction * action )
     SqlTableDialog * dialog = new SqlTableDialog(name, mProject->dbAdapter());
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
+    mProject->setChanged();
 }
 
 void MainWindow::setProjectActionsEnabled(bool enabled)
@@ -599,6 +602,7 @@ int MainWindow::writingSystems()
     if( dlg.exec() )
     {
         mProject->dbAdapter()->loadWritingSystems();
+        mProject->setChanged();
         return 1;
     }
     return 0;
@@ -607,7 +611,12 @@ int MainWindow::writingSystems()
 int MainWindow::projectOptions()
 {
     ProjectOptionsDialog dialog(mProject, this);
-    return dialog.exec();
+    int retVal = dialog.exec();
+    if( retVal != 0 )
+    {
+        mProject->setChanged();
+    }
+    return retVal;
 }
 
 void MainWindow::exportTexts()
@@ -637,6 +646,7 @@ void MainWindow::syntacticElements()
     if( dlg.exec() )
     {
         mProject->dbAdapter()->loadSyntacticTypes();
+        mProject->setChanged();
     }
 }
 
@@ -856,6 +866,7 @@ void MainWindow::searchForSubstring(const TextBit & bit)
 void MainWindow::rebuildIndex()
 {
     mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
+    mProject->setChanged();
 }
 
 void MainWindow::searchForInterpretationById()
@@ -931,7 +942,10 @@ int MainWindow::viewConfigurationDialog()
     ViewConfigurationDialog dialog(mProject, this);
     int result = dialog.exec();
     if( result )
+    {
         setGuiElementsFromProject();
+        mProject->setChanged();
+    }
     return result;
 }
 
@@ -1064,6 +1078,7 @@ void MainWindow::sqlQueryDialog()
     DatabaseQueryDialog *dialog = new DatabaseQueryDialog(mProject->dbAdapter()->dbFilename(), 0);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
+    mProject->setChanged();
 }
 
 void MainWindow::bulkMergeTranslations()
@@ -1322,6 +1337,7 @@ void MainWindow::editLexicon()
     LexiconEdit *edit = new LexiconEdit( mProject, this );
     connect( edit, SIGNAL(textFormIdSearch(qlonglong)), this, SLOT(searchForTextFormById(qlonglong)) );
     edit->show();
+    mProject->setChanged();
 }
 
 void MainWindow::setGuiElementsFromProject()
