@@ -17,6 +17,7 @@ void PunctuationDisplayWidget::contextMenuEvent(QContextMenuEvent *event)
     menu->addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()));
     menu->addAction(tr("Edit Text Form %1 (%2)").arg( mGlossItem->baselineText().id() ).arg( mGlossItem->baselineText().text() ), this, SLOT(editBaselineTextForm()));
     menu->addAction(tr("Begin new line here"), this, SLOT(beginNewLineHere()));
+    menu->addAction(tr("Merge this line with previous"), this, SLOT(noNewLineHere()));
     menu->exec(event->globalPos());
 }
 
@@ -28,6 +29,11 @@ void PunctuationDisplayWidget::updateDisplay()
 void PunctuationDisplayWidget::beginNewLineHere()
 {
     emit requestNewLineFromHere( mGlossItem );
+}
+
+void PunctuationDisplayWidget::noNewLineHere()
+{
+    emit requestNoLineFromHere( mGlossItem );
 }
 
 void PunctuationDisplayWidget::editBaselineTextForm()

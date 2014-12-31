@@ -363,6 +363,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(requestSetFollowingGlosses(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingGlosses(GlossItem*,WritingSystem)) );
 
     connect( wdw, SIGNAL(requestNewLineFromHere(GlossItem*)), mText, SLOT(newLineStartingHere(GlossItem*)) );
+    connect( wdw, SIGNAL(requestNoLineFromHere(GlossItem*)), mText, SLOT(noNewLineStartingHere(GlossItem*)) );
 
     connect( wdw, SIGNAL(leftClicked(WordDisplayWidget*)), this, SLOT(wdwClicked(WordDisplayWidget*)) );
 
@@ -373,6 +374,7 @@ PunctuationDisplayWidget *InterlinearDisplayWidget::addPunctuationDisplayWidget(
 {
     PunctuationDisplayWidget *pdw = new PunctuationDisplayWidget( item, mProject->dbAdapter() , this );
     connect( pdw, SIGNAL(requestNewLineFromHere(GlossItem*)), mText, SLOT(newLineStartingHere(GlossItem*)) );
+    connect( pdw, SIGNAL(requestNoLineFromHere(GlossItem*)), mText, SLOT(noNewLineStartingHere(GlossItem*)) );
     return pdw;
 }
 

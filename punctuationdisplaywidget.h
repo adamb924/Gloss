@@ -19,10 +19,12 @@ private:
 
 signals:
     void requestNewLineFromHere( GlossItem * glossItem );
+    void requestNoLineFromHere( GlossItem * glossItem );
 
 private slots:
     void updateDisplay();
     void beginNewLineHere();
+    void noNewLineHere();
     void editBaselineTextForm();
     void editBaselineText();
 };

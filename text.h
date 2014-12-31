@@ -104,6 +104,7 @@ public slots:
     void matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws );
 
     void newLineStartingHere(GlossItem * glossItem);
+    void noNewLineStartingHere(GlossItem * glossItem);
 
     //! \brief Plays the sound for the given 0-indexed line number, or returns an error.
     bool playSoundForLine( int lineNumber );

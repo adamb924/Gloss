@@ -252,6 +252,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     menu->addSeparator();
 
     menu->addAction(tr("Begin new line here"), this, SLOT(beginNewLineHere()));
+    menu->addAction(tr("Merge this line with previous"), this, SLOT(noNewLineHere()));
 
     menu->addSeparator();
 
@@ -1026,6 +1027,11 @@ void WordDisplayWidget::editBaselineTextForm()
 void WordDisplayWidget::beginNewLineHere()
 {
     emit requestNewLineFromHere( mGlossItem );
+}
+
+void WordDisplayWidget::noNewLineHere()
+{
+    emit requestNoLineFromHere( mGlossItem );
 }
 
 void WordDisplayWidget::annotationMarkActivated( const QString & key )

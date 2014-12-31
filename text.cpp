@@ -596,6 +596,21 @@ void Text::newLineStartingHere(GlossItem *glossItem)
     markAsChanged();
 }
 
+void Text::noNewLineStartingHere(GlossItem *glossItem)
+{
+    int phraseIndex, glossItemIndex;
+    findGlossItemLocation(glossItem, phraseIndex, glossItemIndex );
+
+    if( phraseIndex < 1 ) return;
+
+    for(int i=0; i < mPhrases.at(phraseIndex)->glossItemCount(); i++)
+    {
+        mPhrases.at(phraseIndex-1)->appendGlossItem( mPhrases[phraseIndex]->takeGlossItemAt( i ) );
+    }
+
+    removePhrase(mPhrases[phraseIndex]); /// this will then emit the signals necessary for a refresh, etc.
+}
+
 void Text::baselineSearchReplace( const TextBit & search , const TextBit & replace )
 {
     for(int i=0; i < mPhrases.count(); i++ )
