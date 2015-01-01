@@ -934,7 +934,7 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
     InterlinearChunkEditor * ice = openTextInChunks( textName, 3 );
     if( ice != 0 )
     {
-        ice->moveToLine( lineNumber  && lineNumber > 3 );
+        ice->moveToLine( lineNumber );
         ice->raise();
         ice->setFocus(foci);
     }
