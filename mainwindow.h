@@ -175,21 +175,6 @@ private slots:
     //! \brief Provide a dialog for the user to do a search-and-replace on the baseline texts of all open texts.
     void baselineSearchAndReplace();
 
-    //! \deprecated The functionality provided by this has been moved to SearchForm.
-    void searchForInterpretationById();
-
-    //! \deprecated The functionality provided by this has been moved to SearchForm.
-    void searchForTextFormById();
-
-    //! \deprecated The functionality provided by this has been moved to SearchForm.
-    void searchForGlossById();
-
-    //! \deprecated The functionality provided by this has been moved to SearchForm.
-    void searchForLexicalEntryById();
-
-    //! \deprecated The functionality provided by this has been moved to SearchForm.
-    void searchForAllomorphById();
-
 private:
     void createSearchResultDock(QStandardItemModel * model, const QString & reminder);
     ///@}

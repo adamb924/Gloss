@@ -75,9 +75,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionMerge_EAF, SIGNAL(triggered()), this, SLOT(mergeEaf()));
 
     connect(ui->actionRaw_XQuery, SIGNAL(triggered()), this, SLOT(rawXQuery()));
-    connect(ui->actionInterpreation_by_id, SIGNAL(triggered()), this, SLOT(searchForInterpretationById()));
-    connect(ui->actionGloss_by_id, SIGNAL(triggered()), this, SLOT(searchForGlossById()));
-    connect(ui->actionText_form_by_id, SIGNAL(triggered()), this, SLOT(searchForTextFormById()));
 
     connect(ui->actionRemove_unused_gloss_items, SIGNAL(triggered()), this, SLOT(removeUnusedGlossItems()));
 
@@ -99,9 +96,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionEdit_lexicon, SIGNAL(triggered()), this, SLOT(editLexicon()) );
 
     connect(ui->actionRebuild_index, SIGNAL(triggered()), this, SLOT(rebuildIndex()));
-
-    connect( ui->actionLexical_entry_by_id, SIGNAL(triggered()), this, SLOT(searchForLexicalEntryById()) );
-    connect( ui->actionAllomorph_by_id, SIGNAL(triggered()), this, SLOT(searchForAllomorphById()) );
 
     connect( ui->actionBaseline_text_search_and_replace, SIGNAL(triggered()), this, SLOT(baselineSearchAndReplace()));
 
@@ -867,46 +861,6 @@ void MainWindow::rebuildIndex()
 {
     mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
     mProject->setChanged();
-}
-
-void MainWindow::searchForInterpretationById()
-{
-    bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by interpretation ID"), tr("Interpretation ID"), 1, -2147483647, 2147483647, 1, &ok );
-    if( ok )
-        searchForInterpretationById(id);
-}
-
-void MainWindow::searchForTextFormById()
-{
-    bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by text form ID"), tr("Text form ID"), 1, -2147483647, 2147483647, 1, &ok );
-    if( ok )
-        searchForTextFormById(id);
-}
-
-void MainWindow::searchForGlossById()
-{
-    bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by gloss ID"), tr("Gloss ID"), 1, -2147483647, 2147483647, 1, &ok );
-    if( ok )
-        searchForGlossById(id);
-}
-
-void MainWindow::searchForLexicalEntryById()
-{
-    bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by lexical entry ID"), tr("Lexical Entry ID"), 1, -2147483647, 2147483647, 1, &ok );
-    if( ok )
-        searchForLexicalEntryById(id);
-}
-
-void MainWindow::searchForAllomorphById()
-{
-    bool ok;
-    int id = QInputDialog::getInt ( this, tr("Search by allomorph ID"), tr("Allomorph ID"), 1, -2147483647, 2147483647, 1, &ok );
-    if( ok )
-        searchForAllomorphById(id);
 }
 
 void MainWindow::createSearchResultDock(QStandardItemModel * model, const QString & reminder)
