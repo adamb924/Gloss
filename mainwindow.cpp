@@ -917,15 +917,14 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
         if( ttw != 0 && ttw->text()->name() == textName )
         {
             ui->mdiArea->setActiveSubWindow(w);
-            w->raise();
             ttw->setFocus(foci);
             return;
         }
         else if( ice != 0 && ice->text()->name() == textName )
         {
+            ui->mdiArea->setActiveSubWindow(w);
             ice->moveToLine( lineNumber );
             ice->setFocus(foci);
-            w->raise();
             return;
         }
     }
@@ -935,7 +934,6 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
     if( ice != 0 )
     {
         ice->moveToLine( lineNumber );
-        ice->raise();
         ice->setFocus(foci);
     }
 }
