@@ -1286,6 +1286,49 @@ QStringList DatabaseAdapter::grammaticalTags(qlonglong lexicalEntryId) const
     return tags;
 }
 
+QList<TextBit> DatabaseAdapter::editTextFormsFromAllomorph(qlonglong allomorphId, const TextBit &oldForm, const TextBit &newForm) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("update Allomorph set Form=:Form where _id=:AllomorphId;");
+    q.bindValue(":Form",newForm.text());
+    q.bindValue(":AllomorphId",allomorphId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::editTextFormsFromAllomorph" << q.lastError().text() << q.executedQuery();
+
+    q.prepare("update TextForms set Form=replace(Form,:OldForm,:NewForm) where _id in (select distinct(TextFormId) from MorphologicalAnalysisMembers where AllomorphId=:AllomorphId);");
+    q.bindValue(":OldForm",oldForm.text());
+    q.bindValue(":NewForm",newForm.text());
+    q.bindValue(":AllomorphId",allomorphId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::editTextFormsFromAllomorph" << q.lastError().text() << q.executedQuery();
+
+    QList<TextBit> affected;
+
+    q.prepare("select distinct(TextFormId) as _id,Form,WritingSystem from MorphologicalAnalysisMembers,TextForms where AllomorphId=:AllomorphId and TextForms._id=TextFormId;");
+    q.bindValue(":AllomorphId",allomorphId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::proposeEditTextFormsFromAllomorph" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+        affected << TextBit( q.value(1).toString() , writingSystem( q.value(2).toLongLong() ) , q.value(0).toLongLong() );
+
+    return affected;
+}
+
+QStringList DatabaseAdapter::proposeEditTextFormsFromAllomorph(qlonglong allomorphId, const TextBit &oldForm, const TextBit &newForm) const
+{
+    QStringList transformations;
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select distinct(TextFormId),WritingSystem,Form,replace(Form,:OldForm,:NewForm) as NewForm from MorphologicalAnalysisMembers,TextForms where AllomorphId=:AllomorphId and TextForms._id=TextFormId;");
+    q.bindValue(":OldForm",oldForm.text());
+    q.bindValue(":NewForm",newForm.text());
+    q.bindValue(":AllomorphId",allomorphId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::proposeEditTextFormsFromAllomorph" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+        transformations << q.value(2).toString() + " → " + q.value(3).toString();
+    return transformations;
+}
+
 bool DatabaseAdapter::textIndicesShouldBeUpdated( const QStringList & textNames ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));

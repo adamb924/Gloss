@@ -135,6 +135,8 @@ public:
     void setMultipleTextFormsAvailable(const WritingSystem & ws, bool multiple);
     void setMultipleGlossesAvailable( const WritingSystem & ws, bool multiple );
 
+    void emitTextFormChangedSignal(const TextBit & textForm);
+
 signals:
     //! \brief Emitted when the candidate status of the GlossItem changes
     void candidateNumberChanged( GlossItem::CandidateNumber mCandidateNumber, qlonglong interpretationId );

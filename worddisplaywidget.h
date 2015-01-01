@@ -57,6 +57,7 @@ private:
     void addTextFormSubmenu(QMenu *menu, const WritingSystem & writingSystem );
     void addGlossSubmenu(QMenu *menu, const WritingSystem & writingSystem );
     void addSearchSubmenu(QMenu *menu);
+    void addAllomorphEditSubmenu(QMenu *menu);
 
     void cycleInterpretation();
     void cycleTextForm( const WritingSystem & ws );
@@ -129,6 +130,8 @@ private slots:
     void interpretationSearch(QAction * action);
     void lexicalEntrySearch(QAction * action);
     void allomorphSearch(QAction * action);
+
+    void allomorphEdit(QAction * action);
 
     void guessGloss();
     void guessGloss( const WritingSystem & ws );

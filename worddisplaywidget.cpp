@@ -290,6 +290,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     menu->addSeparator();
 
+    addAllomorphEditSubmenu(menu);
     menu->addAction(tr("Database report"), this, SLOT(displayDatabaseReport()) );
     addSearchSubmenu(menu);
 
@@ -488,6 +489,43 @@ void WordDisplayWidget::addSearchSubmenu(QMenu *menu)
             group->addAction(action);
             submenu->addAction(action);
             connect(group, SIGNAL(triggered(QAction*)), this, SLOT(allomorphSearch(QAction*)) );
+        }
+
+        if( maWS.hasNext() )
+        {
+            submenu->addSeparator();
+        }
+    }
+
+    menu->addMenu(submenu);
+}
+
+void WordDisplayWidget::addAllomorphEditSubmenu(QMenu *menu)
+{
+    QMenu *submenu = new QMenu(tr("Edit allomorphs...") ,menu);
+    QAction *action;
+    QActionGroup *group;
+
+    QListIterator<WritingSystem> maWS(mGlossItem->nonEmptyMorphologicalAnalysisLanguages());
+
+    if( maWS.hasNext() )
+    {
+        submenu->addSeparator();
+    }
+
+    while( maWS.hasNext() )
+    {
+        AllomorphPointerIterator ai = mGlossItem->morphologicalAnalysis( maWS.next() )->allomorphIterator();
+
+        while( ai.hasNext() )
+        {
+            const Allomorph * a = ai.next();
+            action = new QAction( tr("%1 (Allomorph %2)").arg( a->text() ).arg( a->id() ) , menu );
+            action->setData( a->id() );
+            group = new QActionGroup(menu);
+            group->addAction(action);
+            submenu->addAction(action);
+            connect(group, SIGNAL(triggered(QAction*)), this, SLOT(allomorphEdit(QAction*)) );
         }
 
         if( maWS.hasNext() )
@@ -707,6 +745,32 @@ void WordDisplayWidget::lexicalEntrySearch(QAction *action)
 void WordDisplayWidget::allomorphSearch(QAction *action)
 {
     emit requestAllomorphSearch( action->data().toLongLong() );
+}
+
+void WordDisplayWidget::allomorphEdit(QAction *action)
+{
+    qlonglong allomorphId = action->data().toLongLong();
+    Allomorph * a = mDbAdapter->allomorphFromId(allomorphId);
+    GenericTextInputDialog dialog( a->textBit() , this );
+    dialog.setWindowTitle(tr("Edit allomorph (%1)").arg(a->id()));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        QStringList changes = mDbAdapter->proposeEditTextFormsFromAllomorph(allomorphId,a->textBit(),dialog.textBit());
+        if( !changes.isEmpty() ) // this should always pass
+        {
+            if( QMessageBox::Yes == QMessageBox::warning(this, tr("Really?"), tr("<p>This will perform a search-and-replace on the text forms that have this allomorph. This could produce a lot of random effects, depending on the allomorph you're editing. Review the list of changes below to see if you want to do this. <ul><li>%1</li></ul>").arg(changes.join("</li><li>")) , QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) )
+            {
+                QList<TextBit> affected = mDbAdapter->editTextFormsFromAllomorph(allomorphId,a->textBit(),dialog.textBit());
+                QListIterator<TextBit> i(affected);
+                while(i.hasNext())
+                {
+                    // make sure that these changes are propagated throughout all gloss items
+                    mGlossItem->emitTextFormChangedSignal( i.next() );
+                }
+            }
+        }
+    }
+    delete a;
 }
 
 QHash<qlonglong, LingEdit*> WordDisplayWidget::textFormEdits() const

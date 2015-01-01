@@ -190,6 +190,9 @@ public:
     QStringList grammaticalTagsForAllomorph(qlonglong allomorphId) const;
     QStringList grammaticalTags(qlonglong lexicalEntryId) const;
 
+    QList<TextBit> editTextFormsFromAllomorph(qlonglong allomorphId, const TextBit & oldForm, const TextBit & newForm) const;
+    QStringList proposeEditTextFormsFromAllomorph(qlonglong allomorphId, const TextBit & oldForm, const TextBit & newForm) const;
+
     bool textIndicesShouldBeUpdated(const QStringList &textNames ) const;
     bool tableContainsAllTexts(const QString & tableName, const QSet<QString> & texts) const;
     void createTextIndices( const QSet<QString> * filePaths ) const;

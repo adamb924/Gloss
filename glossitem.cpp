@@ -466,6 +466,11 @@ void GlossItem::setMultipleGlossesAvailable(const WritingSystem &ws, bool multip
     }
 }
 
+void GlossItem::emitTextFormChangedSignal(const TextBit &textForm)
+{
+    emit textFormChanged(textForm);
+}
+
 QList<WritingSystem> GlossItem::nonEmptyMorphologicalAnalysisLanguages() const
 {
     QList<WritingSystem> languages;
