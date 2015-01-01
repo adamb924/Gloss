@@ -963,6 +963,7 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
         if( ttw != 0 && ttw->text()->name() == textName )
         {
             ui->mdiArea->setActiveSubWindow(w);
+            w->raise();
             ttw->setFocus(foci);
             return;
         }
@@ -970,14 +971,17 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
         {
             ice->moveToLine( lineNumber );
             ice->setFocus(foci);
+            w->raise();
             return;
         }
     }
+
     // at this point the window must not exist
     InterlinearChunkEditor * ice = openTextInChunks( textName, 3 );
     if( ice != 0 )
     {
         ice->moveToLine( lineNumber  && lineNumber > 3 );
+        ice->raise();
         ice->setFocus(foci);
     }
 }
