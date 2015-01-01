@@ -163,8 +163,6 @@ private slots:
     void selectDifferentGloss(QAction *action);
     void selectDifferentTextForm(QAction *action);
 
-    void displayDatabaseReport();
-
     void copyBaselineText();
     void editBaselineText();
     void editBaselineText(const QString & text);

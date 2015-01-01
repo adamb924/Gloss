@@ -291,7 +291,6 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
     menu->addSeparator();
 
     addAllomorphEditSubmenu(menu);
-    menu->addAction(tr("Database report"), this, SLOT(displayDatabaseReport()) );
     addSearchSubmenu(menu);
 
     menu->exec(event->globalPos());
@@ -800,29 +799,6 @@ QHash<qlonglong, LingEdit*> WordDisplayWidget::glossEdits() const
 GlossItem* WordDisplayWidget::glossItem()
 {
     return mGlossItem;
-}
-
-void WordDisplayWidget::displayDatabaseReport()
-{
-    QString reportString;
-
-    reportString += tr("Interpretation ID: %1\n").arg( mGlossItem->id() );
-
-    TextBitHashIterator iter( *mGlossItem->textForms() );
-    while(iter.hasNext())
-    {
-        iter.next();
-        reportString += tr("%1: %2\n").arg( iter.key().name() ).arg( iter.value().id() );
-    }
-
-    iter = TextBitHashIterator( *mGlossItem->glosses() );
-    while(iter.hasNext())
-    {
-        iter.next();
-        reportString += tr("%1: %2\n").arg( iter.key().name() ).arg( iter.value().id() );
-    }
-
-    QMessageBox::information(this, tr("Report"), reportString );
 }
 
 void WordDisplayWidget::copyBaselineText()
