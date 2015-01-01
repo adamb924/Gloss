@@ -38,6 +38,8 @@ WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, c
     connect( this, SIGNAL(requestInterpretationSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForInterpretationById(qlonglong) ));
     connect( this, SIGNAL(requestTextFormSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForTextFormById(qlonglong) ));
     connect( this, SIGNAL(requestGlossSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForGlossById(qlonglong) ));
+    connect( this, SIGNAL(requestAllomorphSearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForAllomorphById(qlonglong)) );
+    connect( this, SIGNAL(requestLexicalEntrySearch(qlonglong)), mGlossItem->project()->mainWindow(), SLOT( searchForLexicalEntryById(qlonglong)) );
 
     connect( mGlossItem, SIGNAL(glossNumberChanged(bool,qlonglong,WritingSystem)), this, SLOT(setGlossNumber(bool,qlonglong,WritingSystem)) );
     connect( mGlossItem, SIGNAL(textFormNumberChanged(bool,qlonglong,WritingSystem)), this, SLOT(setTextFormNumber(bool,qlonglong,WritingSystem)) );
@@ -454,6 +456,46 @@ void WordDisplayWidget::addSearchSubmenu(QMenu *menu)
         connect(group, SIGNAL(triggered(QAction*)), this, SLOT(glossSearch(QAction*)) );
     }
 
+    QListIterator<WritingSystem> maWS(mGlossItem->nonEmptyMorphologicalAnalysisLanguages());
+
+    if( maWS.hasNext() )
+    {
+        submenu->addSeparator();
+    }
+
+    while( maWS.hasNext() )
+    {
+        AllomorphPointerIterator ai = mGlossItem->morphologicalAnalysis( maWS.next() )->allomorphIterator();
+        while( ai.hasNext() )
+        {
+            const Allomorph * a = ai.next();
+            action = new QAction( tr("%1 (Lexical Entry %2)").arg( a->text() ).arg( a->lexicalEntryId() ) , menu );
+            action->setData( a->lexicalEntryId() );
+            group = new QActionGroup(menu);
+            group->addAction(action);
+            submenu->addAction(action);
+            connect(group, SIGNAL(triggered(QAction*)), this, SLOT(lexicalEntrySearch(QAction*)) );
+        }
+        ai.toFront();
+        submenu->addSeparator();
+
+        while( ai.hasNext() )
+        {
+            const Allomorph * a = ai.next();
+            action = new QAction( tr("%1 (Allomorph %2)").arg( a->text() ).arg( a->id() ) , menu );
+            action->setData( a->id() );
+            group = new QActionGroup(menu);
+            group->addAction(action);
+            submenu->addAction(action);
+            connect(group, SIGNAL(triggered(QAction*)), this, SLOT(allomorphSearch(QAction*)) );
+        }
+
+        if( maWS.hasNext() )
+        {
+            submenu->addSeparator();
+        }
+    }
+
     menu->addMenu(submenu);
 }
 
@@ -655,6 +697,16 @@ void WordDisplayWidget::glossSearch(QAction * action)
 void WordDisplayWidget::interpretationSearch(QAction * action)
 {
     emit requestInterpretationSearch( action->data().toLongLong() );
+}
+
+void WordDisplayWidget::lexicalEntrySearch(QAction *action)
+{
+    emit requestLexicalEntrySearch( action->data().toLongLong() );
+}
+
+void WordDisplayWidget::allomorphSearch(QAction *action)
+{
+    emit requestAllomorphSearch( action->data().toLongLong() );
 }
 
 QHash<qlonglong, LingEdit*> WordDisplayWidget::textFormEdits() const

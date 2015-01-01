@@ -98,6 +98,8 @@ signals:
     void requestInterpretationSearch(qlonglong id);
     void requestTextFormSearch(qlonglong id);
     void requestGlossSearch(qlonglong id);
+    void requestLexicalEntrySearch(qlonglong id);
+    void requestAllomorphSearch(qlonglong id);
 
     void requestRemoveGlossItem( GlossItem *glossItem );
 
@@ -125,6 +127,8 @@ private slots:
     void textFormSearch(QAction * action);
     void glossSearch(QAction * action);
     void interpretationSearch(QAction * action);
+    void lexicalEntrySearch(QAction * action);
+    void allomorphSearch(QAction * action);
 
     void guessGloss();
     void guessGloss( const WritingSystem & ws );
