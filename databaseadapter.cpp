@@ -1047,13 +1047,13 @@ MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( ql
     return analysis;
 }
 
-void DatabaseAdapter::clearMorphologicalAnalysis( qlonglong textFormId ) const
+void DatabaseAdapter::clearMorphologicalAnalysisIfInconsistent(qlonglong textFormId , const TextBit &comparison) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId;");
+    q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId and (select Form from TextForms where _id=:TextFormId) != (select group_concat(Form,'') from ( select Form from MorphologicalAnalysisMembers,Allomorph where TextFormId=:TextFormId and Allomorph._id=AllomorphId order by AllomorphOrder));");
     q.bindValue(":TextFormId", textFormId);
     if( ! q.exec() )
-        qWarning() << "DatabaseAdapter::clearMorphologicalAnalysis" << q.lastError().text() << q.executedQuery();
+        qWarning() << "DatabaseAdapter::clearMorphologicalAnalysisIfInconsistent" << q.lastError().text() << q.executedQuery();
 }
 
 bool DatabaseAdapter::textFormHasMorphologicalAnalysis( qlonglong textFormId ) const
