@@ -757,7 +757,7 @@ void WordDisplayWidget::allomorphEdit(QAction *action)
         QStringList changes = mDbAdapter->proposeEditTextFormsFromAllomorph(allomorphId,a->textBit(),dialog.textBit());
         if( !changes.isEmpty() ) // this should always pass
         {
-            if( QMessageBox::Yes == QMessageBox::warning(this, tr("Really?"), tr("<p>This will perform a search-and-replace on the text forms that have this allomorph. This could produce a lot of random effects, depending on the allomorph you're editing. Review the list of changes below to see if you want to do this. <ul><li>%1</li></ul>").arg(changes.join("</li><li>")) , QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) )
+            if( QMessageBox::Yes == QMessageBox::warning(this, tr("Really?"), tr("<p>This will perform a search-and-replace on the text forms that have this allomorph. This could produce a lot of random effects, depending on the allomorph you're editing. Review the list of changes below to see if you want to do this. <ul><li>%1</li></ul><p>If you go ahead with this, note that the text in the morphological analysis display will not be updated until you close and re-open the text.</p>").arg(changes.join("</li><li>")) , QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) )
             {
                 QList<TextBit> affected = mDbAdapter->editTextFormsFromAllomorph(allomorphId,a->textBit(),dialog.textBit());
                 QListIterator<TextBit> i(affected);
