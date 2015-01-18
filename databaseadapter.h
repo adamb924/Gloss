@@ -244,6 +244,10 @@ public:
     QList<WritingSystem> morphologicalAnalysisTextWritingSystems() const;
     QList<WritingSystem> morphologicalAnalysisGlossWritingSystems() const;
 
+    int interpretationCountFromConcordance(qlonglong interpretationId) const;
+    int textFormCountFromConcordance(qlonglong textFormId) const;
+    int glossCountFromConcordance(qlonglong glossId) const;
+
 private:
     //! \brief Creates the tables; all tables are created with "create if not exists" -- so it's fine to call this in the constructor
     void createTables();

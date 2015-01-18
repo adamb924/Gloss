@@ -1859,3 +1859,51 @@ QList<WritingSystem> DatabaseAdapter::morphologicalAnalysisGlossWritingSystems()
     }
     return writingSystems;
 }
+
+int DatabaseAdapter::interpretationCountFromConcordance(qlonglong interpretationId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select count(LineNumber) from InterpretationIndex where Id=:Id;");
+    q.bindValue(":Id",interpretationId);
+    if( q.exec() && q.next() )
+    {
+        return q.value(0).toInt();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::interpretationCountFromConcordance" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+}
+
+int DatabaseAdapter::textFormCountFromConcordance(qlonglong textFormId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select count(LineNumber) from TextFormIndex where Id=:Id;");
+    q.bindValue(":Id",textFormId);
+    if( q.exec() && q.next() )
+    {
+        return q.value(0).toInt();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::textFormCountFromConcordance" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+}
+
+int DatabaseAdapter::glossCountFromConcordance(qlonglong glossId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select count(LineNumber) from GlossIndex where Id=:Id;");
+    q.bindValue(":Id",glossId);
+    if( q.exec() && q.next() )
+    {
+        return q.value(0).toInt();
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::glossCountFromConcordance" << q.lastError().text() << q.executedQuery();
+        return -1;
+    }
+}

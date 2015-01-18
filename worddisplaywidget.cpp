@@ -425,7 +425,7 @@ void WordDisplayWidget::addSearchSubmenu(QMenu *menu)
     QAction *action;
     QActionGroup *group;
 
-    action = new QAction( tr("Interpretation %1").arg( mGlossItem->id() ) , menu );
+    action = new QAction( tr("Interpretation %1 (%2x)").arg( mGlossItem->id() ).arg(mDbAdapter->interpretationCountFromConcordance(mGlossItem->id())) , menu );
     action->setData( mGlossItem->id() );
     group = new QActionGroup(menu);
     group->addAction(action);
@@ -436,7 +436,7 @@ void WordDisplayWidget::addSearchSubmenu(QMenu *menu)
     while(iter.hasNext())
     {
         iter.next();
-        action = new QAction( tr("%1 (Text Form %2)").arg( iter.value().text() ).arg( iter.value().id() ) , menu );
+        action = new QAction( tr("%1 (Text Form %2; %3x)").arg( iter.value().text() ).arg( iter.value().id() ).arg( mDbAdapter->textFormCountFromConcordance( iter.value().id() ) ) , menu );
         action->setData( iter.value().id() );
         group = new QActionGroup(menu);
         group->addAction(action);
@@ -448,7 +448,7 @@ void WordDisplayWidget::addSearchSubmenu(QMenu *menu)
     while(iter.hasNext())
     {
         iter.next();
-        action = new QAction( tr("%1 (Gloss %2)").arg( iter.value().text() ).arg( iter.value().id() ) , menu );
+        action = new QAction( tr("%1 (Gloss %2; %3x)").arg( iter.value().text() ).arg( iter.value().id() ).arg( mDbAdapter->glossCountFromConcordance( iter.value().id() ) ) , menu );
         action->setData( iter.value().id() );
         group = new QActionGroup(menu);
         group->addAction(action);
