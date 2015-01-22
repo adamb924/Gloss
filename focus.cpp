@@ -3,16 +3,20 @@
 #include <QString>
 #include <QDebug>
 
-Focus::Focus()
+Focus::Focus() : mType(Focus::Null), mIndex(-1)
 {
-    mType = Focus::Null;
-    mIndex = -1;
 }
 
-Focus::Focus(Type t, qlonglong i)
+Focus::Focus(Type t, qlonglong i) : mType(t), mIndex(i)
 {
-    mType = t;
-    mIndex = i;
+}
+
+Focus::Focus(Focus::Type t, const QString &bit) : mType(t), mString(bit)
+{
+    if( mType != Focus::WholeStringSearch && mType != Focus::SubStringSearch)
+    {
+        mType = Focus::Null;
+    }
 }
 
 Focus::Type Focus::type() const
@@ -46,6 +50,11 @@ QString Focus::typeString() const
         return "Null";
         break;
     }
+}
+
+QString Focus::searchString() const
+{
+    return mString;
 }
 
 QDebug operator<<(QDebug dbg, const Focus & key)

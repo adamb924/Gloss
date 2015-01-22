@@ -829,7 +829,9 @@ void MainWindow::searchForText(const TextBit & bit)
     }
     else
     {
-        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForText(bit) );
+        QList<Focus> f;
+        f << Focus(Focus::WholeStringSearch, bit.text() );
+        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForText(bit), f );
         createSearchResultDock(model, tr("Containing exact string '%1'").arg(bit.text()));
     }
 }
@@ -852,7 +854,9 @@ void MainWindow::searchForSubstring(const TextBit & bit)
     }
     else
     {
-        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForSubstring(bit) );
+        QList<Focus> f;
+        f << Focus(Focus::SubStringSearch, bit.text() );
+        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForSubstring(bit) , f );
         createSearchResultDock(model, tr("Containing substring '%1'").arg(bit.text()));
     }
 }

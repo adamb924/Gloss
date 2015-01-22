@@ -13,7 +13,15 @@ IndexSearchModel::IndexSearchModel( QSqlQuery query, const QList<Focus> & focus 
     for(int i=0; i<focus.count(); i++)
     {
         types << focus.at(i).type();
-        indices << focus.at(i).index();
+
+        if( focus.at(i).type() != Focus::WholeStringSearch && focus.at(i).type() != Focus::SubStringSearch )
+        {
+            indices << focus.at(i).index();
+        }
+        else
+        {
+            indices << focus.at(i).searchString();
+        }
     }
 
     if( query.size() == 0 )

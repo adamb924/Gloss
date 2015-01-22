@@ -545,6 +545,40 @@ bool GlossItem::matchesFocus( const Focus & focus ) const
     {
         return (qlonglong)this == focus.index();
     }
+    else if ( focus.type() == Focus::WholeStringSearch )
+    {
+        TextBitHashIterator iter(mGlosses);
+        while(iter.hasNext())
+        {
+            iter.next();
+            if( iter.value().text() == focus.searchString() )
+                return true;
+        }
+        TextBitHashIterator iter2(mTextForms);
+        while(iter2.hasNext())
+        {
+            iter2.next();
+            if( iter2.value().text() == focus.searchString() )
+                return true;
+        }
+    }
+    else if ( focus.type() == Focus::SubStringSearch )
+    {
+        TextBitHashIterator iter(mGlosses);
+        while(iter.hasNext())
+        {
+            iter.next();
+            if( iter.value().text().contains( focus.searchString() ) )
+                return true;
+        }
+        TextBitHashIterator iter2(mTextForms);
+        while(iter2.hasNext())
+        {
+            iter2.next();
+            if( iter2.value().text().contains( focus.searchString() ) )
+                return true;
+        }
+    }
     return false;
 }
 
