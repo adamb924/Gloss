@@ -79,6 +79,14 @@ void DatabaseAdapter::createTables()
 
     if( !q.exec("create table if not exists SyntacticConstituents ( _id integer primary key autoincrement, Name text, Abbreviation text, KeySequence text, AutomaticParent text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
+
+    /// Index constraints
+
+    if( !q.exec("create unique index LexicalEntryGloss_idx on LexicalEntryGloss ( LexicalEntryId , WritingSystem );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    if( !q.exec("create unique index LexicalEntryCitationForm_idx on LexicalEntryCitationForm ( LexicalEntryId , WritingSystem );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
 }
 
 QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBit & bit) const
@@ -471,7 +479,7 @@ void DatabaseAdapter::updateLexicalEntryType( qlonglong lexicalEntryId , const Q
 void DatabaseAdapter::updateLexicalEntryCitationForm( qlonglong lexicalEntryId, const TextBit & bit ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("update LexicalEntryCitationForm set Form=:Form where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem;");
+    q.prepare("insert or replace into LexicalEntryCitationForm (Form,LexicalEntryId,WritingSystem) values (:Form, :LexicalEntryId, :WritingSystem);");
     q.bindValue(":Form", bit.text() );
     q.bindValue(":LexicalEntryId", lexicalEntryId);
     q.bindValue(":WritingSystem", bit.writingSystem().id() );
@@ -482,7 +490,7 @@ void DatabaseAdapter::updateLexicalEntryCitationForm( qlonglong lexicalEntryId, 
 void DatabaseAdapter::updateLexicalEntryGloss( qlonglong lexicalEntryId, const TextBit & bit ) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("update LexicalEntryGloss set Form=:Form where LexicalEntryId=:LexicalEntryId and WritingSystem=:WritingSystem;");
+    q.prepare("insert or replace into LexicalEntryGloss (Form,LexicalEntryId,WritingSystem) values (:Form, :LexicalEntryId, :WritingSystem);");
     q.bindValue(":Form", bit.text() );
     q.bindValue(":LexicalEntryId", lexicalEntryId);
     q.bindValue(":WritingSystem", bit.writingSystem().id() );
