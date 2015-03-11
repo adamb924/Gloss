@@ -135,7 +135,7 @@ void CreateLexicalEntryDialog::fillFromDatabase()
 
     foreach( WritingSystem ws , glosses )
     {
-        LexiconLineForm *form = new LexiconLineForm( glossValues.value( ws ), true, mHideGuessButton );
+        LexiconLineForm *form = new LexiconLineForm( glossValues.value( ws , TextBit("", ws) ), true, mHideGuessButton );
         ui->glossLayout->addWidget(form);
         mGlossEdits << form;
     }
