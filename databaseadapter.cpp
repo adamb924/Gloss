@@ -82,10 +82,10 @@ void DatabaseAdapter::createTables()
 
     /// Index constraints
 
-    if( !q.exec("create unique index LexicalEntryGloss_idx on LexicalEntryGloss ( LexicalEntryId , WritingSystem );") )
+    if( !q.exec("create unique index if not exists LexicalEntryGloss_idx on LexicalEntryGloss ( LexicalEntryId , WritingSystem );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
-    if( !q.exec("create unique index LexicalEntryCitationForm_idx on LexicalEntryCitationForm ( LexicalEntryId , WritingSystem );") )
+    if( !q.exec("create unique index if not exists LexicalEntryCitationForm_idx on LexicalEntryCitationForm ( LexicalEntryId , WritingSystem );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 }
 
