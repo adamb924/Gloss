@@ -95,14 +95,26 @@ void InterlinearChunkEditor::moveToPosition(int position)
 void InterlinearChunkEditor::refreshLayout()
 {
     if( mPosition - mChunkSize < 0 )
+    {
         ui->previousButton->setEnabled(false);
+        ui->beginningButton->setEnabled(false);
+    }
     else
+    {
         ui->previousButton->setEnabled(true);
+        ui->beginningButton->setEnabled(true);
+    }
 
     if( mPosition + mChunkSize >= mText->phrases()->count() )
+    {
         ui->nextButton->setEnabled(false);
+        ui->endButton->setEnabled(false);
+    }
     else
+    {
         ui->nextButton->setEnabled(true);
+        ui->endButton->setEnabled(true);
+    }
 
     if( mTextTabWidget != 0 )
     {
