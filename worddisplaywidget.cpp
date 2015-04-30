@@ -994,6 +994,21 @@ void WordDisplayWidget::keyPressEvent ( QKeyEvent * event )
 
 void WordDisplayWidget::cycleInterpretation()
 {
+    /// save all current textforms and glosses since we don't know what's changed
+    QHashIterator<WritingSystem, LingEdit*> iter(mTextFormEdits);
+    while(iter.hasNext())
+    {
+        iter.next();
+        mGlossItem->setTextForm( iter.value()->textBit() );
+    }
+
+    QHashIterator<WritingSystem, LingEdit*> iter2(mGlossEdits);
+    while(iter2.hasNext())
+    {
+        iter2.next();
+        mGlossItem->setGloss( iter2.value()->textBit() );
+    }
+
     QList<qlonglong> candidates = mDbAdapter->candidateInterpretations( mGlossItem->baselineText() );
     qSort(candidates.begin(), candidates.end());
     int position = candidates.indexOf( mGlossItem->id() );
@@ -1008,6 +1023,9 @@ void WordDisplayWidget::cycleInterpretation()
 
 void WordDisplayWidget::cycleTextForm( const WritingSystem & ws )
 {
+    /// save the current string
+    mGlossItem->setTextForm( mTextFormEdits.value( ws )->textBit() );
+
     QHash<qlonglong,QString> textForms = mDbAdapter->interpretationTextForms(mGlossItem->id(), ws.id() );
     QList<qlonglong> candidates = textForms.uniqueKeys();
     qSort( candidates.begin(), candidates.end() );
@@ -1023,6 +1041,9 @@ void WordDisplayWidget::cycleTextForm( const WritingSystem & ws )
 
 void WordDisplayWidget::cycleGloss( const WritingSystem & ws )
 {
+    /// save the current string
+    mGlossItem->setGloss( mGlossEdits.value( ws )->textBit() );
+
     QHash<qlonglong,QString> glosses = mDbAdapter->interpretationGlosses( mGlossItem->id(), ws.id() );
     QList<qlonglong> candidates = glosses.uniqueKeys();
     qSort( candidates.begin(), candidates.end() );
