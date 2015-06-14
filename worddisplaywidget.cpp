@@ -196,7 +196,7 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
 
     if( technicolor )
     {
-        connect( immutableLabel, SIGNAL(doubleClick(QMouseEvent*)), mGlossItem, SLOT(toggleApproval()) );
+        connect( immutableLabel, SIGNAL(doubleClick(TextBit&)), mGlossItem, SLOT(toggleApproval()) );
     }
 
     return immutableLabel;
@@ -216,7 +216,7 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
 
     if( technicolor )
     {
-        connect( immutableLabel, SIGNAL(doubleClick(QMouseEvent*)), mGlossItem, SLOT(toggleApproval()) );
+        connect( immutableLabel, SIGNAL(doubleClick(TextBit&)), mGlossItem, SLOT(toggleApproval()) );
     }
 
     return immutableLabel;

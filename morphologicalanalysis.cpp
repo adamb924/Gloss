@@ -68,7 +68,7 @@ bool MorphologicalAnalysis::equalExceptGuid(const MorphologicalAnalysis &other) 
     return true;
 }
 
-QString MorphologicalAnalysis::baselineSummary() const
+TextBit MorphologicalAnalysis::baselineSummary() const
 {
     QString summary;
     for(int i=0; i<mAllomorphs.count(); i++)
@@ -82,24 +82,39 @@ QString MorphologicalAnalysis::baselineSummary() const
         }
         summary += mAllomorphs.at(i)->text();
     }
-    return summary;
+    return TextBit( summary, mWritingSystem );
 }
 
-QString MorphologicalAnalysis::glossSummary(const WritingSystem & ws) const
+TextBit MorphologicalAnalysis::baselineText(int i) const
 {
-    QString summary;
-    for(int i=0; i<mAllomorphs.count(); i++)
+    Q_ASSERT( i < mAllomorphs.count() );
+    QString baseline;
+    if( i > 0 )
     {
-        if( i > 0 )
-        {
-            if( mAllomorphs.at(i)->isClitic() )
-                summary += "=";
-            else
-                summary += "-";
-        }
-        summary += mAllomorphs.at(i)->gloss(ws).text();
+        if( mAllomorphs.at(i)->isClitic() )
+            baseline += "=";
+        else
+            baseline += "-";
     }
-    return summary;
+    baseline += mAllomorphs.at(i)->text();
+    /// NB: the id field of the TextBit contains the index
+    return TextBit(baseline, mWritingSystem, i);
+}
+
+TextBit MorphologicalAnalysis::gloss(int i, const WritingSystem &ws) const
+{
+    Q_ASSERT( i < mAllomorphs.count() );
+    QString gloss;
+    if( i > 0 )
+    {
+        if( mAllomorphs.at(i)->isClitic() )
+            gloss += "=";
+        else
+            gloss += "-";
+    }
+    gloss += mAllomorphs.at(i)->gloss(ws).text();
+    /// NB: the id field of the TextBit contains the index
+    return TextBit(gloss, ws, i);
 }
 
 AllomorphPointerIterator MorphologicalAnalysis::allomorphIterator() const

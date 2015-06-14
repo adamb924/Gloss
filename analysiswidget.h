@@ -33,6 +33,9 @@ signals:
 public slots:
     void setupLayout();
 
+private slots:
+    void allomorphDoubleClick(TextBit & bit);
+
 private:
     Project *mProject;
     GlossItem *mGlossItem;
@@ -45,7 +48,7 @@ private:
     void createInitializedLayout(const MorphologicalAnalysis * analysis);
     void createUninitializedLayout();
 
-    void clearWidgetsFromLayout();
+    void clearWidgetsFromLayout(QLayout *layout);
 
     qlonglong selectCandidateLexicalEntry();
 
@@ -59,6 +62,7 @@ private slots:
     void createMonomorphemicLexicalEntry();
     void linkToOther();
     void editLexicalEntry(QAction * action);
+    void editLexicalEntry(qlonglong allomorphId);
 };
 
 #endif // ANALYSISWIDGET_H

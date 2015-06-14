@@ -36,10 +36,13 @@ public:
     bool equalExceptGuid(const MorphologicalAnalysis & other) const;
 
     //! \brief Returns a string representation of the analysis, with the baseline text delimited by morpheme breaks
-    QString baselineSummary() const;
+    TextBit baselineSummary() const;
 
-    //! \brief Returns a string representation of the analysis, with the gloss text for WritingSystem \a ws delimited by morpheme breaks
-    QString glossSummary(const WritingSystem & ws) const;
+    //! \brief Returns a TextBit with the baseline text for the \a i -th morpheme. The id() of the TextBit is set to \a i
+    TextBit baselineText(int i) const;
+
+    //! \brief Returns a TextBit with the gloss for WritingSsytem \ws of the \a i -th morpheme. The id() of the TextBit is set to \a i
+    TextBit gloss(int i, const WritingSystem & ws) const;
 
     //! \brief Returns the text form id for the analysis
     qlonglong textFormId() const;

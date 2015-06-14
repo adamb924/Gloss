@@ -30,9 +30,15 @@ void AnalysisWidget::setupLayout()
         createInitializedLayout( mGlossItem->morphologicalAnalysis(mWritingSystem) );
 }
 
+void AnalysisWidget::allomorphDoubleClick(TextBit &bit)
+{
+    qlonglong allomorphIndex = bit.id();
+    editLexicalEntry( mGlossItem->morphologicalAnalysis(mWritingSystem)->allomorph(allomorphIndex)->id() );
+}
+
 void AnalysisWidget::createUninitializedLayout()
 {
-    clearWidgetsFromLayout();
+    clearWidgetsFromLayout(mLayout);
 
     QPushButton *createMle = new QPushButton(tr("Monomorphemic"), this);
     createMle->setToolTip(tr("Create monomorphemic lexical entry"));
@@ -50,14 +56,32 @@ void AnalysisWidget::createUninitializedLayout()
 
 void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analysis)
 {
-    clearWidgetsFromLayout();
+    clearWidgetsFromLayout(mLayout);
 
-    mLayout->addWidget( new ImmutableLabel( TextBit( analysis->baselineSummary() , mWritingSystem ) , false, this ) );
+    /// add the baseline representation
+    QHBoxLayout * baseLayout = new QHBoxLayout;
+    for(int i=0; i< analysis->allomorphCount(); i++)
+    {
+        ImmutableLabel * label = new ImmutableLabel( analysis->baselineText(i) , false );
+        baseLayout->addWidget( label );
+        connect( label, SIGNAL(doubleClick(TextBit&)), this, SLOT(allomorphDoubleClick(TextBit&)) );
+    }
+    baseLayout->addSpacerItem( new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+    mLayout->addLayout(baseLayout);
 
+    /// add each of the gloss lines
     const QList<WritingSystem> *glossLines = mProject->lexicalEntryGlossFields();
     for(int i=0; i<glossLines->count(); i++)
     {
-        mLayout->addWidget( new ImmutableLabel( TextBit( analysis->glossSummary(glossLines->at(i)), mWritingSystem ), false, this ) );
+        QHBoxLayout * hlayout = new QHBoxLayout;
+        for(int j=0; j< analysis->allomorphCount(); j++)
+        {
+            ImmutableLabel * label = new ImmutableLabel( analysis->gloss(j, glossLines->at(i)) , false );
+            hlayout->addWidget( label );
+            connect( label, SIGNAL(doubleClick(TextBit&)), this, SLOT(allomorphDoubleClick(TextBit&)) );
+        }
+        hlayout->addSpacerItem( new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+        mLayout->addLayout(hlayout);
     }
     for( int i=0; i<analysis->allomorphCount(); i++ )
     {
@@ -98,6 +122,11 @@ void AnalysisWidget::contextMenuEvent ( QContextMenuEvent * event )
 void AnalysisWidget::editLexicalEntry(QAction * action)
 {
     qlonglong allomorphId = action->data().toLongLong();
+    editLexicalEntry( allomorphId );
+}
+
+void AnalysisWidget::editLexicalEntry(qlonglong allomorphId)
+{
     qlonglong lexicalEntryId = mDbAdapter->lexicalEntryIdFromAllomorph(allomorphId);
 
     if( lexicalEntryId == -1 )
@@ -185,14 +214,22 @@ qlonglong AnalysisWidget::selectCandidateLexicalEntry()
         return -1;
 }
 
-void AnalysisWidget::clearWidgetsFromLayout()
+void AnalysisWidget::clearWidgetsFromLayout(QLayout * layout)
 {
-    if( mLayout->count() == 0 )
+    if( layout->count() == 0 )
         return;
     QLayoutItem * item;
-    while( ( item = mLayout->takeAt(0) ) != 0 )
+    while( ( item = layout->takeAt(0) ) != 0 )
     {
-        item->widget()->deleteLater();;
+        if( item->widget() != 0 )
+        {
+            item->widget()->deleteLater();
+        }
+        else if ( item->layout() != 0 )
+        {
+            clearWidgetsFromLayout(item->layout());
+            item->layout()->deleteLater();
+        }
         delete item;
     }
 }

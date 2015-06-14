@@ -79,5 +79,6 @@ void ImmutableLabel::updateStyle()
 
 void ImmutableLabel::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    emit doubleClick(event);
+    Q_UNUSED(event);
+    emit doubleClick(mTextBit);
 }

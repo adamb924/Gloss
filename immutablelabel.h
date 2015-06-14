@@ -22,7 +22,7 @@ public:
     ~ImmutableLabel();
 
 signals:
-    void doubleClick( QMouseEvent * event );
+    void doubleClick( TextBit & bit );
 
 public slots:
     void setCandidateNumber(GlossItem::CandidateNumber status);
