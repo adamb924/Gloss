@@ -255,6 +255,14 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     }
                 }
             }
+            else if ( name == "document" )  // <document>
+            {
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","export-filename") )
+                {
+                    mText->setExportFilename( attr.value("http://www.adambaker.org/gloss.php","export-filename").toString() );
+                }
+            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {

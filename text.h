@@ -50,6 +50,9 @@ public:
     QString name() const;
     void setName(const QString & name);
 
+    QString exportFilename() const;
+    void setExportFilename(const QString & filename);
+
     QString comment() const;
     void setComment(const QString & comment);
 
@@ -118,6 +121,7 @@ private:
     bool mChanged;
 
     QString mName;
+    QString mExportFilename;
     WritingSystem mBaselineWritingSystem;
     Project *mProject;
     DatabaseAdapter *mDbAdapter;

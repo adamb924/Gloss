@@ -77,6 +77,23 @@ void Text::setName(const QString & name)
     mName = name;
 }
 
+QString Text::exportFilename() const
+{
+    if( mExportFilename.isEmpty() )
+    {
+        return mName + ".flextext";
+    }
+    else
+    {
+        return mExportFilename;
+    }
+}
+
+void Text::setExportFilename(const QString &filename)
+{
+    mExportFilename = filename;
+}
+
 QString Text::comment() const
 {
     return mComment;

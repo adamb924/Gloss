@@ -39,6 +39,11 @@ bool FlexTextWriter::writeFile( const QString & filename )
     stream->writeStartElement("document");
     stream->writeAttribute("version", "2");
 
+    if( mIncludeGlossNamespace )
+    {
+        writeNamespaceAttribute("export-filename", mText->exportFilename() );
+    }
+
     serializeInterlinearText();
 
     stream->writeEndElement(); // document
