@@ -26,6 +26,7 @@
 #include "syntacticvocabularydialog.h"
 #include "writingsystemseditdialog.h"
 #include "importplaintextdialog.h"
+#include "textlistmodel.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -1303,7 +1304,9 @@ void MainWindow::setGuiElementsFromProject()
     }
 
     /// Project Texts
-    mTextCombo->addItems( mProject->textNames() );
+    TextListModel * textModel = new TextListModel(mProject);
+    mTextCombo->setModel( textModel );
+    connect( mProject, SIGNAL(textsChanged()), textModel, SLOT(dataChanged()) );
 
     connect( mProject, SIGNAL(currentViewChanged(int)), this, SLOT(setCurrentView(int)) );
     connect( mProject, SIGNAL(currentQuickViewChanged(int)), this, SLOT(setCurrentQuickView(int)) );

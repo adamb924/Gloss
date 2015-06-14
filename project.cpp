@@ -170,6 +170,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
         mTexts.insert(name, text);
         mTextPaths << filepathFromName(name);
         mChanged = true;
+        emit textsChanged();
         return text;
     }
     else
@@ -203,6 +204,7 @@ Text* Project::importFlexText(const QString & filePath,  const WritingSystem & w
         text->saveText(false,true,false);
         mTexts.insert(text->name(), text);
         mTextPaths << filePath;
+        emit textsChanged();
         return text;
     }
     else
@@ -221,7 +223,6 @@ Text* Project::textFromFlexText(const QString & filePath)
         if( !QFile::exists( filepathFromName(text->name()) ) )
             text->saveText(false,true,false);
         mTexts.insert(text->name(), text);
-        mTextPaths << filePath;
         return text;
     }
     else
@@ -383,6 +384,11 @@ QStringList Project::textNames() const
     return texts;
 }
 
+int Project::textCount() const
+{
+    return mTextPaths.count();
+}
+
 void Project::saveAndCloseText(Text *text)
 {
     text->saveText(false,true,false);
@@ -412,6 +418,7 @@ void Project::deleteText(QString textName)
         qWarning() << f.errorString() << path ;
 
     setChanged();
+    emit textsChanged();
 }
 
 QString Project::projectPath() const

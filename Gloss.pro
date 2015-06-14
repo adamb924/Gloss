@@ -104,7 +104,8 @@ SOURCES += main.cpp\
     annotationeditordialog.cpp \
     lingtextedit.cpp \
     punctuationdisplaywidget.cpp \
-    texttabwidget.cpp
+    texttabwidget.cpp \
+    textlistmodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -200,7 +201,8 @@ HEADERS  += mainwindow.h \
     annotationeditordialog.h \
     lingtextedit.h \
     punctuationdisplaywidget.h \
-    texttabwidget.h
+    texttabwidget.h \
+    textlistmodel.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \

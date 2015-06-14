@@ -65,6 +65,9 @@ public:
     //! \brief Returns a list of text names, sorted alphabetically.
     QStringList textNames() const;
 
+    //! \brief Returns the number of texts in the project
+    int textCount() const;
+
     QDir getTempDir() const;
 
     void removeTempDirectory();
@@ -137,6 +140,7 @@ public:
 signals:
     void currentViewChanged(int index);
     void currentQuickViewChanged(int index);
+    void textsChanged();
 
 public slots:
     void setView(int index);
