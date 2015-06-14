@@ -157,7 +157,7 @@ void GlossItem::setTextForm(const TextBit & textForm)
         mConcordance->updateGlossItemTextFormConcordance( this, textForm.id() );
 
         if( textUpdate )
-            mDbAdapter->clearMorphologicalAnalysisIfInconsistent(textForm.id(), textForm);
+            mDbAdapter->clearMorphologicalAnalysisIfInconsistent(textForm.id() );
 
         if( mMorphologicalAnalyses.contains( textForm.writingSystem() ) )
         {
@@ -179,7 +179,7 @@ void GlossItem::setTextFormText(const TextBit & textForm)
         if( mTextForms.value(textForm.writingSystem()).text() != textForm.text() )
         {
             mTextForms[textForm.writingSystem()].setText(textForm.text());
-            mDbAdapter->clearMorphologicalAnalysisIfInconsistent( textForm.id(), textForm );
+            mDbAdapter->clearMorphologicalAnalysisIfInconsistent( textForm.id() );
             emit textFormChanged(textForm);
             emit fieldsChanged();
         }

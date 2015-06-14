@@ -1055,7 +1055,7 @@ MorphologicalAnalysis * DatabaseAdapter::morphologicalAnalysisFromTextFormId( ql
     return analysis;
 }
 
-void DatabaseAdapter::clearMorphologicalAnalysisIfInconsistent(qlonglong textFormId , const TextBit &comparison) const
+void DatabaseAdapter::clearMorphologicalAnalysisIfInconsistent(qlonglong textFormId) const
 {
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("delete from MorphologicalAnalysisMembers where TextFormId=:TextFormId and (select Form from TextForms where _id=:TextFormId) != (select group_concat(Form,'') from ( select Form from MorphologicalAnalysisMembers,Allomorph where TextFormId=:TextFormId and Allomorph._id=AllomorphId order by AllomorphOrder));");
