@@ -57,7 +57,7 @@ void ImmutableLabel::setTextBit(const TextBit & bit)
 
 void ImmutableLabel::updateStyle()
 {
-    if( mTextBit.isNull() ) return;
+    if( mTextBit.writingSystem().isNull() ) return;
 
     QString color;
     if( mTechnicolor )
