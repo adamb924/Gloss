@@ -518,7 +518,7 @@ QSet<qlonglong> Project::getAllTextFormIds()
     QSet<qlonglong> ids;
     QSetIterator<QString> iter(mTextPaths);
     while(iter.hasNext())
-        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt'] return string( $x/@abg:id )" ) );
+        ids.unite( getSetOfNumbersFromTextQuery( iter.next(), "declare namespace abg = \"http://www.adambaker.org/gloss.php\"; declare variable $path external; for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt' or @type='punct'] return string( $x/@abg:id )" ) );
     return ids;
 }
 

@@ -733,7 +733,7 @@ void MainWindow::searchForTextFormById(qlonglong id)
                                 "declare variable $path external; "
                                 "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase[descendant::word/item[@abg:id='%1' and @type='txt']] "
                                 "let $line-number := string( $x/item[@type='segnum']/text() ) "
-                                "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='txt'] ) ) "
+                                "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and ( @type='txt' or @type='punct' )] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(id);
         model = new XQueryModel(query, mProject->textPaths(), this, foci);

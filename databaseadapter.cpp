@@ -1451,7 +1451,7 @@ void DatabaseAdapter::createTextFormIndex( const QSet<QString> * filePaths ) con
 {
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
             "declare variable $path external; "
-                           "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt']  "
+                           "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt' or @type='punct']  "
                           "let $line-number := string( $x/../../../../phrase/item[@type='segnum']/text() ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "TextFormIndex" , queryString , filePaths );
