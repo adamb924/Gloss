@@ -99,6 +99,8 @@ private slots:
     void setCurrentView(int index);
     void setCurrentQuickView(int index);
 
+    void textMetadataDialog();
+
     ///@}
 
     /** @name Text Methods

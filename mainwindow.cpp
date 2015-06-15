@@ -27,6 +27,7 @@
 #include "writingsystemseditdialog.h"
 #include "importplaintextdialog.h"
 #include "textlistmodel.h"
+#include "textmetadatadialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -108,6 +109,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect( ui->actionOptions, SIGNAL(triggered()), this, SLOT(projectOptions()) );
 
     connect( ui->actionSyntactic_elements, SIGNAL(triggered()), this, SLOT(syntacticElements()) );
+
+    connect( ui->actionText_metadata, SIGNAL(triggered()), this, SLOT(textMetadataDialog()) );
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
@@ -1367,6 +1370,13 @@ void MainWindow::setCurrentQuickView(int index)
 {
     ui->menuCurrent_quick_view->actions().at(index)->setChecked(true);
     mQuickViewCombo->setCurrentIndex(index);
+}
+
+void MainWindow::textMetadataDialog()
+{
+    TextMetadataDialog * dlg = new TextMetadataDialog(mProject, this);
+    dlg->exec();
+    mProject->setChanged();
 }
 
 InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, int linesPerScreen)

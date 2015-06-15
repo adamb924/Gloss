@@ -60,6 +60,7 @@
      <string>Texts</string>
     </property>
     <addaction name="actionOpen_text"/>
+    <addaction name="actionText_metadata"/>
     <addaction name="separator"/>
     <addaction name="actionImport_FlexText"/>
     <addaction name="actionImport_plain_text"/>
@@ -507,6 +508,11 @@
   <action name="actionSyntactic_elements">
    <property name="text">
     <string>Syntactic elements...</string>
+   </property>
+  </action>
+  <action name="actionText_metadata">
+   <property name="text">
+    <string>Text metadata...</string>
    </property>
   </action>
  </widget>

@@ -167,6 +167,9 @@ public:
     //! \brief Performs a search-and-replace operation on the baseline text of every open text
     void baselineSearchReplace( const TextBit & search , const TextBit & replace );
 
+    //! \brief Renames the text names \a oldName to \a newName. If there is no text called \a oldName, nothing happens.
+    void renameText( const QString & oldName, const QString & newName );
+
 private:
     //! \brief Reads a text from \a filePath (using FlexTextReader)
     Text* textFromFlexText(const QString & filePath);

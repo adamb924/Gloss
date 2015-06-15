@@ -105,7 +105,8 @@ SOURCES += main.cpp\
     lingtextedit.cpp \
     punctuationdisplaywidget.cpp \
     texttabwidget.cpp \
-    textlistmodel.cpp
+    textlistmodel.cpp \
+    textmetadatadialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -202,7 +203,8 @@ HEADERS  += mainwindow.h \
     lingtextedit.h \
     punctuationdisplaywidget.h \
     texttabwidget.h \
-    textlistmodel.h
+    textlistmodel.h \
+    textmetadatadialog.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -238,7 +240,8 @@ FORMS    += mainwindow.ui \
     lexiconlineform.ui \
     importplaintextdialog.ui \
     annotationtypeeditordialog.ui \
-    annotationeditordialog.ui
+    annotationeditordialog.ui \
+    textmetadatadialog.ui
 
 unix:INCLUDEPATH += "/usr/include/libxml2"
 

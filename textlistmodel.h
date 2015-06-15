@@ -1,18 +1,21 @@
 #ifndef TEXTLISTMODEL_H
 #define TEXTLISTMODEL_H
 
-#include <QAbstractListModel>
+#include <QAbstractTableModel>
 
 class Project;
 
-class TextListModel : public QAbstractListModel
+class TextListModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    TextListModel(const Project * project, QObject *parent = 0);
+    TextListModel(Project * project, QObject *parent = 0);
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
+    int columnCount(const QModelIndex & parent = QModelIndex()) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+    Qt::ItemFlags flags(const QModelIndex & index) const;
 
 signals:
 
@@ -20,7 +23,7 @@ public slots:
     void dataChanged();
 
 private:
-    const Project * mProject;
+    Project * mProject;
 
 };
 

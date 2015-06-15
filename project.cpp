@@ -997,6 +997,25 @@ void Project::baselineSearchReplace(const TextBit &search , const TextBit &repla
     }
 }
 
+void Project::renameText(const QString &oldName, const QString &newName)
+{
+    getTempDir().rename( QString("%1.flextext").arg(oldName), QString("%1.flextext").arg(newName) );
+
+    if( mTextPaths.remove(  filepathFromName(oldName) ) )
+    {
+        mTextPaths.insert( filepathFromName(newName) );
+    }
+
+    if( mTexts.contains(oldName) )
+    {
+        mTexts[oldName]->setName(newName);
+        mTexts.insert( newName, mTexts[oldName] );
+        mTexts.remove(oldName);
+    }
+
+    emit textsChanged();
+}
+
 QString Project::mediaPath(const QString &path) const
 {
     if( mOverrideMediaPath )
