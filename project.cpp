@@ -19,7 +19,6 @@
 #include <QFileDialog>
 
 #include "messagehandler.h"
-#include "xsltproc.h"
 #include "mainwindow.h"
 #include "flextextimporter.h"
 #include "annotationtype.h"
@@ -754,45 +753,6 @@ QStringList Project::getStringListFromXQuery(const QString & filepath, const QSt
     return result;
 }
 
-void Project::applyXslTransformationToTexts(const QString & xslFile, const QHash<QString,QString> & parameters)
-{
-    QStringList names = textNames();
-    QStringListIterator iter(names);
-    while(iter.hasNext())
-        applyXslTransformationToText( iter.next(), xslFile, parameters );
-}
-
-bool Project::applyXslTransformationToText(const QString & name, const QString & xslFile, const QHash<QString,QString> & parameters)
-{
-    QString currentPath = filepathFromName(name);
-    QString tempOutputPath = filepathFromName(name + "-output");
-    QString errorOutputPath = QDir::temp().absoluteFilePath(name + "error.txt");
-
-    Xsltproc transformation;
-    transformation.setStyleSheet( xslFile );
-    transformation.setXmlFilename( currentPath );
-    transformation.setErrorFilename( errorOutputPath );
-    transformation.setOutputFilename( tempOutputPath );
-    transformation.setParameters(parameters);
-    Xsltproc::ReturnValue retval = transformation.execute();
-
-    QFileInfo errorInfo(errorOutputPath);
-
-    if( retval != Xsltproc::Success )
-    {
-        qWarning () << retval;
-        return false;
-    }
-
-    if( errorInfo.size() > 0 )
-        QDesktopServices::openUrl(QUrl(errorOutputPath, QUrl::TolerantMode));
-
-    QFile::remove(currentPath);
-    QFile::rename(tempOutputPath, currentPath);
-
-    return true;
-}
-
 Concordance* Project::concordance()
 {
     return &mConcordance;
@@ -983,21 +943,6 @@ bool Project::overrideMediaPath() const
 void Project::setOverrideMediaPath(bool value)
 {
     mOverrideMediaPath = value;
-}
-
-void Project::setMetaLanguage(const WritingSystem &ws)
-{
-    mMetaLanguage = ws;
-}
-
-void Project::setDefaultGlossLanguage(const WritingSystem &ws)
-{
-    mDefaultGlossLanguage = ws;
-}
-
-void Project::setDefaultTextFormLanguage(const WritingSystem &ws)
-{
-    mDefaultTextFormLanguage = ws;
 }
 
 void Project::setMediaFolder(const QString &folder)
