@@ -17,7 +17,7 @@ class Sound : public QObject
 public:
     enum ReadBehavior { AsNeeded, AllAtOnce, AfterFirstRequest };
 
-    Sound( const QUrl & filename );
+    explicit Sound( const QUrl & filename );
     ~Sound();
 
     bool playSegment(qlonglong start, qlonglong end);

@@ -26,7 +26,6 @@ QVariant TextListModel::data(const QModelIndex &index, int role) const
 {
     if ( index.isValid() && ( role == Qt::DisplayRole || role == Qt::EditRole ) )
     {
-
         QStringList names = mProject->textNames();
         Q_ASSERT(index.row() < names.count());
         switch( index.column() )

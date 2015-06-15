@@ -21,7 +21,7 @@ class LineNumberGraphicsItem : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
 public:
-    LineNumberGraphicsItem(int lineNumber);
+    explicit LineNumberGraphicsItem(int lineNumber);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

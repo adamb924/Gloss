@@ -11,7 +11,7 @@ Focus::Focus(Type t, qlonglong i) : mType(t), mIndex(i)
 {
 }
 
-Focus::Focus(Focus::Type t, const QString &bit) : mType(t), mString(bit)
+Focus::Focus(Focus::Type t, const QString &bit) : mType(t), mIndex(-1), mString(bit)
 {
     if( mType != Focus::WholeStringSearch && mType != Focus::SubStringSearch)
     {

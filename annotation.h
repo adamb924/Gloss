@@ -8,7 +8,7 @@ class Annotation
 public:
     Annotation();
     Annotation(const TextBit & header, const TextBit & text);
-    Annotation(const TextBit & text);
+    explicit Annotation(const TextBit & text);
 
     TextBit header() const;
     TextBit text() const;

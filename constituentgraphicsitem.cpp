@@ -22,11 +22,11 @@ ConstituentGraphicsItem::ConstituentGraphicsItem(const QString & label, const QL
     QGraphicsItem(parent),
     mDaughters(daughters),
     mLabel(label),
-    mElement(element)
+    mElement(element),
+    mFont("Times New Roman",12),
+    mStalkHeight(10),
+    mPenWidth(2)
 {
-    mStalkHeight = 10;
-    mPenWidth = 2;
-    mFont = QFont("Times New Roman",12);
     mFontHeight = QFontMetrics(mFont).height();
     mDepth =  maxDepth();
 

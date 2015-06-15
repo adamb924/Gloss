@@ -34,6 +34,7 @@ MorphologicalAnalysis& MorphologicalAnalysis::operator=(const MorphologicalAnaly
     mWritingSystem = other.mWritingSystem;
     mTextFormId = other.mTextFormId;
     mAllomorphs = other.mAllomorphs;
+    mConcordance = other.mConcordance;
     return *this;
 }
 

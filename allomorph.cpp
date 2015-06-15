@@ -7,7 +7,7 @@
 
 
 Allomorph::Allomorph(QUuid guid) :
-    QObject(), mType(Allomorph::Null), mTextBit( TextBit() ), mId(-1), mGuid(guid)
+    QObject(), mType(Allomorph::Null), mTextBit( TextBit() ), mId(-1), mLexicalEntryId(-1), mGuid(guid)
 {
     if( mGuid.isNull() )
     {

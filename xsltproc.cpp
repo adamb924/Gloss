@@ -17,16 +17,15 @@
 #include <QList>
 #include <QtDebug>
 
-Xsltproc::Xsltproc()
+Xsltproc::Xsltproc() :
+    mErrorRedirect(false)
 {
     exsltRegisterAll();
     xmlSubstituteEntitiesDefault(1);
     xmlLoadExtDtdDefaultValue = 1;
-
     mStylesheet = 0;
     mOutput = 0;
     mXml = 0;
-
     mParams = 0;
     mNParams = 0;
 }

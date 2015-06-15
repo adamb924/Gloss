@@ -13,7 +13,7 @@ class QString;
 class SqlQueryWriter
 {
 public:
-    SqlQueryWriter(const QSqlQuery & query);
+    explicit SqlQueryWriter(const QSqlQuery & query);
 
     bool serialize(const QString & filePath);
 

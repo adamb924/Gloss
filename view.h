@@ -16,7 +16,7 @@ class View
 public:
     enum Type { Full, Quick };
 
-    View(const QString & name);
+    explicit View(const QString & name);
     ~View();
 
     QString name() const;

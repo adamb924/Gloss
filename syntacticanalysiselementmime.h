@@ -16,8 +16,8 @@ class SyntacticAnalysisElementMime : public QMimeData
 {
     Q_OBJECT
 public:
-    SyntacticAnalysisElementMime(SyntacticAnalysisElement * elements);
-    SyntacticAnalysisElementMime(const QList<SyntacticAnalysisElement *> & elements);
+    explicit SyntacticAnalysisElementMime(SyntacticAnalysisElement * elements);
+    explicit SyntacticAnalysisElementMime(const QList<SyntacticAnalysisElement *> & elements);
 
     QList<SyntacticAnalysisElement *> elements() const;
 

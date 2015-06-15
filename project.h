@@ -35,7 +35,7 @@ class Project : public QObject
 
     Q_OBJECT
 public:
-    Project(MainWindow *mainWindow);
+    explicit Project(MainWindow *mainWindow);
     ~Project();
 
     //! \brief Result codes for opening texts

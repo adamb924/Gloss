@@ -22,7 +22,7 @@ typedef QListIterator<Allomorph*> AllomorphPointerIterator;
 class MorphologicalAnalysis
 {
 public:
-    MorphologicalAnalysis(Concordance * concordance);
+    explicit MorphologicalAnalysis(Concordance * concordance);
     MorphologicalAnalysis(const TextBit & textForm, Concordance *concordance);
     MorphologicalAnalysis(qlonglong textFormId, const WritingSystem & ws, Concordance * concordance);
     MorphologicalAnalysis(const MorphologicalAnalysis & other, Concordance *concordance);

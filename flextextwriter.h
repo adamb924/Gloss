@@ -22,7 +22,7 @@ class Annotation;
 class FlexTextWriter
 {
 public:
-    FlexTextWriter(Text *text);
+    explicit FlexTextWriter(Text *text);
 
     bool writeFile( const QString & filename );
 
@@ -33,7 +33,7 @@ private:
     Text *mText;
     bool mVerboseOutput;
     bool mIncludeGlossNamespace;
-    QXmlStreamWriter * stream;
+    QXmlStreamWriter * mStream;
 
     //! \brief Serialize the interlinear text (i.e., <interlinear-text> to the XML stream
     bool serializeInterlinearText() const;

@@ -23,7 +23,7 @@ class Allomorph : public QObject
 public:
     enum Type { Stem,Prefix,Suffix,Infix,BoundStem,Proclitic,Enclitic,Simulfix,Suprafix,Null };
 
-    Allomorph(QUuid guid = QUuid());
+    explicit Allomorph(QUuid guid = QUuid());
     Allomorph(qlonglong id, qlonglong lexicalEntryId, const TextBit & bit, Type type, QUuid guid = QUuid() );
     Allomorph(qlonglong id, qlonglong lexicalEntryId, const TextBit & bit, const TextBitHash & glosses , Type type , QUuid guid = QUuid());
     Allomorph(const Allomorph & other);

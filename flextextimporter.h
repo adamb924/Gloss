@@ -15,7 +15,7 @@ class WritingSystem;
 class FlexTextImporter : public FlexTextReader
 {
 public:
-    FlexTextImporter(Text * text);
+    explicit FlexTextImporter(Text * text);
 
     FlexTextReader::Result readFile(const QString & filepath);
 };
