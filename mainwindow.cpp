@@ -279,6 +279,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::projectClose()
 {
+    mTextCombo->setModel( new QStringListModel );
+
     QList<QMdiSubWindow *> windows = ui->mdiArea->subWindowList();
     while( windows.count() > 0 )
         ui->mdiArea->removeSubWindow( windows.takeAt(0) );
