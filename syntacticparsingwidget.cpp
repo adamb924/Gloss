@@ -11,6 +11,7 @@
 #include <QMenu>
 
 #include "text.h"
+#include "phrase.h"
 #include "tab.h"
 #include "project.h"
 #include "worddisplaywidget.h"

@@ -1,5 +1,4 @@
 #include "textbit.h"
-#include "writingsystem.h"
 
 TextBit::TextBit() : mText(""), mWritingSystem( WritingSystem() ), mId(-1)
 {

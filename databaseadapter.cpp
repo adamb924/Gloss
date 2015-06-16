@@ -9,7 +9,6 @@
 #include <QProgressDialog>
 
 #include "textbit.h"
-#include "writingsystem.h"
 #include "messagehandler.h"
 #include "allomorph.h"
 #include "morphologicalanalysis.h"

@@ -3,7 +3,6 @@
 
 #include <QList>
 
-#include "writingsystem.h"
 #include "createlexicalentrydialog.h"
 #include "databaseadapter.h"
 #include "lingedit.h"

@@ -184,11 +184,6 @@ QString Project::filepathFromName(const QString & name) const
     return getTempDir().absoluteFilePath( QString("%1.flextext").arg(name) );
 }
 
-QString Project::nameFromFilepath(const QString & path) const
-{
-    return QFileInfo(path).baseName();
-}
-
 Text* Project::importFlexText(const QString & filePath,  const WritingSystem & ws)
 {
     QFileInfo info(filePath);
@@ -357,7 +352,7 @@ Project::OpenResult Project::openText(const QString & name)
 
 Project::OpenResult Project::openTextFromPath(const QString & path)
 {
-    if( mTexts.contains( nameFromFilepath(path) ) )
+    if( mTexts.contains( Text::textNameFromPath(path) ) )
         return Project::Success;
     if( QFile::exists( path ) )
     {

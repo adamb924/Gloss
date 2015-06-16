@@ -1,5 +1,6 @@
 #include "flextextreader.h"
 
+#include "phrase.h"
 #include "text.h"
 #include "glossitem.h"
 #include "morphologicalanalysis.h"

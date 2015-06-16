@@ -59,7 +59,7 @@ public:
     void clearGlossItems();
 
     //! \brief Returns the index of GlossItem \a item
-    int indexOfGlossItem(GlossItem *item) const;
+    int indexOfGlossItem(const GlossItem *item) const;
 
     //! \brief Connects \a item to the concordance, and relevant signals/slots in Text and Phrase. Returns \a item.
     GlossItem* connectGlossItem(GlossItem * item);

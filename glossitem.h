@@ -15,7 +15,6 @@
 #include <QHash>
 #include <QList>
 
-#include "writingsystem.h"
 #include "textbit.h"
 #include "allomorph.h"
 #include "morphologicalanalysis.h"

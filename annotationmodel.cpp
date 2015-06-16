@@ -1,5 +1,6 @@
 #include "annotationmodel.h"
 #include "text.h"
+#include "phrase.h"
 
 #include <QtDebug>
 

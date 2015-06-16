@@ -11,7 +11,6 @@
 
 class DatabaseAdapter;
 
-#include "writingsystem.h"
 #include "textbit.h"
 
 namespace Ui {

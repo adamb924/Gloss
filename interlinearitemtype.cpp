@@ -1,5 +1,4 @@
 #include "interlinearitemtype.h"
-#include "writingsystem.h"
 
 InterlinearItemType::InterlinearItemType()
 {

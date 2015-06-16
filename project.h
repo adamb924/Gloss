@@ -177,9 +177,6 @@ private:
     //! \brief Opens the text at path \a path
     OpenResult openTextFromPath(const QString & path);
 
-    //! \brief Returns the name of a text given \a path. This is simply QFileInfo::baseName()
-    QString nameFromFilepath(const QString & path) const;
-
 signals:
     //! \brief Emitted whenever a text is added to or deleted from the project
     void textsChanged();

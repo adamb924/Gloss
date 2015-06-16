@@ -232,7 +232,7 @@ void Phrase::connectToText()
     connect( this, SIGNAL(requestRemovePhrase(Phrase*)), mText, SLOT(removePhrase(Phrase*)) );
 }
 
-int Phrase::indexOfGlossItem(GlossItem * item) const
+int Phrase::indexOfGlossItem(const GlossItem * item) const
 {
-    return mGlossItems.indexOf(item);
+    return mGlossItems.indexOf( const_cast<GlossItem*>(item) );
 }

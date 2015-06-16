@@ -14,7 +14,6 @@
 
 #include <QtDebug>
 
-#include "writingsystem.h"
 #include "project.h"
 #include "databaseadapter.h"
 #include "phrase.h"
@@ -28,11 +27,6 @@
 #include "flextextreader.h"
 #include "syntacticanalysis.h"
 
-Text::Text() :
-    mSound(0), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(false), mChanged(false), mBaselineWritingSystem(WritingSystem()), mProject(0), mDbAdapter(0)
-{
-}
-
 Text::Text(const WritingSystem & ws, const QString & name, Project *project) :
     mSound(0), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(true), mChanged(false), mName(name), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter())
 {
@@ -40,16 +34,6 @@ Text::Text(const WritingSystem & ws, const QString & name, Project *project) :
 
 Text::Text(const QString & filePath, Project *project) :
     mSound(0), mValid(true), mChanged(false), mName(textNameFromPath(filePath)), mProject(project), mDbAdapter(mProject->dbAdapter())
-{
-    FlexTextReader reader(this);
-    mReadResult = reader.readFile(filePath, true);
-    if( mReadResult != FlexTextReader::FlexTextReadSuccess )
-        mValid = false;
-    mChanged = false;
-}
-
-Text::Text(const QString & filePath, const WritingSystem & ws, Project *project) :
-    mSound(0), mValid(true), mChanged(false), mName(textNameFromPath(filePath)), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter())
 {
     FlexTextReader reader(this);
     mReadResult = reader.readFile(filePath, true);
@@ -115,12 +99,6 @@ bool Text::isChanged() const
 WritingSystem Text::baselineWritingSystem() const
 {
     return mBaselineWritingSystem;
-}
-
-void Text::setBaselineWritingSystem(const WritingSystem & ws)
-{
-    mBaselineWritingSystem = ws;
-    markAsChanged();
 }
 
 const Project *Text::project() const
@@ -326,19 +304,16 @@ Text::MergeTranslationResult Text::mergeTranslation(const QString & filename, co
     {
         if( QFile::rename(tempOutputPath, currentPath) )
         {
-            //            QMessageBox::information(0, tr("Success!"), tr("The merge has completed succesfully."));
             markAsChanged();
             return Success;
         }
         else
         {
-            //            QMessageBox::warning(0, tr("Error"), tr("The merge file is stuck with the filename %1, but you can fix this yourself. The old flextext file has been deleted.").arg(tempOutputPath));
             return MergeStuckOldFileDeleted;
         }
     }
     else
     {
-        //        QMessageBox::warning(0, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with the filename %1, but you can fix this yourself.").arg(tempOutputPath));
         return MergeStuckOldFileStillThere;
     }
 }
@@ -390,18 +365,13 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
     return MergeEafSuccess;
 }
 
-QString Text::audioFilePath() const
+QString Text::textNameFromPath(const QString &path)
 {
-    return mAudioFileURL.toLocalFile();
+    QFileInfo info(path);
+    return info.baseName();
 }
 
-void Text::setAudioFilePath(const QUrl & path)
-{
-    mAudioFileURL = path;
-    markAsChanged();
-}
-
-void Text::setBaselineTextForLine( int i, const QString & text )
+void Text::setBaselineTextForPhrase( int i, const QString & text )
 {
     if( i >= mPhrases.count() )
         return;
@@ -471,16 +441,16 @@ void Text::requestGuiRefresh( Phrase * phrase )
         emit phraseRefreshNeeded( lineNumber );
 }
 
-void Text::removeLine( int lineNumber )
+void Text::removeLine(int index )
 {
-    if( lineNumber < mPhrases.count() )
+    if( index < mPhrases.count() )
     {
-        removePhrase( mPhrases.at(lineNumber) );
+        removePhrase( mPhrases.at(index) );
         markAsChanged();
     }
 }
 
-void Text::findGlossItemLocation(GlossItem *glossItem, int & line, int & position) const
+void Text::findGlossItemLocation(const GlossItem *glossItem, int & line, int & position) const
 {
     line = -1;
     position = -1;

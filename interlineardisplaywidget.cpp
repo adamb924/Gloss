@@ -17,7 +17,6 @@
 #include "focus.h"
 #include "annotationmarkwidget.h"
 #include "tab.h"
-#include "writingsystem.h"
 #include "immutablelabel.h"
 #include "punctuationdisplaywidget.h"
 
@@ -232,7 +231,7 @@ void InterlinearDisplayWidget::editLine(int lineNumber)
     dialog.setWindowTitle(tr("Edit baseline text - Line %1").arg(lineNumber+1));
     if( dialog.exec() == QDialog::Accepted )
     {
-        mText->setBaselineTextForLine(lineNumber, dialog.text() );
+        mText->setBaselineTextForPhrase(lineNumber, dialog.text() );
         setLayoutFromText();
     }
 }
