@@ -167,7 +167,6 @@ void AnalysisWidget::enterAnalysis()
 void AnalysisWidget::createMonomorphemicLexicalEntry()
 {
     qlonglong lexicalEntryId = selectCandidateLexicalEntry();
-    /// @todo when is this ever invoked?
     if( lexicalEntryId == -1 )
     {
         CreateLexicalEntryDialog dialog( textBit(), true, true, mGlossItem, mProject, this);

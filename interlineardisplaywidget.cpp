@@ -330,8 +330,7 @@ void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
             wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
         }
 
-        /// @todo This seems to be the bug
-        // add another list to mWordDisplayWidgets if necessary
+        /// add another list to mWordDisplayWidgets if necessary
         while( i >= mWordDisplayWidgets.count() )
             mWordDisplayWidgets.append( QList<QWidget*>() );
         mWordDisplayWidgets[i].append(wdw);
