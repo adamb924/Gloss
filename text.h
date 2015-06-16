@@ -87,7 +87,7 @@ public:
     void setAudioFilePath(const QUrl & path);
 
     void setBaselineTextForLine( int i, const QString & text );
-    QString baselineTextForLine( int i );
+    QString baselineTextForLine( int i ) const;
 
     void setSound(const QUrl & filename);
 

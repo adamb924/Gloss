@@ -75,6 +75,7 @@ QString Text::name() const
 void Text::setName(const QString & name)
 {
     mName = name;
+    markAsChanged();
 }
 
 QString Text::exportFilename() const
@@ -92,6 +93,7 @@ QString Text::exportFilename() const
 void Text::setExportFilename(const QString &filename)
 {
     mExportFilename = filename;
+    markAsChanged();
 }
 
 QString Text::comment() const
@@ -102,6 +104,7 @@ QString Text::comment() const
 void Text::setComment(const QString & comment)
 {
     mComment = comment;
+    markAsChanged();
 }
 
 bool Text::isChanged() const
@@ -117,6 +120,7 @@ WritingSystem Text::baselineWritingSystem() const
 void Text::setBaselineWritingSystem(const WritingSystem & ws)
 {
     mBaselineWritingSystem = ws;
+    markAsChanged();
 }
 
 const Project *Text::project() const
@@ -138,6 +142,7 @@ void Text::clearGlossItems()
 {
     qDeleteAll(mPhrases);
     mPhrases.clear();
+    markAsChanged();
 }
 
 void Text::setGlossItemsFromBaseline(const QString & content, const QRegularExpression & delimiter)
@@ -195,6 +200,7 @@ void Text::setGlossItemsFromBaseline(const QString & content, const QRegularExpr
         progress.setValue(lines.count());
     }
     emit glossItemsChanged();
+    markAsChanged();
 }
 
 QHash<QString, SyntacticAnalysis *> *Text::syntacticAnalyses()
@@ -243,6 +249,7 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
     }
 
     emit phraseRefreshNeeded( mPhrases.indexOf(phrase) );
+    markAsChanged();
 }
 
 void Text::saveText(bool verboseOutput, bool glossNamespace, bool saveAnyway)
@@ -320,6 +327,7 @@ Text::MergeTranslationResult Text::mergeTranslation(const QString & filename, co
         if( QFile::rename(tempOutputPath, currentPath) )
         {
             //            QMessageBox::information(0, tr("Success!"), tr("The merge has completed succesfully."));
+            markAsChanged();
             return Success;
         }
         else
@@ -390,6 +398,7 @@ QString Text::audioFilePath() const
 void Text::setAudioFilePath(const QUrl & path)
 {
     mAudioFileURL = path;
+    markAsChanged();
 }
 
 void Text::setBaselineTextForLine( int i, const QString & text )
@@ -397,9 +406,10 @@ void Text::setBaselineTextForLine( int i, const QString & text )
     if( i >= mPhrases.count() )
         return;
     setLineOfGlossItems( mPhrases.at(i) , text );
+    markAsChanged();
 }
 
-QString Text::baselineTextForLine( int i )
+QString Text::baselineTextForLine( int i ) const
 {
     if( i >= mPhrases.count() )
         return "";
@@ -415,6 +425,8 @@ void Text::setSound(const QUrl & filename)
 
     if( QFileInfo::exists(mAudioFileURL.toLocalFile()) )
         mSound = new Sound(mAudioFileURL);
+
+    markAsChanged();
 }
 
 bool Text::playSoundForLine( int lineNumber )
@@ -464,6 +476,7 @@ void Text::removeLine( int lineNumber )
     if( lineNumber < mPhrases.count() )
     {
         removePhrase( mPhrases.at(lineNumber) );
+        markAsChanged();
     }
 }
 
@@ -511,6 +524,8 @@ void Text::setFollowingInterpretations( GlossItem *glossItem )
             }
         }
     }
+
+    markAsChanged();
 }
 
 void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
@@ -539,6 +554,8 @@ void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
             }
         }
     }
+
+    markAsChanged();
 }
 
 void Text::matchFollowingTextForms(GlossItem *glossItem, const WritingSystem & ws )
@@ -567,6 +584,8 @@ void Text::matchFollowingTextForms(GlossItem *glossItem, const WritingSystem & w
             }
         }
     }
+
+    markAsChanged();
 }
 
 void Text::matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws )
@@ -595,6 +614,8 @@ void Text::matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws 
             }
         }
     }
+
+    markAsChanged();
 }
 
 void Text::newLineStartingHere(GlossItem *glossItem)
@@ -630,6 +651,7 @@ void Text::noNewLineStartingHere(GlossItem *glossItem)
     }
 
     removePhrase(mPhrases[phraseIndex]); /// this will then emit the signals necessary for a refresh, etc.
+    markAsChanged();
 }
 
 void Text::baselineSearchReplace( const TextBit & search , const TextBit & replace )
@@ -644,6 +666,7 @@ void Text::baselineSearchReplace( const TextBit & search , const TextBit & repla
             }
         }
     }
+    markAsChanged();
 }
 
 void Text::registerPhrasalGlossChange(Phrase * thisPhrase, const TextBit & bit)
@@ -651,6 +674,7 @@ void Text::registerPhrasalGlossChange(Phrase * thisPhrase, const TextBit & bit)
     int lineNumber = mPhrases.indexOf(thisPhrase);
     if( lineNumber != -1 )
         emit phrasalGlossChanged(lineNumber, bit);
+    markAsChanged();
 }
 
 void Text::removePhrase( Phrase * phrase )
