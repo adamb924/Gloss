@@ -119,13 +119,13 @@ public:
     ///@{
 public slots:
     //! \brief Removes phrase \a index
-    void removeLine( int index );
+    void removePhrase( int index );
 
     //! \brief Creates a new Phrase, splitting the Phrase that contains \a glossItem into two, with \a glossItem beginning the new phrase.
-    void newLineStartingHere(GlossItem * glossItem);
+    void newPhraseStartingHere(GlossItem * glossItem);
 
     //! \brief Removes the Phrase containing \a glossItem, placing those GlossItem objects at the end of the preceding phrase.
-    void noNewLineStartingHere(GlossItem * glossItem);
+    void noNewPhraseStartingHere(GlossItem * glossItem);
 
 private slots:
     //! \brief If \a thisPhrase is part of the text, emits phrasalGlossChanged()
@@ -151,7 +151,7 @@ public:
     void setBaselineTextForPhrase( int i, const QString & text );
 
     //! \brief Returns the baseline text for phrase \a i of the text
-    QString baselineTextForLine( int i ) const;
+    QString baselineTextOfPhrase( int i ) const;
 
     //! \brief Searches for \a glossItem and sets \a line to the phrase index and \a position to the position of the GlossItem within the phrase. All values are 0-indexed. If \a glossItem is not found, \a line and \a position are both set to -1.
     void findGlossItemLocation(const GlossItem *glossItem, int & line, int & position) const;

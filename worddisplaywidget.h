@@ -93,8 +93,8 @@ signals:
     void mergeGlossItemWithNext( GlossItem *glossItem );
     void mergeGlossItemWithPrevious( GlossItem *glossItem );
 
-    void requestNewLineFromHere( GlossItem * glossItem );
-    void requestNoLineFromHere( GlossItem * glossItem );
+    void requestNewPhraseFromHere( GlossItem * glossItem );
+    void requestNoPhraseFromHere( GlossItem * glossItem );
 
     void requestInterpretationSearch(qlonglong id);
     void requestTextFormSearch(qlonglong id);
@@ -104,7 +104,7 @@ signals:
 
     void requestRemoveGlossItem( GlossItem *glossItem );
 
-    void requestApproveLine( WordDisplayWidget * wdw );
+    void requestApprovePhrase( WordDisplayWidget * wdw );
     void requestLeftGlossItem( WordDisplayWidget * wdw );
     void requestRightGlossItem( WordDisplayWidget * wdw );
     void requestPlaySound( WordDisplayWidget * wdw );
@@ -121,7 +121,7 @@ private slots:
     void annotationMarkActivated( const QString & key );
 
     void playSound();
-    void approveLine();
+    void approvePhrase();
     void rightGlossItem();
     void leftGlossItem();
 
@@ -176,8 +176,8 @@ private slots:
 
     void editBaselineTextForm();
 
-    void beginNewLineHere();
-    void noNewLineHere();
+    void beginNewPhraseHere();
+    void noNewPhraseHere();
 };
 
 #endif // WORDDISPLAYWIDGET_H

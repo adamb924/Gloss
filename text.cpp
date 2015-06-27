@@ -379,7 +379,7 @@ void Text::setBaselineTextForPhrase( int i, const QString & text )
     markAsChanged();
 }
 
-QString Text::baselineTextForLine( int i ) const
+QString Text::baselineTextOfPhrase( int i ) const
 {
     if( i >= mPhrases.count() )
         return "";
@@ -441,7 +441,7 @@ void Text::requestGuiRefresh( Phrase * phrase )
         emit phraseRefreshNeeded( lineNumber );
 }
 
-void Text::removeLine(int index )
+void Text::removePhrase(int index )
 {
     if( index < mPhrases.count() )
     {
@@ -588,7 +588,7 @@ void Text::matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws 
     markAsChanged();
 }
 
-void Text::newLineStartingHere(GlossItem *glossItem)
+void Text::newPhraseStartingHere(GlossItem *glossItem)
 {
     int startingPhrase, startingGlossItem;
     findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
@@ -608,7 +608,7 @@ void Text::newLineStartingHere(GlossItem *glossItem)
     markAsChanged();
 }
 
-void Text::noNewLineStartingHere(GlossItem *glossItem)
+void Text::noNewPhraseStartingHere(GlossItem *glossItem)
 {
     int phraseIndex, glossItemIndex;
     findGlossItemLocation(glossItem, phraseIndex, glossItemIndex );

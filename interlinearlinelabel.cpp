@@ -22,14 +22,14 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
     QMenu menu(this);
 
     menu.addAction(tr("Approve all"), this, SLOT(emitApproveAll()) );
-    menu.addAction(tr("Edit baseline text"), this, SLOT(emitEditLine()) );
+    menu.addAction(tr("Edit baseline text"), this, SLOT(emitEditPhrase()) );
 
     // this seems like the most intuitive thing to me, from a user interface standpoint
     QAction *playSound = menu.addAction(tr("Play sound"), this, SLOT(emitPlaySound()) );
     if( !mSoundAvailable )
         playSound->setEnabled(false);
 
-    menu.addAction(tr("Remove line"), this, SLOT(emitRemoveLine()) );
+    menu.addAction(tr("Remove line"), this, SLOT(emitRemovePhrase()) );
 
     menu.exec(event->globalPos());
 }
@@ -50,12 +50,12 @@ void InterlinearLineLabel::emitPlaySound()
     emit playSound(mLineNumber);
 }
 
-void InterlinearLineLabel::emitEditLine()
+void InterlinearLineLabel::emitEditPhrase()
 {
     emit editLine(mLineNumber);
 }
 
-void InterlinearLineLabel::emitRemoveLine()
+void InterlinearLineLabel::emitRemovePhrase()
 {
     if( QMessageBox::Yes == QMessageBox::question(this, tr("Confirm deletion"), tr("Are you sure you want to remove this line? This cannot be undone."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) )
         emit removeLine(mLineNumber);

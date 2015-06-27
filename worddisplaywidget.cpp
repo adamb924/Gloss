@@ -127,11 +127,11 @@ void WordDisplayWidget::setupShortcuts()
     connect( editBaseline, SIGNAL(triggered()), this, SLOT(editBaselineText()) );
     addAction(editBaseline);
 
-    QAction *approveLine = new QAction(this);
-    approveLine->setShortcut( QKeySequence("Ctrl+Shift+A") );
-    approveLine->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect( approveLine, SIGNAL(triggered()), this, SLOT(approveLine()) );
-    addAction(approveLine);
+    QAction *approvePhrase = new QAction(this);
+    approvePhrase->setShortcut( QKeySequence("Ctrl+Shift+A") );
+    approvePhrase->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect( approvePhrase, SIGNAL(triggered()), this, SLOT(approvePhrase()) );
+    addAction(approvePhrase);
 
     QAction *rightGlossItem = new QAction(this);
     rightGlossItem->setShortcut( QKeySequence("Alt+Right") );
@@ -253,8 +253,8 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 
     menu->addSeparator();
 
-    menu->addAction(tr("Begin new line here"), this, SLOT(beginNewLineHere()));
-    menu->addAction(tr("Merge this line with previous"), this, SLOT(noNewLineHere()));
+    menu->addAction(tr("Begin new line here"), this, SLOT(beginNewPhraseHere()));
+    menu->addAction(tr("Merge this line with previous"), this, SLOT(noNewPhraseHere()));
 
     menu->addSeparator();
 
@@ -1094,9 +1094,9 @@ void WordDisplayWidget::guessGloss( const WritingSystem & ws )
     }
 }
 
-void WordDisplayWidget::approveLine()
+void WordDisplayWidget::approvePhrase()
 {
-    emit requestApproveLine(this);
+    emit requestApprovePhrase(this);
 }
 
 void WordDisplayWidget::rightGlossItem()
@@ -1137,14 +1137,14 @@ void WordDisplayWidget::editBaselineTextForm()
     }
 }
 
-void WordDisplayWidget::beginNewLineHere()
+void WordDisplayWidget::beginNewPhraseHere()
 {
-    emit requestNewLineFromHere( mGlossItem );
+    emit requestNewPhraseFromHere( mGlossItem );
 }
 
-void WordDisplayWidget::noNewLineHere()
+void WordDisplayWidget::noNewPhraseHere()
 {
-    emit requestNoLineFromHere( mGlossItem );
+    emit requestNoPhraseFromHere( mGlossItem );
 }
 
 void WordDisplayWidget::annotationMarkActivated( const QString & key )

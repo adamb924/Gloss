@@ -18,13 +18,13 @@ private:
     void contextMenuEvent ( QContextMenuEvent * event );
 
 signals:
-    void requestNewLineFromHere( GlossItem * glossItem );
-    void requestNoLineFromHere( GlossItem * glossItem );
+    void requestNewPhraseFromHere( GlossItem * glossItem );
+    void requestNoPhraseFromHere( GlossItem * glossItem );
 
 private slots:
     void updateDisplay();
-    void beginNewLineHere();
-    void noNewLineHere();
+    void beginNewPhraseHere();
+    void noNewPhraseHere();
     void editBaselineTextForm();
     void editBaselineText();
 };

@@ -31,8 +31,8 @@ private:
 private slots:
     void emitApproveAll();
     void emitPlaySound();
-    void emitEditLine();
-    void emitRemoveLine();
+    void emitEditPhrase();
+    void emitRemovePhrase();
 
 };
 

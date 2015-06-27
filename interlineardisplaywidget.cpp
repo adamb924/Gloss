@@ -60,7 +60,7 @@ void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
     connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
     connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));
-    connect(lineNumber, SIGNAL(removeLine(int)), mText, SLOT(removeLine(int)) );
+    connect(lineNumber, SIGNAL(removeLine(int)), mText, SLOT(removePhrase(int)) );
 
     flowLayout->addWidget(lineNumber);
     mLineLabels.insert(i, lineNumber);
@@ -227,7 +227,7 @@ void InterlinearDisplayWidget::playSound(int lineNumber)
 void InterlinearDisplayWidget::editLine(int lineNumber)
 {
     // Launch a dialog requesting input
-    GenericTextInputDialog dialog( TextBit( mText->baselineTextForLine(lineNumber) , mText->baselineWritingSystem() ) , this);
+    GenericTextInputDialog dialog( TextBit( mText->baselineTextOfPhrase(lineNumber) , mText->baselineWritingSystem() ) , this);
     dialog.setWindowTitle(tr("Edit baseline text - Line %1").arg(lineNumber+1));
     if( dialog.exec() == QDialog::Accepted )
     {
@@ -350,7 +350,7 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(mergeGlossItemWithPrevious(GlossItem*)), phrase, SLOT(mergeGlossItemWithPrevious(GlossItem*)));
     connect( wdw, SIGNAL(requestRemoveGlossItem(GlossItem*)), phrase, SLOT(removeGlossItem(GlossItem*)));
 
-    connect( wdw, SIGNAL(requestApproveLine(WordDisplayWidget*)), this, SLOT(approveAll(WordDisplayWidget*)) );
+    connect( wdw, SIGNAL(requestApprovePhrase(WordDisplayWidget*)), this, SLOT(approveAll(WordDisplayWidget*)) );
     connect( wdw, SIGNAL(requestPlaySound(WordDisplayWidget*)), this, SLOT(playSound(WordDisplayWidget*)) );
     connect( wdw, SIGNAL(requestLeftGlossItem(WordDisplayWidget*)), this, SLOT(leftGlossItem(WordDisplayWidget*)));
     connect( wdw, SIGNAL(requestRightGlossItem(WordDisplayWidget*)), this, SLOT(rightGlossItem(WordDisplayWidget*)));
@@ -360,8 +360,8 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
     connect( wdw, SIGNAL(requestSetFollowingTextForms(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingTextForms(GlossItem*,WritingSystem)) );
     connect( wdw, SIGNAL(requestSetFollowingGlosses(GlossItem*,WritingSystem)), mText, SLOT(matchFollowingGlosses(GlossItem*,WritingSystem)) );
 
-    connect( wdw, SIGNAL(requestNewLineFromHere(GlossItem*)), mText, SLOT(newLineStartingHere(GlossItem*)) );
-    connect( wdw, SIGNAL(requestNoLineFromHere(GlossItem*)), mText, SLOT(noNewLineStartingHere(GlossItem*)) );
+    connect( wdw, SIGNAL(requestNewPhraseFromHere(GlossItem*)), mText, SLOT(newPhraseStartingHere(GlossItem*)) );
+    connect( wdw, SIGNAL(requestNoPhraseFromHere(GlossItem*)), mText, SLOT(noNewPhraseStartingHere(GlossItem*)) );
 
     connect( wdw, SIGNAL(leftClicked(WordDisplayWidget*)), this, SLOT(wdwClicked(WordDisplayWidget*)) );
 
@@ -371,8 +371,8 @@ WordDisplayWidget* InterlinearDisplayWidget::addWordDisplayWidget(GlossItem *ite
 PunctuationDisplayWidget *InterlinearDisplayWidget::addPunctuationDisplayWidget(GlossItem *item)
 {
     PunctuationDisplayWidget *pdw = new PunctuationDisplayWidget( item, mProject->dbAdapter() , this );
-    connect( pdw, SIGNAL(requestNewLineFromHere(GlossItem*)), mText, SLOT(newLineStartingHere(GlossItem*)) );
-    connect( pdw, SIGNAL(requestNoLineFromHere(GlossItem*)), mText, SLOT(noNewLineStartingHere(GlossItem*)) );
+    connect( pdw, SIGNAL(requestNewPhraseFromHere(GlossItem*)), mText, SLOT(newPhraseStartingHere(GlossItem*)) );
+    connect( pdw, SIGNAL(requestNoPhraseFromHere(GlossItem*)), mText, SLOT(noNewPhraseStartingHere(GlossItem*)) );
     return pdw;
 }
 
