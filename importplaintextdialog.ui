@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>235</height>
+    <height>287</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,7 +55,24 @@
    <item>
     <widget class="QCheckBox" name="delimiterCheckBox">
      <property name="text">
-      <string>Break lines with custom delimiter</string>
+      <string>Break lines and paragraphs with custom delimiter</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="paragraphDelimiterLabel">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Paragraph delimiter regular expression:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="paragraphReEdit">
+     <property name="enabled">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -65,7 +82,7 @@
       <bool>false</bool>
      </property>
      <property name="text">
-      <string>Delimiter regular expression:</string>
+      <string>Line delimiter regular expression:</string>
      </property>
     </widget>
    </item>

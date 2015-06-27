@@ -36,9 +36,14 @@ bool ImportPlainTextDialog::customDelimiter() const
     return ui->delimiterCheckBox->isChecked();
 }
 
-QRegularExpression ImportPlainTextDialog::delimiter() const
+QRegularExpression ImportPlainTextDialog::phraseDelimiter() const
 {
     return QRegularExpression(ui->reEdit->text());
+}
+
+QRegularExpression ImportPlainTextDialog::paragraphDelimiter() const
+{
+    return QRegularExpression(ui->paragraphReEdit->text());
 }
 
 void ImportPlainTextDialog::chooseFilename()
@@ -55,6 +60,8 @@ void ImportPlainTextDialog::delimiterChecked(bool checked)
 {
     ui->delimiterLabel->setEnabled(checked);
     ui->reEdit->setEnabled(checked);
+    ui->paragraphDelimiterLabel->setEnabled(checked);
+    ui->paragraphReEdit->setEnabled(checked);
 }
 
 void ImportPlainTextDialog::accept()

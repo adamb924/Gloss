@@ -9,6 +9,7 @@
 #include "messagehandler.h"
 #include "syntacticanalysis.h"
 #include "syntacticanalysiselement.h"
+#include "paragraph.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -92,19 +93,23 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     glossItemBaselineWritingSystem = mDbAdapter->writingSystem( stream.attributes().value("http://www.adambaker.org/gloss.php", "baseline-writing-system").toString() );
                 }
             }
+            else if ( name == "paragraph" ) // <paragraph>
+            {
+                mText->mParagraphs.append( new Paragraph );
+            }
             else if ( name == "phrase" ) // <phrase>
             {
                 inPhrase = true;
 
-                mText->mPhrases.append( new Phrase(mText, mText->mProject) );
-                mText->mPhrases.last()->connectToText();
+                mText->mParagraphs.last()->mPhrases.append( new Phrase(mText, mText->mProject) );
+                mText->mParagraphs.last()->mPhrases.last()->connectToText();
 
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )
                 {
                     qlonglong start = attr.value("http://www.adambaker.org/gloss.php","annotation-start").toString().toLongLong();
                     qlonglong end = attr.value("http://www.adambaker.org/gloss.php","annotation-end").toString().toLongLong();
-                    mText->mPhrases.last()->setInterval( Interval(start, end) );
+                    mText->mParagraphs.last()->mPhrases.last()->setInterval( Interval(start, end) );
                 }
             }
             else if ( name == "item" && !inMorphemes ) // <item>
@@ -136,7 +141,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                     }
                     else if ( inPhrase && type == "gls" && lang.isValid() )
                     {
-                        mText->mPhrases.last()->setPhrasalGloss( TextBit( text , lang ) );
+                        mText->mParagraphs.last()->mPhrases.last()->setPhrasalGloss( TextBit( text , lang ) );
                     }
                 }
             }
@@ -274,7 +279,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             else if(name == "word") // </word>
             {
                 GlossItem * glossItem = new GlossItem( glossItemBaselineWritingSystem.isNull() ? mText->mBaselineWritingSystem : glossItemBaselineWritingSystem, textFormIds, glossFormIds, interpretationId, mText->mProject );
-                mText->mPhrases.last()->appendGlossItem(glossItem);
+                mText->mParagraphs.last()->mPhrases.last()->appendGlossItem(glossItem);
 
                 glossItem->setApprovalStatus(approvalStatus);
 

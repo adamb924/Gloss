@@ -95,7 +95,7 @@ private:
     void keyPressEvent ( QKeyEvent * event );
 
     //! \brief Add the word display widgets for phrase \a i to \a flowLayout
-    void addWordWidgets( int i , QLayout * flowLayout );
+    void addWordWidgets(int i , Phrase *phrase, QLayout * flowLayout );
     WordDisplayWidget* addWordDisplayWidget(GlossItem *item, Phrase *phrase);
     PunctuationDisplayWidget* addPunctuationDisplayWidget(GlossItem *item);
 
@@ -121,10 +121,10 @@ protected:
     QList<InterlinearItemType> mPhrasalGlossLines;
 
     //! \brief Add the phrasal gloss lines for phrase \a i
-    void addPhrasalGlossLines(int i , QVBoxLayout *phrasalGlossLayout);
+    void addPhrasalGlossLines(int i, Phrase *phrase,  QVBoxLayout *phrasalGlossLayout);
 
     //! \brief Add a line label for phrase \a i
-    void addLineLabel( int i , QLayout * flowLayout  );
+    void addLineLabel(int i, Phrase *phrase, QLayout * flowLayout  );
 
     bool maybeFocus(QWidget *wdw);
 };

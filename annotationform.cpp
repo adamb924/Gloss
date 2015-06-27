@@ -43,18 +43,14 @@ AnnotationForm::~AnnotationForm()
 
 void AnnotationForm::focusLine(const QModelIndex & index)
 {
-    int line, position;
-    mText->findGlossItemLocation( mAnnotationModel->glossItem(index) , line , position );
-    if( line == -1 || position == -1 )
-        return;
-
-    line++; // make it 1-indexed
+    int phrase = mText->lineNumberForGlossItem( mAnnotationModel->glossItem(index) );
+    phrase++; // make it 1-indexed
 
     // TODO focusing the interpretation isn't strictly correct. We actually want to focus the gloss item itself.
     QList<Focus> foci;
     foci << Focus( Focus::GlossItem,  (qlonglong)mAnnotationModel->glossItem(index) );
 
-    emit focusTextPosition( mText->name(), line, foci );
+    emit focusTextPosition( mText->name(), phrase, foci );
 }
 
 void AnnotationForm::modelReset()

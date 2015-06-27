@@ -19,6 +19,7 @@
 #include "tab.h"
 #include "immutablelabel.h"
 #include "punctuationdisplaywidget.h"
+#include "paragraph.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
     QScrollArea(parent), mTab(tab), mText(text), mProject(project), mMouseMode(InterlinearDisplayWidget::Normal)
@@ -54,9 +55,9 @@ void InterlinearDisplayWidget::setPhrasalGloss(int lineNumber, const TextBit &bi
     }
 }
 
-void InterlinearDisplayWidget::addLineLabel( int i , QLayout * flowLayout  )
+void InterlinearDisplayWidget::addLineLabel( int i , Phrase * phrase, QLayout * flowLayout  )
 {
-    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), mText->phrases()->at(i)->interval()->isValid(), mText->phrases()->at(i)->interval()->summaryString(), this);
+    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), phrase->interval()->isValid(), phrase->interval()->summaryString(), this);
     connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
     connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));
@@ -103,7 +104,7 @@ void InterlinearDisplayWidget::resetGui()
     QList<int> newLines = mLines;
     for(int i=0; i<newLines.count(); i++)
     {
-        if( newLines.at(i) >= mText->phrases()->count() )
+        if( newLines.at(i) >= mText->phraseCount() )
         {
             newLines.removeAt(i);
         }
@@ -158,7 +159,7 @@ void InterlinearDisplayWidget::wdwClicked( WordDisplayWidget * wdw )
         TextBit newBaseline = wdw->glossItem()->baselineText();
         newBaseline.setWritingSystem( mChangeWritingSystemTo );
         int lineNumber = lineNumberOfWdw(wdw);
-        mText->phrases()->at(lineNumber)->replaceGlossItem(wdw->glossItem(), newBaseline);
+        mText->phraseAtLine(lineNumber)->replaceGlossItem(wdw->glossItem(), newBaseline);
     }
 }
 
@@ -191,11 +192,11 @@ void InterlinearDisplayWidget::scrollContentsBy ( int dx, int dy )
     }
 }
 
-void InterlinearDisplayWidget::addPhrasalGlossLines( int i , QVBoxLayout * phrasalGlossLayout )
+void InterlinearDisplayWidget::addPhrasalGlossLines( int i, Phrase *phrase, QVBoxLayout * phrasalGlossLayout )
 {
     for(int j=0; j< mTab->phrasalGlossLines()->count(); j++)
     {
-        TextBit bit = mText->phrases()->at(i)->gloss( mTab->phrasalGlossLines()->at(j).writingSystem() );
+        TextBit bit = phrase->gloss( mTab->phrasalGlossLines()->at(j).writingSystem() );
 
         LingEdit *edit = new LingEdit( bit , this);
         phrasalGlossLayout->addWidget(edit);
@@ -204,7 +205,7 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i , QVBoxLayout * phras
         if( lines->isEmpty() ) continue;
 
         edit->matchTextAlignmentTo( lines->first().writingSystem().layoutDirection() );
-        connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), mText->phrases()->at(i), SLOT(setPhrasalGloss(TextBit)) );
+        connect( edit, SIGNAL(stringChanged(TextBit,LingEdit*)), phrase, SLOT(setPhrasalGloss(TextBit)) );
 
         mPhrasalGlossEdits.insert( i , edit );
         phrasalGlossLayout->addWidget( edit );
@@ -213,10 +214,11 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i , QVBoxLayout * phras
 
 void InterlinearDisplayWidget::approveAll(int lineNumber)
 {
-    if( lineNumber >= mText->phrases()->count() )
+    if( lineNumber >= mText->phraseCount() )
         return;
-    for(int i=0; i < mText->phrases()->at(lineNumber)->glossItemCount(); i++)
-        mText->phrases()->at(lineNumber)->glossItemAt(i)->setApprovalStatus(GlossItem::Approved);
+    for(int i=0; i<mText->paragraphs()->count(); i++)
+        for(int j=0; j < mText->paragraphs()->at(i)->phrases()->at(lineNumber)->glossItemCount(); j++)
+            mText->paragraphs()->at(i)->phrases()->at(lineNumber)->glossItemAt(j)->setApprovalStatus(GlossItem::Approved);
 }
 
 void InterlinearDisplayWidget::playSound(int lineNumber)
@@ -304,9 +306,10 @@ void InterlinearDisplayWidget::setLayoutFromText()
 
         if( flowLayout->isEmpty() )
         {
-            addLineLabel(lineIndex, flowLayout);
-            addWordWidgets(lineIndex, flowLayout);
-            addPhrasalGlossLines(lineIndex, phrasalGlossLayout);
+            Phrase * phrase = mText->phraseAtLine(lineIndex);
+            addLineLabel(lineIndex, phrase, flowLayout);
+            addWordWidgets(lineIndex, phrase, flowLayout);
+            addPhrasalGlossLines(lineIndex, phrase, phrasalGlossLayout);
         }
 
         mLineRefreshRequests.clear();
@@ -316,18 +319,18 @@ void InterlinearDisplayWidget::setLayoutFromText()
     mLayout->addStretch(1);
 }
 
-void InterlinearDisplayWidget::addWordWidgets( int i , QLayout * flowLayout )
+void InterlinearDisplayWidget::addWordWidgets( int i , Phrase * phrase, QLayout * flowLayout )
 {
-    for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
+    for(int j=0; j<phrase->glossItemCount(); j++)
     {
         QWidget *wdw;
-        if( mText->phrases()->at(i)->glossItemAt(j)->isPunctuation() )
+        if( phrase->glossItemAt(j)->isPunctuation() )
         {
-            wdw = addPunctuationDisplayWidget( mText->phrases()->at(i)->glossItemAt(j) );
+            wdw = addPunctuationDisplayWidget( phrase->glossItemAt(j) );
         }
         else
         {
-            wdw = addWordDisplayWidget(mText->phrases()->at(i)->glossItemAt(j), mText->phrases()->at(i));
+            wdw = addWordDisplayWidget( phrase->glossItemAt(j), phrase);
         }
 
         /// add another list to mWordDisplayWidgets if necessary
@@ -399,7 +402,7 @@ bool InterlinearDisplayWidget::maybeFocus(QWidget * wdw)
 void InterlinearDisplayWidget::setLinesToDefault()
 {
     mLines.clear();
-    for(int i=0; i<mText->phrases()->count(); i++)
+    for(int i=0; i<mText->phraseCount(); i++)
         mLines << i;
 }
 
@@ -522,7 +525,7 @@ void InterlinearDisplayWidget::moveToNextGlossItem(WordDisplayWidget *wdw)
     int lineNumber = lineNumberOfWdw(wdw);
     if( lineNumber != -1 )
     {
-        int position = mText->phrases()->at(lineNumber)->indexOfGlossItem(wdw->glossItem());
+        int position = mText->phraseAtLine(lineNumber)->indexOfGlossItem(wdw->glossItem());
         if( position != -1 )
         {
             findNextWdw(lineNumber,position);
@@ -536,7 +539,8 @@ void InterlinearDisplayWidget::moveToPreviousGlossItem(WordDisplayWidget *wdw)
     int lineNumber = lineNumberOfWdw(wdw);
     if( lineNumber != -1 )
     {
-        int position = mText->phrases()->at(lineNumber)->indexOfGlossItem(wdw->glossItem());
+
+        int position = mText->phraseAtLine(lineNumber)->indexOfGlossItem(wdw->glossItem());
         if( position != -1 )
         {
             findPreviousWdw(lineNumber,position);

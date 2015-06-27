@@ -24,6 +24,7 @@
 #include "syntacticanalysisoptionsdialog.h"
 #include "databaseadapter.h"
 #include "linenumbergraphicsitem.h"
+#include "paragraph.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -70,73 +71,76 @@ void SyntacticParsingWidget::setupBaseline()
     mConstiuencyItems.clear();
     mGraphicsItemAllomorphHash.clear();
     qreal x = mInterWordDistance;
-    for(int i=0; i<mText->phrases()->count(); i++) /// for each phrase
+    for(int i=0; i<mText->paragraphs()->count(); i++) /// for each paragraph
     {
-        LineNumberGraphicsItem *lineNumberItem = new LineNumberGraphicsItem(i+1);
-        lineNumberItem->setPos(x,0);
-        mScene->addItem(lineNumberItem);
-        x += lineNumberItem->boundingRect().width() + mInterWordDistance;
-        connect(lineNumberItem, SIGNAL(requestPlayLine(int)), mText, SLOT(playSoundForLine(int)) );
-
-        for(int j=0; j<mText->phrases()->at(i)->glossItems()->count(); j++) /// for each gloss item
+        for(int j=0; j<mText->paragraphs()->at(i)->phrases()->count(); j++) /// for each phrase
         {
-            int longestLine = 0;
-            qreal y=0;
+            LineNumberGraphicsItem *lineNumberItem = new LineNumberGraphicsItem(j+1);
+            lineNumberItem->setPos(x,0);
+            mScene->addItem(lineNumberItem);
+            x += lineNumberItem->boundingRect().width() + mInterWordDistance;
+            connect(lineNumberItem, SIGNAL(requestPlayLine(int)), mText, SLOT(playSoundForLine(int)) );
 
-            GlossItem *glossItem = mText->phrases()->at(i)->glossItems()->at(j);
-            InterlinearItemTypeList * lines = mTab->interlinearLines(glossItem->baselineWritingSystem());
-            for(int k=0; k<lines->count(); k++) /// for each interlinear line
+            for(int k=0; k<mText->paragraphs()->at(i)->phrases()->at(j)->glossItems()->count(); k++) /// for each gloss item
             {
-                qreal lineLength = 0;
-                qreal lineHeight = 0;
-                if( lines->at(k).type() == InterlinearItemType::Analysis )
+                int longestLine = 0;
+                qreal y=0;
+
+                GlossItem *glossItem = mText->paragraphs()->at(i)->phrases()->at(j)->glossItems()->at(k);
+                InterlinearItemTypeList * lines = mTab->interlinearLines(glossItem->baselineWritingSystem());
+                for(int k=0; k<lines->count(); k++) /// for each interlinear line
                 {
-                    MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
-                    for(int m=0; m<ma->allomorphCount(); m++) /// for each allomorph
+                    qreal lineLength = 0;
+                    qreal lineHeight = 0;
+                    if( lines->at(k).type() == InterlinearItemType::Analysis )
                     {
-                        SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
-                        if(element == 0)
+                        MorphologicalAnalysis *ma = glossItem->morphologicalAnalysis( lines->at(k).writingSystem() );
+                        for(int m=0; m<ma->allomorphCount(); m++) /// for each allomorph
                         {
-                            continue;
-                        }
-                        MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m)->textBitForConcatenation(), element );
-                        item->setPos(x + lineLength, y);
-                        mScene->addItem(item);
-                        lineLength += item->boundingRect().width();
-                        if( m < ma->allomorphCount()-1 )
-                        {
-                            lineLength += mInterMorphemeDistance;
-                        }
-                        lineHeight = item->boundingRect().height();
+                            SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
+                            if(element == 0)
+                            {
+                                continue;
+                            }
+                            MorphemeGraphicsItem *item = new MorphemeGraphicsItem( ma->allomorph(m)->textBitForConcatenation(), element );
+                            item->setPos(x + lineLength, y);
+                            mScene->addItem(item);
+                            lineLength += item->boundingRect().width();
+                            if( m < ma->allomorphCount()-1 )
+                            {
+                                lineLength += mInterMorphemeDistance;
+                            }
+                            lineHeight = item->boundingRect().height();
 
-                        mGraphicsItemAllomorphHash.insert(ma->allomorph(m), item);
+                            mGraphicsItemAllomorphHash.insert(ma->allomorph(m), item);
+                        }
                     }
-                }
-                else if ( lines->at(k).type() == InterlinearItemType::ImmutableText )
-                {
-                    QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->textForm( lines->at(k).writingSystem() ).text() );
-                    item->setFont( lines->at(k).writingSystem().font() );
-                    item->setPos(x, y);
-                    mScene->addItem(item);
-                    lineHeight = item->boundingRect().height();
-                    lineLength = item->boundingRect().width();
-                }
-                else if ( lines->at(k).type() == InterlinearItemType::ImmutableGloss )
-                {
-                    QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->gloss( lines->at(k).writingSystem() ).text() );
-                    item->setFont( lines->at(k).writingSystem().font() );
-                    item->setPos(x, y);
-                    mScene->addItem(item);
-                    lineHeight = item->boundingRect().height();
-                    lineLength = item->boundingRect().width();
-                }
-                longestLine = lineLength > longestLine ? lineLength : longestLine;
-                y += lineHeight + mVerticalDistance;
-            } /// for each interlinear line
+                    else if ( lines->at(k).type() == InterlinearItemType::ImmutableText )
+                    {
+                        QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->textForm( lines->at(k).writingSystem() ).text() );
+                        item->setFont( lines->at(k).writingSystem().font() );
+                        item->setPos(x, y);
+                        mScene->addItem(item);
+                        lineHeight = item->boundingRect().height();
+                        lineLength = item->boundingRect().width();
+                    }
+                    else if ( lines->at(k).type() == InterlinearItemType::ImmutableGloss )
+                    {
+                        QGraphicsSimpleTextItem *item = new QGraphicsSimpleTextItem( glossItem->gloss( lines->at(k).writingSystem() ).text() );
+                        item->setFont( lines->at(k).writingSystem().font() );
+                        item->setPos(x, y);
+                        mScene->addItem(item);
+                        lineHeight = item->boundingRect().height();
+                        lineLength = item->boundingRect().width();
+                    }
+                    longestLine = lineLength > longestLine ? lineLength : longestLine;
+                    y += lineHeight + mVerticalDistance;
+                } /// for each interlinear line
 
-            x += longestLine + mInterWordDistance;
-        } /// for each gloss item
-    } /// for each phrase
+                x += longestLine + mInterWordDistance;
+            } /// for each gloss item
+        } /// for each phrase
+    } ///  for each paragraph
 }
 
 void SyntacticParsingWidget::redrawSyntacticAnnotations()

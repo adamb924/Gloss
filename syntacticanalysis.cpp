@@ -7,6 +7,7 @@
 #include "glossitem.h"
 #include "project.h"
 #include "databaseadapter.h"
+#include "paragraph.h"
 
 #include <QtDebug>
 
@@ -16,15 +17,18 @@ SyntacticAnalysis::SyntacticAnalysis(const QString &name, const WritingSystem &w
       mClosedVocabulary(closedVocabulary),
       mDbAdapter(text->project()->dbAdapter())
 {
-    for(int i=0; i<text->phrases()->count(); i++)
+    for(int i=0; i<text->paragraphs()->count(); i++)
     {
-        const Phrase * phrase = text->phrases()->at(i);
-        for(int j=0; j<phrase->glossItemCount(); j++)
+        for(int j=0; j<text->paragraphs()->at(i)->phrases()->count(); j++)
         {
-            const MorphologicalAnalysis * ma = phrase->glossItemAt(j)->morphologicalAnalysis(mWritingSystem);
-            for(int k=0; k<ma->allomorphCount(); k++)
+            const Phrase * phrase = text->paragraphs()->at(i)->phrases()->at(j);
+            for(int k=0; k<phrase->glossItemCount(); k++)
             {
-                addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k), mDbAdapter ) );
+                const MorphologicalAnalysis * ma = phrase->glossItemAt(k)->morphologicalAnalysis(mWritingSystem);
+                for(int l=0; l<ma->allomorphCount(); l++)
+                {
+                    addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(l), mDbAdapter ) );
+                }
             }
         }
     }
@@ -160,17 +164,20 @@ SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
 void SyntacticAnalysis::refreshText(const Text *text)
 {
     QList<QUuid> guids = mElementConcordance.keys();
-    for(int i=0; i<text->phrases()->count(); i++)
+    for(int i=0; i<text->paragraphs()->count(); i++)
     {
-        const Phrase * phrase = text->phrases()->at(i);
-        for(int j=0; j<phrase->glossItemCount(); j++)
+        for(int j=0; j<text->paragraphs()->at(i)->phrases()->count(); j++)
         {
-            const MorphologicalAnalysis * ma = phrase->glossItemAt(j)->morphologicalAnalysis(mWritingSystem);
-            for(int k=0; k<ma->allomorphCount(); k++)
+            const Phrase * phrase = text->paragraphs()->at(i)->phrases()->at(j);
+            for(int k=0; k<phrase->glossItemCount(); k++)
             {
-                if( !guids.contains( ma->allomorph(k)->guid() ) )
+                const MorphologicalAnalysis * ma = phrase->glossItemAt(k)->morphologicalAnalysis(mWritingSystem);
+                for(int k=0; k<ma->allomorphCount(); k++)
                 {
-                    addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k), mDbAdapter ) );
+                    if( !guids.contains( ma->allomorph(k)->guid() ) )
+                    {
+                        addBaselineElement( new SyntacticAnalysisElement( ma->allomorph(k), mDbAdapter ) );
+                    }
                 }
             }
         }

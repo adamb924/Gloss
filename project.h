@@ -13,6 +13,7 @@
 #include <QString>
 #include <QPair>
 #include <QDir>
+#include <QRegularExpression>
 
 #include "writingsystem.h"
 #include "text.h"
@@ -146,8 +147,8 @@ public:
     //! \brief Deletes the text with name \a textName from the disk
     void deleteText(QString textName);
 
-    //! \brief Creates a new text with name \a name, baseline writing system \a ws, and the initial content \a content. The lines of the text are determined by \a delimiter. Returns a pointer to the new text.
-    Text* newText(const QString & name, const WritingSystem & ws, const QString &content, const QRegularExpression & delimiter);
+    //! \brief Creates a new text with name \a name, baseline writing system \a ws, and the initial content \a content. The lines of the text are determined by \a phraseDelimiter and \a paragraphDelimiter. Returns a pointer to the new text.
+    Text* newText(const QString & name, const WritingSystem & ws, const QString &content, const QRegularExpression & phraseDelimiter = QRegularExpression("[\\n\\r]+"), const QRegularExpression & paragraphDelimiter = QRegularExpression("\\n\\r?\\n\\r?"));
 
     //! \brief Creates a new text by importing a Flex FlexText at \a filePath, with baseline writing system \a ws
     Text* importFlexText(const QString & filePath, const WritingSystem & ws);

@@ -21,7 +21,8 @@ public:
     QStringList filenames() const;
     WritingSystem writingSystem() const;
     bool customDelimiter() const;
-    QRegularExpression delimiter() const;
+    QRegularExpression phraseDelimiter() const;
+    QRegularExpression paragraphDelimiter() const;
 
 private slots:
     void chooseFilename();

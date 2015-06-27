@@ -1,6 +1,7 @@
 #include "annotationmodel.h"
 #include "text.h"
 #include "phrase.h"
+#include "paragraph.h"
 
 #include <QtDebug>
 
@@ -21,13 +22,16 @@ void AnnotationModel::loadGlossItems()
 {
     beginResetModel();
     mGlossItems.clear();
-    for(int i=0; i<mText->phrases()->count(); i++)
+    for(int i=0; i<mText->paragraphs()->count(); i++)
     {
-        for(int j=0; j<mText->phrases()->at(i)->glossItemCount(); j++)
+        for(int j=0; j<mText->paragraphs()->at(i)->phrases()->count(); j++)
         {
-            if( mText->phrases()->at(i)->glossItemAt(j)->hasAnnotation(mAnnotationLabel) )
+            for(int k=0; k<mText->paragraphs()->at(i)->phrases()->at(j)->glossItemCount(); k++)
             {
-                mGlossItems << mText->phrases()->at(i)->glossItemAt(j);
+                if( mText->paragraphs()->at(i)->phrases()->at(j)->glossItemAt(k)->hasAnnotation(mAnnotationLabel) )
+                {
+                    mGlossItems << mText->paragraphs()->at(i)->phrases()->at(j)->glossItemAt(k);
+                }
             }
         }
     }

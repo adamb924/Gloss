@@ -6,6 +6,7 @@
 #include "morphologicalanalysis.h"
 #include "databaseadapter.h"
 #include "project.h"
+#include "paragraph.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -43,18 +44,22 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
                 textForms.clear();
                 glossForms.clear();
             }
+            else if ( name == "paragraph" ) // <paragraph>
+            {
+                mText->mParagraphs.append( new Paragraph );
+            }
             else if ( name == "phrase" )
             {
                 inPhrase = true;
-                mText->mPhrases.append( new Phrase(mText, mText->mProject) );
-                mText->mPhrases.last()->connectToText();
+                mText->mParagraphs.last()->mPhrases.append( new Phrase(mText, mText->mProject) );
+                mText->mParagraphs.last()->mPhrases.last()->connectToText();
 
                 QXmlStreamAttributes attr = stream.attributes();
                 if( attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-start") && attr.hasAttribute("http://www.adambaker.org/gloss.php","annotation-end") )
                 {
                     qlonglong start = attr.value("http://www.adambaker.org/gloss.php","annotation-start").toString().toLongLong();
                     qlonglong end = attr.value("http://www.adambaker.org/gloss.php","annotation-end").toString().toLongLong();
-                    mText->mPhrases.last()->setInterval( Interval(start, end) );
+                    mText->mParagraphs.last()->phrases()->last()->setInterval( Interval(start, end) );
                 }
             }
             else if ( name == "item" )
@@ -85,7 +90,7 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
                     }
                     else if ( inPhrase && type == "gls" )
                     {
-                        mText->mPhrases.last()->setPhrasalGloss( TextBit( text , lang ) );
+                        mText->mParagraphs.last()->phrases()->last()->setPhrasalGloss( TextBit( text , lang ) );
                     }
                 }
             }
@@ -102,7 +107,7 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
         {
             if(name == "word")
             {
-                mText->mPhrases.last()->appendGlossItem(new GlossItem( mText->mBaselineWritingSystem, textForms, glossForms, mText->mProject ));
+                mText->mParagraphs.last()->phrases()->last()->appendGlossItem(new GlossItem( mText->mBaselineWritingSystem, textForms, glossForms, mText->mProject ));
                 inWord = false;
             }
             else if(name == "phrase")

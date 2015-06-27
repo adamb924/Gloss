@@ -341,7 +341,7 @@ void MainWindow::importPlainText()
         {
             if( dlg.customDelimiter() )
             {
-                importPlainText( files.first() , ws , true, dlg.delimiter() );
+                importPlainText( files.first() , ws , true, dlg.phraseDelimiter(), dlg.paragraphDelimiter() );
             }
             else
             {
@@ -359,7 +359,7 @@ void MainWindow::importPlainText()
                 {
                     if( dlg.customDelimiter() )
                     {
-                        importPlainText( files.at(i) , ws , false, dlg.delimiter() );
+                        importPlainText( files.at(i) , ws , false, dlg.phraseDelimiter(), dlg.paragraphDelimiter() );
                     }
                     else
                     {
@@ -376,7 +376,7 @@ void MainWindow::importPlainText()
     }
 }
 
-void MainWindow::importPlainText(const QString & filepath , const WritingSystem & ws, bool openText, const QRegularExpression & re)
+void MainWindow::importPlainText(const QString & filepath , const WritingSystem & ws, bool openText, const QRegularExpression & phraseDelimiter, const QRegularExpression & paragraphDelimiter )
 {
     QFile file(filepath);
     if( file.open(QFile::ReadOnly) )
@@ -389,7 +389,7 @@ void MainWindow::importPlainText(const QString & filepath , const WritingSystem 
         QString content = stream.readAll();
         file.close();
 
-        Text *text = mProject->newText(name, ws, content, re );
+        Text *text = mProject->newText(name, ws, content, phraseDelimiter, paragraphDelimiter );
         if( openText )
         {
             InterlinearChunkEditor * subWindow = new InterlinearChunkEditor(text, mProject, View::Full, 3, this);
@@ -473,8 +473,7 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
         query.setQuery(queryString);
         query.evaluateTo(&result);
 
-        /// @todo This is a stupid way to do this.
-        Text *text = mProject->newText(name, ws, result.join("\n"), QRegularExpression("[\\n\\r]+") );
+        Text *text = mProject->newText(name, ws, result.join("\r\n") );
 
         text->mergeEaf(filepath);
 

@@ -57,7 +57,7 @@ void InterlinearChunkEditor::previous()
 void InterlinearChunkEditor::goTo()
 {
     bool ok;
-    int newPosition = QInputDialog::getInt(this, tr("Go to"), tr("Go to the chunk with line... (1-%1)").arg(mText->phrases()->count()), mPosition, 1, mText->phrases()->count(), 1, &ok );
+    int newPosition = QInputDialog::getInt(this, tr("Go to"), tr("Go to the chunk with line... (1-%1)").arg(mText->phraseCount()), mPosition, 1, mText->phraseCount(), 1, &ok );
     if( ok )
         moveToLine( newPosition );
 }
@@ -69,7 +69,7 @@ void InterlinearChunkEditor::beginning()
 
 void InterlinearChunkEditor::end()
 {
-    moveToLine( mText->phrases()->count() );
+    moveToLine( mText->phraseCount() );
 }
 
 void InterlinearChunkEditor::moveToLine(int line)
@@ -84,7 +84,7 @@ void InterlinearChunkEditor::moveToPosition(int position)
     if( position < 0 )
         position = 0;
 
-    if( position >= mText->phrases()->count() )
+    if( position >= mText->phraseCount() )
         return;
 
     mPosition = position;
@@ -105,7 +105,7 @@ void InterlinearChunkEditor::refreshLayout()
         ui->beginningButton->setEnabled(true);
     }
 
-    if( mPosition + mChunkSize >= mText->phrases()->count() )
+    if( mPosition + mChunkSize >= mText->phraseCount() )
     {
         ui->nextButton->setEnabled(false);
         ui->endButton->setEnabled(false);
@@ -125,7 +125,7 @@ void InterlinearChunkEditor::refreshLayout()
 QList<int> InterlinearChunkEditor::makeLines()
 {
     QList<int> lines;
-    for( int i=mPosition; i < mPosition + mChunkSize && i < mText->phrases()->count(); i++ )
+    for( int i=mPosition; i < mPosition + mChunkSize && i < mText->phraseCount(); i++ )
         lines << i;
     return lines;
 }

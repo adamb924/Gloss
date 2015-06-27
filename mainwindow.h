@@ -110,7 +110,7 @@ private slots:
 private slots:
     void importFlexText();
     void importPlainText();
-    void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText, const QRegularExpression & re = QRegularExpression("[\\n\\r]+") );
+    void importPlainText(const QString & filepath , const WritingSystem & ws, bool openText, const QRegularExpression & phraseDelimiter = QRegularExpression("[\\n\\r]+"), const QRegularExpression & paragraphDelimiter = QRegularExpression("\\n\\r?\\n\\r?") );
     void importEaf();
     bool importEaf(const QString & filepath, const QString & tierId, const WritingSystem & ws);
     void openText();

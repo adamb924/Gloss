@@ -26,6 +26,7 @@
 #include "flextextwriter.h"
 #include "flextextreader.h"
 #include "syntacticanalysis.h"
+#include "paragraph.h"
 
 Text::Text(const WritingSystem & ws, const QString & name, Project *project) :
     mSound(0), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(true), mChanged(false), mName(name), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter())
@@ -44,8 +45,8 @@ Text::Text(const QString & filePath, Project *project) :
 
 Text::~Text()
 {
-    qDeleteAll(mPhrases);
-    mPhrases.clear();
+    qDeleteAll(mParagraphs);
+    mParagraphs.clear();
 
     if( mSound != 0 )
         delete mSound;
@@ -106,77 +107,40 @@ const Project *Text::project() const
     return mProject;
 }
 
-QList<Phrase*>* Text::phrases()
+QList<Paragraph *> *Text::paragraphs()
 {
-    return &mPhrases;
+    return &mParagraphs;
 }
 
-const QList<Phrase*>* Text::phrases() const
+const QList<Paragraph *> *Text::paragraphs() const
 {
-    return &mPhrases;
+    return &mParagraphs;
 }
 
 void Text::clearGlossItems()
 {
-    qDeleteAll(mPhrases);
-    mPhrases.clear();
+    qDeleteAll(mParagraphs);
+    mParagraphs.clear();
     markAsChanged();
 }
 
-void Text::setGlossItemsFromBaseline(const QString & content, const QRegularExpression & delimiter)
+void Text::initializeTextFromString(const QString & content, const QRegularExpression &phraseDelimiter, const QRegularExpression &paragraphDelimiter)
 {
-    QStringList lines;
-    int pos = 0;
-    QRegularExpressionMatch m = delimiter.match(content, pos);
-    if( m.hasMatch() )
+    clearGlossItems();
+
+    QStringList paragraphs = content.split( paragraphDelimiter );
+    foreach(QString paragraph, paragraphs)
     {
-        do
+        mParagraphs.append( new Paragraph );
+        QStringList phrases = paragraph.split( phraseDelimiter );
+        foreach(QString phrase, phrases)
         {
-            lines << content.mid( pos, m.capturedEnd() - pos ).trimmed();
-            pos = m.capturedEnd();
-            m = delimiter.match(content, pos);
+            mParagraphs.last()->phrases()->append( new Phrase( this, mProject) );
+            mParagraphs.last()->phrases()->last()->connectToText();
+            setLineOfGlossItems( mParagraphs.last()->phrases()->last(), phrase );
         }
-        while( m.hasMatch() );
-        if( pos < content.length() - 1 )
-        {
-            lines << content.mid( pos ).trimmed();
-        }
-    }
-    else
-    {
-        lines << content;
     }
 
-    if( mPhrases.count() == lines.count() )
-    {
-        for(int i=0; i<lines.count(); i++)
-        {
-            if( mPhrases.at(i)->equivalentBaselineLineText() != lines.at(i) )
-            {
-                setLineOfGlossItems(mPhrases.at(i), lines.at(i));
-            }
-        }
-    }
-    else
-    {
-        clearGlossItems();
-        QProgressDialog progress(tr("Analyzing text %1...").arg(mName), "Cancel", 0, lines.count(), 0);
-        progress.setWindowModality(Qt::WindowModal);
-        for(int i=0; i<lines.count(); i++)
-        {
-            progress.setValue(i);
-            mPhrases.append( new Phrase( this, mProject) );
-            mPhrases.last()->connectToText();
-
-            setLineOfGlossItems(mPhrases.last(), lines.at(i));
-            if( progress.wasCanceled() )
-            {
-                mValid = false;
-                break;
-            }
-        }
-        progress.setValue(lines.count());
-    }
     emit glossItemsChanged();
     markAsChanged();
 }
@@ -226,7 +190,7 @@ void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
         phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
     }
 
-    emit phraseRefreshNeeded( mPhrases.indexOf(phrase) );
+    emit phraseRefreshNeeded( lineNumberForPhrase(phrase) );
     markAsChanged();
 }
 
@@ -332,9 +296,9 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
 
     query.evaluateTo(&result);
 
-    if( result.count() != mPhrases.count() )
+    if( result.count() != phraseCount() )
     {
-        qWarning() << result.count() << mPhrases.count();
+        qWarning() << result.count() << phraseCount();
         return MergeEafWrongNumberOfAnnotations;
     }
 
@@ -345,7 +309,7 @@ Text::MergeEafResult Text::mergeEaf(const QString & filename )
             continue;
         qlonglong start = tokens.at(0).toLongLong();
         qlonglong end = tokens.at(1).toLongLong();
-        mPhrases.at(i)->setInterval(Interval(start, end));
+        phraseAtLine(i)->setInterval(Interval(start, end));
     }
 
     // read the audio path
@@ -373,17 +337,17 @@ QString Text::textNameFromPath(const QString &path)
 
 void Text::setBaselineTextForPhrase( int i, const QString & text )
 {
-    if( i >= mPhrases.count() )
+    if( i >= phraseCount() )
         return;
-    setLineOfGlossItems( mPhrases.at(i) , text );
+    setLineOfGlossItems( phraseAtLine(i) , text );
     markAsChanged();
 }
 
 QString Text::baselineTextOfPhrase( int i ) const
 {
-    if( i >= mPhrases.count() )
+    if( i >= phraseCount() )
         return "";
-    return mPhrases.at(i)->equivalentBaselineLineText();
+    return phraseAtLine(i)->equivalentBaselineLineText();
 }
 
 void Text::setSound(const QUrl & filename)
@@ -413,13 +377,14 @@ bool Text::playSoundForLine( int lineNumber )
             return false;
         }
     }
-    if( !mPhrases.at(lineNumber)->interval()->isValid() )
+    Phrase * phrase = phraseAtLine(lineNumber);
+    if( !phrase->interval()->isValid() )
     {
-        QMessageBox::warning(0, tr("Error"), tr("This phrase does not have a valid annotation (%1, %2).").arg(mPhrases.at(lineNumber)->interval()->start()).arg(mPhrases.at(lineNumber)->interval()->end()) );
+        QMessageBox::warning(0, tr("Error"), tr("This phrase does not have a valid annotation (%1, %2).").arg(phrase->interval()->start()).arg(phrase->interval()->end()) );
         return false;
     }
     if( mSound != 0 )
-        return mSound->playSegment( mPhrases.at(lineNumber)->interval()->start() , mPhrases.at(lineNumber)->interval()->end() );
+        return mSound->playSegment( phrase->interval()->start() , phrase->interval()->end() );
     else
         return false;
 }
@@ -429,6 +394,96 @@ FlexTextReader::Result Text::readResult() const
     return mReadResult;
 }
 
+Paragraph *Text::paragraphForPhrase(Phrase *phrase)
+{
+    foreach(Paragraph * paragraph, mParagraphs)
+    {
+        if( paragraph->indexOf(phrase) != -1 )
+        {
+            return paragraph;
+        }
+    }
+    return 0;
+}
+
+int Text::lineNumberForPhrase(Phrase *phrase) const
+{
+    int lineNumber = 0;
+    foreach(Paragraph * paragraph, mParagraphs)
+    {
+        if( paragraph->indexOf(phrase) == -1 )
+        {
+            lineNumber += paragraph->phraseCount();
+        }
+        else
+        {
+            return lineNumber + paragraph->indexOf(phrase);
+        }
+    }
+    return -1;
+}
+
+int Text::lineNumberForGlossItem(const GlossItem *item) const
+{
+    int lineNumber = 0;
+    foreach(Paragraph * paragraph, mParagraphs)
+    {
+        if( paragraph->indexOfGlossItem( item ) == -1 )
+        {
+            lineNumber += paragraph->phraseCount();
+        }
+        else
+        {
+            return lineNumber + paragraph->indexOfGlossItem( item );
+        }
+    }
+    return -1;
+}
+
+Phrase *Text::phraseAtLine(int lineNumber)
+{
+    int lineCount = 0;
+    foreach(Paragraph * paragraph, mParagraphs)
+    {
+        if( lineNumber < lineCount + paragraph->phraseCount() )
+        {
+            return paragraph->phrases()->at( lineNumber - lineCount );
+        }
+        else
+        {
+            lineCount += paragraph->phraseCount();
+        }
+    }
+    return 0;
+}
+
+const Phrase *Text::phraseAtLine(int lineNumber) const
+{
+    int lineCount = 0;
+    foreach(Paragraph * paragraph, mParagraphs)
+    {
+        if( lineNumber < lineCount + paragraph->phraseCount() )
+        {
+            return paragraph->phrases()->at( lineNumber - lineCount );
+        }
+        else
+        {
+            lineCount += paragraph->phraseCount();
+        }
+    }
+    return 0;
+}
+
+int Text::phraseCount() const
+{
+    int lineCount = 0;
+    foreach(const Paragraph * paragraph, mParagraphs)
+    {
+        lineCount += paragraph->phraseCount();
+    }
+    return lineCount;
+}
+
 void Text::markAsChanged()
 {
     mChanged = true;
@@ -436,33 +491,50 @@ void Text::markAsChanged()
 
 void Text::requestGuiRefresh( Phrase * phrase )
 {
-    int lineNumber = mPhrases.indexOf(phrase);
+    int lineNumber = lineNumberForPhrase(phrase);
     if( lineNumber != -1 )
         emit phraseRefreshNeeded( lineNumber );
 }
 
-void Text::removePhrase(int index )
+void Text::removePhrase(int lineNumber )
 {
-    if( index < mPhrases.count() )
+    foreach(Paragraph * paragraph, mParagraphs)
     {
-        removePhrase( mPhrases.at(index) );
-        markAsChanged();
+        if( paragraph->removePhrase( phraseAtLine(lineNumber) ) )
+        {
+            markAsChanged();
+            return;
+        }
     }
 }
 
-void Text::findGlossItemLocation(const GlossItem *glossItem, int & line, int & position) const
+void Text::findGlossItemLocation(const GlossItem *glossItem, int & paragraph, int & phrase, int & position) const
 {
-    line = -1;
-    position = -1;
-    for(int i=0; i<mPhrases.count(); i++)
+    paragraph = -1;
+    phrase = -1;
+    position = 0;
+    for(int i=0; i<mParagraphs.count(); i++)
     {
-        int index = mPhrases.at(i)->indexOfGlossItem(glossItem);
-        if( index != -1 )
+        for(int j=0; j<mParagraphs.at(i)->phraseCount(); j++)
         {
-            line = i;
-            position = index;
+            int index = mParagraphs.at(i)->phrases()->at(j)->indexOfGlossItem(glossItem);
+            if( index != -1 )
+            {
+                paragraph = i;
+                phrase = j;
+                position = index;
+                return;
+            }
+            else
+            {
+                position += mParagraphs.at(i)->phraseCount();
+            }
         }
     }
+    // interesting that this is the preferred strategy!
+    // http://stackoverflow.com/questions/1257744/can-i-use-break-to-exit-multiple-nested-for-loops
+    if( phrase == -1 )
+        position = -1;
 }
 
 void Text::setFollowingInterpretations( GlossItem *glossItem )
@@ -470,27 +542,30 @@ void Text::setFollowingInterpretations( GlossItem *glossItem )
     QString textForm = glossItem->baselineText().text();
     qlonglong interpretationId = glossItem->id();
 
-    int startingPhrase, startingGlossItem;
-    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+    int startingParagraph, startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingParagraph, startingPhrase, startingGlossItem );
     if( startingPhrase == -1 || startingGlossItem == -1 )
         return;
 
-    // do the remainder of the starting phrase
-    for(int i=startingGlossItem+1; i < mPhrases.at(startingPhrase)->glossItemCount(); i++ )
+    // do the remainder of the starting paragraph and phrase
+    for(int i=startingGlossItem+1; i < mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemCount(); i++ )
     {
-        if( mPhrases.at(startingPhrase)->glossItemAt(i)->baselineText().text() == textForm )
+        if( mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemAt(i)->baselineText().text() == textForm )
         {
-            mPhrases.at(startingPhrase)->glossItemAt(i)->setInterpretation( interpretationId );
+            mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemAt(i)->setInterpretation( interpretationId );
         }
     }
 
-    for(int i=startingPhrase+1; i < mPhrases.count(); i++ )
+    for(int i=startingParagraph+1; i<mParagraphs.count(); i++)
     {
-        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        for(int j=0; j < mParagraphs.at(i)->phraseCount(); j++ )
         {
-            if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == textForm )
+            for(int k=0; k < mParagraphs.at(i)->phrases()->at(j)->glossItemCount(); k++ )
             {
-                mPhrases.at(i)->glossItemAt(j)->setInterpretation( interpretationId );
+                if( mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->baselineText().text() == textForm )
+                {
+                    mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->setInterpretation( interpretationId );
+                }
             }
         }
     }
@@ -500,27 +575,33 @@ void Text::setFollowingInterpretations( GlossItem *glossItem )
 
 void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
 {
-    int startingPhrase, startingGlossItem;
-    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+    int startingParagraph, startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingParagraph, startingPhrase, startingGlossItem );
     if( startingPhrase == -1 || startingGlossItem == -1 )
         return;
 
-    // do the remainder of the starting phrase
-    for(int i=startingGlossItem+1; i < mPhrases.at(startingPhrase)->glossItemCount(); i++ )
+    // @todo this looks like a copy/paste error ... it's set interpretation where it should be a replace operation
+    // you need to check the interface to see what is supposed to happen
+
+    // do the remainder of the starting paragraph and phrase
+    for(int i=startingGlossItem+1; i < mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemCount(); i++ )
     {
-        if( mPhrases.at(startingPhrase)->glossItemAt(i)->baselineText().text() == searchFor )
+        if( mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemAt(i)->baselineText().text() == searchFor )
         {
-            mPhrases.at(startingPhrase)->glossItemAt(i)->setInterpretation( glossItem->id() );
+            mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemAt(i)->setInterpretation( glossItem->id() );
         }
     }
 
-    for(int i=startingPhrase+1; i < mPhrases.count(); i++ )
+    for(int i=startingParagraph+1; i<mParagraphs.count(); i++)
     {
-        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        for(int j=0; j < mParagraphs.at(i)->phraseCount(); j++ )
         {
-            if( mPhrases.at(i)->glossItemAt(j)->baselineText().text() == searchFor )
+            for(int k=0; k < mParagraphs.at(i)->phrases()->at(j)->glossItemCount(); k++ )
             {
-                mPhrases.at(i)->glossItemAt(j)->setInterpretation( glossItem->id() );
+                if( mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->baselineText().text() == searchFor )
+                {
+                    mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->setInterpretation( glossItem->id() );
+                }
             }
         }
     }
@@ -530,27 +611,30 @@ void Text::replaceFollowing( GlossItem *glossItem, const QString & searchFor )
 
 void Text::matchFollowingTextForms(GlossItem *glossItem, const WritingSystem & ws )
 {
-    int startingPhrase, startingGlossItem;
-    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+    int startingParagraph, startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingParagraph, startingPhrase, startingGlossItem );
     if( startingPhrase == -1 || startingGlossItem == -1 )
         return;
 
     // do the remainder of the starting phrase
-    for(int i=startingGlossItem+1; i < mPhrases.at(startingPhrase)->glossItemCount(); i++ )
+    for(int i=startingGlossItem+1; i < mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemCount(); i++ )
     {
-        if( mPhrases.at(startingPhrase)->glossItemAt(i)->id() == glossItem->id() )
+        if( mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemAt(i)->id() == glossItem->id() )
         {
-            mPhrases.at(startingPhrase)->glossItemAt(i)->setTextForm( glossItem->textForm(ws) );
+            mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemAt(i)->setTextForm( glossItem->textForm(ws) );
         }
     }
 
-    for(int i=startingPhrase+1; i < mPhrases.count(); i++ )
+    for(int i=startingParagraph+1; i<mParagraphs.count(); i++)
     {
-        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        for(int j=0; j < mParagraphs.at(i)->phraseCount(); j++ )
         {
-            if( mPhrases.at(i)->glossItemAt(j)->id() == glossItem->id() )
+            for(int k=0; k < mParagraphs.at(i)->phrases()->at(j)->glossItemCount(); k++ )
             {
-                mPhrases.at(i)->glossItemAt(j)->setTextForm( glossItem->textForm(ws) );
+                if( mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->id() == glossItem->id() )
+                {
+                    mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->setTextForm( glossItem->textForm(ws) );
+                }
             }
         }
     }
@@ -560,27 +644,30 @@ void Text::matchFollowingTextForms(GlossItem *glossItem, const WritingSystem & w
 
 void Text::matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws )
 {
-    int startingPhrase, startingGlossItem;
-    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+    int startingParagraph, startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingParagraph, startingPhrase, startingGlossItem );
     if( startingPhrase == -1 || startingGlossItem == -1 )
         return;
 
     // do the remainder of the starting phrase
-    for(int i=startingGlossItem+1; i < mPhrases.at(startingPhrase)->glossItemCount(); i++ )
+    for(int i=startingGlossItem+1; i < mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemCount(); i++ )
     {
-        if( mPhrases.at(startingPhrase)->glossItemAt(i)->id() == glossItem->id() )
+        if( mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemAt(i)->id() == glossItem->id() )
         {
-            mPhrases.at(startingPhrase)->glossItemAt(i)->setGloss( glossItem->gloss(ws) );
+            mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase)->glossItemAt(i)->setGloss( glossItem->gloss(ws) );
         }
     }
 
-    for(int i=startingPhrase+1; i < mPhrases.count(); i++ )
+    for(int i=startingParagraph+1; i<mParagraphs.count(); i++)
     {
-        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        for(int j=0; j < mParagraphs.at(i)->phraseCount(); j++ )
         {
-            if( mPhrases.at(i)->glossItemAt(j)->id() == glossItem->id() )
+            for(int k=0; k < mParagraphs.at(i)->phrases()->at(j)->glossItemCount(); k++ )
             {
-                mPhrases.at(i)->glossItemAt(j)->setGloss( glossItem->gloss(ws) );
+                if( mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->id() == glossItem->id() )
+                {
+                    mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->setGloss( glossItem->gloss(ws) );
+                }
             }
         }
     }
@@ -590,19 +677,20 @@ void Text::matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws 
 
 void Text::newPhraseStartingHere(GlossItem *glossItem)
 {
-    int startingPhrase, startingGlossItem;
-    findGlossItemLocation(glossItem, startingPhrase, startingGlossItem );
+    int startingParagraph, startingPhrase, startingGlossItem;
+    findGlossItemLocation(glossItem, startingParagraph, startingPhrase, startingGlossItem );
 
     Phrase * newPhrase = new Phrase( this, mProject);
     newPhrase->connectToText();
 
-    int mx = mPhrases.at(startingPhrase)->glossItemCount() - startingGlossItem;
+    Phrase * sourcePhrase = mParagraphs.at(startingParagraph)->phrases()->at(startingPhrase);
+    int mx = sourcePhrase->glossItemCount() - startingGlossItem;
     for(int i=0; i<mx; i++)
     {
-        newPhrase->appendGlossItem( mPhrases[startingPhrase]->takeGlossItemAt(startingGlossItem) );
+        newPhrase->appendGlossItem( sourcePhrase->takeGlossItemAt(startingGlossItem) );
     }
 
-    mPhrases.insert( startingPhrase + 1 , newPhrase ); /// because it's insertBefore
+    mParagraphs.at(startingParagraph)->insertPhrase( startingPhrase + 1, newPhrase);
 
     emit guiRefreshRequest();
     markAsChanged();
@@ -610,29 +698,34 @@ void Text::newPhraseStartingHere(GlossItem *glossItem)
 
 void Text::noNewPhraseStartingHere(GlossItem *glossItem)
 {
-    int phraseIndex, glossItemIndex;
-    findGlossItemLocation(glossItem, phraseIndex, glossItemIndex );
+    int paragraphIndex, phraseIndex, glossItemIndex;
+    findGlossItemLocation(glossItem, paragraphIndex, phraseIndex, glossItemIndex );
 
     if( phraseIndex < 1 ) return;
 
-    for(int i=0; i < mPhrases.at(phraseIndex)->glossItemCount(); i++)
+    Phrase * first = mParagraphs.at(paragraphIndex)->phrases()->at(phraseIndex-1);
+    Phrase * second = mParagraphs.at(paragraphIndex)->phrases()->at(phraseIndex);
+    for(int i=0; i < first->glossItemCount(); i++)
     {
-        mPhrases.at(phraseIndex-1)->appendGlossItem( mPhrases[phraseIndex]->takeGlossItemAt( i ) );
+        first->appendGlossItem( second->takeGlossItemAt( i ) );
     }
 
-    removePhrase(mPhrases[phraseIndex]); /// this will then emit the signals necessary for a refresh, etc.
+    removePhrase(second); /// this will then emit the signals necessary for a refresh, etc.
     markAsChanged();
 }
 
 void Text::baselineSearchReplace( const TextBit & search , const TextBit & replace )
 {
-    for(int i=0; i < mPhrases.count(); i++ )
+    for(int i=0; i < mParagraphs.count(); i++ )
     {
-        for(int j=0; j < mPhrases.at(i)->glossItemCount(); j++ )
+        for(int j=0; j < mParagraphs.at(i)->phraseCount(); j++ )
         {
-            if( mPhrases.at(i)->glossItemAt(j)->baselineText() == search )
+            for(int k=0; k < mParagraphs.at(i)->phrases()->at(j)->glossItemCount(); k++ )
             {
-                mPhrases.at(i)->glossItemAt(j)->resetBaselineText( replace );
+                if( mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->baselineText() == search )
+                {
+                    mParagraphs.at(i)->phrases()->at(j)->glossItemAt(k)->resetBaselineText( replace );
+                }
             }
         }
     }
@@ -641,19 +734,20 @@ void Text::baselineSearchReplace( const TextBit & search , const TextBit & repla
 
 void Text::registerPhrasalGlossChange(Phrase * thisPhrase, const TextBit & bit)
 {
-    int lineNumber = mPhrases.indexOf(thisPhrase);
+    int lineNumber = lineNumberForPhrase(thisPhrase);
     if( lineNumber != -1 )
+    {
         emit phrasalGlossChanged(lineNumber, bit);
-    markAsChanged();
+        markAsChanged();
+    }
 }
 
 void Text::removePhrase( Phrase * phrase )
 {
-    int index = mPhrases.indexOf(phrase);
-    if( index != -1)
+    foreach(Paragraph * paragraph, mParagraphs)
     {
-        delete mPhrases.takeAt(index);
-        emit guiRefreshRequest();
-        markAsChanged();
+        paragraph->removePhrase(phrase);
     }
+    emit guiRefreshRequest();
+    markAsChanged();
 }

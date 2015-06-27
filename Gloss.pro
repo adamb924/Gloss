@@ -106,7 +106,8 @@ SOURCES += main.cpp\
     punctuationdisplaywidget.cpp \
     texttabwidget.cpp \
     textlistmodel.cpp \
-    textmetadatadialog.cpp
+    textmetadatadialog.cpp \
+    paragraph.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -204,7 +205,8 @@ HEADERS  += mainwindow.h \
     punctuationdisplaywidget.h \
     texttabwidget.h \
     textlistmodel.h \
-    textmetadatadialog.h
+    textmetadatadialog.h \
+    paragraph.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \

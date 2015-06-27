@@ -12,6 +12,7 @@
 #include <QString>
 #include <QList>
 #include <QUrl>
+#include <QRegularExpression>
 
 #include "textbit.h"
 #include "flextextreader.h"
@@ -26,6 +27,7 @@ class SyntacticAnalysis;
 class GlossItem;
 class Phrase;
 class TextBit;
+class Paragraph;
 
 class Text : public QObject
 {
@@ -84,11 +86,11 @@ public:
     //! \brief Returns a const pointer the Project that the text is part of
     const Project * project() const;
 
-    //! \brief Returns a pointer to the list of Phrases in the text
-    QList<Phrase*>* phrases();
+    //! \brief Returns a pointer to the list of Paragraphs in the text
+    QList<Paragraph*>* paragraphs();
 
-    //! \brief Returns a const pointer to the list of Phrases in the text
-    const QList<Phrase *> *phrases() const;
+    //! \brief Returns a const pointer to the list of Paragraphs in the text
+    const QList<Paragraph *> *paragraphs() const;
 
     //! \brief Returns true if the Text is valid, otherwise false. A Text can be invalid if there has been some error, for instance.
     bool isValid() const;
@@ -113,13 +115,38 @@ public:
     FlexTextReader::Result readResult() const;
     ///@}
 
+    /** @name Paragraph operations
+    * Methods for performing actions on the paragraphs of the text
+    */
+    ///@{
+
+    //! \brief Returns a pointer to the paragraph containing \a phrase, or zero if no paragraph in the text contains \a phrase.
+    Paragraph * paragraphForPhrase(Phrase *phrase);
+
+    //! \brief Returns the (0-indexed) position of this phrase, in this text. If the phrase does not exist in the text, returns -1.
+    int lineNumberForPhrase(Phrase *phrase) const;
+
+    //! \brief Returns the (0-indexed) position of this phrase, in this text. If the phrase does not exist in the text, returns -1.
+    int lineNumberForGlossItem(const GlossItem *item) const;
+
+    ///@}
+
     /** @name Phrase operations
     * Methods for performing actions on the phrases of the text
     */
     ///@{
 public slots:
+    //! \brief Returns a pointer to the phrase for line \a lineNumber.
+    Phrase * phraseAtLine(int lineNumber);
+
+    //! \brief Returns a const pointer to the phrase for line \a lineNumber.
+    const Phrase * phraseAtLine(int lineNumber) const;
+
+    //! \brief Returns the number of phrases in a text.
+    int phraseCount() const;
+
     //! \brief Removes phrase \a index
-    void removePhrase( int index );
+    void removePhrase(int lineNumber );
 
     //! \brief Creates a new Phrase, splitting the Phrase that contains \a glossItem into two, with \a glossItem beginning the new phrase.
     void newPhraseStartingHere(GlossItem * glossItem);
@@ -154,10 +181,10 @@ public:
     QString baselineTextOfPhrase( int i ) const;
 
     //! \brief Searches for \a glossItem and sets \a line to the phrase index and \a position to the position of the GlossItem within the phrase. All values are 0-indexed. If \a glossItem is not found, \a line and \a position are both set to -1.
-    void findGlossItemLocation(const GlossItem *glossItem, int & line, int & position) const;
+    void findGlossItemLocation(const GlossItem *glossItem, int &paragraph, int & phrase, int & position) const;
 
-    //! \brief Initializes the text with the text \a content. The text is split into phrases using \a delimiter.
-    void setGlossItemsFromBaseline(const QString &content, const QRegularExpression &delimiter);
+    //! \brief Initializes the text with the text \a content. The text is split into paragraphs using \a paragraphDelimiter, and then into phrases using \a phraseDelimiter.
+    void initializeTextFromString(const QString &content, const QRegularExpression & phraseDelimiter = QRegularExpression("[\\n\\r]+"), const QRegularExpression & paragraphDelimiter = QRegularExpression("\\n\\r?\\n\\r?"));
 
 public slots:
     //! \brief Changes all GlossItem objects following \a glossItem to match the interpretation of \a glossItem
@@ -262,6 +289,7 @@ private:
     QUrl mAudioFileURL;
 
     QList<Phrase*> mPhrases;
+    QList<Paragraph*> mParagraphs;
 };
 
 #endif // TEXT_H
