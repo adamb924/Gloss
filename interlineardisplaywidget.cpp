@@ -213,13 +213,13 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i, Phrase *phrase, QVBo
     }
 }
 
-void InterlinearDisplayWidget::addParagraphMarker(int lineIndex, const Paragraph *paragraph)
+void InterlinearDisplayWidget::addParagraphMarker(int lineIndex, Paragraph *paragraph)
 {
-    ParagraphMarkWidget * mark = new ParagraphMarkWidget(paragraph->header(),this);
+    ParagraphMarkWidget * mark = new ParagraphMarkWidget(paragraph,this);
     mLayout->addWidget( mark );
     mParagraphMarkWidgets.insert(lineIndex, mark);
 
-    connect( mark, SIGNAL(headerChanged(TextBit)), paragraph, SLOT(setHeader(TextBit)) );
+    connect( mark, SIGNAL(removeParagraphDivision(Paragraph*)), mText, SLOT(removeParagraphDivision(Paragraph*)) );
 }
 
 void InterlinearDisplayWidget::approveAll(int lineNumber)
@@ -309,23 +309,33 @@ void InterlinearDisplayWidget::setLayoutFromText()
 
         Phrase * phrase = mText->phraseAtLine(lineIndex);
         Paragraph * paragraph = mText->paragraphForPhrase(phrase);
-        if( mText->paragraphs()->count() > 1 && paragraph->indexOf(phrase) == 0 )
+        /// add a paragraph marker if there is more than one paragraph in the text && this is the first phrase in the paragraph
+        bool paragraphMarkerAppropriate = mText->paragraphs()->count() > 1 && paragraph->indexOf(phrase) == 0;
+
+        if( !paragraphMarkerAppropriate && mParagraphMarkWidgets.contains(lineIndex) ) /// there should then be no paragraph marker. if one exists, remove it
         {
-            addParagraphMarker(lineIndex, paragraph);
+            ParagraphMarkWidget * marker = mParagraphMarkWidgets.value(lineIndex);
+            mLayout->removeWidget( marker );
+            marker->deleteLater();
+            mParagraphMarkWidgets.remove( lineIndex, marker );
         }
 
-        if( mLineLayouts.value(lineIndex) == 0 ) // there is no layout here
+        if( mLineLayouts.value(lineIndex) == 0 ) /// if there is no layout for this line, a new layout needs to be created
         {
-            flowLayout = addLine(lineIndex);
+            if( paragraphMarkerAppropriate )
+            {
+                addParagraphMarker(lineIndex, paragraph);
+            }
+            flowLayout = addLine(lineIndex); /// the flow layout is added to mLayout here
             phrasalGlossLayout = addPhrasalGlossLayout(lineIndex);
         }
-        else if( mLineRefreshRequests.contains( lineIndex ) )
+        else if( mLineRefreshRequests.contains( lineIndex ) ) /// if the program has requested the line to be redrawn, the widgets in the layout should be cleared away
         {
             flowLayout = mLineLayouts.value(lineIndex);
             phrasalGlossLayout = mPhrasalGlossLayouts.value(lineIndex);
             clearWidgetsFromLine(lineIndex);
         }
-        else
+        else /// there is a layout for this line, and no refresh has been requested, so move on
         {
             continue;
         }

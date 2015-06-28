@@ -443,6 +443,31 @@ int Text::lineNumberForGlossItem(const GlossItem *item) const
     return -1;
 }
 
+void Text::removeParagraphDivision(int paragraphIndex)
+{
+    Q_ASSERT( paragraphIndex < mParagraphs.count() );
+    if( paragraphIndex > 0 )
+    {
+        Paragraph * first = mParagraphs.at(paragraphIndex-1);
+        Paragraph * second = mParagraphs.at(paragraphIndex);
+        for(int i=0; i<second->phraseCount(); i++)
+        {
+            first->phrases()->append( second->phrases()->takeAt(0) );
+        }
+        delete mParagraphs.takeAt(paragraphIndex);
+        phraseRefreshNeeded(paragraphIndex);
+    }
+}
+
+void Text::removeParagraphDivision(Paragraph *paragraph)
+{
+    int index = mParagraphs.indexOf(paragraph);
+    if( index != -1 )
+    {
+        removeParagraphDivision(index);
+    }
+}
+
 Phrase *Text::phraseAtLine(int lineNumber)
 {
     int lineCount = 0;

@@ -129,6 +129,13 @@ public:
     //! \brief Returns the (0-indexed) position of this phrase, in this text. If the phrase does not exist in the text, returns -1.
     int lineNumberForGlossItem(const GlossItem *item) const;
 
+    //! \brief Removes the paragraph division at position \a paragraphIndex
+    void removeParagraphDivision(int paragraphIndex);
+
+public slots:
+    //! \brief Removes the paragraph division \a paragraph
+    void removeParagraphDivision(Paragraph * paragraph);
+
     ///@}
 
     /** @name Phrase operations

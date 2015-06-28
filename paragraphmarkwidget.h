@@ -3,26 +3,27 @@
 
 #include <QWidget>
 
-#include "textbit.h"
-
 class ImmutableLabel;
+class Paragraph;
 
 class ParagraphMarkWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ParagraphMarkWidget(const TextBit & header, QWidget *parent = 0);
+    ParagraphMarkWidget(Paragraph *paragraph, QWidget *parent = 0);
 
 signals:
-    void headerChanged(const TextBit & newHeader);
+    void removeParagraphDivision(Paragraph * paragraph);
 
 private slots:
     void editHeader();
+    void removeParagraphDivision();
 
 private:
     void mouseDoubleClickEvent ( QMouseEvent * event );
+    void contextMenuEvent ( QContextMenuEvent * event );
 
-    TextBit mHeader;
+    Paragraph * mParagraph;
     ImmutableLabel * mHeaderLabel;
 };
 
