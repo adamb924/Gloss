@@ -135,6 +135,10 @@ public:
     //! \brief Adds a paragraph division after position \a paragraphIndex, with \a phraseIndex as the first phrase of the new paragraph
     void addParagraphDivision(int paragraphIndex, int phraseIndex);
 
+private:
+    //! \brief Removes all gloss items from the text
+    void removeAllParagraphs();
+
 public slots:
     //! \brief Removes the paragraph division \a paragraph
     void removeParagraphDivision(Paragraph * paragraph);
@@ -208,10 +212,6 @@ public slots:
 
     //! \brief Sets the glosses with WritingSystem \a w of all GlossItem objects following \a glossItem to match \a glossItem for that WritingSystem
     void matchFollowingGlosses(GlossItem *glossItem, const WritingSystem & ws );
-
-private:
-    //! \brief Removes all gloss items from the text
-    void clearGlossItems();
 
 signals:
     //! \brief Emitted whenever the GlossItem objects of the text are changed

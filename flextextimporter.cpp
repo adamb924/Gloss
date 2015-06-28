@@ -25,7 +25,7 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
     file.open(QFile::ReadOnly);
     QXmlStreamReader stream(&file);
 
-    mText->clearGlossItems();
+    mText->removeAllParagraphs();
 
     bool inWord = false;
     bool inPhrase = false;

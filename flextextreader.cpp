@@ -41,7 +41,7 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     QFileInfo info(file.fileName());
     mText->mName = info.baseName();
 
-    mText->clearGlossItems();
+    mText->removeAllParagraphs();
 
     bool inWord = false;
     bool inPhrase = false;

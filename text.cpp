@@ -117,7 +117,7 @@ const QList<Paragraph *> *Text::paragraphs() const
     return &mParagraphs;
 }
 
-void Text::clearGlossItems()
+void Text::removeAllParagraphs()
 {
     qDeleteAll(mParagraphs);
     mParagraphs.clear();
@@ -126,7 +126,7 @@ void Text::clearGlossItems()
 
 void Text::initializeTextFromString(const QString & content, const QRegularExpression &phraseDelimiter, const QRegularExpression &paragraphDelimiter)
 {
-    clearGlossItems();
+    removeAllParagraphs();
 
     QStringList paragraphs = content.split( paragraphDelimiter );
     foreach(QString paragraph, paragraphs)
