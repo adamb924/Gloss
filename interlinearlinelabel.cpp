@@ -64,7 +64,7 @@ void InterlinearLineLabel::editBaselineText()
     dialog.setWindowTitle(tr("Edit baseline text - Line %1").arg(mLineNumber+1));
     if( dialog.exec() == QDialog::Accepted )
     {
-        mText->setBaselineTextForPhrase(mLineNumber, dialog.text() );
+        mPhrase->setBaselineText( dialog.textBit() );
     }
 }
 

@@ -187,9 +187,6 @@ signals:
     */
     ///@{
 public:
-    //! \brief Sets the baseline text for phrase \a i to \a text (creating GlossItems, etc.)
-    void setBaselineTextForPhrase( int i, const QString & text );
-
     //! \brief Searches for \a glossItem and sets \a line to the phrase index and \a position to the position of the GlossItem within the phrase. All values are 0-indexed. If \a glossItem is not found, \a line and \a position are both set to -1.
     void findGlossItemLocation(const GlossItem *glossItem, int &paragraph, int & phrase, int & position) const;
 
@@ -215,10 +212,6 @@ public slots:
 private:
     //! \brief Removes all gloss items from the text
     void clearGlossItems();
-
-    //! \brief Changes \a phrase so that it contains the text in \a line (creating GlossItems, etc.)
-    /// @todo Why is this here and not in Phrase?
-    void setLineOfGlossItems(Phrase *phrase , const QString & line );
 
 signals:
     //! \brief Emitted whenever the GlossItem objects of the text are changed

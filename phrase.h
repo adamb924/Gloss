@@ -34,6 +34,9 @@ public:
     //! \brief Returns the phrasal gloss for the given WritingSystem, or if this does not yet exist, creates an empty gloss and returns that.
     TextBit gloss(const WritingSystem & ws);
 
+    //! \brief Resets the GlossItems of the phrase to match \a text
+    void setBaselineText(const TextBit &line);
+
     //! \brief Returns a string with all the words of the phrase delimited by spaces
     QString equivalentBaselineLineText() const;
 

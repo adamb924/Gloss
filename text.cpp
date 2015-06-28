@@ -140,7 +140,7 @@ void Text::initializeTextFromString(const QString & content, const QRegularExpre
             phrase = phrase.trimmed();
             mParagraphs.last()->phrases()->append( new Phrase( this, mProject) );
             mParagraphs.last()->phrases()->last()->connectToText();
-            setLineOfGlossItems( mParagraphs.last()->phrases()->last(), phrase );
+            mParagraphs.last()->phrases()->last()->setBaselineText( TextBit( phrase, mBaselineWritingSystem) );
         }
     }
 
@@ -151,50 +151,6 @@ void Text::initializeTextFromString(const QString & content, const QRegularExpre
 QHash<QString, SyntacticAnalysis *> *Text::syntacticAnalyses()
 {
     return &mSyntacticAnalyses;
-}
-
-void Text::setLineOfGlossItems( Phrase * phrase , const QString & line )
-{
-    phrase->clearGlossItems();
-
-    QStringList words = line.split(QRegExp("\\b+"),QString::SkipEmptyParts);
-
-    for(int i=0; i<words.count(); i++)
-    {
-        words[i] = words.at(i).trimmed();
-        if( words.at(i).isEmpty() )
-        {
-            words.removeAt(i);
-            i--;
-        }
-    }
-
-    /// this awkward workaround is because I don't know how to customize \b to
-    /// avoid breaking words against the zero-width non-joiner, which should
-    /// not count as a word break, but which does in Qt regular expressions.
-    int index = words.indexOf(QRegExp("[\\x200C\\x200D]"));
-    while( index != -1 )
-    {
-        if( index == 0 || index == words.length() -1 )
-        {
-            continue;
-        }
-        else
-        {
-            words[index - 1] = words.at(index-1) + words.at(index) + words.at(index+1);
-            words.removeAt(index+1);
-            words.removeAt(index);
-        }
-        index = words.indexOf(QRegExp("[\\x200C\\x200D]"));
-    }
-
-    for(int i=0; i<words.count(); i++)
-    {
-        phrase->appendGlossItem(new GlossItem(TextBit(words.at(i),mBaselineWritingSystem), mProject ));
-    }
-
-    emit phraseRefreshNeeded( lineNumberForPhrase(phrase) );
-    markAsChanged();
 }
 
 void Text::saveText(bool verboseOutput, bool glossNamespace, bool saveAnyway)
@@ -336,14 +292,6 @@ QString Text::textNameFromPath(const QString &path)
 {
     QFileInfo info(path);
     return info.baseName();
-}
-
-void Text::setBaselineTextForPhrase( int i, const QString & text )
-{
-    if( i >= phraseCount() )
-        return;
-    setLineOfGlossItems( phraseAtLine(i) , text );
-    markAsChanged();
 }
 
 void Text::setSound(const QUrl & filename)

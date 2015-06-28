@@ -32,6 +32,49 @@ TextBit Phrase::gloss(const WritingSystem & ws)
     return mGlosses.value(ws);
 }
 
+void Phrase::setBaselineText(const TextBit &line)
+{
+    clearGlossItems();
+
+    QStringList words = line.text().split(QRegExp("\\b+"),QString::SkipEmptyParts);
+
+    for(int i=0; i<words.count(); i++)
+    {
+        words[i] = words.at(i).trimmed();
+        if( words.at(i).isEmpty() )
+        {
+            words.removeAt(i);
+            i--;
+        }
+    }
+
+    /// this awkward workaround is because I don't know how to customize \b to
+    /// avoid breaking words against the zero-width non-joiner, which should
+    /// not count as a word break, but which does in Qt regular expressions.
+    int index = words.indexOf(QRegExp("[\\x200C\\x200D]"));
+    while( index != -1 )
+    {
+        if( index == 0 || index == words.length() -1 )
+        {
+            continue;
+        }
+        else
+        {
+            words[index - 1] = words.at(index-1) + words.at(index) + words.at(index+1);
+            words.removeAt(index+1);
+            words.removeAt(index);
+        }
+        index = words.indexOf(QRegExp("[\\x200C\\x200D]"));
+    }
+
+    for(int i=0; i<words.count(); i++)
+    {
+        appendGlossItem(new GlossItem(TextBit(words.at(i),line.writingSystem()), mProject ));
+    }
+
+    emit requestGuiRefresh(this);
+}
+
 void Phrase::setPhrasalGloss( const TextBit & bit )
 {
     if( !mGlosses.contains(bit.writingSystem()) || mGlosses.value(bit.writingSystem()) !=  bit )
