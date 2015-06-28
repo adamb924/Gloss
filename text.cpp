@@ -131,11 +131,13 @@ void Text::initializeTextFromString(const QString & content, const QRegularExpre
     QStringList paragraphs = content.split( paragraphDelimiter );
     foreach(QString paragraph, paragraphs)
     {
+        paragraph = paragraph.trimmed();
         mParagraphs.append( new Paragraph );
         connect( mParagraphs.last(), SIGNAL(changed()), this, SLOT(markAsChanged()) );
         QStringList phrases = paragraph.split( phraseDelimiter );
         foreach(QString phrase, phrases)
         {
+            phrase = phrase.trimmed();
             mParagraphs.last()->phrases()->append( new Phrase( this, mProject) );
             mParagraphs.last()->phrases()->last()->connectToText();
             setLineOfGlossItems( mParagraphs.last()->phrases()->last(), phrase );
