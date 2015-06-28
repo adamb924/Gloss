@@ -462,6 +462,8 @@ void Text::removeParagraphDivision(int paragraphIndex)
 
 void Text::addParagraphDivision(int lineNumber)
 {
+    if( lineNumber == 0 )
+        return;
     Phrase * phrase = phraseAtLine(lineNumber);
     Q_ASSERT(phrase != 0);
     Paragraph * paragraph = paragraphForPhrase(phrase);
