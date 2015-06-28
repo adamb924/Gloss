@@ -63,6 +63,7 @@ void InterlinearDisplayWidget::addLineLabel( int i , Phrase * phrase, QLayout * 
     connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
     connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));
     connect(lineNumber, SIGNAL(removeLine(int)), mText, SLOT(removePhrase(int)) );
+    connect(lineNumber, SIGNAL(newParagraphAt(int)), mText, SLOT(addParagraphDivision(int)) );
 
     flowLayout->addWidget(lineNumber);
     mLineLabels.insert(i, lineNumber);
@@ -213,12 +214,25 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i, Phrase *phrase, QVBo
     }
 }
 
-void InterlinearDisplayWidget::addParagraphMarker(int lineIndex, Paragraph *paragraph)
+void InterlinearDisplayWidget::addParagraphMarker(int lineIndex, Paragraph *paragraph, QLayout *before)
 {
     ParagraphMarkWidget * mark = new ParagraphMarkWidget(paragraph,this);
-    mLayout->addWidget( mark );
+    if( before == 0 ) /// add it to the end
+    {
+        mLayout->addWidget( mark );
+    }
+    else /// find \a before and insert it before that
+    {
+        for(int i=0; i<mLayout->count(); i++)
+        {
+            if( mLayout->itemAt(i)->layout() == before )
+            {
+                mLayout->insertWidget(i, mark );
+                break;
+            }
+        }
+    }
     mParagraphMarkWidgets.insert(lineIndex, mark);
-
     connect( mark, SIGNAL(removeParagraphDivision(Paragraph*)), mText, SLOT(removeParagraphDivision(Paragraph*)) );
 }
 
@@ -334,6 +348,10 @@ void InterlinearDisplayWidget::setLayoutFromText()
             flowLayout = mLineLayouts.value(lineIndex);
             phrasalGlossLayout = mPhrasalGlossLayouts.value(lineIndex);
             clearWidgetsFromLine(lineIndex);
+            if( paragraphMarkerAppropriate && !mParagraphMarkWidgets.contains(lineIndex) )
+            {
+                addParagraphMarker(lineIndex, paragraph, flowLayout);
+            }
         }
         else /// there is a layout for this line, and no refresh has been requested, so move on
         {

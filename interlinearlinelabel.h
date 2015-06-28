@@ -20,6 +20,7 @@ signals:
     void approveAll(int lineNumber);
     void editLine(int lineNumber);
     void removeLine(int lineNumber);
+    void newParagraphAt(int lineNumber);
 
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
@@ -33,6 +34,7 @@ private slots:
     void emitPlaySound();
     void emitEditPhrase();
     void emitRemovePhrase();
+    void emitNewParagraphAt();
 
 };
 

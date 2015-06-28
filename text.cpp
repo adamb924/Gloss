@@ -455,8 +455,37 @@ void Text::removeParagraphDivision(int paragraphIndex)
             first->phrases()->append( second->phrases()->takeAt(0) );
         }
         delete mParagraphs.takeAt(paragraphIndex);
-        phraseRefreshNeeded(paragraphIndex);
+        emit phraseRefreshNeeded(paragraphIndex);
+        markAsChanged();
     }
+}
+
+void Text::addParagraphDivision(int lineNumber)
+{
+    Phrase * phrase = phraseAtLine(lineNumber);
+    Q_ASSERT(phrase != 0);
+    Paragraph * paragraph = paragraphForPhrase(phrase);
+    Q_ASSERT(paragraph != 0);
+    int paragraphIndex = mParagraphs.indexOf(paragraph);
+    int phraseIndex = paragraph->indexOf(phrase);
+    Q_ASSERT(paragraphIndex != -1);
+    Q_ASSERT(phraseIndex != -1);
+    addParagraphDivision(paragraphIndex, phraseIndex);
+}
+
+void Text::addParagraphDivision(int paragraphIndex, int phraseIndex)
+{
+    Q_ASSERT( paragraphIndex < mParagraphs.count() );
+    Q_ASSERT( phraseIndex < mParagraphs.at(paragraphIndex)->phraseCount() );
+    Paragraph * newParagraph = new Paragraph(mBaselineWritingSystem);
+    connect( newParagraph, SIGNAL(changed()), this, SLOT(markAsChanged()) );
+    for(int i=phraseIndex; i<mParagraphs.at(paragraphIndex)->phraseCount(); i++)
+    {
+        newParagraph->phrases()->append( mParagraphs.at(paragraphIndex)->phrases()->takeAt(phraseIndex) );
+    }
+    mParagraphs.insert(paragraphIndex+1,newParagraph);
+    emit requestGuiRefresh(newParagraph->phrases()->first());
+    markAsChanged();
 }
 
 void Text::removeParagraphDivision(Paragraph *paragraph)

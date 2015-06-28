@@ -132,9 +132,15 @@ public:
     //! \brief Removes the paragraph division at position \a paragraphIndex
     void removeParagraphDivision(int paragraphIndex);
 
+    //! \brief Adds a paragraph division after position \a paragraphIndex, with \a phraseIndex as the first phrase of the new paragraph
+    void addParagraphDivision(int paragraphIndex, int phraseIndex);
+
 public slots:
     //! \brief Removes the paragraph division \a paragraph
     void removeParagraphDivision(Paragraph * paragraph);
+
+    //! \brief Adds a paragraph division starting at line \a lineNumber
+    void addParagraphDivision(int lineNumber);
 
     ///@}
 

@@ -29,6 +29,8 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
     if( !mSoundAvailable )
         playSound->setEnabled(false);
 
+    menu.addAction(tr("New paragraph here"), this, SLOT(emitNewParagraphAt()) );
+
     menu.addAction(tr("Remove line"), this, SLOT(emitRemovePhrase()) );
 
     menu.exec(event->globalPos());
@@ -59,4 +61,9 @@ void InterlinearLineLabel::emitRemovePhrase()
 {
     if( QMessageBox::Yes == QMessageBox::question(this, tr("Confirm deletion"), tr("Are you sure you want to remove this line? This cannot be undone."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) )
         emit removeLine(mLineNumber);
+}
+
+void InterlinearLineLabel::emitNewParagraphAt()
+{
+    emit newParagraphAt(mLineNumber);
 }
