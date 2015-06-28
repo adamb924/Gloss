@@ -502,6 +502,10 @@ void Text::removePhrase(int lineNumber )
     {
         if( paragraph->removePhrase( phraseAtLine(lineNumber) ) )
         {
+            if( paragraph->phraseCount() == 0 )
+            {
+                removeParagraphDivision( mParagraphs.indexOf(paragraph) );
+            }
             markAsChanged();
             if( lineNumber < phraseCount() )
             {
