@@ -503,6 +503,10 @@ void Text::removePhrase(int lineNumber )
         if( paragraph->removePhrase( phraseAtLine(lineNumber) ) )
         {
             markAsChanged();
+            if( lineNumber < phraseCount() )
+            {
+                emit phraseRefreshNeeded( lineNumber );
+            }
             return;
         }
     }
