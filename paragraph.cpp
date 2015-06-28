@@ -23,6 +23,7 @@ bool Paragraph::removePhrase( Phrase * phrase )
     if( index != -1)
     {
         delete mPhrases.takeAt(index);
+        emit changed();
         return true;
     }
     return false;
@@ -52,4 +53,16 @@ int Paragraph::phraseCount() const
 void Paragraph::insertPhrase(int i, Phrase *phrase)
 {
     mPhrases.insert(i, phrase);
+    emit changed();
+}
+
+TextBit Paragraph::header() const
+{
+    return mHeader;
+}
+
+void Paragraph::setHeader(const TextBit &header)
+{
+    mHeader = header;
+    emit changed();
 }

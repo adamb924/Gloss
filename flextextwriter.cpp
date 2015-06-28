@@ -81,6 +81,8 @@ bool FlexTextWriter::serializeInterlinearText() const
     {
         int count = 0;
         mStream->writeStartElement("paragraph");
+        writeNamespaceAttribute("title", paragraph->header().text() );
+
         mStream->writeStartElement("phrases");
         progress.setValue(count);
         foreach( Phrase* phrase, *paragraph->phrases() )

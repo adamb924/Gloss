@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QList>
 
+#include "textbit.h"
+
 class Phrase;
 class GlossItem;
 
@@ -39,11 +41,20 @@ public:
     //! \brief Inserts \a phrase at position \a before
     void insertPhrase(int i, Phrase * phrase);
 
+    //! \brief Returns the header of the paragraph
+    TextBit header() const;
+
+    //! \brief Sets the header of the paragraph. The header is assumed to be (but is not enforced to be) in the baseline text of the language.
+    void setHeader(const TextBit & header);
+
 signals:
+    //! \brief Emitted whenever the paragraph changes
+    void changed();
 
 public slots:
 
 private:
+    TextBit mHeader;
     QList<Phrase*> mPhrases;
 };
 

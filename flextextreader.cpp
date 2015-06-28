@@ -96,6 +96,13 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
             else if ( name == "paragraph" ) // <paragraph>
             {
                 mText->mParagraphs.append( new Paragraph );
+                QObject::connect( mText->mParagraphs.last(), SIGNAL(changed()), mText, SLOT(markAsChanged()) );
+
+                QXmlStreamAttributes attr = stream.attributes();
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","title") )
+                {
+                    mText->mParagraphs.last()->setHeader( TextBit( attr.value("http://www.adambaker.org/gloss.php","title").toString(), mText->mBaselineWritingSystem ) );
+                }
             }
             else if ( name == "phrase" ) // <phrase>
             {

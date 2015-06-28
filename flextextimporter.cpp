@@ -47,6 +47,7 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
             else if ( name == "paragraph" ) // <paragraph>
             {
                 mText->mParagraphs.append( new Paragraph );
+                QObject::connect( mText->mParagraphs.last(), SIGNAL(changed()), mText, SLOT(markAsChanged()) );
             }
             else if ( name == "phrase" )
             {
