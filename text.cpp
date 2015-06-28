@@ -132,7 +132,7 @@ void Text::initializeTextFromString(const QString & content, const QRegularExpre
     foreach(QString paragraph, paragraphs)
     {
         paragraph = paragraph.trimmed();
-        mParagraphs.append( new Paragraph );
+        mParagraphs.append( new Paragraph(mBaselineWritingSystem) );
         connect( mParagraphs.last(), SIGNAL(changed()), this, SLOT(markAsChanged()) );
         QStringList phrases = paragraph.split( phraseDelimiter );
         foreach(QString phrase, phrases)

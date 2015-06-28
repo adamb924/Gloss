@@ -20,6 +20,7 @@
 #include "immutablelabel.h"
 #include "punctuationdisplaywidget.h"
 #include "paragraph.h"
+#include "paragraphmarkwidget.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
     QScrollArea(parent), mTab(tab), mText(text), mProject(project), mMouseMode(InterlinearDisplayWidget::Normal)
@@ -212,6 +213,15 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i, Phrase *phrase, QVBo
     }
 }
 
+void InterlinearDisplayWidget::addParagraphMarker(int lineIndex, const Paragraph *paragraph)
+{
+    ParagraphMarkWidget * mark = new ParagraphMarkWidget(paragraph->header(),this);
+    mLayout->addWidget( mark );
+    mParagraphMarkWidgets.insert(lineIndex, mark);
+
+    connect( mark, SIGNAL(headerChanged(TextBit)), paragraph, SLOT(setHeader(TextBit)) );
+}
+
 void InterlinearDisplayWidget::approveAll(int lineNumber)
 {
     if( lineNumber >= mText->phraseCount() )
@@ -267,6 +277,15 @@ void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
             gloss->deleteLater();
             mPhrasalGlossEdits.remove( lineNumber, gloss );
         }
+
+        QListIterator<ParagraphMarkWidget*> paraIter( mParagraphMarkWidgets.values(lineNumber) );
+        while(paraIter.hasNext())
+        {
+            ParagraphMarkWidget *marker = paraIter.next();
+            layout->removeWidget(marker);
+            marker->deleteLater();
+            mParagraphMarkWidgets.remove( lineNumber, marker );
+        }
    }
 }
 
@@ -288,6 +307,13 @@ void InterlinearDisplayWidget::setLayoutFromText()
         QLayout *flowLayout;
         QVBoxLayout *phrasalGlossLayout;
 
+        Phrase * phrase = mText->phraseAtLine(lineIndex);
+        Paragraph * paragraph = mText->paragraphForPhrase(phrase);
+        if( mText->paragraphs()->count() > 1 && paragraph->indexOf(phrase) == 0 )
+        {
+            addParagraphMarker(lineIndex, paragraph);
+        }
+
         if( mLineLayouts.value(lineIndex) == 0 ) // there is no layout here
         {
             flowLayout = addLine(lineIndex);
@@ -306,7 +332,6 @@ void InterlinearDisplayWidget::setLayoutFromText()
 
         if( flowLayout->isEmpty() )
         {
-            Phrase * phrase = mText->phraseAtLine(lineIndex);
             addLineLabel(lineIndex, phrase, flowLayout);
             addWordWidgets(lineIndex, phrase, flowLayout);
             addPhrasalGlossLines(lineIndex, phrase, phrasalGlossLayout);

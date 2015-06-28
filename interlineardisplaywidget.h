@@ -27,6 +27,8 @@ class GlossItem;
 class Phrase;
 class Focus;
 class Tab;
+class Paragraph;
+class ParagraphMarkWidget;
 
 #include "annotationmarkwidget.h"
 #include "interlinearitemtype.h"
@@ -111,6 +113,7 @@ protected:
     // WordDisplayWidget objects, keyed to line number
     QList< QList<QWidget*> > mWordDisplayWidgets;
     QMultiHash<int, LingEdit*> mPhrasalGlossEdits;
+    QMultiHash<int, ParagraphMarkWidget*> mParagraphMarkWidgets;
 
 
     QLayout* addLine(int lineNumber);
@@ -122,6 +125,9 @@ protected:
 
     //! \brief Add the phrasal gloss lines for phrase \a i
     void addPhrasalGlossLines(int i, Phrase *phrase,  QVBoxLayout *phrasalGlossLayout);
+
+    //! \brief Add a paragraph marker
+    void addParagraphMarker(int lineIndex, const Paragraph *paragraph);
 
     //! \brief Add a line label for phrase \a i
     void addLineLabel(int i, Phrase *phrase, QLayout * flowLayout  );

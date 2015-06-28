@@ -18,7 +18,7 @@ class Paragraph : public QObject
     friend class FlexTextImporter;
 
 public:
-    explicit Paragraph(QObject *parent = 0);
+    explicit Paragraph(WritingSystem & baselineWritingSystem, QObject *parent = 0);
 
     //! \brief Returns a pointer to the list of Phrases in the paragraph
     QList<Phrase*>* phrases();
@@ -44,6 +44,7 @@ public:
     //! \brief Returns the header of the paragraph
     TextBit header() const;
 
+public slots:
     //! \brief Sets the header of the paragraph. The header is assumed to be (but is not enforced to be) in the baseline text of the language.
     void setHeader(const TextBit & header);
 

@@ -2,8 +2,9 @@
 
 #include "phrase.h"
 
-Paragraph::Paragraph(QObject *parent) :
-    QObject(parent)
+Paragraph::Paragraph(WritingSystem &baselineWritingSystem, QObject *parent) :
+    QObject(parent),
+    mHeader(baselineWritingSystem)
 {
 }
 

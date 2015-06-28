@@ -17,6 +17,7 @@ class TextBit
 public:
     TextBit();
     TextBit(const QString & text, const WritingSystem & ws, qlonglong id = -1 );
+    TextBit(const WritingSystem & ws);
     TextBit(const TextBit & other);
 
     bool operator==(qlonglong id) const;

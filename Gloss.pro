@@ -107,7 +107,8 @@ SOURCES += main.cpp\
     texttabwidget.cpp \
     textlistmodel.cpp \
     textmetadatadialog.cpp \
-    paragraph.cpp
+    paragraph.cpp \
+    paragraphmarkwidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -206,7 +207,8 @@ HEADERS  += mainwindow.h \
     texttabwidget.h \
     textlistmodel.h \
     textmetadatadialog.h \
-    paragraph.h
+    paragraph.h \
+    paragraphmarkwidget.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \

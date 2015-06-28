@@ -8,6 +8,10 @@ TextBit::TextBit(const QString & text, const WritingSystem & ws, qlonglong id ) 
 {
 }
 
+TextBit::TextBit(const WritingSystem &ws) : mText(""), mWritingSystem( ws ), mId(-1)
+{
+}
+
 TextBit::TextBit(const TextBit & other) : mText(other.mText), mWritingSystem(other.mWritingSystem), mId(other.mId)
 {
 }
