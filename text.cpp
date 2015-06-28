@@ -346,13 +346,6 @@ void Text::setBaselineTextForPhrase( int i, const QString & text )
     markAsChanged();
 }
 
-QString Text::baselineTextOfPhrase( int i ) const
-{
-    if( i >= phraseCount() )
-        return "";
-    return phraseAtLine(i)->equivalentBaselineLineText();
-}
-
 void Text::setSound(const QUrl & filename)
 {
     if( mSound != 0 )

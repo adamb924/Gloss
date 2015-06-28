@@ -60,7 +60,7 @@ void InterlinearLineLabel::playSound()
 void InterlinearLineLabel::editBaselineText()
 {
     // Launch a dialog requesting input
-    GenericTextInputDialog dialog( TextBit( mText->baselineTextOfPhrase(mLineNumber) , mText->baselineWritingSystem() ) , this);
+    GenericTextInputDialog dialog( TextBit( mPhrase->equivalentBaselineLineText(), mText->baselineWritingSystem() ) , this);
     dialog.setWindowTitle(tr("Edit baseline text - Line %1").arg(mLineNumber+1));
     if( dialog.exec() == QDialog::Accepted )
     {

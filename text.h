@@ -190,9 +190,6 @@ public:
     //! \brief Sets the baseline text for phrase \a i to \a text (creating GlossItems, etc.)
     void setBaselineTextForPhrase( int i, const QString & text );
 
-    //! \brief Returns the baseline text for phrase \a i of the text
-    QString baselineTextOfPhrase( int i ) const;
-
     //! \brief Searches for \a glossItem and sets \a line to the phrase index and \a position to the position of the GlossItem within the phrase. All values are 0-indexed. If \a glossItem is not found, \a line and \a position are both set to -1.
     void findGlossItemLocation(const GlossItem *glossItem, int &paragraph, int & phrase, int & position) const;
 
