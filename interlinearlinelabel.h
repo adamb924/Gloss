@@ -9,32 +9,29 @@
 
 #include <QLabel>
 
+class Phrase;
+class Text;
+
 class InterlinearLineLabel : public QLabel
 {
     Q_OBJECT
 public:
-    InterlinearLineLabel(int lineNumber, const QString & label, bool soundAvailable, const QString & soundSummary, QWidget *parent = 0);
-
-signals:
-    void playSound(int lineNumber);
-    void approveAll(int lineNumber);
-    void editLine(int lineNumber);
-    void removeLine(int lineNumber);
-    void newParagraphAt(int lineNumber);
+    InterlinearLineLabel(Text * text, Phrase * phrase, int lineNumber, QWidget *parent = 0);
 
 private:
     void contextMenuEvent ( QContextMenuEvent * event );
     void mouseDoubleClickEvent ( QMouseEvent * event );
 
+    Text * mText;
+    Phrase * mPhrase;
     int mLineNumber;
-    bool mSoundAvailable;
 
 private slots:
-    void emitApproveAll();
-    void emitPlaySound();
-    void emitEditPhrase();
-    void emitRemovePhrase();
-    void emitNewParagraphAt();
+    void approveAll();
+    void playSound();
+    void editBaselineText();
+    void removePhrase();
+    void newParagraphAt();
 
 };
 

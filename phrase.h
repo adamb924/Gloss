@@ -76,7 +76,11 @@ public:
     //! \brief Replace the GlossItem at \a index with a new GlossItem with baseline text \a bit
     void replaceGlossItem(GlossItem *glossItem, const TextBit & bit );
 
+    //! \brief Contains many connect calls for connecting a phrase to a Text object
     void connectToText();
+
+    //! \brief Marks all gloss items in the phrase as approved
+    void setApproval(GlossItem::ApprovalStatus status);
 
 signals:
     //! \brief Emitted whenever a phrasal gloss changes

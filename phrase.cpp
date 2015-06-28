@@ -232,6 +232,14 @@ void Phrase::connectToText()
     connect( this, SIGNAL(requestRemovePhrase(Phrase*)), mText, SLOT(removePhrase(Phrase*)) );
 }
 
+void Phrase::setApproval(GlossItem::ApprovalStatus status)
+{
+    foreach(GlossItem *item, mGlossItems)
+    {
+        item->setApprovalStatus( status );
+    }
+}
+
 int Phrase::indexOfGlossItem(const GlossItem * item) const
 {
     return mGlossItems.indexOf( const_cast<GlossItem*>(item) );

@@ -4,15 +4,18 @@
 #include <QContextMenuEvent>
 #include <QMessageBox>
 
-InterlinearLineLabel::InterlinearLineLabel(int lineNumber, const QString & label, bool soundAvailable, const QString & soundSummary, QWidget *parent) :
-    QLabel(label, parent)
+#include "phrase.h"
+#include "text.h"
+#include "generictextinputdialog.h"
+
+InterlinearLineLabel::InterlinearLineLabel(Text * text, Phrase * phrase, int lineNumber, QWidget *parent) :
+    QLabel(parent),
+    mText(text),
+    mPhrase(phrase),
+    mLineNumber(lineNumber)
 {
-    mLineNumber = lineNumber;
-    mSoundAvailable = soundAvailable;
-
-    if( !soundSummary.isEmpty() )
-        setToolTip(soundSummary);
-
+    setText(  QString("%1").arg(lineNumber+1) );
+    setToolTip( mPhrase->interval()->summaryString() );
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setMinimumSize(30, 30);
 }
@@ -21,17 +24,16 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
 
-    menu.addAction(tr("Approve all"), this, SLOT(emitApproveAll()) );
-    menu.addAction(tr("Edit baseline text"), this, SLOT(emitEditPhrase()) );
+    menu.addAction(tr("Approve all"), this, SLOT(approveAll()) );
+    menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()) );
 
     // this seems like the most intuitive thing to me, from a user interface standpoint
-    QAction *playSound = menu.addAction(tr("Play sound"), this, SLOT(emitPlaySound()) );
-    if( !mSoundAvailable )
-        playSound->setEnabled(false);
+    QAction *playSound = menu.addAction(tr("Play sound"), this, SLOT(playSound()) );
+    playSound->setEnabled( mPhrase->interval()->isValid() );
 
-    menu.addAction(tr("New paragraph here"), this, SLOT(emitNewParagraphAt()) );
+    menu.addAction(tr("New paragraph here"), this, SLOT(newParagraphAt()) );
 
-    menu.addAction(tr("Remove line"), this, SLOT(emitRemovePhrase()) );
+    menu.addAction(tr("Remove line"), this, SLOT(removePhrase()) );
 
     menu.exec(event->globalPos());
 }
@@ -39,31 +41,37 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
 void InterlinearLineLabel::mouseDoubleClickEvent ( QMouseEvent * event )
 {
     Q_UNUSED(event);
-    emitPlaySound();
+    playSound();
 }
 
-void InterlinearLineLabel::emitApproveAll()
+void InterlinearLineLabel::approveAll()
 {
-    emit approveAll(mLineNumber);
+    mPhrase->setApproval(GlossItem::Approved);
 }
 
-void InterlinearLineLabel::emitPlaySound()
+void InterlinearLineLabel::playSound()
 {
-    emit playSound(mLineNumber);
+    mText->playSoundForLine(mLineNumber);
 }
 
-void InterlinearLineLabel::emitEditPhrase()
+void InterlinearLineLabel::editBaselineText()
 {
-    emit editLine(mLineNumber);
+    // Launch a dialog requesting input
+    GenericTextInputDialog dialog( TextBit( mText->baselineTextOfPhrase(mLineNumber) , mText->baselineWritingSystem() ) , this);
+    dialog.setWindowTitle(tr("Edit baseline text - Line %1").arg(mLineNumber+1));
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        mText->setBaselineTextForPhrase(mLineNumber, dialog.text() );
+    }
 }
 
-void InterlinearLineLabel::emitRemovePhrase()
+void InterlinearLineLabel::removePhrase()
 {
     if( QMessageBox::Yes == QMessageBox::question(this, tr("Confirm deletion"), tr("Are you sure you want to remove this line? This cannot be undone."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) )
-        emit removeLine(mLineNumber);
+        mText->removePhrase(mLineNumber);
 }
 
-void InterlinearLineLabel::emitNewParagraphAt()
+void InterlinearLineLabel::newParagraphAt()
 {
-    emit newParagraphAt(mLineNumber);
+    mText->addParagraphDivision(mLineNumber);
 }

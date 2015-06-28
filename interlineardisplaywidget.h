@@ -64,11 +64,6 @@ private slots:
     void saveText();
     void saveTextVerbose();
 
-
-    void approveAll(int lineNumber);
-    void playSound(int lineNumber);
-    void editLine(int lineNumber);
-
     void approveAll( WordDisplayWidget * wdw );
     void playSound( WordDisplayWidget * wdw );
     void leftGlossItem( WordDisplayWidget * wdw );

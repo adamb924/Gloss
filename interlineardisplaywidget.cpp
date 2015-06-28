@@ -58,13 +58,7 @@ void InterlinearDisplayWidget::setPhrasalGloss(int lineNumber, const TextBit &bi
 
 void InterlinearDisplayWidget::addLineLabel( int i , Phrase * phrase, QLayout * flowLayout  )
 {
-    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(i, QString("%1").arg(i+1), phrase->interval()->isValid(), phrase->interval()->summaryString(), this);
-    connect(lineNumber, SIGNAL(approveAll(int)), this, SLOT(approveAll(int)));
-    connect(lineNumber, SIGNAL(playSound(int)), this, SLOT(playSound(int)));
-    connect(lineNumber, SIGNAL(editLine(int)), this, SLOT(editLine(int)));
-    connect(lineNumber, SIGNAL(removeLine(int)), mText, SLOT(removePhrase(int)) );
-    connect(lineNumber, SIGNAL(newParagraphAt(int)), mText, SLOT(addParagraphDivision(int)) );
-
+    InterlinearLineLabel *lineNumber = new InterlinearLineLabel(mText, phrase, i, this);
     flowLayout->addWidget(lineNumber);
     mLineLabels.insert(i, lineNumber);
 }
@@ -234,32 +228,6 @@ void InterlinearDisplayWidget::addParagraphMarker(int lineIndex, Paragraph *para
     }
     mParagraphMarkWidgets.insert(lineIndex, mark);
     connect( mark, SIGNAL(removeParagraphDivision(Paragraph*)), mText, SLOT(removeParagraphDivision(Paragraph*)) );
-}
-
-void InterlinearDisplayWidget::approveAll(int lineNumber)
-{
-    if( lineNumber >= mText->phraseCount() )
-        return;
-    for(int i=0; i<mText->paragraphs()->count(); i++)
-        for(int j=0; j < mText->paragraphs()->at(i)->phrases()->at(lineNumber)->glossItemCount(); j++)
-            mText->paragraphs()->at(i)->phrases()->at(lineNumber)->glossItemAt(j)->setApprovalStatus(GlossItem::Approved);
-}
-
-void InterlinearDisplayWidget::playSound(int lineNumber)
-{
-    mText->playSoundForLine(lineNumber);
-}
-
-void InterlinearDisplayWidget::editLine(int lineNumber)
-{
-    // Launch a dialog requesting input
-    GenericTextInputDialog dialog( TextBit( mText->baselineTextOfPhrase(lineNumber) , mText->baselineWritingSystem() ) , this);
-    dialog.setWindowTitle(tr("Edit baseline text - Line %1").arg(lineNumber+1));
-    if( dialog.exec() == QDialog::Accepted )
-    {
-        mText->setBaselineTextForPhrase(lineNumber, dialog.text() );
-        setLayoutFromText();
-    }
 }
 
 void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
@@ -516,7 +484,7 @@ void InterlinearDisplayWidget::approveAll( WordDisplayWidget * wdw )
     int lineNumber = lineNumberOfWdw(wdw);
     if( lineNumber != -1 )
     {
-        approveAll(lineNumber);
+        mText->phraseAtLine(lineNumber)->setApproval(GlossItem::Approved);
     }
 }
 
@@ -525,7 +493,7 @@ void InterlinearDisplayWidget::playSound( WordDisplayWidget * wdw )
     int lineNumber = lineNumberOfWdw(wdw);
     if( lineNumber != -1 )
     {
-        playSound(lineNumber);
+        mText->playSoundForLine(lineNumber);
     }
 }
 
