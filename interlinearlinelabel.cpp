@@ -1,5 +1,7 @@
 #include "interlinearlinelabel.h"
 
+#include <QApplication>
+#include <QClipboard>
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QMessageBox>
@@ -26,6 +28,7 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addAction(tr("Approve all"), this, SLOT(approveAll()) );
     menu.addAction(tr("Edit baseline text"), this, SLOT(editBaselineText()) );
+    menu.addAction(tr("Copy baseline text"), this, SLOT(copyBaselineTextToClipboard()));
 
     // this seems like the most intuitive thing to me, from a user interface standpoint
     QAction *playSound = menu.addAction(tr("Play sound"), this, SLOT(playSound()) );
@@ -74,4 +77,10 @@ void InterlinearLineLabel::removePhrase()
 void InterlinearLineLabel::newParagraphAt()
 {
     mText->addParagraphDivision(mLineNumber);
+}
+
+void InterlinearLineLabel::copyBaselineTextToClipboard()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText( mPhrase->equivalentBaselineLineText() );
 }

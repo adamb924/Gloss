@@ -32,7 +32,7 @@ private slots:
     void editBaselineText();
     void removePhrase();
     void newParagraphAt();
-
+    void copyBaselineTextToClipboard();
 };
 
 #endif // INTERLINEARLINELABEL_H
