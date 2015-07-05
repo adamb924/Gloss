@@ -21,6 +21,9 @@ public:
     ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *parent = 0);
     ~ImmutableLabel();
 
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
+
 signals:
     void doubleClick( TextBit & bit );
 

@@ -5,7 +5,9 @@
 #include <QtDebug>
 
 ImmutableLabel::ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *parent) :
-        QLabel(parent)
+        QLabel(parent),
+        mTextBit(bit),
+        mTechnicolor(technicolor)
 {
     setAlignment( Qt::AlignLeft );
 
@@ -17,15 +19,27 @@ ImmutableLabel::ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *p
     {
         setText(bit.text());
     }
-
-    mTextBit = bit;
-    mTechnicolor = technicolor;
+    setFont( mTextBit.writingSystem().font() );
     setToolTip(mTextBit.writingSystem().name());
     updateStyle();
 }
 
 ImmutableLabel::~ImmutableLabel()
 {
+}
+
+QSize ImmutableLabel::sizeHint() const
+{
+    QSize sizeHint = QLabel::sizeHint();
+    sizeHint.setWidth( fontMetrics().boundingRect(mTextBit.text()).width() + fontMetrics().averageCharWidth() );
+    return sizeHint;
+}
+
+QSize ImmutableLabel::minimumSizeHint() const
+{
+    QSize sizeHint = QLabel::sizeHint();
+    sizeHint.setWidth( fontMetrics().boundingRect(mTextBit.text()).width() + fontMetrics().averageCharWidth() );
+    return sizeHint;
 }
 
 void ImmutableLabel::setCandidateNumber(GlossItem::CandidateNumber status)
@@ -50,6 +64,7 @@ void ImmutableLabel::setCandidateNumberAndApprovalStatus(GlossItem::CandidateNum
 void ImmutableLabel::setTextBit(const TextBit & bit)
 {
     mTextBit = bit;
+    setFont( mTextBit.writingSystem().font() );
     setToolTip(mTextBit.writingSystem().name());
     setText( bit.text() );
     updateStyle();
