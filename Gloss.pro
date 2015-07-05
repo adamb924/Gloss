@@ -249,8 +249,15 @@ FORMS    += mainwindow.ui \
 
 unix:INCLUDEPATH += "/usr/include/libxml2"
 
+# Approximately every other Qt update, I have switch back
+# and forth between these two sets of library includes. I
+# am certain there is a logic to it, but I do not understand
+# it at all.
 LIBS += -L./ \
     -lquazip \
-    -lexslt \
-    -lxslt \
-    -lxml2
+    -llibexslt \
+    -llibxslt \
+    -llibxml2
+#    -lexslt \
+#    -lxslt \
+#    -lxml2
