@@ -135,12 +135,15 @@ private slots:
     ///@{
 public slots:
     //! \brief Searches either the texts or the database index for the specified interpretation \a id, and puts the results in a dock.
+    //! @todo this probably doesn't work anymore. Cf. DatabaseAdapter::createIndex for how to fix the XPath
     void searchForInterpretationById(qlonglong id);
 
     //! \brief Searches either the texts or the database index for the specified text form \a id, and puts the results in a dock.
+    //! @todo this probably doesn't work anymore. Cf. DatabaseAdapter::createIndex for how to fix the XPath
     void searchForTextFormById(qlonglong id);
 
     //! \brief Searches either the texts or the database index for the specified gloss \a id, and puts the results in a dock.
+    //! @todo this probably doesn't work anymore. Cf. DatabaseAdapter::createIndex for how to fix the XPath
     void searchForGlossById(qlonglong id);
 
     //! \brief Searches either the texts or the database index for the specified lexical entry \a id, and puts the results in a dock.

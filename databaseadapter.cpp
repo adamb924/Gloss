@@ -1451,7 +1451,7 @@ void DatabaseAdapter::createTextFormIndex( const QSet<QString> * filePaths ) con
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
             "declare variable $path external; "
                            "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='txt' or @type='punct']  "
-                          "let $line-number := string( $x/../../../../phrase/item[@type='segnum']/text() ) "
+                            "let $line-number := string( count($x/preceding::words)+1 ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "TextFormIndex" , queryString , filePaths );
 }
@@ -1461,7 +1461,7 @@ void DatabaseAdapter::createGlossIndex( const QSet<QString> * filePaths ) const
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
             "declare variable $path external; "
                            "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word/item[@type='gls']  "
-                          "let $line-number := string( $x/../../../../phrase/item[@type='segnum']/text() ) "
+            "let $line-number := string( count($x/preceding::words)+1 ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "GlossIndex" , queryString , filePaths );
 }
@@ -1471,7 +1471,7 @@ void DatabaseAdapter::createInterpretationIndex( const QSet<QString> * filePaths
     QString queryString = "declare namespace abg = 'http://www.adambaker.org/gloss.php'; "
             "declare variable $path external; "
                            "for $x in doc($path)/document/interlinear-text/paragraphs/paragraph/phrases/phrase/words/word "
-                          "let $line-number := string( $x/../../../phrase/item[@type='segnum']/text() ) "
+                          "let $line-number := string( count($x/preceding::words)+1 ) "
                           "return string-join( ($line-number, $x/@abg:id) , ',') ";
     createIndex( "InterpretationIndex" , queryString , filePaths );
 }

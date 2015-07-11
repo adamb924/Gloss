@@ -239,6 +239,8 @@ private:
     ///@{
 public:
     //! \brief Attempts to play the sound associated with \a textName for line \a lineNumber. This file reads the XML file, since a user may want to hear a line without opening the entire text.
+    //! @todo it's not at all clear that this needs to be in Project.. maybe Text, and maybe even Phrase
+    //! Also the XPath query probably doesn't even work
     void playLine(const QString & textName, int lineNumber);
 
     //! \brief Returns a path to the filename, changing the path to the project's default media path, if the project is configured that way.
