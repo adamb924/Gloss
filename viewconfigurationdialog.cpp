@@ -180,11 +180,14 @@ void ViewConfigurationDialog::viewChanged(const QItemSelection &selected, const 
 void ViewConfigurationDialog::populateWritingSystemCombo()
 {
     ui->itemWritingSystemsCombo->clear();
+
     QList<WritingSystem> availableWS = mTab->interlinearLineKeys();
     for(int i=0; i<availableWS.count(); i++)
     {
         ui->itemWritingSystemsCombo->addItem( availableWS.at(i).name() );
     }
+
+    ui->itemWritingSystemsCombo->setEnabled( ui->itemWritingSystemsCombo->count() > 0 );
 
     WritingSystem currentWS = currentWritingSystem();
     if( mItemsModel != 0 )
