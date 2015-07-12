@@ -29,6 +29,14 @@ ImmutableLabel::~ImmutableLabel()
 {
 }
 
+void ImmutableLabel::matchTextAlignmentTo(Qt::LayoutDirection target)
+{
+    if( target == Qt::LeftToRight )
+        setAlignment( mTextBit.writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignLeft : Qt::AlignRight );
+    else
+        setAlignment( mTextBit.writingSystem().layoutDirection() == Qt::LeftToRight ? Qt::AlignRight : Qt::AlignLeft );
+}
+
 QSize ImmutableLabel::sizeHint() const
 {
     QSize sizeHint = QLabel::sizeHint();

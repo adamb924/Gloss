@@ -188,6 +188,7 @@ ImmutableLabel* WordDisplayWidget::addImmutableTextFormLine( const InterlinearIt
 
     ImmutableLabel *immutableLabel = new ImmutableLabel( bit, technicolor , this);
     immutableLabel->setCandidateNumberAndApprovalStatus(mGlossItem->candidateNumber(), mGlossItem->approvalStatus());
+    immutableLabel->matchTextAlignmentTo( mGlossLines->first().writingSystem().layoutDirection() );
 
     mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
 
@@ -208,6 +209,7 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
 
     ImmutableLabel *immutableLabel = new ImmutableLabel( bit, technicolor , this);
     immutableLabel->setCandidateNumberAndApprovalStatus(mGlossItem->candidateNumber(), mGlossItem->approvalStatus());
+    immutableLabel->matchTextAlignmentTo( mGlossLines->first().writingSystem().layoutDirection() );
 
     mImmutableLines.insert( glossLine.writingSystem() , immutableLabel );
 

@@ -21,6 +21,8 @@ public:
     ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *parent = 0);
     ~ImmutableLabel();
 
+    void matchTextAlignmentTo( Qt::LayoutDirection target );
+
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
 
