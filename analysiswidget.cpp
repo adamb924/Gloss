@@ -11,8 +11,8 @@
 #include "lexicalentrysearchdialog.h"
 #include "project.h"
 
-AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, Project *project, QWidget *parent) :
-        QWidget(parent), mProject(project), mGlossItem(glossItem), mWritingSystem(analysisWs), mDbAdapter(mProject->dbAdapter())
+AnalysisWidget::AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, Qt::LayoutDirection layoutDirection, Project *project, QWidget *parent) :
+        QWidget(parent), mProject(project), mGlossItem(glossItem), mWritingSystem(analysisWs), mLayoutDirection(layoutDirection), mDbAdapter(mProject->dbAdapter())
 {
     mLayout = new QVBoxLayout;
     mLayout->setSpacing(0);
@@ -60,13 +60,22 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analy
 
     /// add the baseline representation
     QHBoxLayout * baseLayout = new QHBoxLayout;
+    baseLayout->setContentsMargins(0,0,0,0);
+    if( mLayoutDirection == Qt::RightToLeft )
+    {
+        baseLayout->addSpacerItem( new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+    }
     for(int i=0; i< analysis->allomorphCount(); i++)
     {
-        ImmutableLabel * label = new ImmutableLabel( analysis->baselineText(i) , false );
+        ImmutableLabel * label = new ImmutableLabel( analysis->baselineText(i) , true );
+        label->matchTextAlignmentTo( mLayoutDirection );
         baseLayout->addWidget( label );
         connect( label, SIGNAL(doubleClick(TextBit&)), this, SLOT(allomorphDoubleClick(TextBit&)) );
     }
-    baseLayout->addSpacerItem( new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+    if( mLayoutDirection == Qt::LeftToRight )
+    {
+        baseLayout->addSpacerItem( new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+    }
     mLayout->addLayout(baseLayout);
 
     /// add each of the gloss lines
@@ -74,13 +83,22 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analy
     for(int i=0; i<glossLines->count(); i++)
     {
         QHBoxLayout * hlayout = new QHBoxLayout;
+        hlayout->setContentsMargins(0,0,0,0);
+        if( mLayoutDirection == Qt::RightToLeft )
+        {
+            hlayout->addSpacerItem( new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+        }
         for(int j=0; j< analysis->allomorphCount(); j++)
         {
-            ImmutableLabel * label = new ImmutableLabel( analysis->gloss(j, glossLines->at(i)) , false );
+            ImmutableLabel * label = new ImmutableLabel( analysis->gloss(j, glossLines->at(i)) , true );
+            label->matchTextAlignmentTo( mLayoutDirection );
             hlayout->addWidget( label );
             connect( label, SIGNAL(doubleClick(TextBit&)), this, SLOT(allomorphDoubleClick(TextBit&)) );
         }
-        hlayout->addSpacerItem( new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+        if( mLayoutDirection == Qt::LeftToRight )
+        {
+            hlayout->addSpacerItem( new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum) );
+        }
         mLayout->addLayout(hlayout);
     }
     for( int i=0; i<analysis->allomorphCount(); i++ )

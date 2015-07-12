@@ -24,7 +24,7 @@ class AnalysisWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, Project *project, QWidget *parent = 0);
+    AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, Qt::LayoutDirection layoutDirection, Project *project, QWidget *parent = 0);
 
 signals:
     void morphologicalAnalysisChanged(const GlossItem * originator, const MorphologicalAnalysis * analysis);
@@ -40,6 +40,7 @@ private:
     Project *mProject;
     GlossItem *mGlossItem;
     WritingSystem mWritingSystem;
+    Qt::LayoutDirection mLayoutDirection;
 
     const DatabaseAdapter *mDbAdapter;
 

@@ -226,7 +226,7 @@ ImmutableLabel* WordDisplayWidget::addImmutableGlossLine( const InterlinearItemT
 
 AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType & glossLine )
 {
-    AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mProject, this);
+    AnalysisWidget *analysisWidget = new AnalysisWidget(mGlossItem, glossLine.writingSystem(), mGlossLines->first().writingSystem().layoutDirection(), mProject, this);
     mAnalysisWidgets.insert( glossLine.writingSystem(), analysisWidget );
 
     connect( mGlossItem, SIGNAL(morphologicalAnalysisChanged(const GlossItem*,const MorphologicalAnalysis*)), analysisWidget, SLOT(setupLayout()));

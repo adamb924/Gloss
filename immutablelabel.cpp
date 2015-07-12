@@ -9,7 +9,6 @@ ImmutableLabel::ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *p
         mTextBit(bit),
         mTechnicolor(technicolor)
 {
-    setAlignment( Qt::AlignLeft );
     setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     if( bit.writingSystem().layoutDirection() == Qt::RightToLeft )
