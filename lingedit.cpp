@@ -59,6 +59,10 @@ void LingEdit::focusOutEvent ( QFocusEvent * e )
 void LingEdit::keyPressEvent(QKeyEvent *event)
 {
     QLineEdit::keyPressEvent(event);
+    if( event->key() == 0x200C )
+    {
+        insert( QChar(0x200C) );
+    }
     if( event->key() == Qt::Key_Insert )
     {
         emit insertPressed( mTextBit.writingSystem() );
