@@ -53,6 +53,7 @@ signals:
 private slots:
     void newLexicalEntry();
     void linkToOther();
+    void quickLE();
     void setType(int index);
 };
 

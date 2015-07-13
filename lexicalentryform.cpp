@@ -27,6 +27,7 @@ LexicalEntryForm::LexicalEntryForm(const TextBit &allomorphString, const GlossIt
     connect(ui->candidatesCombo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(entryChanged()) );
     connect(ui->newForm, SIGNAL(clicked()), this, SLOT(newLexicalEntry()));
     connect(ui->linkToOther, SIGNAL(clicked()), this, SLOT(linkToOther()));
+    connect(ui->quickLeButton, SIGNAL(clicked()), this, SLOT(quickLE()) );
 }
 
 LexicalEntryForm::~LexicalEntryForm()
@@ -108,6 +109,18 @@ void LexicalEntryForm::linkToOther()
             emit entryChanged();
         }
     }
+}
+
+void LexicalEntryForm::quickLE()
+{
+    TextBitHash textForms = * mGlossItem->textForms();
+    textForms.insert( mAllomorphText.writingSystem(), mAllomorphText );
+    qlonglong lexicalEntryId = mDbAdapter->addLexicalEntry( "", mAllomorphType, mGlossItem->glosses()->values(), textForms.values(), QStringList() );
+    Allomorph::Type type = mDbAdapter->lexicalEntryMorphologicalType( lexicalEntryId );
+    mTypes << type;
+    mDbAdapter->addAllomorph( mAllomorphText , lexicalEntryId );
+    fillData(lexicalEntryId);
+    emit entryChanged();
 }
 
 qlonglong LexicalEntryForm::id() const

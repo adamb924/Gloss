@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>654</width>
+    <width>799</width>
     <height>34</height>
    </rect>
   </property>
@@ -45,6 +45,19 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QComboBox" name="morphemeType">
        <property name="minimumSize">
         <size>
@@ -72,6 +85,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="newForm">
+       <property name="toolTip">
+        <string>Create a new lexical entry for this word</string>
+       </property>
        <property name="text">
         <string>Create new...</string>
        </property>
@@ -79,8 +95,21 @@
      </item>
      <item>
       <widget class="QPushButton" name="linkToOther">
+       <property name="toolTip">
+        <string>Link this form to an existing lexical entry</string>
+       </property>
        <property name="text">
         <string>Link to other...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="quickLeButton">
+       <property name="toolTip">
+        <string>Add a lexical entry using the item's glosses and text forms for the lexical entries</string>
+       </property>
+       <property name="text">
+        <string>Quick LE</string>
        </property>
       </widget>
      </item>
