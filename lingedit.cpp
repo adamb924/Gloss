@@ -8,13 +8,13 @@
 #include "textbit.h"
 
 LingEdit::LingEdit(QWidget *parent) :
-    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(TextBit()), mSpecialBorder(false)
+    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(TextBit()), mSpecialBorder(false), mWarningText("")
 {
     connect(this,SIGNAL(editingFinished()),this,SLOT(textChanged()));
 }
 
 LingEdit::LingEdit(const TextBit & bit, QWidget *parent) :
-    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(bit), mSpecialBorder(false)
+    QLineEdit(parent), mOverrideFontSize(-1), mTextBit(bit), mSpecialBorder(false), mWarningText("")
 {
     setWritingSystem( mTextBit.writingSystem() );
     setText( mTextBit.text() );
@@ -113,11 +113,12 @@ void LingEdit::updateMatchingTextBit( const TextBit & bit )
 
 void LingEdit::refreshStyle()
 {
-    setStyleSheet( QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid %3; %4 }")
+    setStyleSheet( QString(" QLineEdit { font-family: %1; font-size: %2pt; border: 1px solid %3; %4 %5 }")
                    .arg(mTextBit.writingSystem().fontFamily())
                    .arg( mOverrideFontSize == -1 ? mTextBit.writingSystem().fontSize() : mOverrideFontSize )
                    .arg( hasFocus() ? "#c0c0c0" : "#f0f0f0" )
-                   .arg( mSpecialBorder && hasFocus() ? "border-left-color: #0000ff;" : mSpecialBorder ? "border-left-color: #aaaaff;" : "" ) );
+                   .arg( mSpecialBorder && hasFocus() ? "border-left-color: #0000ff;" : mSpecialBorder ? "border-left-color: #aaaaff;" : "" )
+                   .arg( mWarningText.length() > 0 ? "background-color: #fbe3e4" : "background-color: #fff" ) );
 }
 
 void LingEdit::setFontSize(int fontSize)
@@ -150,4 +151,17 @@ QSize LingEdit::minimumSizeHint() const
     QSize sizeHint = QLineEdit::minimumSizeHint();
     sizeHint.setWidth( fontMetrics().width(mTextBit.text()) + 10 );
     return sizeHint;
+}
+
+void LingEdit::setWarning(const QString &warning)
+{
+    mWarningText = warning;
+    if( mWarningText.length() > 0 )
+    {
+        setToolTip(mWarningText);
+    }
+    else
+    {
+        setToolTip(mTextBit.writingSystem().name());
+    }
 }

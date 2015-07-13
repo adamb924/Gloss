@@ -253,6 +253,9 @@ public:
     QSet<TextBit> allPrefixPossibilities(const TextBit & textForm, bool testOther) const;
     QSet<TextBit> allTwoRootPossibilities(const TextBit & textForm) const;
 
+    bool hasDuplicateTextForms(qlonglong interpretationId, qlonglong writingSystemId) const;
+    bool hasDuplicateGlosses(qlonglong interpretationId, qlonglong writingSystemId) const;
+
 private:
     //! \brief Creates the tables; all tables are created with "create if not exists" -- so it's fine to call this in the constructor
     void createTables();

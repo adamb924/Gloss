@@ -178,6 +178,9 @@ private slots:
 
     void beginNewPhraseHere();
     void noNewPhraseHere();
+
+    void checkForDuplicateTextForm(const TextBit & bit, LingEdit * edit);
+    void checkForDuplicateGloss(const TextBit & bit, LingEdit * edit);
 };
 
 #endif // WORDDISPLAYWIDGET_H

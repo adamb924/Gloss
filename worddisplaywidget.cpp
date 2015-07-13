@@ -163,6 +163,7 @@ LingEdit* WordDisplayWidget::addGlossLine( const InterlinearItemType & glossLine
     // update the gloss item
     connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setGloss(TextBit)) );
     connect(edit, SIGNAL(insertPressed(WritingSystem)), this, SLOT(newGloss(WritingSystem)));
+    connect(edit, SIGNAL(stringChanged(TextBit,LingEdit*)), this, SLOT(checkForDuplicateGloss(TextBit,LingEdit*)) );
 
     return edit;
 }
@@ -178,6 +179,7 @@ LingEdit* WordDisplayWidget::addTextFormLine( const InterlinearItemType & glossL
     // update the gloss item
     connect(edit,SIGNAL(stringChanged(TextBit,LingEdit*)), mGlossItem, SLOT(setTextForm(TextBit)) );
     connect(edit, SIGNAL(insertPressed(WritingSystem)), this, SLOT(newTextForm(WritingSystem)));
+    connect(edit, SIGNAL(stringChanged(TextBit,LingEdit*)), this, SLOT(checkForDuplicateTextForm(TextBit,LingEdit*)) );
 
     return edit;
 }
@@ -1147,6 +1149,30 @@ void WordDisplayWidget::beginNewPhraseHere()
 void WordDisplayWidget::noNewPhraseHere()
 {
     emit requestNoPhraseFromHere( mGlossItem );
+}
+
+void WordDisplayWidget::checkForDuplicateTextForm(const TextBit &bit, LingEdit *edit)
+{
+    if( mDbAdapter->hasDuplicateTextForms(mGlossItem->id(), bit.writingSystem().id()) )
+    {
+        edit->setWarning(tr("Multiple text forms have the same string. This is likely a mistake."));
+    }
+    else
+    {
+        edit->setWarning();
+    }
+}
+
+void WordDisplayWidget::checkForDuplicateGloss(const TextBit &bit, LingEdit *edit)
+{
+    if( mDbAdapter->hasDuplicateGlosses(mGlossItem->id(), bit.writingSystem().id()) )
+    {
+        edit->setWarning(tr("Multiple glosses have the same string. This is likely a mistake."));
+    }
+    else
+    {
+        edit->setWarning();
+    }
 }
 
 void WordDisplayWidget::annotationMarkActivated( const QString & key )

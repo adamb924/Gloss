@@ -2092,3 +2092,25 @@ QSet<TextBit> DatabaseAdapter::allTwoRootPossibilities(const TextBit &textForm) 
 
     return retVal;
 }
+
+bool DatabaseAdapter::hasDuplicateTextForms(qlonglong interpretationId, qlonglong writingSystemId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select count(1) as cnt from TextForms where InterpretationId=? and WritingSystem=? group by Form having count(1) > 1;");
+              q.bindValue(0,interpretationId);
+              q.bindValue(1,writingSystemId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::hasDuplicateTextForms" << q.lastError().text() << q.executedQuery();
+    return q.next();
+}
+
+bool DatabaseAdapter::hasDuplicateGlosses(qlonglong interpretationId, qlonglong writingSystemId) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select count(1) as cnt from Glosses where InterpretationId=? and WritingSystem=? group by Form having count(1) > 1;");
+              q.bindValue(0,interpretationId);
+              q.bindValue(1,writingSystemId);
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::hasDuplicateGlosses" << q.lastError().text() << q.executedQuery();
+    return q.next();
+}

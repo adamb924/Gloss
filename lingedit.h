@@ -35,6 +35,8 @@ public:
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
 
+    void setWarning(const QString & warning = QString() );
+
 private:
     void focusInEvent ( QFocusEvent * e );
     void focusOutEvent ( QFocusEvent * e );
@@ -43,6 +45,7 @@ private:
     int mOverrideFontSize;
     TextBit mTextBit;
     bool mSpecialBorder;
+    QString mWarningText;
 
     void refreshStyle();
 
