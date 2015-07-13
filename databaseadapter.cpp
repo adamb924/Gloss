@@ -2066,6 +2066,8 @@ QSet<TextBit> DatabaseAdapter::allTwoRootPossibilities(const TextBit &textForm) 
                   "where LexicalEntry._id=Allomorph.LexicalEntryId "
                   "and MorphologicalCategory='Stem' "
                   "and Form=substr(?,1,length(Form)) "
+                  "and length(First) > 0 "
+                  "and length(Second) > 0 "
                   "and WritingSystem=? "
                "union "
                 "select substr(?,1,length(?)-length(Form)) as First, Form as Second "
@@ -2073,6 +2075,8 @@ QSet<TextBit> DatabaseAdapter::allTwoRootPossibilities(const TextBit &textForm) 
                   "where LexicalEntry._id=Allomorph.LexicalEntryId "
                   "and MorphologicalCategory='Stem' "
                   "and Form=substr(?,-1*length(Form)) "
+                  "and length(First) > 0 "
+                  "and length(Second) > 0 "
                   "and WritingSystem=?;");
     q.bindValue(0,stem);
     q.bindValue(1,stem);
