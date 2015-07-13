@@ -48,10 +48,18 @@ void AnalysisWidget::createUninitializedLayout()
     connect(createMle, SIGNAL(clicked()), this, SLOT(createMonomorphemicLexicalEntry()));
 
     QPushButton *analyze = new QPushButton(tr("Polymorphemic"), this);
+    createMle->setToolTip(tr("Create polymorphemic lexical entry"));
     analyze->setFlat(true);
     analyze->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; padding-bottom: 6px; padding-top: 6px; }");
     mLayout->addWidget(analyze);
     connect(analyze, SIGNAL(clicked()), this, SLOT(enterAnalysis()));
+
+    QPushButton *createQMle = new QPushButton(tr("Quick Mono"), this);
+    createQMle->setToolTip(tr("Create monomorphemic lexical entry without a chance to edit"));
+    createQMle->setFlat(true);
+    createQMle->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; padding-bottom: 6px;  padding-top: 6px; }");
+    mLayout->addWidget(createQMle);
+    connect(createQMle, SIGNAL(clicked()), this, SLOT(createQuickMonomorphemicLexicalEntry()));
 }
 
 void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analysis)
@@ -182,17 +190,9 @@ void AnalysisWidget::enterAnalysis()
     }
 }
 
-void AnalysisWidget::createMonomorphemicLexicalEntry()
+void AnalysisWidget::createAndDisplayAnalysis(qlonglong lexicalEntryId)
 {
-    qlonglong lexicalEntryId = selectCandidateLexicalEntry();
-    if( lexicalEntryId == -1 )
-    {
-        CreateLexicalEntryDialog dialog( textBit(), true, true, mGlossItem, mProject, this);
-        connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
-        if( dialog.exec() == QDialog::Accepted )
-            lexicalEntryId = dialog.lexicalEntryId();
-    }
-    if( lexicalEntryId != -1 ) /// i.e., if it is *still* -1
+    if( lexicalEntryId != -1 ) /// if we have a valid lexical entry
     {
         qlonglong allomorphId = mDbAdapter->addAllomorph( textBit() , lexicalEntryId );
         Allomorph *allomorph = mDbAdapter->allomorphFromId(allomorphId);
@@ -205,6 +205,29 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         /// emit 0 so that the concordance actually does change this gloss item
         emit morphologicalAnalysisChanged( 0, analysis );
     }
+}
+
+void AnalysisWidget::createMonomorphemicLexicalEntry()
+{
+    qlonglong lexicalEntryId = selectCandidateLexicalEntry();
+    if( lexicalEntryId == -1 )
+    {
+        CreateLexicalEntryDialog dialog( textBit(), true, true, mGlossItem, mProject, this);
+        connect( &dialog, SIGNAL(linkToOther()), this, SLOT(linkToOther()) );
+        if( dialog.exec() == QDialog::Accepted )
+            lexicalEntryId = dialog.lexicalEntryId();
+    }
+    createAndDisplayAnalysis(lexicalEntryId);
+}
+
+void AnalysisWidget::createQuickMonomorphemicLexicalEntry()
+{
+    qlonglong lexicalEntryId = selectCandidateLexicalEntry();
+    if( lexicalEntryId == -1 ) /// if the user has not just chosen a different lexical entry
+    {
+        lexicalEntryId = mDbAdapter->addLexicalEntry( "", Allomorph::Stem, mGlossItem->glosses()->values(), mGlossItem->textForms()->values(), QStringList() );
+    }
+    createAndDisplayAnalysis(lexicalEntryId);
 }
 
 qlonglong AnalysisWidget::selectCandidateLexicalEntry()

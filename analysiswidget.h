@@ -26,6 +26,7 @@ class AnalysisWidget : public QWidget
 public:
     AnalysisWidget(GlossItem *glossItem, const WritingSystem & analysisWs, Qt::LayoutDirection layoutDirection, Project *project, QWidget *parent = 0);
 
+    void createAndDisplayAnalysis(qlonglong lexicalEntryId);
 signals:
     void morphologicalAnalysisChanged(const GlossItem * originator, const MorphologicalAnalysis * analysis);
     void requestAlternateInterpretation();
@@ -61,6 +62,7 @@ protected:
 private slots:
     void enterAnalysis();
     void createMonomorphemicLexicalEntry();
+    void createQuickMonomorphemicLexicalEntry();
     void linkToOther();
     void editLexicalEntry(QAction * action);
     void editLexicalEntry(qlonglong allomorphId);
