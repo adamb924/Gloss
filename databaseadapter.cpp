@@ -1976,6 +1976,11 @@ QSet<TextBit> DatabaseAdapter::allSuffixPossibilities(const TextBit &textForm, b
         retVal.unite( allPrefixPossibilities(textForm,false) );
     }
 
+    if(testOther && retVal.count() == 1 )
+    {
+        retVal.unite( allTwoRootPossibilities( textForm ) );
+    }
+
     return retVal;
 }
 
@@ -2028,6 +2033,61 @@ QSet<TextBit> DatabaseAdapter::allPrefixPossibilities(const TextBit &textForm, b
     if(testOther && retVal.count() == 1 )
     {
         retVal.unite( allSuffixPossibilities( textForm, false ) );
+    }
+
+    if(testOther && retVal.count() == 1 )
+    {
+        retVal.unite( allTwoRootPossibilities( textForm ) );
+    }
+
+    return retVal;
+}
+
+QSet<TextBit> DatabaseAdapter::allTwoRootPossibilities(const TextBit &textForm) const
+{
+    QSet<TextBit> retVal;
+    QString stem;
+
+    QRegularExpression re(" (?![-=*~])([^-=*~]+)(?![-=*~]) ");
+    QRegularExpressionMatch match = re.match(" " + textForm.text() + " ");
+    if (match.hasMatch())
+    {
+        stem = match.captured(1);
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::allTwoRootPossibilities was not passed a string with a stem." << textForm;
+        return retVal;
+    }
+
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select Form as First,substr(?,length(Form)+1) as Second "
+                  "from LexicalEntry,Allomorph "
+                  "where LexicalEntry._id=Allomorph.LexicalEntryId "
+                  "and MorphologicalCategory='Stem' "
+                  "and Form=substr(?,1,length(Form)) "
+                  "and WritingSystem=? "
+               "union "
+                "select substr(?,1,length(?)-length(Form)) as First, Form as Second "
+                  "from LexicalEntry,Allomorph "
+                  "where LexicalEntry._id=Allomorph.LexicalEntryId "
+                  "and MorphologicalCategory='Stem' "
+                  "and Form=substr(?,-1*length(Form)) "
+                  "and WritingSystem=?;");
+    q.bindValue(0,stem);
+    q.bindValue(1,stem);
+    q.bindValue(2,textForm.writingSystem().id());
+    q.bindValue(3,stem);
+    q.bindValue(4,stem);
+    q.bindValue(5,stem);
+    q.bindValue(6,textForm.writingSystem().id());
+
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::allTwoRootPossibilities" << q.lastError().text() << q.executedQuery();
+
+    while( q.next() )
+    {
+        retVal << TextBit( q.value(0).toString() + " " + q.value(1).toString() , textForm.writingSystem() );
     }
 
     return retVal;
