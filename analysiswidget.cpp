@@ -167,7 +167,7 @@ void AnalysisWidget::editLexicalEntry(qlonglong allomorphId)
 
 void AnalysisWidget::enterAnalysis()
 {
-    CreateAnalysisDialog dialog( textBit() );
+    CreateAnalysisDialog dialog( mDbAdapter, textBit() );
     if( dialog.exec() == QDialog::Accepted )
     {
         ChooseLexicalEntriesDialog leDialog( TextBit(dialog.analysisString(), textBit().writingSystem(), textBit().id() ), mGlossItem,  mProject , this);

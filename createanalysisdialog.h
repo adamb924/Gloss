@@ -14,20 +14,28 @@ namespace Ui {
     class CreateAnalysisDialog;
 }
 
-class TextBit;
+#include "textbit.h"
+
+class DatabaseAdapter;
 
 class CreateAnalysisDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    CreateAnalysisDialog(const TextBit & initialString, QWidget *parent = 0);
+    CreateAnalysisDialog(const DatabaseAdapter *dbAdapter, const TextBit & initialString, QWidget *parent = 0);
     ~CreateAnalysisDialog();
 
     QString analysisString() const;
 
+private slots:
+    void acceptSegmentation( const TextBit & textBit );
+    void copySegmentation( const TextBit & textBit );
+
 private:
     Ui::CreateAnalysisDialog *ui;
+    const DatabaseAdapter *mDbAdapter;
+    TextBit mSegmentation;
 };
 
 #endif // CREATEANALYSISDIALOG_H

@@ -1914,3 +1914,121 @@ int DatabaseAdapter::glossCountFromConcordance(qlonglong glossId) const
         return -1;
     }
 }
+
+QSet<TextBit> DatabaseAdapter::candidateMorphologicalSplits(const TextBit &textForm) const
+{
+    QSet<TextBit> retVal;
+    retVal.unite( allSuffixPossibilities(textForm, true) );
+    retVal.unite( allPrefixPossibilities(textForm, true) );
+    retVal.remove(textForm); /// don't bother including the monomorphemic case
+    return retVal;
+}
+
+QSet<TextBit> DatabaseAdapter::allSuffixPossibilities(const TextBit &textForm, bool testOther) const
+{
+    QSet<TextBit> retVal;
+    QString stem;
+
+    QRegularExpression re(" (?![-=*~])([^-=*~]+)(?![-=*~]) ");
+    QRegularExpressionMatch match = re.match(" " + textForm.text() + " ");
+    if (match.hasMatch())
+    {
+        stem = match.captured(1);
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::allSuffixPossibilities was not passed a string with a stem." << textForm;
+        return retVal;
+    }
+
+    //// suffixes
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select distinct Form,substr(?,1,length(?)-length(Form)) as Remainder,MorphologicalCategory "
+              "from LexicalEntry,Allomorph "
+              "where LexicalEntry._id=Allomorph.LexicalEntryId "
+              "and (MorphologicalCategory='Suffix' or MorphologicalCategory='Enclitic') "
+              "and Form=substr(?,-1*length(Form)) "
+              "and WritingSystem=? "
+              "order by length(Form) desc;");
+    q.bindValue(0,stem);
+    q.bindValue(1,stem);
+    q.bindValue(2,stem);
+    q.bindValue(3,textForm.writingSystem().id());
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::allSuffixPossibilities" << q.lastError().text() << q.executedQuery();
+
+    retVal << textForm;
+
+    while( q.next() )
+    {
+        // suffixes
+        TextBit suffix( " " + Allomorph::getTypeFormatTextString( q.value(0).toString(), Allomorph::getType( q.value(2).toString() ) ), textForm.writingSystem() );
+        QString remainder = q.value(1).toString();
+        QSet<TextBit> moreSegmentations = allSuffixPossibilities( TextBit(remainder, textForm.writingSystem() ), testOther );
+        foreach(TextBit segmentation, moreSegmentations)
+        {
+            retVal << segmentation + suffix;
+        }
+    }
+
+    if( testOther && retVal.count() == 1 )
+    {
+        retVal.unite( allPrefixPossibilities(textForm,false) );
+    }
+
+    return retVal;
+}
+
+QSet<TextBit> DatabaseAdapter::allPrefixPossibilities(const TextBit &textForm, bool testOther) const
+{
+    QSet<TextBit> retVal;
+    QString stem;
+
+    QRegularExpression re(" (?![-=*~])([^-=*~]+)(?![-=*~]) ");
+    QRegularExpressionMatch match = re.match(" " + textForm.text() + " ");
+    if (match.hasMatch())
+    {
+        stem = match.captured(1);
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::allSuffixPossibilities was not passed a string with a stem." << textForm;
+        return retVal;
+    }
+
+    /// prefixes
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select distinct Form,substr(?,length(Form)+1),MorphologicalCategory "
+               "from LexicalEntry,Allomorph "
+               "where LexicalEntry._id=Allomorph.LexicalEntryId "
+               "and (MorphologicalCategory='Prefix' or MorphologicalCategory='Proclitic') "
+               "and Form=substr(?,1,length(Form)) "
+               "and WritingSystem=? "
+               "order by length(Form) desc;");
+    q.bindValue(0,stem);
+    q.bindValue(1,stem);
+    q.bindValue(2,textForm.writingSystem().id());
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::allPrefixPossibilities" << q.lastError().text() << q.executedQuery();
+
+    retVal << textForm;
+
+    while( q.next() )
+    {
+        TextBit prefix( Allomorph::getTypeFormatTextString( q.value(0).toString(), Allomorph::getType( q.value(2).toString() ) ) + " ", textForm.writingSystem() );
+        QString remainder = q.value(1).toString();
+
+        QSet<TextBit> moreSegmentations = allPrefixPossibilities( TextBit(remainder, textForm.writingSystem() ), testOther );
+        foreach(TextBit segmentation, moreSegmentations)
+        {
+            retVal << prefix + segmentation;
+        }
+    }
+
+    if(testOther && retVal.count() == 1 )
+    {
+        retVal.unite( allSuffixPossibilities( textForm, false ) );
+    }
+
+    return retVal;
+}

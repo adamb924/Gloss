@@ -108,7 +108,8 @@ SOURCES += main.cpp\
     textlistmodel.cpp \
     textmetadatadialog.cpp \
     paragraph.cpp \
-    paragraphmarkwidget.cpp
+    paragraphmarkwidget.cpp \
+    segmentationoptionbutton.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -208,7 +209,8 @@ HEADERS  += mainwindow.h \
     textlistmodel.h \
     textmetadatadialog.h \
     paragraph.h \
-    paragraphmarkwidget.h
+    paragraphmarkwidget.h \
+    segmentationoptionbutton.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \

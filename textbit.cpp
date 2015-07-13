@@ -39,6 +39,11 @@ bool TextBit::operator!=(const TextBit & other) const
     return mText != other.mText || mWritingSystem != other.mWritingSystem || mId != other.mId;
 }
 
+TextBit TextBit::operator+(const TextBit &other) const
+{
+    return TextBit( mText + other.text(), mWritingSystem, mId );
+}
+
 void TextBit::setText(const QString & text)
 {
     mText = text;

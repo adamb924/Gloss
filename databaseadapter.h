@@ -248,6 +248,10 @@ public:
     int textFormCountFromConcordance(qlonglong textFormId) const;
     int glossCountFromConcordance(qlonglong glossId) const;
 
+    QSet<TextBit> candidateMorphologicalSplits(const TextBit & textForm) const;
+    QSet<TextBit> allSuffixPossibilities(const TextBit & textForm, bool testOther) const;
+    QSet<TextBit> allPrefixPossibilities(const TextBit & textForm, bool testOther) const;
+
 private:
     //! \brief Creates the tables; all tables are created with "create if not exists" -- so it's fine to call this in the constructor
     void createTables();

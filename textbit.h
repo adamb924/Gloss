@@ -24,6 +24,7 @@ public:
     bool operator==(const TextBit & other) const;
     TextBit& operator=(const TextBit & other);
     bool operator!=(const TextBit & other) const;
+    TextBit operator+(const TextBit & other) const;
 
     QString text() const;
     WritingSystem writingSystem() const;
