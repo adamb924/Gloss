@@ -1920,6 +1920,7 @@ QSet<TextBit> DatabaseAdapter::candidateMorphologicalSplits(const TextBit &textF
     QSet<TextBit> retVal;
     retVal.unite( allSuffixPossibilities(textForm, true) );
     retVal.unite( allPrefixPossibilities(textForm, true) );
+    retVal.unite( allTwoRootPossibilities( textForm ) );
     retVal.remove(textForm); /// don't bother including the monomorphemic case
     return retVal;
 }
