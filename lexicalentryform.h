@@ -39,8 +39,8 @@ private:
     Ui::LexicalEntryForm *ui;
     TextBit mAllomorphText;
     Allomorph::Type mAllomorphType;
-    const DatabaseAdapter *mDbAdapter;
     const Project *mProject;
+    const DatabaseAdapter *mDbAdapter;
     const GlossItem *mGlossItem;
     QSet<Allomorph::Type> mTypes;
 

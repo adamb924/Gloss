@@ -7,15 +7,15 @@
 #include "project.h"
 
 LexicalEntryForm::LexicalEntryForm(const TextBit &allomorphString, const GlossItem *glossItem, const Project *project,  QWidget *parent) :
-        QWidget(parent), ui(new Ui::LexicalEntryForm), mProject(project)
+        QWidget(parent), ui(new Ui::LexicalEntryForm),
+        mProject(project),
+        mDbAdapter(mProject->dbAdapter()),
+        mGlossItem(glossItem)
 {
     ui->setupUi(this);
 
     mAllomorphText = Allomorph::stripPunctuationFromTextBit(allomorphString);
     mAllomorphType = Allomorph::typeFromFormattedString(allomorphString);
-
-    mDbAdapter = mProject->dbAdapter();
-    mGlossItem = glossItem;
 
     // the available types are whatever is available in the database, plus whatever the user entered
     mTypes = mDbAdapter->getPossibleMorphologicalTypes( mAllomorphText );
