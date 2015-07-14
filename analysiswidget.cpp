@@ -234,17 +234,17 @@ qlonglong AnalysisWidget::selectCandidateLexicalEntry()
 {
     QStringList candidateItems;
     QList<qlonglong> indices;
-    QHash<qlonglong,QString> candidates = mDbAdapter->getLexicalEntryCandidates( textBit() , Allomorph::getTypeString(Allomorph::Stem) );
+    QList< QPair<qlonglong,QString> > candidates = mDbAdapter->getLexicalEntryCandidates( textBit() , Allomorph::getTypeString(Allomorph::Stem) );
 
     if(candidates.isEmpty())
         return -1;
 
-    QHashIterator<qlonglong,QString> iter(candidates);
+    QListIterator< QPair<qlonglong,QString> > iter(candidates);
     while(iter.hasNext())
     {
-        iter.next();
-        candidateItems << iter.value();
-        indices << iter.key();
+        QPair<qlonglong,QString> pair = iter.next();
+        candidateItems << pair.second;
+        indices << pair.first;
     }
     bool ok;
     QString choice = QInputDialog::getItem(this, tr("Select candidate"), tr("Select an existing lexical item, or cancel to create a new one."), candidateItems, 0, false, &ok );

@@ -773,15 +773,24 @@ int DatabaseAdapter::removeTextForms( QSet<qlonglong> ids )
     return count;
 }
 
-QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit , const QString & morphologicalType ) const
+QList< QPair<qlonglong,QString> > DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit , const QString & morphologicalType ) const
 {
-    QHash<qlonglong,QString> candidates;
+    QList< QPair<qlonglong,QString> > candidates;
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select LexicalEntryId,Allomorph._id from Allomorph,LexicalEntry on Allomorph.LexicalEntryId=LexicalEntry._id where WritingSystem=:WritingSystem and Form=:Form and LexicalEntry.MorphologicalCategory=:MorphologicalCategory;");
-    q.bindValue(":WritingSystem", bit.writingSystem().id());
-    q.bindValue(":Form", bit.text());
-    q.bindValue(":MorphologicalCategory", morphologicalType );
+    q.prepare("select LexicalEntryId,A.AllomorphId,count(MorphologicalAnalysisMembers._id) as TypeFrequency from "
+              "(select LexicalEntryId,Allomorph._id as AllomorphId from Allomorph,LexicalEntry "
+              "on Allomorph.LexicalEntryId=LexicalEntry._id "
+              "where WritingSystem=? "
+              "and Form=? "
+              "and LexicalEntry.MorphologicalCategory=? ) as A "
+              "left join MorphologicalAnalysisMembers "
+              "on MorphologicalAnalysisMembers.AllomorphId=A.AllomorphId "
+              "group by LexicalEntryId "
+              "order by TypeFrequency desc;");
+    q.bindValue(0, bit.writingSystem().id());
+    q.bindValue(1, bit.text());
+    q.bindValue(2, morphologicalType );
     if( q.exec() )
     {
         while( q.next() )
@@ -809,8 +818,12 @@ QHash<qlonglong,QString> DatabaseAdapter::getLexicalEntryCandidates( const TextB
                     summary.append(",");
             }
 
-            candidates.insert( lexicalEntryId , summary );
+            candidates << QPair<qlonglong,QString>(lexicalEntryId , summary);
         }
+    }
+    else
+    {
+        qWarning() << "DatabaseAdapter::getLexicalEntryCandidates" << q.lastError().text() << q.executedQuery();
     }
     return candidates;
 }

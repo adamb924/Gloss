@@ -136,7 +136,7 @@ public:
     }
 
     //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, which are possible lexical entries for the given form.
-    QHash<qlonglong,QString> getLexicalEntryCandidates( const TextBit & bit, const QString & morphologicalType ) const;
+    QList< QPair<qlonglong,QString> > getLexicalEntryCandidates( const TextBit & bit, const QString & morphologicalType ) const;
 
     //! \brief Returns a list of summaries of lexical candidates, indexed by lexical entry id, which are possible lexical entries for the given form.
     QSet<Allomorph::Type> getPossibleMorphologicalTypes( const TextBit & bit ) const;
