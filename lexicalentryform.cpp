@@ -48,8 +48,6 @@ void LexicalEntryForm::fillData(qlonglong currentLexicalEntryId)
     QList< QPair<qlonglong,QString> > candidates = mDbAdapter->getLexicalEntryCandidates( mAllomorphText, Allomorph::getTypeString(mAllomorphType) );
     QListIterator< QPair<qlonglong,QString> > iter(candidates);
 
-    qDebug() << candidates.length();
-
     while(iter.hasNext())
     {
         QPair<qlonglong,QString> pair = iter.next();
@@ -115,7 +113,6 @@ void LexicalEntryForm::linkToOther()
 
 void LexicalEntryForm::quickLE()
 {
-    qDebug() << "LexicalEntryForm::quickLE() begin";
     TextBitHash textForms = * mGlossItem->textForms();
     textForms.insert( mAllomorphText.writingSystem(), mAllomorphText );
     qlonglong lexicalEntryId = mDbAdapter->addLexicalEntry( "", mAllomorphType, mGlossItem->glosses()->values(), textForms.values(), QStringList() );
@@ -124,7 +121,6 @@ void LexicalEntryForm::quickLE()
     mDbAdapter->addAllomorph( mAllomorphText , lexicalEntryId );
     fillData(lexicalEntryId);
     emit entryChanged();
-    qDebug() << "LexicalEntryForm::quickLE() end";
 }
 
 qlonglong LexicalEntryForm::id() const
