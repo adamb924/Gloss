@@ -9,7 +9,7 @@ class SegmentationOptionButton : public QCommandLinkButton
 {
     Q_OBJECT
 public:
-    SegmentationOptionButton(const TextBit & text, QWidget * parent = 0);
+    SegmentationOptionButton(const TextBit & text, bool allAttested, QWidget * parent = 0);
 
 signals:
     void clicked(const TextBit & text);

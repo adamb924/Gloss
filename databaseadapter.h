@@ -248,10 +248,11 @@ public:
     int textFormCountFromConcordance(qlonglong textFormId) const;
     int glossCountFromConcordance(qlonglong glossId) const;
 
-    QSet<TextBit> candidateMorphologicalSplits(const TextBit & textForm) const;
-    QSet<TextBit> allSuffixPossibilities(const TextBit & textForm, bool testOther) const;
-    QSet<TextBit> allPrefixPossibilities(const TextBit & textForm, bool testOther) const;
-    QSet<TextBit> allTwoRootPossibilities(const TextBit & textForm) const;
+    QList< QPair<TextBit, bool> > candidateMorphologicalSplits(const TextBit & textForm) const;
+    QSet< QPair<TextBit, bool> > allSuffixPossibilities(const TextBit & textForm, bool testOther) const;
+    QSet< QPair<TextBit, bool> > allPrefixPossibilities(const TextBit & textForm, bool testOther) const;
+    QSet< QPair<TextBit, bool> > allTwoRootPossibilities(const TextBit & textForm) const;
+    bool isStemAllomorph(const TextBit & textForm) const;
 
     bool hasDuplicateTextForms(qlonglong interpretationId, qlonglong writingSystemId) const;
     bool hasDuplicateGlosses(qlonglong interpretationId, qlonglong writingSystemId) const;

@@ -1928,19 +1928,33 @@ int DatabaseAdapter::glossCountFromConcordance(qlonglong glossId) const
     }
 }
 
-QSet<TextBit> DatabaseAdapter::candidateMorphologicalSplits(const TextBit &textForm) const
+QList<QPair<TextBit, bool> > DatabaseAdapter::candidateMorphologicalSplits(const TextBit &textForm) const
 {
-    QSet<TextBit> retVal;
-    retVal.unite( allSuffixPossibilities(textForm, true) );
-    retVal.unite( allPrefixPossibilities(textForm, true) );
-    retVal.unite( allTwoRootPossibilities( textForm ) );
-    retVal.remove(textForm); /// don't bother including the monomorphemic case
-    return retVal;
+    QSet< QPair<TextBit, bool> > sets;
+    sets.unite( allSuffixPossibilities(textForm, true) );
+    sets.unite( allPrefixPossibilities(textForm, true) );
+    sets.unite( allTwoRootPossibilities( textForm ) );
+    sets.remove(QPair<TextBit, bool>(textForm, true)); /// don't bother including the monomorphemic case
+    sets.remove(QPair<TextBit, bool>(textForm, false)); /// don't bother including the monomorphemic case
+
+    QList< QPair<TextBit, bool> > allAttested;
+    QList< QPair<TextBit, bool> > notAllAttested;
+    QSetIterator< QPair<TextBit, bool> > iter(sets);
+    while( iter.hasNext() )
+    {
+        QPair<TextBit, bool> element = iter.next();
+        if( element.second )
+            allAttested << element;
+        else
+            notAllAttested << element;
+    }
+    allAttested.append(notAllAttested);
+    return allAttested;
 }
 
-QSet<TextBit> DatabaseAdapter::allSuffixPossibilities(const TextBit &textForm, bool testOther) const
+QSet< QPair<TextBit, bool> > DatabaseAdapter::allSuffixPossibilities(const TextBit &textForm, bool testOther) const
 {
-    QSet<TextBit> retVal;
+    QSet< QPair<TextBit, bool> > retVal;
     QString stem;
 
     QRegularExpression re(" (?![-=*~])([^-=*~]+)(?![-=*~]) ");
@@ -1971,17 +1985,19 @@ QSet<TextBit> DatabaseAdapter::allSuffixPossibilities(const TextBit &textForm, b
     if( !q.exec()  )
         qWarning() << "DatabaseAdapter::allSuffixPossibilities" << q.lastError().text() << q.executedQuery();
 
-    retVal << textForm;
+    retVal << QPair<TextBit, bool>(textForm, isStemAllomorph(textForm) );
 
     while( q.next() )
     {
         // suffixes
         TextBit suffix( " " + Allomorph::getTypeFormatTextString( q.value(0).toString(), Allomorph::getType( q.value(2).toString() ) ), textForm.writingSystem() );
         QString remainder = q.value(1).toString();
-        QSet<TextBit> moreSegmentations = allSuffixPossibilities( TextBit(remainder, textForm.writingSystem() ), testOther );
-        foreach(TextBit segmentation, moreSegmentations)
+        QSet< QPair<TextBit, bool> > moreSegmentations = allSuffixPossibilities( TextBit(remainder, textForm.writingSystem() ), testOther );
+        QSetIterator< QPair<TextBit, bool> > iter(moreSegmentations);
+        while( iter.hasNext() )
         {
-            retVal << segmentation + suffix;
+            QPair<TextBit, bool> segmentation = iter.next();
+            retVal << QPair<TextBit, bool>( segmentation.first + suffix, segmentation.second );
         }
     }
 
@@ -1998,9 +2014,9 @@ QSet<TextBit> DatabaseAdapter::allSuffixPossibilities(const TextBit &textForm, b
     return retVal;
 }
 
-QSet<TextBit> DatabaseAdapter::allPrefixPossibilities(const TextBit &textForm, bool testOther) const
+QSet< QPair<TextBit, bool> > DatabaseAdapter::allPrefixPossibilities(const TextBit &textForm, bool testOther) const
 {
-    QSet<TextBit> retVal;
+    QSet< QPair<TextBit, bool> > retVal;
     QString stem;
 
     QRegularExpression re(" (?![-=*~])([^-=*~]+)(?![-=*~]) ");
@@ -2011,13 +2027,13 @@ QSet<TextBit> DatabaseAdapter::allPrefixPossibilities(const TextBit &textForm, b
     }
     else
     {
-        qWarning() << "DatabaseAdapter::allSuffixPossibilities was not passed a string with a stem." << textForm;
+        qWarning() << "DatabaseAdapter::allPrefixPossibilities was not passed a string with a stem." << textForm;
         return retVal;
     }
 
     /// prefixes
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select distinct Form,substr(?,length(Form)+1),MorphologicalCategory "
+    q.prepare("select distinct Form,substr(?,length(Form)+1) as Remainder,MorphologicalCategory "
                "from LexicalEntry,Allomorph "
                "where LexicalEntry._id=Allomorph.LexicalEntryId "
                "and (MorphologicalCategory='Prefix' or MorphologicalCategory='Proclitic') "
@@ -2028,19 +2044,23 @@ QSet<TextBit> DatabaseAdapter::allPrefixPossibilities(const TextBit &textForm, b
     q.bindValue(1,stem);
     q.bindValue(2,textForm.writingSystem().id());
     if( !q.exec()  )
+    {
         qWarning() << "DatabaseAdapter::allPrefixPossibilities" << q.lastError().text() << q.executedQuery();
+    }
 
-    retVal << textForm;
+    retVal << QPair<TextBit, bool>(textForm, isStemAllomorph(textForm) );
 
     while( q.next() )
     {
         TextBit prefix( Allomorph::getTypeFormatTextString( q.value(0).toString(), Allomorph::getType( q.value(2).toString() ) ) + " ", textForm.writingSystem() );
         QString remainder = q.value(1).toString();
 
-        QSet<TextBit> moreSegmentations = allPrefixPossibilities( TextBit(remainder, textForm.writingSystem() ), testOther );
-        foreach(TextBit segmentation, moreSegmentations)
+        QSet< QPair<TextBit, bool> > moreSegmentations = allPrefixPossibilities( TextBit(remainder, textForm.writingSystem() ), testOther );
+        QSetIterator< QPair<TextBit, bool> > iter(moreSegmentations);
+        while( iter.hasNext() )
         {
-            retVal << prefix + segmentation;
+            QPair<TextBit, bool> segmentation = iter.next();
+            retVal << QPair<TextBit, bool>( prefix + segmentation.first, segmentation.second );
         }
     }
 
@@ -2057,9 +2077,9 @@ QSet<TextBit> DatabaseAdapter::allPrefixPossibilities(const TextBit &textForm, b
     return retVal;
 }
 
-QSet<TextBit> DatabaseAdapter::allTwoRootPossibilities(const TextBit &textForm) const
+QSet< QPair<TextBit, bool> > DatabaseAdapter::allTwoRootPossibilities(const TextBit &textForm) const
 {
-    QSet<TextBit> retVal;
+    QSet< QPair<TextBit, bool> > retVal;
     QString stem;
 
     QRegularExpression re(" (?![-=*~])([^-=*~]+)(?![-=*~]) ");
@@ -2075,23 +2095,32 @@ QSet<TextBit> DatabaseAdapter::allTwoRootPossibilities(const TextBit &textForm) 
     }
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
-    q.prepare("select Form as First,substr(?,length(Form)+1) as Second "
-                  "from LexicalEntry,Allomorph "
-                  "where LexicalEntry._id=Allomorph.LexicalEntryId "
-                  "and MorphologicalCategory='Stem' "
-                  "and Form=substr(?,1,length(Form)) "
-                  "and length(First) > 0 "
-                  "and length(Second) > 0 "
-                  "and WritingSystem=? "
-               "union "
-                "select substr(?,1,length(?)-length(Form)) as First, Form as Second "
-                  "from LexicalEntry,Allomorph "
-                  "where LexicalEntry._id=Allomorph.LexicalEntryId "
-                  "and MorphologicalCategory='Stem' "
-                  "and Form=substr(?,-1*length(Form)) "
-                  "and length(First) > 0 "
-                  "and length(Second) > 0 "
-                  "and WritingSystem=?;");
+    q.prepare("select First,Second,RemainderIsReal from ( "
+              "select First,Second,length(B.Form) > 0 as RemainderIsReal from ( "
+                  "select Form as First,substr(?,length(Form)+1) as Second  "
+                              "from LexicalEntry,Allomorph  "
+                              "where LexicalEntry._id=Allomorph.LexicalEntryId  "
+                              "and MorphologicalCategory='Stem'  "
+                              "and Form=substr(?,1,length(Form))  "
+                              "and length(First) > 0  "
+                              "and length(Second) > 0  "
+                              "and WritingSystem=? ) as A  "
+                          "left join Allomorph as B  "
+                          "on B.Form=A.Second "
+          "union  "
+          "select First,Second,length(D.Form) > 0 as RemainderIsReal from ( "
+                      "select substr(?,1,length(?)-length(Form)) as First, Form as Second  "
+                          "from LexicalEntry,Allomorph  "
+                          "where LexicalEntry._id=Allomorph.LexicalEntryId  "
+                          "and MorphologicalCategory='Stem'  "
+                          "and Form=substr(?,-1*length(Form))  "
+                          "and length(First) > 0  "
+                          "and length(Second) > 0  "
+                          "and WritingSystem=? ) as C  "
+                      "left join Allomorph as D  "
+                      "on D.Form=C.Second "
+      ") as E "
+       "order by RemainderIsReal desc; ");
     q.bindValue(0,stem);
     q.bindValue(1,stem);
     q.bindValue(2,textForm.writingSystem().id());
@@ -2105,10 +2134,26 @@ QSet<TextBit> DatabaseAdapter::allTwoRootPossibilities(const TextBit &textForm) 
 
     while( q.next() )
     {
-        retVal << TextBit( q.value(0).toString() + " " + q.value(1).toString() , textForm.writingSystem() );
+        retVal << QPair<TextBit, bool>( TextBit( q.value(0).toString() + " " + q.value(1).toString() , textForm.writingSystem() ), q.value(2).toInt() > 0 );
     }
 
     return retVal;
+}
+
+bool DatabaseAdapter::isStemAllomorph(const TextBit &textForm) const
+{
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select count(*) from Allomorph,LexicalEntry where Form=? and MorphologicalCategory='Stem' "
+              "and WritingSystem=? "
+              "and LexicalEntry._id=Allomorph.LexicalEntryId;");
+    q.bindValue(0,textForm.text());
+    q.bindValue(1,textForm.writingSystem().id());
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::isStemAllomorph" << q.lastError().text() << q.executedQuery();
+    if( q.next() )
+        return q.value(0).toInt() > 0;
+    else
+        return false;
 }
 
 bool DatabaseAdapter::hasDuplicateTextForms(qlonglong interpretationId, qlonglong writingSystemId) const

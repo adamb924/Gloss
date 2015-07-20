@@ -2,11 +2,15 @@
 
 #include <QMouseEvent>
 
-SegmentationOptionButton::SegmentationOptionButton(const TextBit &text, QWidget *parent) :
+SegmentationOptionButton::SegmentationOptionButton(const TextBit &text, bool allAttested, QWidget *parent) :
     QCommandLinkButton( text.text(), parent ),
     mTextBit( text )
 {
-    setFont( mTextBit.writingSystem().font() );
+    if( allAttested )
+        setStyleSheet( QString("QCommandLinkButton { font-family: %1; font-weight: bold; }").arg(text.writingSystem().fontFamily()) );
+    else
+        setStyleSheet( QString("QCommandLinkButton { font-family: %1; font-weight: normal; }").arg(text.writingSystem().fontFamily()) );
+
     connect( this, SIGNAL(clicked(bool)), this, SLOT(emitClicked()) );
 }
 

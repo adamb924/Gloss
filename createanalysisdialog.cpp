@@ -17,10 +17,12 @@ CreateAnalysisDialog::CreateAnalysisDialog(const DatabaseAdapter *dbAdapter, con
 
     ui->analysisEdit->setFontSize(24);
 
-    QSet<TextBit> options = mDbAdapter->candidateMorphologicalSplits( initialString );
-    foreach(TextBit option, options)
+    QList< QPair<TextBit, bool> > options = mDbAdapter->candidateMorphologicalSplits( initialString );
+    QListIterator< QPair<TextBit, bool> > iter(options);
+    while( iter.hasNext() )
     {
-        SegmentationOptionButton * button = new SegmentationOptionButton(option);
+        QPair<TextBit, bool> option = iter.next();
+        SegmentationOptionButton * button = new SegmentationOptionButton(option.first, option.second);
         ui->presetOptions->addWidget(button);
         connect(button, SIGNAL(clicked(TextBit)), this, SLOT(acceptSegmentation(TextBit)) );
         connect(button, SIGNAL(rightClicked(TextBit)), this, SLOT(copySegmentation(TextBit)) );
