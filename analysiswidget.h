@@ -63,6 +63,7 @@ private slots:
     void enterAnalysis();
     void createMonomorphemicLexicalEntry();
     void createQuickMonomorphemicLexicalEntry();
+    void createGuessedLexicalEntry();
     void linkToOther();
     void editLexicalEntry(QAction * action);
     void editLexicalEntry(qlonglong allomorphId);

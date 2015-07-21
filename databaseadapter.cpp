@@ -773,7 +773,7 @@ int DatabaseAdapter::removeTextForms( QSet<qlonglong> ids )
     return count;
 }
 
-QList< QPair<qlonglong,QString> > DatabaseAdapter::getLexicalEntryCandidates( const TextBit & bit , const QString & morphologicalType ) const
+QList< QPair<qlonglong,QString> > DatabaseAdapter::getLexicalEntryCandidates(const TextBit & bit , const QString & morphologicalType , bool includeCitationForms) const
 {
     QList< QPair<qlonglong,QString> > candidates;
 
@@ -799,22 +799,26 @@ QList< QPair<qlonglong,QString> > DatabaseAdapter::getLexicalEntryCandidates( co
             qlonglong allomorphId = q.value(1).toLongLong();
 
             QString summary;
-            TextBitHashIterator iter( lexicalEntryCitationFormsForAllomorph( allomorphId ) );
-            while(iter.hasNext())
-            {
-                iter.next();
-                summary.append( iter.value().text() );
-                if( iter.hasNext() )
-                    summary.append(",");
-            }
-            summary.append(" ");
 
-            iter = TextBitHashIterator( lexicalEntryGlossFormsForAllomorph( allomorphId ) );
-            while(iter.hasNext())
+            if( includeCitationForms )
             {
-                iter.next();
-                summary.append( iter.value().text() );
-                if( iter.hasNext() )
+                TextBitHashIterator iter( lexicalEntryCitationFormsForAllomorph( allomorphId ) );
+                while(iter.hasNext())
+                {
+                    iter.next();
+                    summary.append( iter.value().text() );
+                    if( iter.hasNext() )
+                        summary.append(",");
+                }
+                summary.append(" ");
+            }
+
+            TextBitHashIterator iter2( lexicalEntryGlossFormsForAllomorph( allomorphId ) );
+            while(iter2.hasNext())
+            {
+                iter2.next();
+                summary.append( iter2.value().text() );
+                if( iter2.hasNext() )
                     summary.append(",");
             }
 

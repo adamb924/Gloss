@@ -60,6 +60,17 @@ void AnalysisWidget::createUninitializedLayout()
     createQMle->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; padding-bottom: 6px;  padding-top: 6px; }");
     mLayout->addWidget(createQMle);
     connect(createQMle, SIGNAL(clicked()), this, SLOT(createQuickMonomorphemicLexicalEntry()));
+
+    QList< QPair<qlonglong,QString> > candidates = mDbAdapter->getLexicalEntryCandidates( textBit() , Allomorph::getTypeString(Allomorph::Stem), false );
+    if( candidates.count() == 1 )
+    {
+        QPushButton *createGMle = new QPushButton( candidates.first().second, this);
+        createGMle->setToolTip(tr("Link this word to the indicated element"));
+        createGMle->setFlat(true);
+        createGMle->setStyleSheet("QPushButton { color: blue; text-decoration: underline; padding: 0px; padding-bottom: 6px;  padding-top: 6px; }");
+        mLayout->addWidget(createGMle);
+        connect(createGMle, SIGNAL(clicked()), this, SLOT(createGuessedLexicalEntry()));
+    }
 }
 
 void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analysis)
@@ -228,6 +239,15 @@ void AnalysisWidget::createQuickMonomorphemicLexicalEntry()
         lexicalEntryId = mDbAdapter->addLexicalEntry( "", Allomorph::Stem, mGlossItem->glosses()->values(), mGlossItem->textForms()->values(), QStringList() );
     }
     createAndDisplayAnalysis(lexicalEntryId);
+}
+
+void AnalysisWidget::createGuessedLexicalEntry()
+{
+    QList< QPair<qlonglong,QString> > candidates = mDbAdapter->getLexicalEntryCandidates( textBit() , Allomorph::getTypeString(Allomorph::Stem) );
+    if( candidates.count() == 1 )
+    {
+        createAndDisplayAnalysis(candidates.first().first);
+    }
 }
 
 qlonglong AnalysisWidget::selectCandidateLexicalEntry()
