@@ -38,6 +38,7 @@ void AnnotationMarkWidget::setupLayout()
         mMarks << mark;
         mLayout->addWidget(mark);
     }
+    mLayout->addStretch(1);
 }
 
 void AnnotationMarkWidget::markActivated( Mark * mark )
