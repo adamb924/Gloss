@@ -1976,8 +1976,7 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allSuffixPossibilities(const TextB
               "where LexicalEntry._id=Allomorph.LexicalEntryId "
               "and (MorphologicalCategory='Suffix' or MorphologicalCategory='Enclitic') "
               "and Form=substr(?,-1*length(Form)) "
-              "and WritingSystem=? "
-              "order by length(Form) desc;");
+              "and WritingSystem=?;");
     q.bindValue(0,stem);
     q.bindValue(1,stem);
     q.bindValue(2,stem);
@@ -2038,8 +2037,7 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allPrefixPossibilities(const TextB
                "where LexicalEntry._id=Allomorph.LexicalEntryId "
                "and (MorphologicalCategory='Prefix' or MorphologicalCategory='Proclitic') "
                "and Form=substr(?,1,length(Form)) "
-               "and WritingSystem=? "
-               "order by length(Form) desc;");
+               "and WritingSystem=?;");
     q.bindValue(0,stem);
     q.bindValue(1,stem);
     q.bindValue(2,textForm.writingSystem().id());
@@ -2118,9 +2116,8 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allTwoRootPossibilities(const Text
                           "and length(Second) > 0  "
                           "and WritingSystem=? ) as C  "
                       "left join Allomorph as D  "
-                      "on D.Form=C.Second "
-      ") as E "
-       "order by RemainderIsReal desc; ");
+                      "on D.Form=C.First "
+      ") as E;");
     q.bindValue(0,stem);
     q.bindValue(1,stem);
     q.bindValue(2,textForm.writingSystem().id());
