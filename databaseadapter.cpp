@@ -2094,7 +2094,7 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allTwoRootPossibilities(const Text
 
     QSqlQuery q(QSqlDatabase::database(mFilename));
     q.prepare("select First,Second,RemainderIsReal from ( "
-              "select First,Second,length(B.Form) > 0 as RemainderIsReal from ( "
+              "select First,Second,(length(B.Form) > 0 and MorphologicalCategory='Stem' ) as RemainderIsReal from ( "
                   "select Form as First,substr(?,length(Form)+1) as Second  "
                               "from LexicalEntry,Allomorph  "
                               "where LexicalEntry._id=Allomorph.LexicalEntryId  "
@@ -2103,10 +2103,10 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allTwoRootPossibilities(const Text
                               "and length(First) > 0  "
                               "and length(Second) > 0  "
                               "and WritingSystem=? ) as A  "
-                          "left join Allomorph as B  "
-                          "on B.Form=A.Second "
+                          "left join Allomorph as B on B.Form=A.Second "
+                          "left join LexicalEntry as B2 on B2._id=B.LexicalEntryId "
           "union  "
-          "select First,Second,length(D.Form) > 0 as RemainderIsReal from ( "
+          "select First,Second,(length(D.Form) > 0 and MorphologicalCategory='Stem' ) as RemainderIsReal from ( "
                       "select substr(?,1,length(?)-length(Form)) as First, Form as Second  "
                           "from LexicalEntry,Allomorph  "
                           "where LexicalEntry._id=Allomorph.LexicalEntryId  "
@@ -2115,8 +2115,8 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allTwoRootPossibilities(const Text
                           "and length(First) > 0  "
                           "and length(Second) > 0  "
                           "and WritingSystem=? ) as C  "
-                      "left join Allomorph as D  "
-                      "on D.Form=C.First "
+                          "left join Allomorph as D on D.Form=C.First "
+                          "left join LexicalEntry as D2 on D2._id=D.LexicalEntryId "
       ") as E;");
     q.bindValue(0,stem);
     q.bindValue(1,stem);
