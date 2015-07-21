@@ -228,7 +228,10 @@ void AnalysisWidget::createMonomorphemicLexicalEntry()
         if( dialog.exec() == QDialog::Accepted )
             lexicalEntryId = dialog.lexicalEntryId();
     }
-    createAndDisplayAnalysis(lexicalEntryId);
+    if( lexicalEntryId != -1 )
+    {
+        createAndDisplayAnalysis(lexicalEntryId);
+    }
 }
 
 void AnalysisWidget::createQuickMonomorphemicLexicalEntry()
