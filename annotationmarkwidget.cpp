@@ -17,6 +17,8 @@ void AnnotationMarkWidget::setupLayout()
 {
     qDeleteAll(mMarks);
     mMarks.clear();
+    while( mLayout->count() > 0 )
+        mLayout->takeAt(0);
 
     for(int i=0; i<mAnnotationTypes->count(); i++)
     {
