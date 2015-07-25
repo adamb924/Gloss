@@ -11,6 +11,9 @@ ParagraphMarkWidget::ParagraphMarkWidget(Paragraph * paragraph, QWidget *parent)
     mParagraph(paragraph),
     mHeaderLabel(0)
 {
+
+    setStyleSheet("ParagraphMarkWidget { border: 1px dashed #668DCC; border-radius: 0px; padding: 2px; }");
+
     setLayoutDirection(mParagraph->header().writingSystem().layoutDirection());
 
     QHBoxLayout * layout = new QHBoxLayout;
@@ -23,6 +26,15 @@ ParagraphMarkWidget::ParagraphMarkWidget(Paragraph * paragraph, QWidget *parent)
 
     layout->addStretch(1);
     setLayout(layout);
+}
+
+void ParagraphMarkWidget::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+    QStyleOption o;
+    o.initFrom(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 }
 
 void ParagraphMarkWidget::editHeader()

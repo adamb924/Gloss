@@ -12,6 +12,9 @@ class ParagraphMarkWidget : public QWidget
 public:
     ParagraphMarkWidget(Paragraph *paragraph, QWidget *parent = 0);
 
+protected:
+    void paintEvent(QPaintEvent * event);
+
 signals:
     void removeParagraphDivision(Paragraph * paragraph);
 
