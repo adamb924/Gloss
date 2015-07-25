@@ -26,10 +26,6 @@ WordDisplayWidget::WordDisplayWidget(GlossItem *item, Qt::Alignment alignment, c
     mAlignment(alignment),
     mGlossLines(tab->interlinearLines(mGlossItem->baselineWritingSystem()))
 {
-    setStyleSheet("WordDisplayWidget { border: 1px solid transparent; background-color: transparent; }");
-
-    setObjectName("WordDisplayWidget");
-
     setupLayout();
 
     setSizePolicy(QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed));
