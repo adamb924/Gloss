@@ -2009,7 +2009,7 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allSuffixPossibilities(const TextB
         retVal.unite( allPrefixPossibilities(textForm,false) );
     }
 
-    if( testOther )
+    if( testOther && retVal.count() == 1 )
     {
         retVal.unite( allTwoRootPossibilities( textForm ) );
     }
@@ -2071,7 +2071,7 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allPrefixPossibilities(const TextB
         retVal.unite( allSuffixPossibilities( textForm, false ) );
     }
 
-    if( testOther )
+    if( testOther && retVal.count() == 1 )
     {
         retVal.unite( allTwoRootPossibilities( textForm ) );
     }
