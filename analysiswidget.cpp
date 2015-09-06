@@ -86,7 +86,7 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analy
     }
     for(int i=0; i< analysis->allomorphCount(); i++)
     {
-        ImmutableLabel * label = new ImmutableLabel( analysis->baselineText(i) , true );
+        ImmutableLabel * label = new ImmutableLabel( analysis->baselineText(i) , false );
         label->matchTextAlignmentTo( mLayoutDirection );
         baseLayout->addWidget( label );
         connect( label, SIGNAL(doubleClick(TextBit&)), this, SLOT(allomorphDoubleClick(TextBit&)) );
@@ -109,7 +109,7 @@ void AnalysisWidget::createInitializedLayout(const MorphologicalAnalysis * analy
         }
         for(int j=0; j< analysis->allomorphCount(); j++)
         {
-            ImmutableLabel * label = new ImmutableLabel( analysis->gloss(j, glossLines->at(i)) , true );
+            ImmutableLabel * label = new ImmutableLabel( analysis->gloss(j, glossLines->at(i)) , false );
             label->matchTextAlignmentTo( mLayoutDirection );
             hlayout->addWidget( label );
             connect( label, SIGNAL(doubleClick(TextBit&)), this, SLOT(allomorphDoubleClick(TextBit&)) );
