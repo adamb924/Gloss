@@ -713,7 +713,8 @@ void Text::noNewPhraseStartingHere(GlossItem *glossItem)
 
     Phrase * first = mParagraphs.at(paragraphIndex)->phrases()->at(phraseIndex-1);
     Phrase * second = mParagraphs.at(paragraphIndex)->phrases()->at(phraseIndex);
-    for(int i=0; i < first->glossItemCount(); i++)
+
+    for(int i=0; i < second->glossItemCount(); i++)
     {
         first->appendGlossItem( second->takeGlossItemAt( i ) );
     }
