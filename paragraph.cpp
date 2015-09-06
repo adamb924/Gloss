@@ -37,11 +37,11 @@ int Paragraph::indexOf(const Phrase *phrase) const
 
 int Paragraph::indexOfGlossItem(const GlossItem *item) const
 {
-    foreach(Phrase * phrase, mPhrases)
+    for(int i=0; i<mPhrases.count(); i++)
     {
-        int index = phrase->indexOfGlossItem(item);
+        int index = mPhrases.at(i)->indexOfGlossItem(item);
         if( index != -1 )
-            return index;
+            return i;
     }
     return -1;
 }
