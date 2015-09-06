@@ -47,7 +47,7 @@ int AnnotationModel::rowCount(const QModelIndex & parent ) const
 int AnnotationModel::columnCount(const QModelIndex & parent ) const
 {
     Q_UNUSED(parent);
-    return 2;
+    return 3;
 }
 
 QVariant AnnotationModel::data(const QModelIndex & index, int role ) const
@@ -56,9 +56,13 @@ QVariant AnnotationModel::data(const QModelIndex & index, int role ) const
     {
         if( index.column() == 0 )
         {
-            return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).header().text();
+            return mText->lineNumberForGlossItem( mGlossItems.at( index.row() ) ) + 1;
         }
         else if( index.column() == 1 )
+        {
+            return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).header().text();
+        }
+        else if( index.column() == 2 )
         {
             return mGlossItems.at( index.row() )->getAnnotation( mAnnotationLabel ).text().text();
         }
