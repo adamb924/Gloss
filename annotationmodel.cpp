@@ -88,11 +88,11 @@ bool AnnotationModel::setData(const QModelIndex & index, const QVariant & value,
             Annotation a = mGlossItems.at( index.row() )->getAnnotation(mAnnotationLabel);
             TextBit h = a.header();
             TextBit t = a.text();
-            if( index.column() == 0 ) // editting the header
+            if( index.column() == 1 ) // editing the header
             {
                 h.setText( value.toString() );
             }
-            else if ( index.column() == 1 ) // editting the text
+            else if ( index.column() == 2 ) // editing the text
             {
                 t.setText( value.toString() );
             }
@@ -105,7 +105,10 @@ bool AnnotationModel::setData(const QModelIndex & index, const QVariant & value,
 Qt::ItemFlags AnnotationModel::flags(const QModelIndex & index) const
 {
     Q_UNUSED(index);
-    return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
+    if( index.column() < 1 )
+        return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    else
+        return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }
 
 GlossItem * AnnotationModel::glossItem( const QModelIndex & index ) const
