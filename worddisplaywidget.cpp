@@ -1177,11 +1177,19 @@ void WordDisplayWidget::annotationMarkActivated( const QString & key )
     annotation.setWritingSystem( mProject->annotationType(key).writingSystem() );
     annotation.setHeaderWritingSystem( mProject->annotationType(key).headerWritingSystem() );
 
-    AnnotationEditorDialog dialog( annotation, mGlossItem->baselineText(), this );
+    AnnotationEditorDialog dialog( annotation, mGlossItem->baselineText(), key, mProject->annotationTypes(), this );
     dialog.setWindowTitle(key);
     if( dialog.exec() == QDialog::Accepted )
     {
-        mGlossItem->setAnnotation( key , dialog.annotation() );
+        if( dialog.newAnnotationType() == key )
+        {
+            mGlossItem->setAnnotation( key , dialog.annotation() );
+        }
+        else
+        {
+            mGlossItem->setAnnotation( dialog.newAnnotationType(), dialog.annotation() );
+            mGlossItem->setAnnotation( key , Annotation() );
+        }
         mAnnotationMarks->setupLayout();
     }
 }
