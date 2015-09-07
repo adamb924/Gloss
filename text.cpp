@@ -714,9 +714,9 @@ void Text::noNewPhraseStartingHere(GlossItem *glossItem)
     Phrase * first = mParagraphs.at(paragraphIndex)->phrases()->at(phraseIndex-1);
     Phrase * second = mParagraphs.at(paragraphIndex)->phrases()->at(phraseIndex);
 
-    for(int i=0; i < second->glossItemCount(); i++)
+    while( second->glossItemCount() > 0 )
     {
-        first->appendGlossItem( second->takeGlossItemAt( i ) );
+        first->appendGlossItem( second->takeGlossItemAt(0) );
     }
 
     removePhrase(second); /// this will then emit the signals necessary for a refresh, etc.
