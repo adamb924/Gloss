@@ -21,6 +21,7 @@ public:
 
 private slots:
     void guessButton();
+    void clearAll();
 
 private:
     Ui::AnnotationEditorDialog *ui;

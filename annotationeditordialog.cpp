@@ -11,6 +11,7 @@ AnnotationEditorDialog::AnnotationEditorDialog(const Annotation &annotation, con
     ui->headerEdit->setTextBit( annotation.header() );
 
     connect(ui->guessButton, SIGNAL(clicked()), this, SLOT(guessButton()));
+    connect(ui->clearAll, SIGNAL(clicked()), this, SLOT(clearAll()) );
 }
 
 AnnotationEditorDialog::~AnnotationEditorDialog()
@@ -26,4 +27,11 @@ Annotation AnnotationEditorDialog::annotation() const
 void AnnotationEditorDialog::guessButton()
 {
     ui->headerEdit->setText( mHint.text() );
+}
+
+void AnnotationEditorDialog::clearAll()
+{
+    ui->textEdit->setText( "" );
+    ui->headerEdit->setText( "" );
+    accept();
 }
