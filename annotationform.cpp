@@ -8,6 +8,7 @@
 #include "annotationtype.h"
 #include "annotationmodel.h"
 #include "project.h"
+#include "annotationeditordialog.h"
 
 AnnotationForm::AnnotationForm(Text *text, const Project *project, QWidget *parent) :
     QWidget(parent),
@@ -33,7 +34,7 @@ AnnotationForm::AnnotationForm(Text *text, const Project *project, QWidget *pare
     ui->treeView->setEditTriggers(QAbstractItemView::SelectedClicked);
     ui->treeView->resizeColumnToContents(0);
 
-    connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(focusLine(QModelIndex)) );
+    connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(doubleClick(QModelIndex)) );
 }
 
 AnnotationForm::~AnnotationForm()
@@ -42,16 +43,41 @@ AnnotationForm::~AnnotationForm()
     delete ui;
 }
 
-void AnnotationForm::focusLine(const QModelIndex & index)
+void AnnotationForm::doubleClick(const QModelIndex & index)
 {
-    int phrase = mText->lineNumberForGlossItem( mAnnotationModel->glossItem(index) );
-    phrase++; // make it 1-indexed
+    if( index.column() == 0 ) // double-clicking the line number should jump to the line
+    {
+        int phrase = mText->lineNumberForGlossItem( mAnnotationModel->glossItem(index) );
+        phrase++; // make it 1-indexed
 
-    // TODO focusing the interpretation isn't strictly correct. We actually want to focus the gloss item itself.
-    QList<Focus> foci;
-    foci << Focus( Focus::GlossItem,  (qlonglong)mAnnotationModel->glossItem(index) );
+        QList<Focus> foci;
+        foci << Focus( Focus::GlossItem,  (qlonglong)mAnnotationModel->glossItem(index) );
 
-    emit focusTextPosition( mText->name(), phrase, foci );
+        emit focusTextPosition( mText->name(), phrase, foci );
+    }
+    else // double-clicking anywhere else launches the annotation editor
+    {
+        GlossItem * glossItem = mAnnotationModel->glossItem(index);
+        QString key = ui->comboBox->currentText();
+        Annotation annotation = glossItem->getAnnotation( key );
+        annotation.setWritingSystem( mProject->annotationType(key).writingSystem() );
+        annotation.setHeaderWritingSystem( mProject->annotationType(key).headerWritingSystem() );
+
+        AnnotationEditorDialog dialog( annotation, glossItem->baselineText(), key, mProject->annotationTypes() );
+        dialog.setWindowTitle(key);
+        if( dialog.exec() == QDialog::Accepted )
+        {
+            if( dialog.newAnnotationType() == key )
+            {
+                glossItem->setAnnotation( key , dialog.annotation() );
+            }
+            else
+            {
+                glossItem->setAnnotation( dialog.newAnnotationType(), dialog.annotation() );
+                glossItem->setAnnotation( key , Annotation() );
+            }
+        }
+    }
 }
 
 void AnnotationForm::modelReset()

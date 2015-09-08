@@ -38,7 +38,7 @@ private:
     AnnotationModel * mAnnotationModel;
 
 private slots:
-    void focusLine(const QModelIndex & index);
+    void doubleClick(const QModelIndex & index);
     void modelReset();
 };
 
