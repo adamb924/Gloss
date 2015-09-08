@@ -619,13 +619,22 @@ int MainWindow::projectOptions()
 }
 
 void MainWindow::exportTexts()
-{
+{    
     ExportTextsDialog dlg(mProject->textNames());
     if( dlg.exec() == QDialog::Accepted )
     {
+        QProgressDialog progress("Exporting files...", "Abort", 0, dlg.textNames().count(), this);
+        progress.setWindowModality(Qt::WindowModal);
+        int i=0;
+
         QDir dir(dlg.destinationFolder());
         foreach( QString textName, dlg.textNames() )
         {
+            progress.setValue(i++);
+
+            if (progress.wasCanceled())
+                break;
+
             Text * text = mProject->text(textName);
             if( text != 0)
             {
@@ -636,6 +645,7 @@ void MainWindow::exportTexts()
                 QMessageBox::critical(this, tr("Error"), tr("There was an error exporting %1").arg(textName));
             }
         }
+        progress.setValue(dlg.textNames().count());
     }
 }
 
