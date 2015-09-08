@@ -79,6 +79,8 @@ private slots:
 
     void wdwClicked( WordDisplayWidget * wdw );
 
+    void clearFocus();
+
 protected:
     const Tab * mTab;
     Text *mText;

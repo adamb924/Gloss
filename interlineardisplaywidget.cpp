@@ -111,6 +111,9 @@ void InterlinearDisplayWidget::resetGui()
 void InterlinearDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     QMenu menu(this);
+
+    menu.addAction(tr("Clear highlighting"), this, SLOT(clearFocus()), QKeySequence("Ctrl+Shift+C"));
+    menu.addSeparator();
     menu.addAction(tr("Save this text"), this, SLOT(saveText()), QKeySequence("Ctrl+Shift+S"));
     menu.addAction(tr("Save this text, verbose output"), this, SLOT(saveTextVerbose()) );
 
@@ -157,6 +160,11 @@ void InterlinearDisplayWidget::wdwClicked( WordDisplayWidget * wdw )
         int lineNumber = lineNumberOfWdw(wdw);
         mText->phraseAtLine(lineNumber)->replaceGlossItem(wdw->glossItem(), newBaseline);
     }
+}
+
+void InterlinearDisplayWidget::clearFocus()
+{
+    setFocus( QList<Focus>() );
 }
 
 void InterlinearDisplayWidget::scrollToLine(int line)
