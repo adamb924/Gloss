@@ -79,55 +79,58 @@ bool FlexTextWriter::serializeInterlinearText() const
 
     foreach( Paragraph* paragraph, mText->mParagraphs )
     {
-        int count = 0;
-        mStream->writeStartElement("paragraph");
-        writeNamespaceAttribute("title", paragraph->header().text() );
-
-        mStream->writeStartElement("phrases");
-        progress.setValue(count);
-        foreach( Phrase* phrase, *paragraph->phrases() )
+        if( paragraph->phraseCount() > 0 )
         {
-            count++;
+            int count = 0;
+            mStream->writeStartElement("paragraph");
+            writeNamespaceAttribute("title", paragraph->header().text() );
 
-            mStream->writeStartElement("phrase");
-
-            if( !phrase->interval()->isNull() )
+            mStream->writeStartElement("phrases");
+            progress.setValue(count);
+            foreach( Phrase* phrase, *paragraph->phrases() )
             {
-                writeNamespaceAttribute( "annotation-start", QString("%1").arg(phrase->interval()->start()) );
-                writeNamespaceAttribute( "annotation-end", QString("%1").arg(phrase->interval()->end()) );
-            }
+                count++;
 
-            serializeItem("segnum", mText->project()->metaLanguage(), QString("%1").arg(count)  );
+                mStream->writeStartElement("phrase");
 
-            mStream->writeStartElement("words");
-            for(int i=0; i<phrase->glossItemCount(); i++ )
-            {
-                GlossItem *glossItem = phrase->glossItemAt(i);
-
-                if( glossItem->isPunctuation() )
+                if( !phrase->interval()->isNull() )
                 {
-                    serializePunctuation(glossItem);
+                    writeNamespaceAttribute( "annotation-start", QString("%1").arg(phrase->interval()->start()) );
+                    writeNamespaceAttribute( "annotation-end", QString("%1").arg(phrase->interval()->end()) );
                 }
-                else
+
+                serializeItem("segnum", mText->project()->metaLanguage(), QString("%1").arg(count)  );
+
+                mStream->writeStartElement("words");
+                for(int i=0; i<phrase->glossItemCount(); i++ )
                 {
-                    serializeGlossItem(glossItem);
+                    GlossItem *glossItem = phrase->glossItemAt(i);
+
+                    if( glossItem->isPunctuation() )
+                    {
+                        serializePunctuation(glossItem);
+                    }
+                    else
+                    {
+                        serializeGlossItem(glossItem);
+                    }
                 }
+
+                mStream->writeEndElement(); // words
+
+                // phrase-level glosses
+                TextBitHashIterator iter = phrase->glosses();
+                while (iter.hasNext())
+                {
+                    iter.next();
+                    serializeItem("gls",iter.key(),iter.value().text());
+                }
+
+                mStream->writeEndElement(); // phrase
             }
-
-            mStream->writeEndElement(); // words
-
-            // phrase-level glosses
-            TextBitHashIterator iter = phrase->glosses();
-            while (iter.hasNext())
-            {
-                iter.next();
-                serializeItem("gls",iter.key(),iter.value().text());
-            }
-
-            mStream->writeEndElement(); // phrase
+            mStream->writeEndElement(); // phrases
+            mStream->writeEndElement(); // paragraph
         }
-        mStream->writeEndElement(); // phrases
-        mStream->writeEndElement(); // paragraph
     }
 
     progress.setValue(mText->mParagraphs.count());
