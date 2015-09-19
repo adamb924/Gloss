@@ -814,7 +814,10 @@ void WordDisplayWidget::editBaselineText()
     if( dialog.exec() == QDialog::Accepted )
     {
         QString text = dialog.text().trimmed();
-        editBaselineText( text );
+        if( mGlossItem->baselineText().text() != text )
+        {
+            editBaselineText( text );
+        }
     }
 }
 
