@@ -38,7 +38,7 @@
      <x>0</x>
      <y>0</y>
      <width>531</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -469,10 +469,16 @@
    <property name="text">
     <string>Search dock...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
   </action>
   <action name="actionAnnotation_dock">
    <property name="text">
     <string>Annotation dock...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+A</string>
    </property>
   </action>
   <action name="actionConfigure_views">
