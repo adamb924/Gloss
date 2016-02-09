@@ -31,6 +31,34 @@ XQueryModel::XQueryModel( const QString & queryString, const QSet<QString>* text
     }
 }
 
+QString XQueryModel::resultSummary() const
+{
+    int textCount = rowCount();
+    int lineCount = 0;
+    int instanceCount = 0;
+
+    for(int i=0; i<textCount; i++)
+    {
+        QModelIndex textIndex = index(i,0);
+        for( int j=0; j<rowCount(textIndex); j++)
+        {
+            lineCount++;
+
+            QModelIndex lineIndex = index(j,0,textIndex);
+            instanceCount += itemFromIndex(lineIndex)->data(Qt::UserRole + 3 ).toInt();
+        }
+    }
+
+    if( instanceCount == 0 )
+    {
+        return tr("");
+    }
+    else
+    {
+        return tr("%1 results on %2 lines of %3 texts").arg(instanceCount).arg(lineCount).arg(textCount);
+    }
+}
+
 bool XQueryModel::query( QStandardItem *parentItem, const QString & filename )
 {
     QXmlResultItems result;
@@ -61,20 +89,23 @@ bool XQueryModel::query( QStandardItem *parentItem, const QString & filename )
         {
             QString stringResult = item.toAtomicValue().toString();
             QString displayString;
+            int count;
             int lineNumber;
             if( stringResult.contains(",") )
             {
                 QStringList bits = stringResult.split(",");
-                if( bits.at(1).toInt() > 1 )
-                    displayString = tr("Line %1 (%2)").arg(bits.at(0)).arg(bits.at(1));
-                else
-                    displayString = tr("Line %1").arg(bits.at(0));
                 lineNumber = bits.at(0).toInt();
+                count = bits.at(1).toInt();
+                if( count > 1 )
+                    displayString = tr("Line %1 (%2)").arg(lineNumber).arg(count);
+                else
+                    displayString = tr("Line %1").arg(lineNumber);
             }
             else
             {
                 displayString = tr("Line %1").arg(stringResult);
                 lineNumber = stringResult.toInt();
+                count = 1;
             }
 
             QStandardItem *resultItem = new QStandardItem( displayString );
@@ -82,6 +113,7 @@ bool XQueryModel::query( QStandardItem *parentItem, const QString & filename )
             resultItem->setData( lineNumber , Qt::UserRole );
             resultItem->setData( types , Focus::TypeList );
             resultItem->setData( indices , Focus::IndexList );
+            resultItem->setData( count , Qt::UserRole + 3 );
             filenameItem->appendRow(resultItem);
             item = result.next();
         }

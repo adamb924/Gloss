@@ -2,6 +2,8 @@
 
 #include "focus.h"
 
+#include <QtDebug>
+
 IndexSearchModel::IndexSearchModel( QSqlQuery query, const QList<Focus> & focus )
 {
     mQuery = query;
@@ -58,8 +60,37 @@ IndexSearchModel::IndexSearchModel( QSqlQuery query, const QList<Focus> & focus 
         resultItem->setData( lineNumber , Qt::UserRole );
         resultItem->setData( types , Focus::TypeList );
         resultItem->setData( indices , Focus::IndexList );
+        resultItem->setData( count , Qt::UserRole + 3 );
         filenameItem->appendRow(resultItem);
 
         previousTextName = textName;
+    }
+}
+
+QString IndexSearchModel::resultSummary() const
+{
+    int textCount = rowCount();
+    int lineCount = 0;
+    int instanceCount = 0;
+
+    for(int i=0; i<textCount; i++)
+    {
+        QModelIndex textIndex = index(i,0);
+        for( int j=0; j<rowCount(textIndex); j++)
+        {
+            lineCount++;
+
+            QModelIndex lineIndex = index(j,0,textIndex);
+            instanceCount += itemFromIndex(lineIndex)->data(Qt::UserRole + 3 ).toInt();
+        }
+    }
+
+    if( instanceCount == 0 )
+    {
+        return tr("");
+    }
+    else
+    {
+        return tr("%1 results on %2 lines of %3 texts").arg(instanceCount).arg(lineCount).arg(textCount);
     }
 }

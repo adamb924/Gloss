@@ -703,7 +703,6 @@ void MainWindow::mergeTranslations()
 
 void MainWindow::searchForInterpretationById(qlonglong id)
 {
-    QStandardItemModel *model;
     QList<Focus> foci;
     foci << Focus(Focus::Interpretation, id );
 
@@ -716,7 +715,8 @@ void MainWindow::searchForInterpretationById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word[@abg:id='%1'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(id);
-        model = new XQueryModel(query, mProject->textPaths(), this, foci);
+        XQueryModel * model = new XQueryModel(query, mProject->textPaths(), this, foci);
+        createSearchResultDock(model, tr("Interpretation ID: %1\n%2").arg(id).arg(model->resultSummary()) );
     }
     else
     {
@@ -726,14 +726,13 @@ void MainWindow::searchForInterpretationById(qlonglong id)
                 return;
             mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
         }
-        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForInterpretation( id ) , foci );
+        IndexSearchModel * model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForInterpretation( id ) , foci );
+        createSearchResultDock(model, tr("Interpretation ID: %1\n%2").arg(id).arg(model->resultSummary()) );
     }
-    createSearchResultDock(model, tr("Interpretation ID: %1").arg(id));
 }
 
 void MainWindow::searchForTextFormById(qlonglong id)
 {
-    QStandardItemModel *model;
     QList<Focus> foci;
     foci << Focus(Focus::TextForm, id );
     if( ui->actionSearch_files_instead_of_index->isChecked() )
@@ -745,7 +744,8 @@ void MainWindow::searchForTextFormById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and ( @type='txt' or @type='punct' )] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') ").arg(id);
-        model = new XQueryModel(query, mProject->textPaths(), this, foci);
+        XQueryModel * model = new XQueryModel(query, mProject->textPaths(), this, foci);
+        createSearchResultDock(model, tr("Text Form ID: %1\n%2").arg(id).arg(model->resultSummary()) );
     }
     else
     {
@@ -755,14 +755,13 @@ void MainWindow::searchForTextFormById(qlonglong id)
                 return;
             mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
         }
-        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForTextForm( id ), foci );
+        IndexSearchModel * model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForTextForm( id ), foci );
+        createSearchResultDock(model, tr("Text Form ID: %1\n%2").arg(id).arg(model->resultSummary()) );
     }
-    createSearchResultDock(model, tr("Text Form ID: %1").arg(id));
 }
 
 void MainWindow::searchForGlossById(qlonglong id)
 {
-    QStandardItemModel *model;
     QList<Focus> foci;
     foci << Focus(Focus::Gloss, id );
 
@@ -775,7 +774,8 @@ void MainWindow::searchForGlossById(qlonglong id)
                                 "let $count := string( count( $x/descendant::word/item[@abg:id='%1' and @type='gls'] ) ) "
                                 "order by number($x/item[@type='segnum']/text()) "
                                 "return   string-join( ($line-number, $count) , ',') " ).arg(id);
-        model = new XQueryModel(query, mProject->textPaths(), this, foci);
+        XQueryModel * model = new XQueryModel(query, mProject->textPaths(), this, foci);
+        createSearchResultDock(model, tr("Gloss ID: %1\n%2").arg(id).arg(model->resultSummary()) );
     }
     else
     {
@@ -785,9 +785,9 @@ void MainWindow::searchForGlossById(qlonglong id)
                 return;
             mProject->dbAdapter()->createTextIndices( mProject->textPaths() );
         }
-        model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForGloss( id ), foci );
+        IndexSearchModel * model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForGloss( id ), foci );
+        createSearchResultDock(model, tr("Gloss ID: %1\n%2").arg(id).arg(model->resultSummary()) );
     }
-    createSearchResultDock(model, tr("Gloss ID: %1").arg(id));
 }
 
 void MainWindow::searchForLexicalEntryById(qlonglong id)
@@ -804,8 +804,8 @@ void MainWindow::searchForLexicalEntryById(qlonglong id)
     while( iter.hasNext() )
         foci << Focus( Focus::TextForm , iter.next() );
 
-    QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForLexicalEntry( id ), foci );
-    createSearchResultDock(model, tr("Lexical Entry ID: %1").arg(id));
+    IndexSearchModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForLexicalEntry( id ), foci );
+    createSearchResultDock(model, tr("Lexical Entry ID: %1\n%2").arg(id).arg(model->resultSummary()));
 }
 
 void MainWindow::searchForAllomorphById(qlonglong id)
@@ -822,8 +822,8 @@ void MainWindow::searchForAllomorphById(qlonglong id)
     while( iter.hasNext() )
         foci << Focus( Focus::TextForm , iter.next() );
 
-    QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForAllomorph( id ), foci );
-    createSearchResultDock(model, tr("Allomorph ID: %1").arg(id));
+    IndexSearchModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForAllomorph( id ), foci );
+    createSearchResultDock(model, tr("Allomorph ID: %1\n%2").arg(id).arg(model->resultSummary()) );
 }
 
 void MainWindow::searchForText(const TextBit & bit)
@@ -840,14 +840,14 @@ void MainWindow::searchForText(const TextBit & bit)
                                 "return   string-join( ($line-number, $count) , ',') ").arg(bit.writingSystem().flexString()).arg(bit.text());
 
         XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
-        createSearchResultDock(model, tr("Containing exact string '%1'").arg(bit.text()) );
+        createSearchResultDock(model, tr("Containing exact string '%1'\n%2").arg(bit.text()).arg(model->resultSummary()) );
     }
     else
     {
         QList<Focus> f;
         f << Focus(Focus::WholeStringSearch, bit.text() );
-        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForText(bit), f );
-        createSearchResultDock(model, tr("Containing exact string '%1'").arg(bit.text()));
+        IndexSearchModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForText(bit), f );
+        createSearchResultDock(model, tr("Containing exact string '%1'\n%2").arg(bit.text()).arg(model->resultSummary()) );
     }
 }
 
@@ -865,14 +865,14 @@ void MainWindow::searchForSubstring(const TextBit & bit)
                                 "return   string-join( ($line-number, $count) , ',') ").arg(bit.writingSystem().flexString()).arg(bit.text());
 
         XQueryModel *model = new XQueryModel(query, mProject->textPaths(), this);
-        createSearchResultDock(model, tr("Containing substring '%1'").arg(bit.text()));
+        createSearchResultDock(model, tr("Containing substring '%1'\n%2").arg(bit.text()).arg(model->resultSummary()) );
     }
     else
     {
         QList<Focus> f;
         f << Focus(Focus::SubStringSearch, bit.text() );
-        QStandardItemModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForSubstring(bit) , f );
-        createSearchResultDock(model, tr("Containing substring '%1'").arg(bit.text()));
+        IndexSearchModel *model = new IndexSearchModel( mProject->dbAdapter()->searchIndexForSubstring(bit) , f );
+        createSearchResultDock(model, tr("Containing substring '%1'\n%2").arg(bit.text()).arg(model->resultSummary()) );
     }
 }
 

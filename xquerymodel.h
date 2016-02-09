@@ -18,6 +18,8 @@ class XQueryModel : public QStandardItemModel
 public:
     XQueryModel( const QString & queryString, const QSet<QString>* textPaths, QObject * parent, const QList<Focus> & focus = QList<Focus>() );
 
+    QString resultSummary() const;
+
 private:
     QString mQuery;
     QList<Focus> mFocus;

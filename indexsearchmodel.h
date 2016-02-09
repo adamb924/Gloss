@@ -18,6 +18,8 @@ class IndexSearchModel : public QStandardItemModel
 public:
     IndexSearchModel( QSqlQuery query , const QList<Focus> & focus = QList<Focus>() );
 
+    QString resultSummary() const;
+
 private:
     QSqlQuery mQuery;
 };
