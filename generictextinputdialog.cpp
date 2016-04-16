@@ -83,3 +83,8 @@ WritingSystem GenericTextInputDialog::writingSystem() const
     else
         return mWritingSystem;
 }
+
+void GenericTextInputDialog::setCursorPosition(int position)
+{
+    ui->textEdit->setCursorPosition(position);
+}

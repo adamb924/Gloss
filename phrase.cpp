@@ -131,6 +131,7 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
 
     GenericTextInputDialog dialog( TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text() , glossItem->baselineWritingSystem() ) , 0);
     dialog.setWindowTitle(tr("Edit the baseline text, if necessary. Any spaces will be converted to non-breaking spaces."));
+    dialog.setCursorPosition( glossItemAt(index)->baselineText().text().length() );
     if( dialog.exec() == QDialog::Accepted )
     {
         TextBit newBit = dialog.textBit();
@@ -158,6 +159,7 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
 
     GenericTextInputDialog dialog( TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text() , glossItem->baselineWritingSystem() ) , 0);
     dialog.setWindowTitle(tr("Edit the baseline text, if necessary. Any spaces will be converted to non-breaking spaces."));
+    dialog.setCursorPosition( glossItemAt(index-1)->baselineText().text().length() );
     if( dialog.exec() == QDialog::Accepted )
     {
         TextBit newBit = dialog.textBit();

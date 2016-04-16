@@ -33,6 +33,8 @@ public:
     TextBit textBit() const;
     WritingSystem writingSystem() const;
 
+    void setCursorPosition(int position);
+
 private:
     Ui::GenericTextInputDialog *ui;
 
