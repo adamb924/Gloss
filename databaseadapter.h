@@ -241,6 +241,9 @@ public:
     SyntacticType syntacticType(const QKeySequence & keySequence) const;
     SyntacticType syntacticType(const QString & abbreviation) const;
 
+    QHash<QString, PartOfSpeech> lexicalItemPosByAbbreviation() const;
+    QHash<QString, PartOfSpeech> wordPosByAbbreviation() const;
+
     bool multipleTextFormsAvailable(qlonglong interpretationId, const WritingSystem & ws) const;
     bool multipleGlossesAvailable(qlonglong interpretationId, const WritingSystem & ws) const;
 
@@ -271,6 +274,12 @@ private:
     QHash<QString, WritingSystem> mWritingSystemByFlexString;
     QHash<QKeySequence, SyntacticType> mSyntacticTypes;
     QHash<QString, SyntacticType> mSyntacticTypesByAbbreviation;
+
+    QHash<QKeySequence, PartOfSpeech> mWordPOS;
+    QHash<QString, PartOfSpeech> mWordPOSByAbbreviation;
+
+    QHash<QKeySequence, PartOfSpeech> mLexicalItemPOS;
+    QHash<QString, PartOfSpeech> mLexicalItemPOSByAbbreviation;
 
 signals:
 

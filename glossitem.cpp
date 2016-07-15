@@ -186,9 +186,19 @@ void GlossItem::setTextFormText(const TextBit & textForm)
     }
 }
 
+void GlossItem::setPos(const PartOfSpeech &pos)
+{
+    mPos = pos;
+}
+
 qlonglong GlossItem::id() const
 {
     return mId;
+}
+
+PartOfSpeech GlossItem::pos() const
+{
+    return mPos;
 }
 
 TextBit GlossItem::baselineText() const

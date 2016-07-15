@@ -19,6 +19,7 @@
 #include "allomorph.h"
 #include "morphologicalanalysis.h"
 #include "annotation.h"
+#include "partofspeech.h"
 
 class TextBit;
 class Project;
@@ -52,6 +53,9 @@ public:
 
     //! \brief Returns the id of the GlossItem (corresponding to the _id row of the Interpretations SQL table)
     qlonglong id() const;
+
+    //! \brief Returns the PartOfSpeech of the GlossItem
+    PartOfSpeech pos() const;
 
     //! \brief Returns the TextBit of the baseline text.
     TextBit baselineText() const;
@@ -180,6 +184,9 @@ public slots:
     //! \brief Changes the text of the text form, if the id matches
     void setTextFormText(const TextBit & textForm);
 
+    //! \brief Changes the part of speech
+    void setPos(const PartOfSpeech & pos);
+
 private:
     //! \brief Attempt to set the (interpretation) id of \a bit by querying the database for interpretations compatible with the text forms and gloss forms, or if there are none, than for those compatible with the baseline bit. If no compatible interpretation is found, a new interpretation is created.
     void guessInterpretation();
@@ -218,6 +225,8 @@ private:
     TextBitHash mGlosses;
     QHash<WritingSystem,bool> mMultipleTextForms;
     QHash<WritingSystem,bool> mMultipleGlosses;
+
+    PartOfSpeech mPos;
 };
 
 #endif // GLOSSITEM_H

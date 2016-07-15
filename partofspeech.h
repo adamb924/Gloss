@@ -16,6 +16,8 @@ public:
 
     bool isNull() const;
 
+    bool operator==(const PartOfSpeech & other) const;
+
 private:
     QString mName;
     QString mAbbreviation;

@@ -32,6 +32,8 @@ DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
 
     loadWritingSystems();
     loadSyntacticTypes();
+    loadLexicalItemPOS();
+    loadWordPOS();
 }
 
 DatabaseAdapter::~DatabaseAdapter()
@@ -1178,12 +1180,33 @@ void DatabaseAdapter::loadSyntacticTypes()
 
 void DatabaseAdapter::loadWordPOS()
 {
+    mWordPOS.clear();
+    mWordPOSByAbbreviation.clear();
 
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select Name, Abbreviation, KeySequence from WordPOS;");
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::loadWordPOS" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+    {
+        PartOfSpeech pos( q.value(0).toString(), q.value(1).toString(), QKeySequence( q.value(2).toString() ) );
+        mWordPOS.insert( pos.keySequence(), pos );
+        mWordPOSByAbbreviation.insert( pos.abbreviation(), pos );
+    }
 }
 
 void DatabaseAdapter::loadLexicalItemPOS()
 {
-
+    QSqlQuery q(QSqlDatabase::database(mFilename));
+    q.prepare("select Name, Abbreviation, KeySequence from WordPOS;");
+    if( !q.exec()  )
+        qWarning() << "DatabaseAdapter::LexicalItemPOS" << q.lastError().text() << q.executedQuery();
+    while( q.next() )
+    {
+        PartOfSpeech pos( q.value(0).toString(), q.value(1).toString(), QKeySequence( q.value(2).toString() ) );
+        mLexicalItemPOS.insert( pos.keySequence(), pos );
+        mWordPOSByAbbreviation.insert( pos.abbreviation(), pos );
+    }
 }
 
 SyntacticType DatabaseAdapter::syntacticType(const QKeySequence &keySequence) const
@@ -1194,6 +1217,16 @@ SyntacticType DatabaseAdapter::syntacticType(const QKeySequence &keySequence) co
 SyntacticType DatabaseAdapter::syntacticType(const QString &abbreviation) const
 {
     return mSyntacticTypesByAbbreviation.value(abbreviation, SyntacticType() );
+}
+
+QHash<QString, PartOfSpeech> DatabaseAdapter::lexicalItemPosByAbbreviation() const
+{
+    return mLexicalItemPOSByAbbreviation;
+}
+
+QHash<QString, PartOfSpeech> DatabaseAdapter::wordPosByAbbreviation() const
+{
+    return mWordPOSByAbbreviation;
 }
 
 bool DatabaseAdapter::multipleTextFormsAvailable(qlonglong interpretationId, const WritingSystem &ws) const

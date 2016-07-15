@@ -34,6 +34,10 @@ InterlinearItemType::InterlinearItemType(const QString & type, const WritingSyst
     {
         mType = InterlinearItemType::ImmutableGloss;
     }
+    else if( string == "pos-tagging" )
+    {
+        mType = InterlinearItemType::PosTagging;
+    }
     else
     {
         mType = InterlinearItemType::Null;
@@ -75,6 +79,9 @@ QString InterlinearItemType::typeString() const
     case InterlinearItemType::Analysis:
         return QObject::tr("Analysis");
         break;
+    case InterlinearItemType::PosTagging:
+        return QObject::tr("Part of Speech Tagging");
+        break;
     case InterlinearItemType::Null:
     default:
         return QObject::tr("(Null)");
@@ -100,6 +107,9 @@ QString InterlinearItemType::typeXmlString() const
         break;
     case InterlinearItemType::Analysis:
         return QObject::tr("analysis");
+        break;
+    case InterlinearItemType::PosTagging:
+        return QObject::tr("pos-tagging");
         break;
     case InterlinearItemType::Null:
     default:
@@ -131,6 +141,9 @@ QDebug operator<<(QDebug dbg, const InterlinearItemType &type)
         break;
     case InterlinearItemType::Analysis:
         dbg.nospace() << "InterlinearItemType(Analysis)";
+        break;
+    case InterlinearItemType::PosTagging:
+        dbg.nospace() << "InterlinearItemType(PosTagging)";
         break;
     case InterlinearItemType::Null:
     default:

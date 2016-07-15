@@ -16,6 +16,7 @@ ItemEditDialog::ItemEditDialog(const QList<WritingSystem> & writingSystems, QWid
     ui->itemTypeCombo->addItem( tr("Text") , InterlinearItemType::Text );
     ui->itemTypeCombo->addItem( tr("Gloss") , InterlinearItemType::Gloss );
     ui->itemTypeCombo->addItem( tr("Analysis") , InterlinearItemType::Analysis );
+    ui->itemTypeCombo->addItem( tr("Part of Speech") , InterlinearItemType::PosTagging );
 
     ui->writingSystemCombo->setWritingSystems(writingSystems);
 }

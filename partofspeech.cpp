@@ -34,6 +34,11 @@ bool PartOfSpeech::isNull() const
     return mAbbreviation.isEmpty();
 }
 
+bool PartOfSpeech::operator==(const PartOfSpeech &other) const
+{
+    return mName == other.mName;
+}
+
 QDebug operator<<(QDebug dbg, const PartOfSpeech &key)
 {
     if( key.isNull() )

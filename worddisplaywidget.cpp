@@ -12,6 +12,7 @@
 #include "dealwithspacesdialog.h"
 #include "annotationmarkwidget.h"
 #include "annotationeditordialog.h"
+#include "poswidget.h"
 
 #include <QtWidgets>
 #include <QtDebug>
@@ -96,6 +97,9 @@ void WordDisplayWidget::setupLayout()
             break;
         case InterlinearItemType::Analysis:
             vLayout->addWidget( addAnalysisWidget( mGlossLines->at(i) ) );
+            break;
+        case InterlinearItemType::PosTagging:
+            vLayout->addWidget( addPosWidget( mGlossLines->at(i) ) );
             break;
         case InterlinearItemType::Null:
             break;
@@ -232,6 +236,13 @@ AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType 
     connect( analysisWidget, SIGNAL(requestAlternateInterpretation()), this, SLOT(duplicateInterpretation()) );
 
     return analysisWidget;
+}
+
+PosWidget *WordDisplayWidget::addPosWidget(const InterlinearItemType &glossLine)
+{
+    PosWidget *posWidget = new PosWidget(mGlossItem, mProject->dbAdapter()->wordPosByAbbreviation() );
+
+    return posWidget;
 }
 
 void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )

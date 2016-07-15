@@ -26,6 +26,7 @@ class AnalysisWidget;
 class Concordance;
 class AnnotationMarkWidget;
 class Tab;
+class PosWidget;
 
 class WordDisplayWidget : public QFrame
 {
@@ -70,6 +71,7 @@ private:
     ImmutableLabel* addImmutableTextFormLine( const InterlinearItemType & glossLine, bool technicolor );
     ImmutableLabel* addImmutableGlossLine( const InterlinearItemType & glossLine, bool technicolor );
     AnalysisWidget* addAnalysisWidget( const InterlinearItemType & glossLine );
+    PosWidget* addPosWidget( const InterlinearItemType & glossLine );
 
     QLabel *mBaselineWordLabel;
     QHash<WritingSystem, LingEdit*> mTextFormEdits;

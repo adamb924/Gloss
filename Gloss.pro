@@ -111,7 +111,8 @@ SOURCES += main.cpp\
     paragraphmarkwidget.cpp \
     segmentationoptionbutton.cpp \
     partofspeechdialog.cpp \
-    partofspeech.cpp
+    partofspeech.cpp \
+    poswidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -214,7 +215,8 @@ HEADERS  += mainwindow.h \
     paragraphmarkwidget.h \
     segmentationoptionbutton.h \
     partofspeechdialog.h \
-    partofspeech.h
+    partofspeech.h \
+    poswidget.h
 
 FORMS    += mainwindow.ui \
     importflextextdialog.ui \
@@ -252,7 +254,8 @@ FORMS    += mainwindow.ui \
     annotationtypeeditordialog.ui \
     annotationeditordialog.ui \
     textmetadatadialog.ui \
-    partofspeechdialog.ui
+    partofspeechdialog.ui \
+    poswidget.ui
 
 unix:INCLUDEPATH += "/usr/include/libxml2"
 

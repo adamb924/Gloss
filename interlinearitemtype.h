@@ -17,6 +17,7 @@ public:
         Text,
         Gloss,
         Analysis,
+        PosTagging,
         Null
     };
 
