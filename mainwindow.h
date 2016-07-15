@@ -92,6 +92,8 @@ private slots:
     int projectOptions();
     void exportTexts();
     void syntacticElements();
+    void wordPOS();
+    void lexicalItemPOS();
 
     void viewChanged(int index);
     void quickViewChanged(int index);

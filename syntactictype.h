@@ -33,7 +33,10 @@ private:
 
 QDebug operator<<(QDebug dbg, const SyntacticType &key);
 
+#ifndef QHASH_QKEYSEQUENCE
+#define QHASH_QKEYSEQUENCE
 /// this is not of course part of SyntacticType, but it needs to be here for this class to be used well
 uint qHash(const QKeySequence & key);
+#endif
 
 #endif // SYNTACTICTYPE_H

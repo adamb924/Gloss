@@ -124,7 +124,10 @@
     <addaction name="actionOptions"/>
     <addaction name="actionWriting_systems"/>
     <addaction name="actionSyntactic_elements"/>
+    <addaction name="actionWord_Parts_of_Speech"/>
+    <addaction name="actionLexical_item_Parts_of_Speech"/>
     <addaction name="actionDelete_text"/>
+    <addaction name="separator"/>
     <addaction name="menuMemory_mode"/>
     <addaction name="separator"/>
     <addaction name="actionConfigure_views"/>
@@ -519,6 +522,16 @@
   <action name="actionText_metadata">
    <property name="text">
     <string>Text metadata...</string>
+   </property>
+  </action>
+  <action name="actionWord_Parts_of_Speech">
+   <property name="text">
+    <string>Word Parts of Speech...</string>
+   </property>
+  </action>
+  <action name="actionLexical_item_Parts_of_Speech">
+   <property name="text">
+    <string>Lexical item Parts of Speech...</string>
    </property>
   </action>
  </widget>

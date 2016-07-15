@@ -44,17 +44,12 @@ bool SyntacticType::isNull() const
     return mAbbreviation.isEmpty();
 }
 
+#ifndef QHASH_QKEYSEQUENCE_DEFINITION
+#define QHASH_QKEYSEQUENCE_DEFINITION
+
 uint qHash(const QKeySequence &key)
 {
     return qHash( key.toString() );
 }
 
-
-QDebug operator<<(QDebug dbg, const SyntacticType &key)
-{
-    if( key.isNull() )
-        dbg.nospace() << "SyntacticType(null)";
-    else
-        dbg.nospace() << "SyntacticType( Name: " << key.name() << ", Abbreviation: " << key.abbreviation() << ", Shortcut: " <<  key.keySequence().toString() << ", Automatic Parent: " << key.automaticParent() << ")";
-    return dbg.maybeSpace();
-}
+#endif

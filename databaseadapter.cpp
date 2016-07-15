@@ -79,6 +79,12 @@ void DatabaseAdapter::createTables()
     if( !q.exec("create table if not exists SyntacticConstituents ( _id integer primary key autoincrement, Name text, Abbreviation text, KeySequence text, AutomaticParent text );") )
         qWarning() << q.lastError().text() << q.executedQuery();
 
+    if( !q.exec("create table if not exists WordPOS ( _id integer primary key autoincrement, Name text, Abbreviation text, KeySequence text );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
+    if( !q.exec("create table if not exists LexicalItemPOS ( _id integer primary key autoincrement, Name text, Abbreviation text, KeySequence text );") )
+        qWarning() << q.lastError().text() << q.executedQuery();
+
     /// Index constraints
 
     if( !q.exec("create unique index if not exists LexicalEntryGloss_idx on LexicalEntryGloss ( LexicalEntryId , WritingSystem );") )
@@ -86,6 +92,7 @@ void DatabaseAdapter::createTables()
 
     if( !q.exec("create unique index if not exists LexicalEntryCitationForm_idx on LexicalEntryCitationForm ( LexicalEntryId , WritingSystem );") )
         qWarning() << q.lastError().text() << q.executedQuery();
+
 }
 
 QList<qlonglong> DatabaseAdapter::candidateInterpretations(const TextBit & bit) const
@@ -1167,6 +1174,16 @@ void DatabaseAdapter::loadSyntacticTypes()
         mSyntacticTypes.insert( type.keySequence(), type );
         mSyntacticTypesByAbbreviation.insert( type.abbreviation(), type );
     }
+}
+
+void DatabaseAdapter::loadWordPOS()
+{
+
+}
+
+void DatabaseAdapter::loadLexicalItemPOS()
+{
+
 }
 
 SyntacticType DatabaseAdapter::syntacticType(const QKeySequence &keySequence) const

@@ -17,6 +17,7 @@
 #include "allomorph.h"
 #include "annotationtype.h"
 #include "syntactictype.h"
+#include "partofspeech.h"
 
 class WritingSystem;
 class MorphologicalAnalysis;
@@ -234,6 +235,8 @@ public:
 
     void loadWritingSystems();
     void loadSyntacticTypes();
+    void loadWordPOS();
+    void loadLexicalItemPOS();
 
     SyntacticType syntacticType(const QKeySequence & keySequence) const;
     SyntacticType syntacticType(const QString & abbreviation) const;

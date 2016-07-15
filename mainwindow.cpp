@@ -28,6 +28,7 @@
 #include "importplaintextdialog.h"
 #include "textlistmodel.h"
 #include "textmetadatadialog.h"
+#include "partofspeechdialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -110,6 +111,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( ui->actionSyntactic_elements, SIGNAL(triggered()), this, SLOT(syntacticElements()) );
 
+    connect( ui->actionWord_Parts_of_Speech, SIGNAL(triggered()), this, SLOT(wordPOS()) );
+    connect( ui->actionLexical_item_Parts_of_Speech, SIGNAL(triggered()), this, SLOT(lexicalItemPOS()) );
+
     connect( ui->actionText_metadata, SIGNAL(triggered()), this, SLOT(textMetadataDialog()) );
 
     ui->actionSearch_files_instead_of_index->setCheckable(true);
@@ -136,7 +140,9 @@ void MainWindow::addTableMenuItems()
 
     ui->menuView_Edit_SQL_Tables->addSeparator();
     tables.clear();
-    tables << "Allomorph" << "LexicalEntry" << "LexicalEntryGloss" << "LexicalEntryCitationForm" << "LexicalEntryTags" << "MorphologicalAnalysisMembers" << "GrammaticalTags";
+    tables << "Allomorph" << "LexicalEntry" << "LexicalEntryGloss" << "LexicalEntryCitationForm" << "LexicalEntryTags" << "MorphologicalAnalysisMembers" << "GrammaticalTags"
+           << "WordPOS"
+           << "LexicalItemPOS";
     addTableMenuItems(tables);
 
     ui->menuView_Edit_SQL_Tables->addSeparator();
@@ -655,6 +661,26 @@ void MainWindow::syntacticElements()
     if( dlg.exec() )
     {
         mProject->dbAdapter()->loadSyntacticTypes();
+        mProject->setChanged();
+    }
+}
+
+void MainWindow::wordPOS()
+{
+    PartOfSpeechDialog dlg("WordPOS", mProject);
+    if( dlg.exec() )
+    {
+        mProject->dbAdapter()->loadWordPOS();
+        mProject->setChanged();
+    }
+}
+
+void MainWindow::lexicalItemPOS()
+{
+    PartOfSpeechDialog dlg("LexicalItemPOS", mProject);
+    if( dlg.exec() )
+    {
+        mProject->dbAdapter()->loadLexicalItemPOS();
         mProject->setChanged();
     }
 }
