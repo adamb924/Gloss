@@ -36,7 +36,9 @@ void InterlinearLineLabel::contextMenuEvent ( QContextMenuEvent * event )
 
     menu.addAction(tr("New paragraph here"), this, SLOT(newParagraphAt()) );
 
-    menu.addAction(tr("Remove line"), this, SLOT(removePhrase()) );
+    menu.addAction(tr("Merge with previous line"), this, SLOT(mergePhraseWithPrevious()) );
+
+    menu.addAction(tr("Delete this line"), this, SLOT(removePhrase()) );
 
     menu.exec(event->globalPos());
 }
@@ -86,4 +88,9 @@ void InterlinearLineLabel::copyBaselineTextToClipboard()
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText( mPhrase->equivalentBaselineLineText() );
+}
+
+void InterlinearLineLabel::mergePhraseWithPrevious()
+{
+    mText->mergePhraseWithPrevious(mLineNumber);
 }

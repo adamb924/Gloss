@@ -33,6 +33,7 @@ private slots:
     void removePhrase();
     void newParagraphAt();
     void copyBaselineTextToClipboard();
+    void mergePhraseWithPrevious();
 };
 
 #endif // INTERLINEARLINELABEL_H

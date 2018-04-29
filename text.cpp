@@ -396,7 +396,7 @@ void Text::removeParagraphDivision(int paragraphIndex)
             first->phrases()->append( second->phrases()->takeAt(0) );
         }
         delete mParagraphs.takeAt(paragraphIndex);
-        emit phraseRefreshNeeded(paragraphIndex);
+        emit guiRefreshRequest();
         markAsChanged();
     }
 }
@@ -514,6 +514,25 @@ void Text::removePhrase(int lineNumber )
             return;
         }
     }
+}
+
+void Text::mergePhraseWithPrevious(int lineNumber)
+{
+    if( lineNumber == 0 || lineNumber >= phraseCount() )
+    {
+        return;
+    }
+    Phrase * earlierPhrase = phraseAtLine(lineNumber-1);
+    Phrase * latterPhrase = phraseAtLine(lineNumber);
+
+    int nItems = latterPhrase->glossItemCount();
+    for(int i=0; i< nItems; i++)
+    {
+        earlierPhrase->appendGlossItem( latterPhrase->takeGlossItemAt(0) );
+    }
+    emit phraseRefreshNeeded( lineNumber-1 );
+    removePhrase(lineNumber);
+    markAsChanged();
 }
 
 void Text::findGlossItemLocation(const GlossItem *glossItem, int & paragraph, int & phrase, int & position) const

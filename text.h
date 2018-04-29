@@ -162,8 +162,11 @@ public slots:
     //! \brief Returns the number of phrases in a text.
     int phraseCount() const;
 
-    //! \brief Removes phrase \a index
+    //! \brief Removes phrase \a lineNumber
     void removePhrase(int lineNumber );
+
+    //! \brief Moves the GlossItem objects from \a lineNumber to the previous line
+    void mergePhraseWithPrevious(int lineNumber);
 
     //! \brief Creates a new Phrase, splitting the Phrase that contains \a glossItem into two, with \a glossItem beginning the new phrase.
     void newPhraseStartingHere(GlossItem * glossItem);
@@ -291,7 +294,6 @@ private:
     QString mComment;
     QUrl mAudioFileURL;
 
-    QList<Phrase*> mPhrases;
     QList<Paragraph*> mParagraphs;
 };
 
