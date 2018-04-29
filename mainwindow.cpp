@@ -116,6 +116,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( ui->actionText_metadata, SIGNAL(triggered()), this, SLOT(textMetadataDialog()) );
 
+    connect( ui->actionOpen_project_temp_folder, SIGNAL(triggered()), this, SLOT(openProjectTempFolder()) );
+
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
 
@@ -1224,6 +1226,14 @@ void MainWindow::createCountReport(const QString & typeString)
         {
             QMessageBox::warning(this, tr("Gloss"), tr("The report could not be generated, sorry.") );
         }
+    }
+}
+
+void MainWindow::openProjectTempFolder()
+{
+    if( mProject != 0 )
+    {
+        QDesktopServices::openUrl(QUrl(mProject->getTempDir().absolutePath(), QUrl::TolerantMode));
     }
 }
 

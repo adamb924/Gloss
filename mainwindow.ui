@@ -94,6 +94,7 @@
     </widget>
     <addaction name="menuReports"/>
     <addaction name="actionEdit_lexicon"/>
+    <addaction name="actionOpen_project_temp_folder"/>
     <addaction name="separator"/>
     <addaction name="actionRemove_unused_gloss_items"/>
     <addaction name="actionPerform_a_query"/>
@@ -532,6 +533,11 @@
   <action name="actionLexical_item_Parts_of_Speech">
    <property name="text">
     <string>Lexical item Parts of Speech...</string>
+   </property>
+  </action>
+  <action name="actionOpen_project_temp_folder">
+   <property name="text">
+    <string>Open project temp folder...</string>
    </property>
   </action>
  </widget>

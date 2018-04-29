@@ -212,6 +212,7 @@ private slots:
     void countTextForms();
     void countGlosses();
     void createCountReport(const QString & typeString);
+    void openProjectTempFolder();
     ///@}
 
 private slots:
