@@ -530,8 +530,8 @@ void Text::mergePhraseWithPrevious(int lineNumber)
     {
         earlierPhrase->appendGlossItem( latterPhrase->takeGlossItemAt(0) );
     }
-    emit phraseRefreshNeeded( lineNumber-1 );
     removePhrase(lineNumber);
+    emit guiRefreshRequest();
     markAsChanged();
 }
 

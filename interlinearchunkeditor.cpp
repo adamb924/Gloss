@@ -125,6 +125,11 @@ void InterlinearChunkEditor::refreshLayout()
 QList<int> InterlinearChunkEditor::makeLines()
 {
     QList<int> lines;
+    // line numbers may have changed
+    if( mPosition >= mText->phraseCount() )
+    {
+        mPosition = ((mText->phraseCount() - 1) / mChunkSize) * mChunkSize;
+    }
     for( int i=mPosition; i < mPosition + mChunkSize && i < mText->phraseCount(); i++ )
         lines << i;
     return lines;
