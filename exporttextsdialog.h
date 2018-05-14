@@ -30,7 +30,9 @@ private slots:
     void chooseFolder();
     void selectAll();
     void selectNone();
-
+    void onCustomContextMenu(const QPoint &point);
+    void checkSelected();
+    void uncheckSelected();
 
 private:
     Ui::ExportTextsDialog *ui;

@@ -2,6 +2,7 @@
 #include "ui_exporttextsdialog.h"
 
 #include <QFileDialog>
+#include <QMenu>
 
 ExportTextsDialog::ExportTextsDialog(QStringList textNames, QWidget *parent) :
     QDialog(parent),
@@ -22,6 +23,9 @@ ExportTextsDialog::ExportTextsDialog(QStringList textNames, QWidget *parent) :
     }
 
     ui->listView->setModel(&mTextNamesModel);
+
+    ui->listView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->listView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onCustomContextMenu(QPoint)) );
 }
 
 ExportTextsDialog::~ExportTextsDialog()
@@ -76,5 +80,39 @@ void ExportTextsDialog::selectNone()
     for(int i=0; i<mTextNamesModel.rowCount(); i++)
     {
         mTextNamesModel.item(i)->setCheckState( Qt::Unchecked );
+    }
+}
+
+void ExportTextsDialog::onCustomContextMenu(const QPoint &point)
+{
+    QMenu *menu = new QMenu(this);
+
+    menu->addAction(tr("Check selected"), this, SLOT(checkSelected()));
+    menu->addAction(tr("Uncheck selected"), this, SLOT(uncheckSelected()));
+
+    menu->addSeparator();
+
+    menu->addAction(tr("Check all"), this, SLOT(selectAll()));
+    menu->addAction(tr("Clear all checks"), this, SLOT(selectNone()));
+
+    menu->exec( ui->listView->mapToGlobal( point ) );
+
+}
+
+void ExportTextsDialog::checkSelected()
+{
+    QModelIndexList selection = ui->listView->selectionModel()->selectedIndexes();
+    foreach(QModelIndex index, selection)
+    {
+        mTextNamesModel.itemFromIndex(index)->setCheckState( Qt::Checked );
+    }
+}
+
+void ExportTextsDialog::uncheckSelected()
+{
+    QModelIndexList selection = ui->listView->selectionModel()->selectedIndexes();
+    foreach(QModelIndex index, selection)
+    {
+        mTextNamesModel.itemFromIndex(index)->setCheckState( Qt::Unchecked );
     }
 }
