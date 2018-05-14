@@ -287,12 +287,20 @@ void InterlinearDisplayWidget::setLayoutFromText()
     QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mLines.count(), 0);
     progress.setWindowModality(Qt::WindowModal);
 
+    int nPhrases = mText->phraseCount();
+
     QListIterator<int> iter(mLines);
     while(iter.hasNext())
     {
         progress.setValue( progress.value() + 1 );
 
         int lineIndex = iter.next();
+
+        // bit of a kludge, but saves a crash
+        if( lineIndex >= nPhrases )
+        {
+            continue;
+        }
 
         QLayout *flowLayout;
         QVBoxLayout *phrasalGlossLayout;
