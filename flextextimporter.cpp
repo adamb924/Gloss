@@ -108,6 +108,14 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
                     mText->setSound( QUrl::fromEncoded( attr.value("http://www.adambaker.org/gloss.php","audio-file").toString().toUtf8() ) );
                 }
             }
+            else if(name == "morphemes")
+            {
+                /// Skip over any <morphemes> element
+                while( !( stream.name().toString() == "morphemes" && stream.tokenType() == QXmlStreamReader::EndElement ) )
+                {
+                    stream.readNext();
+                }
+            }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement )
         {
