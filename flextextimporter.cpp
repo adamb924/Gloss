@@ -88,6 +88,11 @@ FlexTextReader::Result FlexTextImporter::readFile(const QString & filepath)
                         {
                             glossForms.insert( lang, TextBit( text , lang, itemId) );
                         }
+                        else if ( type == "punct" )
+                        {
+                            TextBit textForm( text , lang, itemId);
+                            textForms.insert( lang, textForm );
+                        }
                     }
                     else if ( inPhrase && type == "gls" )
                     {
