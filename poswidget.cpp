@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QGroupBox>
 #include <QRadioButton>
+#include <QButtonGroup>
 
 #include <QtDebug>
 

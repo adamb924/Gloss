@@ -265,9 +265,9 @@ unix:INCLUDEPATH += "/usr/include/libxml2"
 # it at all.
 LIBS += -L./ \
     -lquazip \
+#    -llibexslt \
+#    -llibxslt \
+#    -llibxml2
     -llibexslt \
-    -llibxslt \
-    -llibxml2
-#    -lexslt \
-#    -lxslt \
-#    -lxml2
+    -lxslt \
+    -lxml2
