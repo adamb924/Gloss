@@ -14,19 +14,21 @@
 #include <libxslt/xsltutils.h>
 #include <libexslt/exslt.h>
 
+#include <QFileInfo>
 #include <QList>
 #include <QtDebug>
 
-Xsltproc::Xsltproc() :
-    mErrorRedirect(false)
+Xsltproc::Xsltproc()
 {
     exsltRegisterAll();
     xmlSubstituteEntitiesDefault(1);
     xmlLoadExtDtdDefaultValue = 1;
-    mStylesheet = 0;
-    mOutput = 0;
-    mXml = 0;
-    mParams = 0;
+
+    mStylesheet = nullptr;
+    mOutput = nullptr;
+    mXml = nullptr;
+
+    mParams = nullptr;
     mNParams = 0;
 }
 
@@ -53,12 +55,12 @@ void Xsltproc::setOutputFilename(const QString & filename)
 
 void Xsltproc::setParameters(const QHash<QString,QString> & parameters)
 {
-    for(int i=0; i<mNParams; i++)
+    for(unsigned int i=0; i<mNParams; i++)
     {
         delete mParams[i];
     }
-    if( mParams != 0 ) delete mParams;
-    mNParams = parameters.count();
+    if( mParams != nullptr ) delete mParams;
+    mNParams = static_cast<unsigned int>(parameters.count());
     mParams = new char*[2*mNParams+1];
 
     QList<QByteArray*> byteArrays;
@@ -73,7 +75,7 @@ void Xsltproc::setParameters(const QHash<QString,QString> & parameters)
         byteArrays << new QByteArray(paramValue.toUtf8());
         mParams[i++] = byteArrays.last()->data();
     }
-    mParams[i] = NULL;
+    mParams[i] = nullptr;
 }
 
 Xsltproc::ReturnValue Xsltproc::execute()
@@ -81,22 +83,22 @@ Xsltproc::ReturnValue Xsltproc::execute()
     Xsltproc::ReturnValue retval = Xsltproc::Success;
     try
     {
-        if( freopen(mErrorFilename.toUtf8().data(),"w",stderr) == NULL ) throw Xsltproc::GenericFailure;
+        if( freopen(mErrorFilename.toUtf8().data(),"w",stderr) == nullptr ) throw Xsltproc::GenericFailure;
 
-        mStylesheet = xsltParseStylesheetFile( (const xmlChar*)mStyleSheetFilename.toUtf8().data() );
-        if(mStylesheet == 0) throw Xsltproc::InvalidStylesheet;
+        mStylesheet = xsltParseStylesheetFile( reinterpret_cast<const xmlChar*>(mStyleSheetFilename.toUtf8().data()) );
+        if(mStylesheet == nullptr || getErrorFileHasContents())
+            throw Xsltproc::InvalidStylesheet;
 
-        mXml = xmlParseFile( (const char*)mXmlFilename.toUtf8().data() );
-        if(mXml == 0) throw Xsltproc::InvalidXmlFile;
+        mXml = xmlParseFile( static_cast<const char*>(mXmlFilename.toUtf8().data()) );
+        if(mXml == nullptr || getErrorFileHasContents())
+            throw Xsltproc::InvalidXmlFile;
 
-        mOutput = xsltApplyStylesheet(mStylesheet, mXml, (const char**)mParams);
-        if(mOutput == 0) throw Xsltproc::GenericFailure;
+        mOutput = xsltApplyStylesheet(mStylesheet, mXml, const_cast<const char**>(mParams) );
+        if(mOutput == nullptr || getErrorFileHasContents())
+            throw Xsltproc::ApplyStylesheetFailure;
 
-        FILE *foutput = 0;
-        foutput = fopen(mOutputFilename.toUtf8().data(),"w");
-        if( foutput == 0 ) throw Xsltproc::CouldNotOpenOutput;
-        xsltSaveResultToFile(foutput, mOutput, mStylesheet);
-        fclose(foutput);
+        if( 0 == xsltSaveResultToFilename(mOutputFilename.toUtf8().data(), mOutput, mStylesheet, 0) )
+            throw Xsltproc::CouldNotOpenOutput;
     }
     catch(Xsltproc::ReturnValue e)
     {
@@ -104,7 +106,6 @@ Xsltproc::ReturnValue Xsltproc::execute()
     }
 
     fclose(stderr);
-
     freeResources();
 
     return retval;
@@ -112,24 +113,64 @@ Xsltproc::ReturnValue Xsltproc::execute()
 
 void Xsltproc::freeResources()
 {
-    if( mStylesheet != 0 )
+    if( mStylesheet != nullptr )
     {
         xsltFreeStylesheet(mStylesheet);
-        mStylesheet = 0;
+        mStylesheet = nullptr;
     }
-    if( mOutput != 0 )
+    if( mOutput != nullptr )
     {
         xmlFreeDoc(mOutput);
-        mOutput = 0;
+        mOutput = nullptr;
     }
-    if( mXml != 0 )
+    if( mXml != nullptr )
     {
         xmlFreeDoc(mXml);
-        mXml=0;
+        mXml=nullptr;
+    }
+}
+
+bool Xsltproc::getErrorFileHasContents()
+{
+    fclose(stderr);
+    QFileInfo info(mErrorFilename);
+    if( info.size() > 0 )
+    {
+        return true;
+    }
+    else
+    {
+        if( freopen(mErrorFilename.toUtf8().data(),"w",stderr) == nullptr ) throw Xsltproc::GenericFailure;
+        return false;
     }
 }
 
 void Xsltproc::setErrorFilename(const QString & filename)
 {
     mErrorFilename = filename;
+}
+
+QDebug operator<<(QDebug dbg, const Xsltproc::ReturnValue &value)
+{
+    switch(value) {
+    case Xsltproc::Success:
+        dbg << "Xsltproc::Success";
+        break;
+    case Xsltproc::InvalidStylesheet:
+        dbg << "Xsltproc::InvalidStylesheet";
+        break;
+    case Xsltproc::InvalidXmlFile:
+        dbg << "Xsltproc::InvalidXmlFile";
+        break;
+    case Xsltproc::CouldNotOpenOutput:
+        dbg << "Xsltproc::CouldNotOpenOutput";
+        break;
+    case Xsltproc::ApplyStylesheetFailure:
+        dbg << "Xsltproc::ApplyStylesheetFailure";
+        break;
+    case Xsltproc::GenericFailure:
+        dbg << "Xsltproc::GenericFailure";
+        break;
+    }
+    return dbg;
 }

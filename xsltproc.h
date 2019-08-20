@@ -18,7 +18,7 @@ public:
     Xsltproc();
     ~Xsltproc();
 
-    enum ReturnValue { Success, InvalidStylesheet, InvalidXmlFile, CouldNotOpenOutput, GenericFailure };
+    enum ReturnValue { Success, InvalidStylesheet, InvalidXmlFile, CouldNotOpenOutput, ApplyStylesheetFailure, GenericFailure };
 
     void setStyleSheet(const QString & filename);
     void setXmlFilename(const QString & filename);
@@ -29,13 +29,14 @@ public:
 
 private:
     void freeResources();
+    bool getErrorFileHasContents();
 
     QString mStyleSheetFilename;
     QString mXmlFilename;
     QString mErrorFilename;
     QString mOutputFilename;
     char **mParams;
-    int mNParams;
+    unsigned int mNParams;
 
     bool mErrorRedirect;
 
@@ -43,5 +44,7 @@ private:
     xmlDocPtr mXml;
     xmlDocPtr mOutput;
 };
+
+QDebug operator<<(QDebug dbg, const Xsltproc::ReturnValue & value);
 
 #endif // XSLTPROC_H
