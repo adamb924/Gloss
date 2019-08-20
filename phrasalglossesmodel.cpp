@@ -58,7 +58,7 @@ void PhrasalGlossesModel::moveUp(int index)
     if( index > 0 )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index, index, QModelIndex(), index-1);
-        mTab->phrasalGlossLines()->swap( index, index-1 );
+        mTab->phrasalGlossLines()->swapItemsAt( index, index-1 );
         QAbstractItemModel::endMoveRows();
     }
 }
@@ -68,7 +68,7 @@ void PhrasalGlossesModel::moveDown(int index)
     if( index+1 < mTab->phrasalGlossLines()->count() )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index+1, index+1, QModelIndex(), index);
-        mTab->phrasalGlossLines()->swap( index, index+1 );
+        mTab->phrasalGlossLines()->swapItemsAt( index, index+1 );
         QAbstractItemModel::endMoveRows();
     }
 }

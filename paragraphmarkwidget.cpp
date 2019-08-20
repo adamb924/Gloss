@@ -9,7 +9,7 @@
 ParagraphMarkWidget::ParagraphMarkWidget(Paragraph * paragraph, QWidget *parent) :
     QWidget(parent),
     mParagraph(paragraph),
-    mHeaderLabel(0)
+    mHeaderLabel(nullptr)
 {
 
     setStyleSheet("ParagraphMarkWidget { border: 1px dashed #668DCC; border-radius: 0px; padding: 2px; }");

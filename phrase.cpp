@@ -129,7 +129,7 @@ void Phrase::mergeGlossItemWithNext( GlossItem *glossItem )
     if( index == -1 || index >= glossItemCount() -1 )
         return;
 
-    GenericTextInputDialog dialog( TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text() , glossItem->baselineWritingSystem() ) , 0);
+    GenericTextInputDialog dialog( TextBit( glossItemAt(index)->baselineText().text() + glossItemAt(index+1)->baselineText().text() , glossItem->baselineWritingSystem() ) , nullptr);
     dialog.setWindowTitle(tr("Edit the baseline text, if necessary. Any spaces will be converted to non-breaking spaces."));
     dialog.setCursorPosition( glossItemAt(index)->baselineText().text().length() );
     if( dialog.exec() == QDialog::Accepted )
@@ -157,7 +157,7 @@ void Phrase::mergeGlossItemWithPrevious( GlossItem *glossItem )
     if( index <= 0 || index >= glossItemCount() )
         return;
 
-    GenericTextInputDialog dialog( TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text() , glossItem->baselineWritingSystem() ) , 0);
+    GenericTextInputDialog dialog( TextBit( glossItemAt(index-1)->baselineText().text() + glossItemAt(index)->baselineText().text() , glossItem->baselineWritingSystem() ) , nullptr);
     dialog.setWindowTitle(tr("Edit the baseline text, if necessary. Any spaces will be converted to non-breaking spaces."));
     dialog.setCursorPosition( glossItemAt(index-1)->baselineText().text().length() );
     if( dialog.exec() == QDialog::Accepted )
@@ -183,7 +183,7 @@ void Phrase::removeGlossItem( GlossItem *glossItem )
 {
     if( mGlossItems.count() == 1)
     {
-        if( QMessageBox::Yes == QMessageBox::question(0, tr("Remove phrase?"), tr("This is the last gloss item on the line. Would you like to remove the entire phrase? (If you click no, nothing will happen.)"), QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) )
+        if( QMessageBox::Yes == QMessageBox::question(nullptr, tr("Remove phrase?"), tr("This is the last gloss item on the line. Would you like to remove the entire phrase? (If you click no, nothing will happen.)"), QMessageBox::Yes | QMessageBox::No , QMessageBox::No ) )
         {
             emit requestRemovePhrase(this);
         }

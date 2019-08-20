@@ -82,7 +82,7 @@ void Tab::interlinearLineSwap(const WritingSystem &ws, int i, int j)
 {
     if( mInterlinearLines.contains(ws) )
     {
-        mInterlinearLines[ws]->swap(i,j);
+        mInterlinearLines[ws]->swapItemsAt(i,j);
     }
 }
 
@@ -105,9 +105,9 @@ QString Tab::getTypeString(Tab::TabType t)
     case Tab::SyntacticParsing:
         return "syntactic-parsing";
     case Tab::Null:
-    default:
         return "null";
     }
+    return "null";
 }
 
 Tab::TabType Tab::getType(QString t)

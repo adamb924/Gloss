@@ -30,12 +30,12 @@ ViewConfigurationDialog::ViewConfigurationDialog(Project *project, QWidget *pare
     mViewModel = new ViewsModel(mProject);
     ui->viewView->setModel( mViewModel );
 
-    mTabsModel = 0;
-    mItemsModel = 0;
-    mPhrasalGlossesModel = 0;
+    mTabsModel = nullptr;
+    mItemsModel = nullptr;
+    mPhrasalGlossesModel = nullptr;
 
-    mView = 0;
-    mTab = 0;
+    mView = nullptr;
+    mTab = nullptr;
 
     connect(ui->addView, SIGNAL(clicked()), this, SLOT(addView()) );
     connect(ui->removeView, SIGNAL(clicked()), this, SLOT(removeView()) );
@@ -92,7 +92,7 @@ void ViewConfigurationDialog::removeView()
 
 void ViewConfigurationDialog::addTab()
 {
-    if( mTabsModel != 0 )
+    if( mTabsModel != nullptr )
     {
         TabEditDialog dlg;
         if( dlg.exec() )
@@ -104,7 +104,7 @@ void ViewConfigurationDialog::addTab()
 
 void ViewConfigurationDialog::removeTab()
 {
-    if( mTabsModel != 0 && ui->tabView->selectionModel()->selectedIndexes().count() > 0 )
+    if( mTabsModel != nullptr && ui->tabView->selectionModel()->selectedIndexes().count() > 0 )
     {
         mTabsModel->removeTab( ui->tabView->selectionModel()->selectedIndexes().first() );
     }
@@ -112,7 +112,7 @@ void ViewConfigurationDialog::removeTab()
 
 void ViewConfigurationDialog::addItem()
 {
-    if( mTab == 0 ) return;
+    if( mTab == nullptr ) return;
 
     ItemEditDialog dialog(mProject->dbAdapter()->writingSystems(), this);
     dialog.setWritingSystem( currentWritingSystem(), true );
@@ -127,13 +127,13 @@ void ViewConfigurationDialog::addItem()
 
 void ViewConfigurationDialog::removeItem()
 {
-    if( mTab == 0 || ui->itemView->selectionModel()->selectedIndexes().count() == 0 ) return;
+    if( mTab == nullptr || ui->itemView->selectionModel()->selectedIndexes().count() == 0 ) return;
     mItemsModel->removeItem( currentWritingSystem(), ui->itemView->selectionModel()->selectedIndexes().first() );
 }
 
 void ViewConfigurationDialog::addPhrasalGloss()
 {
-    if( mPhrasalGlossesModel == 0 ) return;
+    if( mPhrasalGlossesModel == nullptr ) return;
     WritingSystemDialog dialog(mProject->dbAdapter()->writingSystems(), this);
     dialog.exec();
     if( dialog.result() == QDialog::Accepted )
@@ -144,7 +144,7 @@ void ViewConfigurationDialog::addPhrasalGloss()
 
 void ViewConfigurationDialog::removePhrasalGloss()
 {
-    if( mPhrasalGlossesModel == 0 || ui->phrasalGlossView->selectionModel()->selectedRows().isEmpty() ) return;
+    if( mPhrasalGlossesModel == nullptr || ui->phrasalGlossView->selectionModel()->selectedRows().isEmpty() ) return;
     mPhrasalGlossesModel->removePhrasalGloss( ui->phrasalGlossView->selectionModel()->selectedRows().first().row() );
 }
 
@@ -155,7 +155,7 @@ void ViewConfigurationDialog::viewChanged(const QItemSelection &selected, const 
     if( ! selected.indexes().isEmpty() )
     {
         int currentView = selected.indexes().first().row();
-        if( mTabsModel != 0 )
+        if( mTabsModel != nullptr )
         {
             delete mTabsModel;
         }
@@ -190,7 +190,7 @@ void ViewConfigurationDialog::populateWritingSystemCombo()
     ui->itemWritingSystemsCombo->setEnabled( ui->itemWritingSystemsCombo->count() > 0 );
 
     WritingSystem currentWS = currentWritingSystem();
-    if( mItemsModel != 0 )
+    if( mItemsModel != nullptr )
     {
         delete mItemsModel;
     }
@@ -201,7 +201,7 @@ void ViewConfigurationDialog::populateWritingSystemCombo()
 void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     Q_UNUSED(deselected);
-    if( ! selected.indexes().isEmpty() &&  !ui->viewView->selectionModel()->selectedRows().isEmpty() && mView != 0 )
+    if( ! selected.indexes().isEmpty() &&  !ui->viewView->selectionModel()->selectedRows().isEmpty() && mView != nullptr )
     {
         int currentTab = selected.indexes().first().row();
         mTab = mView->tabs()->at(currentTab);
@@ -209,7 +209,7 @@ void ViewConfigurationDialog::tabChanged(const QItemSelection &selected, const Q
         populateWritingSystemCombo();
 
 
-        if( mPhrasalGlossesModel != 0 )
+        if( mPhrasalGlossesModel != nullptr )
         {
             delete mPhrasalGlossesModel;
         }
@@ -228,7 +228,7 @@ void ViewConfigurationDialog::indexLanguageChanged(int index)
 {
     Q_UNUSED(index);
     WritingSystem currentWS = currentWritingSystem();
-    if( mItemsModel != 0 )
+    if( mItemsModel != nullptr )
     {
         delete mItemsModel;
     }
@@ -248,7 +248,7 @@ void ViewConfigurationDialog::editPhrasalGloss(const QModelIndex &index)
 
 void ViewConfigurationDialog::editItem(const QModelIndex &index)
 {
-    if( mTab == 0 ) return;
+    if( mTab == nullptr ) return;
     ItemEditDialog dialog(mProject->dbAdapter()->writingSystems(), this);
     dialog.setWritingSystem( currentWritingSystem(), false );
     dialog.setType( mTab->interlinearLines(currentWritingSystem())->at( index.row() ) );
@@ -261,7 +261,7 @@ void ViewConfigurationDialog::editItem(const QModelIndex &index)
 
 WritingSystem ViewConfigurationDialog::currentWritingSystem() const
 {
-    if( ui->itemWritingSystemsCombo->count() == 0 || mTab == 0 )
+    if( ui->itemWritingSystemsCombo->count() == 0 || mTab == nullptr )
     {
         return WritingSystem();
     }
@@ -273,49 +273,49 @@ WritingSystem ViewConfigurationDialog::currentWritingSystem() const
 
 void ViewConfigurationDialog::viewUp()
 {
-    if(mViewModel == 0 || ui->viewView->selectionModel()->selectedRows().count() == 0 ) return;
+    if(mViewModel == nullptr || ui->viewView->selectionModel()->selectedRows().count() == 0 ) return;
     mViewModel->moveUp( ui->viewView->selectionModel()->selectedRows().first().row() );
 }
 
 void ViewConfigurationDialog::viewDown()
 {
-    if(mViewModel == 0 || ui->viewView->selectionModel()->selectedRows().count() == 0 ) return;
+    if(mViewModel == nullptr || ui->viewView->selectionModel()->selectedRows().count() == 0 ) return;
     mViewModel->moveDown( ui->viewView->selectionModel()->selectedRows().first().row() );
 }
 
 void ViewConfigurationDialog::tabUp()
 {
-    if(mTabsModel == 0 || ui->tabView->selectionModel()->selectedRows().count() == 0 ) return;
+    if(mTabsModel == nullptr || ui->tabView->selectionModel()->selectedRows().count() == 0 ) return;
     mTabsModel->moveUp( ui->tabView->selectionModel()->selectedRows().first().row() );
 }
 
 void ViewConfigurationDialog::tabDown()
 {
-    if(mTabsModel == 0 || ui->tabView->selectionModel()->selectedRows().count() == 0 ) return;
+    if(mTabsModel == nullptr || ui->tabView->selectionModel()->selectedRows().count() == 0 ) return;
     mTabsModel->moveDown( ui->tabView->selectionModel()->selectedRows().first().row() );
 }
 
 void ViewConfigurationDialog::itemUp()
 {
-    if(mItemsModel == 0 || ui->itemView->selectionModel()->selectedRows().count() == 0 ) return;
+    if(mItemsModel == nullptr || ui->itemView->selectionModel()->selectedRows().count() == 0 ) return;
     mItemsModel->moveUp( currentWritingSystem(), ui->itemView->selectionModel()->selectedRows().first().row() );
 }
 
 void ViewConfigurationDialog::itemDown()
 {
-    if(mItemsModel == 0 || ui->itemView->selectionModel()->selectedRows().count() == 0 ) return;
+    if(mItemsModel == nullptr || ui->itemView->selectionModel()->selectedRows().count() == 0 ) return;
     mItemsModel->moveDown( currentWritingSystem(), ui->itemView->selectionModel()->selectedRows().first().row() );
 }
 
 void ViewConfigurationDialog::phrasalGlossUp()
 {
-    if(mPhrasalGlossesModel == 0 || ui->phrasalGlossView->selectionModel()->selectedRows().count() == 0 ) return;
+    if(mPhrasalGlossesModel == nullptr || ui->phrasalGlossView->selectionModel()->selectedRows().count() == 0 ) return;
     mPhrasalGlossesModel->moveUp( ui->phrasalGlossView->selectionModel()->selectedRows().first().row() );
 }
 
 void ViewConfigurationDialog::phrasalGlossDown()
 {
-    if(mPhrasalGlossesModel == 0 || ui->phrasalGlossView->selectionModel()->selectedRows().count() == 0 ) return;
+    if(mPhrasalGlossesModel == nullptr || ui->phrasalGlossView->selectionModel()->selectedRows().count() == 0 ) return;
     mPhrasalGlossesModel->moveDown( ui->phrasalGlossView->selectionModel()->selectedRows().first().row() );
 }
 

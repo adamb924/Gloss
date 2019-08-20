@@ -69,7 +69,7 @@ bool TextListModel::setData(const QModelIndex &index, const QVariant &value, int
 Qt::ItemFlags TextListModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
-        return 0;
+        return Qt::NoItemFlags;
 
     return Qt::ItemIsSelectable	| Qt::ItemIsEditable | Qt::ItemIsEnabled;
 }

@@ -143,14 +143,14 @@ void LingEdit::setSpecialBorder(bool special)
 QSize LingEdit::sizeHint() const
 {
     QSize sizeHint = QLineEdit::sizeHint();
-    sizeHint.setWidth( fontMetrics().width(mTextBit.text()) + 10 );
+    sizeHint.setWidth( fontMetrics().horizontalAdvance(mTextBit.text()) + 10 );
     return sizeHint;
 }
 
 QSize LingEdit::minimumSizeHint() const
 {
     QSize sizeHint = QLineEdit::minimumSizeHint();
-    sizeHint.setWidth( fontMetrics().width(mTextBit.text()) + 10 );
+    sizeHint.setWidth( fontMetrics().horizontalAdvance(mTextBit.text()) + 10 );
     return sizeHint;
 }
 

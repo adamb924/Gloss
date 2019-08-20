@@ -18,7 +18,7 @@ TextTabWidget::TextTabWidget(Text *text, Project *project, View::Type type, cons
     mProject = project;
     const View *view = mProject->view(type);
 
-    if( view == 0 )
+    if( view == nullptr )
     {
         QMessageBox::critical(this, tr("Error"), tr("There is no valid view available. Something is likely wrong with your configuration.xml file."));
     }

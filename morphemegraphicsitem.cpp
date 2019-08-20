@@ -44,14 +44,14 @@ void MorphemeGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
         foreach(QGraphicsItem * item, items)
         {
             MorphemeGraphicsItem * mgi = qgraphicsitem_cast<MorphemeGraphicsItem*>(item);
-            if( mgi != 0 )
+            if( mgi != nullptr )
             {
                 selection.append( mgi->element() );
             }
             else
             {
                 ConstituentGraphicsItem * cgi = qgraphicsitem_cast<ConstituentGraphicsItem*>(item);
-                if ( cgi != 0 )
+                if ( cgi != nullptr )
                 {
                     selection.append( cgi->element() );
                 }
@@ -62,5 +62,5 @@ void MorphemeGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     SyntacticAnalysisElementMime *data = new SyntacticAnalysisElementMime(selection);
     QDrag *drag = new QDrag(event->widget());
     drag->setMimeData(data);
-    drag->start();
+    drag->exec();
 }

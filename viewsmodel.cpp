@@ -63,7 +63,7 @@ void ViewsModel::moveUp(int index)
     if( index > 0 )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index, index, QModelIndex(), index-1);
-        mProject->views()->swap( index, index-1 );
+        mProject->views()->swapItemsAt( index, index-1 );
         QAbstractItemModel::endMoveRows();
     }
 }
@@ -73,7 +73,7 @@ void ViewsModel::moveDown(int index)
     if( index+1 < mProject->views()->count() )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index+1, index+1, QModelIndex(), index);
-        mProject->views()->swap( index, index+1 );
+        mProject->views()->swapItemsAt( index, index+1 );
         QAbstractItemModel::endMoveRows();
     }
 }

@@ -11,7 +11,7 @@ Sound::Sound( const QUrl & filename )
     mBitsPerSample = -1;
     mNChannels = -1;
 
-    mAudioOutput = 0;
+    mAudioOutput = nullptr;
 
     readHeader();
 }
@@ -69,12 +69,12 @@ bool Sound::playSegment(qlonglong start, qlonglong end)
         return false;
     }
 
-    start = bytePositionAtTime( (float)start/1000.0f );
-    end = bytePositionAtTime( (float)end/1000.0f );
+    start = bytePositionAtTime( static_cast<float>(start)/1000.0f );
+    end = bytePositionAtTime( static_cast<float>(end)/1000.0f );
 
     qlonglong duration = end - start;
 
-    if( mAudioOutput != 0 )
+    if( mAudioOutput != nullptr )
         mAudioOutput->stop();
 
     QFile audio_file(mFileURL.toLocalFile());
@@ -119,6 +119,6 @@ void Sound::finishedPlaying(QAudio::State state)
         mAudioOutput->stop();
         delete mAudioOutput;
         delete mBuffer;
-        mAudioOutput = 0;
+        mAudioOutput = nullptr;
     }
 }

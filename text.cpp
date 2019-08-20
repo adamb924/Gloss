@@ -29,12 +29,12 @@
 #include "paragraph.h"
 
 Text::Text(const WritingSystem & ws, const QString & name, Project *project) :
-    mSound(0), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(true), mChanged(false), mName(name), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter())
+    mSound(nullptr), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(true), mChanged(false), mName(name), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter())
 {
 }
 
 Text::Text(const QString & filePath, Project *project) :
-    mSound(0), mValid(true), mChanged(false), mName(textNameFromPath(filePath)), mProject(project), mDbAdapter(mProject->dbAdapter())
+    mSound(nullptr), mValid(true), mChanged(false), mName(textNameFromPath(filePath)), mProject(project), mDbAdapter(mProject->dbAdapter())
 {
     FlexTextReader reader(this);
     mReadResult = reader.readFile(filePath, true);
@@ -48,7 +48,7 @@ Text::~Text()
     qDeleteAll(mParagraphs);
     mParagraphs.clear();
 
-    if( mSound != 0 )
+    if( mSound != nullptr )
         delete mSound;
 }
 
@@ -201,20 +201,23 @@ Text::MergeTranslationResult Text::mergeTranslation(const QString & filename, co
     switch(retval)
     {
     case Xsltproc::InvalidStylesheet:
-        QMessageBox::critical(0, tr("Error"), tr("The XSL transformation %1 is invalid.").arg(QDir::current().absoluteFilePath("merge-translation-by-line-number.xsl")));
+        QMessageBox::critical(nullptr, tr("Error"), tr("The XSL transformation %1 is invalid.").arg(QDir::current().absoluteFilePath("merge-translation-by-line-number.xsl")));
         return XslTranslationError;
     case Xsltproc::InvalidXmlFile:
-        QMessageBox::critical(0, tr("Error"), tr("The flextext file %1 is invalid.").arg(currentPath) );
+        QMessageBox::critical(nullptr, tr("Error"), tr("The flextext file %1 is invalid.").arg(currentPath) );
         return XslTranslationError;
     case Xsltproc::CouldNotOpenOutput:
-        QMessageBox::critical(0, tr("Error"), tr("The file %1 could not be opened.").arg(tempOutputPath) );
+        QMessageBox::critical(nullptr, tr("Error"), tr("The file %1 could not be opened.").arg(tempOutputPath) );
         return XslTranslationError;
-    case Xsltproc::GenericFailure:
+    case Xsltproc::ApplyStylesheetFailure:
         if( errorInfo.size() > 0 )
             QDesktopServices::openUrl(QUrl(errorOutputPath, QUrl::TolerantMode));
         else
-            QMessageBox::critical(0, tr("Error"), tr("Failure for unknown reasons."));
+            QMessageBox::critical(nullptr, tr("Error"), tr("Failure for unknown reasons."));
         QFile::remove(tempOutputPath);
+        return XslTranslationError;
+    case Xsltproc::GenericFailure:
+        QMessageBox::critical(nullptr, tr("Error"), tr("A non-descript error has occurred.") );
         return XslTranslationError;
     case Xsltproc::Success:
         break;
@@ -296,7 +299,7 @@ QString Text::textNameFromPath(const QString &path)
 
 void Text::setSound(const QUrl & filename)
 {
-    if( mSound != 0 )
+    if( mSound != nullptr )
         delete mSound;
 
     mAudioFileURL = QUrl::fromLocalFile( mProject->mediaPath(filename.toLocalFile()) );
@@ -309,7 +312,7 @@ void Text::setSound(const QUrl & filename)
 
 bool Text::playSoundForLine( int lineNumber )
 {
-    if( mSound == 0 )
+    if( mSound == nullptr )
     {
         if( QFileInfo::exists(mAudioFileURL.toLocalFile()) )
         {
@@ -317,17 +320,17 @@ bool Text::playSoundForLine( int lineNumber )
         }
         else
         {
-            QMessageBox::warning(0, tr("Error"), tr("The path to the file does not appear to be valid (%1).").arg(mAudioFileURL.toLocalFile()) );
+            QMessageBox::warning(nullptr, tr("Error"), tr("The path to the file does not appear to be valid (%1).").arg(mAudioFileURL.toLocalFile()) );
             return false;
         }
     }
     Phrase * phrase = phraseAtLine(lineNumber);
     if( !phrase->interval()->isValid() )
     {
-        QMessageBox::warning(0, tr("Error"), tr("This phrase does not have a valid annotation (%1, %2).").arg(phrase->interval()->start()).arg(phrase->interval()->end()) );
+        QMessageBox::warning(nullptr, tr("Error"), tr("This phrase does not have a valid annotation (%1, %2).").arg(phrase->interval()->start()).arg(phrase->interval()->end()) );
         return false;
     }
-    if( mSound != 0 )
+    if( mSound != nullptr )
         return mSound->playSegment( phrase->interval()->start() , phrase->interval()->end() );
     else
         return false;
@@ -347,7 +350,7 @@ Paragraph *Text::paragraphForPhrase(Phrase *phrase)
             return paragraph;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 int Text::lineNumberForPhrase(Phrase *phrase) const
@@ -406,9 +409,9 @@ void Text::addParagraphDivision(int lineNumber)
     if( lineNumber == 0 )
         return;
     Phrase * phrase = phraseAtLine(lineNumber);
-    Q_ASSERT(phrase != 0);
+    Q_ASSERT(phrase != nullptr);
     Paragraph * paragraph = paragraphForPhrase(phrase);
-    Q_ASSERT(paragraph != 0);
+    Q_ASSERT(paragraph != nullptr);
     int paragraphIndex = mParagraphs.indexOf(paragraph);
     int phraseIndex = paragraph->indexOf(phrase);
     Q_ASSERT(paragraphIndex != -1);
@@ -454,7 +457,7 @@ Phrase *Text::phraseAtLine(int lineNumber)
             lineCount += paragraph->phraseCount();
         }
     }
-    return 0;
+    return nullptr;
 }
 
 const Phrase *Text::phraseAtLine(int lineNumber) const
@@ -471,7 +474,7 @@ const Phrase *Text::phraseAtLine(int lineNumber) const
             lineCount += paragraph->phraseCount();
         }
     }
-    return 0;
+    return nullptr;
 }
 
 int Text::phraseCount() const

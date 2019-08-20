@@ -25,13 +25,13 @@
 #include "writingsystem.h"
 
 Project::Project(MainWindow * mainWindow) :
-    mMainWindow(mainWindow), mDatabaseFilename("sqlite3-database.db"), mDbAdapter(0), mOverrideMediaPath(false), mMemoryMode(Project::OneAtATime), mCurrentInterlinearView(0), mCurrentQuickView(0), mChanged(false)
+    mMainWindow(mainWindow), mDatabaseFilename("sqlite3-database.db"), mDbAdapter(nullptr), mOverrideMediaPath(false), mMemoryMode(Project::OneAtATime), mCurrentInterlinearView(nullptr), mCurrentQuickView(nullptr), mChanged(false)
 {
 }
 
 Project::~Project()
 {
-    if( mDbAdapter != 0 )
+    if( mDbAdapter != nullptr )
         delete mDbAdapter;
     qDeleteAll(mTexts);
     qDeleteAll(mViews);
@@ -42,10 +42,10 @@ bool Project::create(QString filename)
     mProjectPath = filename;
     QDir tempDir = getTempDir();
 
-    if( mDbAdapter != 0 )
+    if( mDbAdapter != nullptr )
     {
         delete mDbAdapter;
-        mDbAdapter = 0;
+        mDbAdapter = nullptr;
     }
 
     mDatabasePath = tempDir.absoluteFilePath(mDatabaseFilename);
@@ -63,7 +63,7 @@ bool Project::readFromFile(QString filename)
     if( zip.open(QuaZip::mdUnzip) )
     {
         QuaZipFile file(&zip);
-        char* data = (char*)malloc(4096);
+        char* data = static_cast<char*>(malloc(4096));
         for(bool f=zip.goToFirstFile(); f; f=zip.goToNextFile())
         {
             if( file.open(QIODevice::ReadOnly) )
@@ -74,7 +74,7 @@ bool Project::readFromFile(QString filename)
                 while( !file.atEnd() )
                 {
                     qint64 bytesRead = file.read(data, 4096);
-                    out.writeRawData(data,(uint)bytesRead);
+                    out.writeRawData(data, static_cast<int>(bytesRead));
                 }
                 file.close();
             }
@@ -84,10 +84,10 @@ bool Project::readFromFile(QString filename)
 
         if(QFile::exists(tempDir.absoluteFilePath(mDatabaseFilename)))
         {
-            if( mDbAdapter != 0 )
+            if( mDbAdapter != nullptr )
             {
                 delete mDbAdapter;
-                mDbAdapter = 0;
+                mDbAdapter = nullptr;
             }
 
             mDbAdapter = new DatabaseAdapter(tempDir.absoluteFilePath(mDatabaseFilename));
@@ -95,12 +95,12 @@ bool Project::readFromFile(QString filename)
         }
         else
         {
-            QMessageBox::critical(0,tr("Error opening file"),tr("Something seems to be wrong with the archive. The file %1, which is an important one, could not be found.").arg(mDatabaseFilename));
+            QMessageBox::critical(nullptr,tr("Error opening file"),tr("Something seems to be wrong with the archive. The file %1, which is an important one, could not be found.").arg(mDatabaseFilename));
             return false;
         }
         if(!QFile::exists(tempDir.absoluteFilePath("configuration.xml")))
         {
-            QMessageBox::critical(0,tr("Error opening file"),tr("Something seems to be wrong with the archive. The file configuration.xml, which is an important one, could not be found."));
+            QMessageBox::critical(nullptr,tr("Error opening file"),tr("Something seems to be wrong with the archive. The file configuration.xml, which is an important one, could not be found."));
             return false;
         }
         else
@@ -110,7 +110,7 @@ bool Project::readFromFile(QString filename)
     }
     else
     {
-        QMessageBox::critical(0,tr("Error opening file"),tr("The file %1 could not be opened. It may be the wrong format, or it may have been corrupted.").arg(mProjectPath));
+        QMessageBox::critical(nullptr,tr("Error opening file"),tr("The file %1 could not be opened. It may be the wrong format, or it may have been corrupted.").arg(mProjectPath));
         return false;
     }
     return true;
@@ -155,8 +155,8 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
 {
     if( mTexts.contains(name) )
     {
-        QMessageBox::critical(0, tr("Cannot add text"), tr("The project already has a text with that name. You need to rename the file if you want to add it to this project."));
-        return 0;
+        QMessageBox::critical(nullptr, tr("Cannot add text"), tr("The project already has a text with that name. You need to rename the file if you want to add it to this project."));
+        return nullptr;
     }
 
     Text *text = new Text(ws,name,this);
@@ -175,7 +175,7 @@ Text* Project::newText(const QString & name, const WritingSystem & ws, const QSt
     else
     {
         delete text;
-        return 0;
+        return nullptr;
     }
 }
 
@@ -204,7 +204,7 @@ Text* Project::importFlexText(const QString & filePath,  const WritingSystem & w
     else
     {
         delete text;
-        return 0;
+        return nullptr;
     }
 }
 
@@ -224,21 +224,21 @@ Text* Project::textFromFlexText(const QString & filePath)
         switch( text->readResult() )
         {
         case FlexTextReader::FlexTextReadSuccess:
-            QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened, but no error was reported.").arg(text->name()));
+            QMessageBox::critical(nullptr,tr("Error reading file"),tr("The text %1 could not be opened, but no error was reported.").arg(text->name()));
             break;
         case FlexTextReader::FlexTextReadBaselineNotFound:
-            QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because the baseline text could not be read.").arg(text->name()));
+            QMessageBox::critical(nullptr,tr("Error reading file"),tr("The text %1 could not be opened because the baseline text could not be read.").arg(text->name()));
             break;
         case FlexTextReader::FlexTextReadXmlReadError:
-            QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because of a low-level XML reading error. ").arg(text->name()));
+            QMessageBox::critical(nullptr,tr("Error reading file"),tr("The text %1 could not be opened because of a low-level XML reading error. ").arg(text->name()));
             break;
         case FlexTextReader::FlexTextReadNoAttempt:
-            QMessageBox::critical(0,tr("Error reading file"),tr("The text %1 could not be opened because no attempt was made to open it. (Figure that one out!)").arg(text->name()));
+            QMessageBox::critical(nullptr,tr("Error reading file"),tr("The text %1 could not be opened because no attempt was made to open it. (Figure that one out!)").arg(text->name()));
             break;
         }
 
         delete text;
-        return 0;
+        return nullptr;
     }
 }
 
@@ -340,7 +340,7 @@ Text* Project::text(const QString & name)
         }
         else
         {
-            return 0;
+            return nullptr;
         }
     }
 }
@@ -399,7 +399,7 @@ void Project::closeText(Text *text)
 void Project::deleteText(QString textName)
 {
     Text * text = mTexts.value(textName);
-    if( text != 0 )
+    if( text != nullptr )
     {
         delete text;
     }
@@ -445,7 +445,7 @@ void Project::closeOpenTexts( const QStringList & except )
 
 QString Project::doDatabaseCleanup()
 {
-    QProgressDialog progress(tr("Cleaning up database..."), QString(), 0, 4, 0);
+    QProgressDialog progress(tr("Cleaning up database..."), QString(), 0, 4);
     progress.setWindowModality(Qt::WindowModal);
     progress.setValue( progress.value() + 1 );
 
@@ -541,7 +541,7 @@ void Project::setTextXmlFromDatabase()
     QStringList names = textNames();
     QStringListIterator iter(names);
 
-    QProgressDialog progress(tr("Setting FlexText text..."), tr("Cancel"), 0, names.count(), 0);
+    QProgressDialog progress(tr("Setting FlexText text..."), tr("Cancel"), 0, names.count());
     progress.setWindowModality(Qt::WindowModal);
     int i=0;
     while(iter.hasNext())
@@ -616,7 +616,7 @@ QList<qlonglong> Project::getListOfNumbersFromXQuery(const QString & filepath, c
 bool Project::interpretationUsageReport(const QString & filename)
 {
     Q_UNUSED(filename);
-    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::interpretationUsageReport()."));
+    QMessageBox::critical(nullptr,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::interpretationUsageReport()."));
     return false;
 /*
     QStringList instances;
@@ -638,7 +638,7 @@ bool Project::outputInterpretationUsageReport(const QString & filename, const QS
 {
     Q_UNUSED(filename);
     Q_UNUSED(instances);
-    QMessageBox::critical(0,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::outputInterpretationUsageReport()."));
+    QMessageBox::critical(nullptr,tr("Broken feature"),tr("This feature used to work, but relied on an outmoded function. It will need to be rewritten before it works again. This message is from Project::outputInterpretationUsageReport()."));
     return false;
 /*
     QList<InterlinearItemType> lineTypes = mDbAdapter->glossInterlinearLines();
@@ -867,7 +867,7 @@ void Project::parseConfigurationFile()
                 {
                     mOverrideMediaPath = true;
                 }
-                mMediaPath = QUrl(stream.readElementText()).toLocalFile();
+                mMediaPath.setPath( QUrl(stream.readElementText()).toLocalFile() );
             }
         }
         else if( stream.tokenType() == QXmlStreamReader::EndElement && name == "tab" )
@@ -965,7 +965,7 @@ void Project::setMemoryMode( Project::MemoryMode mode )
 
 void Project::loadAllTextsIntoMemory()
 {
-    QProgressDialog progress(tr("Opening texts..."), QString(tr("Cancel")), 0, mTextPaths.count(), 0);
+    QProgressDialog progress(tr("Opening texts..."), QString(tr("Cancel")), 0, mTextPaths.count());
     progress.setWindowModality(Qt::WindowModal);
     progress.setValue( progress.value() + 1 );
 
@@ -1033,7 +1033,7 @@ void Project::maybeUpdateMediaPath()
 {
     if( !mMediaPath.exists() )
     {
-        if( QMessageBox::Yes == QMessageBox::question(0,tr("Update directory?"),tr("The media directory specified in the project (%1) does not exist. Would you like to choose a new directory?").arg(mMediaPath.absolutePath())) )
+        if( QMessageBox::Yes == QMessageBox::question(nullptr,tr("Update directory?"),tr("The media directory specified in the project (%1) does not exist. Would you like to choose a new directory?").arg(mMediaPath.absolutePath())) )
         {
             QFileDialog dlg;
             dlg.setFileMode(QFileDialog::Directory);

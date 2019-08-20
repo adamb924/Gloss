@@ -24,7 +24,7 @@ DatabaseAdapter::DatabaseAdapter(const QString & filename, QObject *parent) :
     db.setDatabaseName(filename);
     if(!db.open())
     {
-        QMessageBox::information (0,"Error Message","There was a problem in opening the database. The program said: " + db.lastError().databaseText() + " It is unlikely that you will solve this on your own. Rather you had better contact the developer." );
+        QMessageBox::information (nullptr,"Error Message","There was a problem in opening the database. The program said: " + db.lastError().databaseText() + " It is unlikely that you will solve this on your own. Rather you had better contact the developer." );
         return;
     }
 
@@ -376,7 +376,7 @@ qlonglong DatabaseAdapter::newInterpretation( const TextBit & bit ) const
     }
     catch(std::exception &e)
     {
-        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.executedQuery();
+        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.executedQuery() << e.what();
         db.rollback();
         return -1;
     }
@@ -426,7 +426,7 @@ qlonglong DatabaseAdapter::newInterpretation( TextBitHash & textForms , TextBitH
     }
     catch(int e)
     {
-        qWarning() << "DatabaseAdapter::newInterpretation" << q.lastError().text() << q.executedQuery();
+        qWarning() << "DatabaseAdapter::newInterpretation" << e << q.lastError().text() << q.executedQuery();
         db.rollback();
         return -1;
     }
@@ -984,7 +984,7 @@ qlonglong DatabaseAdapter::addLexicalEntry( const QString & grammaticalInfo, All
     }
     catch(int e)
     {
-        qWarning() << "DatabaseAdapter::addLexicalEntry" << q.lastError().text() << q.executedQuery();
+        qWarning() << "DatabaseAdapter::addLexicalEntry" << e << q.lastError().text() << q.executedQuery();
         db.rollback();
         return -1;
     }
@@ -1469,7 +1469,7 @@ void DatabaseAdapter::createTextIndices( const QSet<QString> * filePaths ) const
 
 void DatabaseAdapter::createIndex( const QString & tableName, const QString & queryString, const QSet<QString> * filePaths ) const
 {
-    QProgressDialog progress( QObject::tr("Creating index..."), QString(), 0, filePaths->count(), 0);
+    QProgressDialog progress( QObject::tr("Creating index..."), QString(), 0, filePaths->count(), nullptr);
     progress.setWindowModality(Qt::WindowModal);
     int position = 0;
 

@@ -8,16 +8,16 @@
 SyntacticAnalysisElement::SyntacticAnalysisElement(const Allomorph * allomorph, const DatabaseAdapter *dbAdapter)
     : mAllomorph(allomorph),
       mType(SyntacticAnalysisElement::Terminal),
-      mParent(0),
+      mParent(nullptr),
       mDbAdapter(dbAdapter)
 {
 }
 
 SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType & type, const QList<SyntacticAnalysisElement *> &elements, const DatabaseAdapter * dbAdapter)
-    : mAllomorph(0),
+    : mAllomorph(nullptr),
       mSyntacticType(type),
       mType(SyntacticAnalysisElement::Consituent),
-      mParent(0),
+      mParent(nullptr),
       mDbAdapter(dbAdapter)
 {
     for(int i=0; i<elements.count(); i++)
@@ -28,10 +28,10 @@ SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType & type, c
 }
 
 SyntacticAnalysisElement::SyntacticAnalysisElement(const SyntacticType &type, SyntacticAnalysisElement * soleChild, const DatabaseAdapter * dbAdapter )
-    : mAllomorph(0),
+    : mAllomorph(nullptr),
       mSyntacticType(type),
       mType(SyntacticAnalysisElement::Consituent),
-      mParent(0),
+      mParent(nullptr),
       mDbAdapter(dbAdapter)
 {
     mElements << soleChild;
@@ -42,9 +42,9 @@ SyntacticAnalysisElement::~SyntacticAnalysisElement()
 {
     for(int i=0; i<mElements.count(); i++)
     {
-        mElements[i]->setParent(0);
+        mElements[i]->setParent(nullptr);
     }
-    if( mParent != 0 )
+    if( mParent != nullptr )
     {
         mParent->removeChild(this);
     }
@@ -77,7 +77,7 @@ bool SyntacticAnalysisElement::hasChild() const
 
 bool SyntacticAnalysisElement::hasParent() const
 {
-    return mParent != 0;
+    return mParent != nullptr;
 }
 
 SyntacticAnalysisElement *SyntacticAnalysisElement::parent()

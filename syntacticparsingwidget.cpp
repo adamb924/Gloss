@@ -33,7 +33,7 @@ SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, con
     mText(text),
     mTab(tab),
     mProject(project),
-    mAnalysis(0),
+    mAnalysis(nullptr),
     mInterMorphemeDistance(5),
     mInterWordDistance(15),
     mVerticalDistance(5)
@@ -66,7 +66,7 @@ SyntacticParsingWidget::~SyntacticParsingWidget()
 
 void SyntacticParsingWidget::setupBaseline()
 {
-    if( mAnalysis == 0 ) return;
+    if( mAnalysis == nullptr ) return;
 
     mScene->clear();
     mConstiuencyItems.clear();
@@ -99,7 +99,7 @@ void SyntacticParsingWidget::setupBaseline()
                         for(int m=0; m<ma->allomorphCount(); m++) /// for each allomorph
                         {
                             SyntacticAnalysisElement * element = mAnalysis->elementFromGuid( ma->allomorph(m)->guid() );
-                            if(element == 0)
+                            if(element == nullptr)
                             {
                                 continue;
                             }
@@ -134,7 +134,7 @@ void SyntacticParsingWidget::setupBaseline()
                         lineHeight = item->boundingRect().height();
                         lineLength = item->boundingRect().width();
                     }
-                    longestLine = lineLength > longestLine ? lineLength : longestLine;
+                    longestLine = lineLength > longestLine ? static_cast<int>(lineLength) : longestLine;
                     y += lineHeight + mVerticalDistance;
                 } /// for each interlinear line
 
@@ -146,7 +146,7 @@ void SyntacticParsingWidget::setupBaseline()
 
 void SyntacticParsingWidget::redrawSyntacticAnnotations()
 {
-    if( mAnalysis == 0 ) return;
+    if( mAnalysis == nullptr ) return;
     qDeleteAll(mConstiuencyItems);
     mConstiuencyItems.clear();
 
@@ -186,7 +186,7 @@ QGraphicsItem *SyntacticParsingWidget::addConstituentElementToScene(SyntacticAna
 
 void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
 {
-    if( mAnalysis == 0) return;
+    if( mAnalysis == nullptr) return;
 
     if( event->key() == MainWindow::mShortcuts.shortcut("RemoveConstituent") )
     {
@@ -195,7 +195,7 @@ void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
 
     if( mAnalysis->closedVocabulary() )
     {
-        QKeySequence key = QKeySequence( event->modifiers() | event->key() );
+        QKeySequence key = QKeySequence( static_cast<int>(event->modifiers()) | static_cast<int>(event->key()) );
         SyntacticType type = mProject->dbAdapter()->syntacticType( key );
         if( !type.isNull() )
         {
@@ -217,7 +217,7 @@ void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
 
 void SyntacticParsingWidget::createConstituent(const SyntacticType & type)
 {
-    if( mAnalysis == 0 ) return;
+    if( mAnalysis == nullptr ) return;
 
     QList<SyntacticAnalysisElement *> elements = selectedElements();
     if( !elements.isEmpty() )
@@ -265,14 +265,14 @@ QList<SyntacticAnalysisElement *> SyntacticParsingWidget::selectedElements()
         QGraphicsItem * item = iter.next();
         MorphemeGraphicsItem * mgi = qgraphicsitem_cast<MorphemeGraphicsItem*>(item);
 
-        if( mgi != 0 ) /// then it's a morpheme graphics item (with an associated element)
+        if( mgi != nullptr ) /// then it's a morpheme graphics item (with an associated element)
         {
             elements << mgi->element();
         }
         else
         {
             ConstituentGraphicsItem * con = qgraphicsitem_cast<ConstituentGraphicsItem*>(item);
-            if( con != 0 )
+            if( con != nullptr )
             {
                 elements << con->element();
             }
@@ -371,7 +371,7 @@ void SyntacticParsingWidget::refreshText()
 
 void SyntacticParsingWidget::maybeDisable()
 {
-    if( mAnalysis == 0 || mAnalysis->hasNoBaselineElements() )
+    if( mAnalysis == nullptr || mAnalysis->hasNoBaselineElements() )
     {
         ui->graphicsView->setEnabled(false);
     }

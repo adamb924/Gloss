@@ -71,7 +71,7 @@ private:
     ImmutableLabel* addImmutableTextFormLine( const InterlinearItemType & glossLine, bool technicolor );
     ImmutableLabel* addImmutableGlossLine( const InterlinearItemType & glossLine, bool technicolor );
     AnalysisWidget* addAnalysisWidget( const InterlinearItemType & glossLine );
-    PosWidget* addPosWidget( const InterlinearItemType & glossLine );
+    PosWidget* addPosWidget();
 
     QLabel *mBaselineWordLabel;
     QHash<WritingSystem, LingEdit*> mTextFormEdits;

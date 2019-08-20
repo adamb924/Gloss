@@ -34,11 +34,11 @@ IndexSearchModel::IndexSearchModel( QSqlQuery query, const QList<Focus> & focus 
     }
 
     QString previousTextName;
-    QStandardItem *filenameItem = 0;
+    QStandardItem *filenameItem = nullptr;
     while( query.next() )
     {
         QString textName = query.value(0).toString();
-        int lineNumber = query.value(1).toLongLong();
+        int lineNumber = query.value(1).toInt();
         int count = query.value(2).toInt();
 
         if( textName != previousTextName )

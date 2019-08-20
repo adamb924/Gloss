@@ -49,11 +49,11 @@ MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow)
 {
-    mProject = 0;
-    mInterlinearViewMenu = 0;
-    mQuickViewMenu = 0;
-    mSearchDock = 0;
-    mAnnotationDock = 0;
+    mProject = nullptr;
+    mInterlinearViewMenu = nullptr;
+    mQuickViewMenu = nullptr;
+    mSearchDock = nullptr;
+    mAnnotationDock = nullptr;
 
     ui->setupUi(this);
     setupToolbar();
@@ -131,7 +131,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    if( mProject != 0 )
+    if( mProject != nullptr )
         delete mProject;
     delete ui;
 }
@@ -206,7 +206,7 @@ void MainWindow::newProject()
 
     if( filename.isNull() ) return;
 
-    if( mProject != 0 )
+    if( mProject != nullptr )
         delete mProject;
     mProject = new Project(this);
     mProject->create(filename);
@@ -231,7 +231,7 @@ void MainWindow::openProject()
 
     if( !filename.isNull() )
     {
-        if( mProject != 0 )
+        if( mProject != nullptr )
             delete mProject;
         mProject = new Project(this);
         if( mProject->readFromFile(filename) )
@@ -242,7 +242,7 @@ void MainWindow::openProject()
         else
         {
             delete mProject;
-            mProject = 0;
+            mProject = nullptr;
         }
     }
 }
@@ -254,7 +254,7 @@ void MainWindow::saveProject()
 
 void MainWindow::closeProject()
 {
-    if( mProject == 0 )
+    if( mProject == nullptr )
         return;
     mProject->save();
     projectClose();
@@ -262,7 +262,7 @@ void MainWindow::closeProject()
 
 void MainWindow::closeProjectWithoutSaving()
 {
-    if( mProject == 0 )
+    if( mProject == nullptr )
         return;
     if( !mProject->isChanged() || QMessageBox::question(this, tr("Really?"), tr("Close project without saving changes?")) == QMessageBox::Yes )
     {
@@ -272,7 +272,7 @@ void MainWindow::closeProjectWithoutSaving()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if( mProject == 0 )
+    if( mProject == nullptr )
     {
         event->accept();
     }
@@ -297,7 +297,7 @@ void MainWindow::projectClose()
 
     mProject->removeTempDirectory();
     delete mProject;
-    mProject = 0;
+    mProject = nullptr;
     setProjectActionsEnabled(false);
     setAppropriateWindowTitle();
 }
@@ -305,7 +305,7 @@ void MainWindow::projectClose()
 
 bool MainWindow::maybeSave()
 {
-    while( ui->mdiArea->currentSubWindow() != 0 )
+    while( ui->mdiArea->currentSubWindow() != nullptr )
         ui->mdiArea->removeSubWindow(ui->mdiArea->currentSubWindow());
 
     QMessageBox::StandardButton result = QMessageBox::question(this,tr("Save changes?"),tr("Do you want to save your changes?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel , QMessageBox::Cancel );
@@ -314,16 +314,12 @@ bool MainWindow::maybeSave()
     case QMessageBox::Yes:
         mProject->save();
         return true;
-        break;
     case QMessageBox::No:
         return true;
-        break;
     case QMessageBox::Cancel:
         return false;
-        break;
     default:
         return false;
-        break;
     }
 }
 
@@ -490,12 +486,13 @@ bool MainWindow::importEaf(const QString & filepath, const QString & tierId, con
         Text::MergeEafResult mergeResult = text->mergeEaf( filepath );
         switch(mergeResult)
         {
-        case Text::Success:
+        case Text::MergeEafSuccess:
             break;
         case Text::MergeEafWrongNumberOfAnnotations:
-            QMessageBox::information(0, tr("Failure!"), tr("The import of %1 has failed because the number of annotations is wrong (in the merge stage).").arg( filepath ));
+            QMessageBox::information(nullptr, tr("Failure!"), tr("The import of %1 has failed because the number of annotations is wrong (in the merge stage).").arg( filepath ));
+            break;
         default:
-            QMessageBox::information(0, tr("Failure!"), tr("The merge into %1 has failed.").arg( filepath ));
+            QMessageBox::information(nullptr, tr("Failure!"), tr("The merge into %1 has failed.").arg( filepath ));
             break;
         }
         return true;
@@ -513,7 +510,7 @@ void MainWindow::importFlexText()
         {
             mProject->importFlexText(dialog.filename(),mProject->dbAdapter()->writingSystem(dialog.writingSystem()));
             Text *text = mProject->openedTexts()->value( Text::textNameFromPath(dialog.filename()) );
-            if(text != 0)
+            if(text != nullptr)
                 openTextInChunks(text->name());
         }
     }
@@ -574,7 +571,7 @@ void MainWindow::openText()
         else
         {
             InterlinearChunkEditor * ice = openTextInChunks( dialog.textName(), dialog.linesPerScreen() );
-            if( ice != 0 && dialog.goToLine() > dialog.linesPerScreen() )
+            if( ice != nullptr && dialog.goToLine() > dialog.linesPerScreen() )
                 ice->moveToLine( dialog.goToLine() );
         }
     }
@@ -583,12 +580,12 @@ void MainWindow::openText()
 TextTabWidget* MainWindow::openText(const QString & textName, const QList<Focus> & foci)
 {
     Text *text;
-    TextTabWidget *subWindow = 0;
+    TextTabWidget *subWindow = nullptr;
     switch( mProject->openText(textName) )
     {
     case Project::Success:
-        text = mProject->openedTexts()->value(textName, 0);
-        if( text != 0 )
+        text = mProject->openedTexts()->value(textName, nullptr);
+        if( text != nullptr )
         {
             subWindow = new TextTabWidget(text, mProject, View::Full, QList<int>(), foci, this);
             ui->mdiArea->addSubWindow(subWindow);
@@ -646,7 +643,7 @@ void MainWindow::exportTexts()
                 break;
 
             Text * text = mProject->text(textName);
-            if( text != 0)
+            if( text != nullptr)
             {
                 text->writeTextTo( dir.absoluteFilePath(text->exportFilename()) , true, dlg.includeGlossNamespace() );
             }
@@ -717,13 +714,13 @@ void MainWindow::mergeTranslations()
         switch(result)
         {
         case Text::Success:
-            QMessageBox::information(0, tr("Success!"), tr("The merge into %1 has completed succesfully.").arg(dialog.text()));
+            QMessageBox::information(nullptr, tr("Success!"), tr("The merge into %1 has completed succesfully.").arg(dialog.text()));
             break;
         case Text::MergeStuckOldFileDeleted:
-            QMessageBox::warning(0, tr("Error"), tr("The merge file is stuck with a temporary filename, but you can fix this yourself. The old flextext file has been deleted."));
+            QMessageBox::warning(nullptr, tr("Error"), tr("The merge file is stuck with a temporary filename, but you can fix this yourself. The old flextext file has been deleted."));
             break;
         case Text::MergeStuckOldFileStillThere:
-            QMessageBox::warning(0, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with a temporary filename, but you can fix this yourself."));
+            QMessageBox::warning(nullptr, tr("Error"), tr("The old flextext file could not be deleted, so the merge file is stuck with a temporary filename, but you can fix this yourself."));
             break;
         case Text::XslTranslationError:
             break;
@@ -963,13 +960,13 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
         TextTabWidget* ttw = qobject_cast<TextTabWidget*>(w->widget());
         InterlinearChunkEditor* ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
 
-        if( ttw != 0 && ttw->text()->name() == textName )
+        if( ttw != nullptr && ttw->text()->name() == textName )
         {
             ui->mdiArea->setActiveSubWindow(w);
             ttw->setFocus(foci);
             return;
         }
-        else if( ice != 0 && ice->text()->name() == textName )
+        else if( ice != nullptr && ice->text()->name() == textName )
         {
             ui->mdiArea->setActiveSubWindow(w);
             ice->moveToLine( lineNumber );
@@ -980,7 +977,7 @@ void MainWindow::focusTextPosition( const QString & textName , int lineNumber, c
 
     // at this point the window must not exist
     InterlinearChunkEditor * ice = openTextInChunks( textName, 3 );
-    if( ice != 0 )
+    if( ice != nullptr )
     {
         ice->moveToLine( lineNumber );
         ice->setFocus(foci);
@@ -995,8 +992,8 @@ void MainWindow::playSoundForLine( const QString & textName , int lineNumber )
     if( mProject->openedTexts()->contains(textName) )
     {
         mProject->openText(textName);
-        Text *text = mProject->openedTexts()->value(textName, 0);
-        if( text == 0)
+        Text *text = mProject->openedTexts()->value(textName, nullptr);
+        if( text == nullptr)
             return;
         lineNumber--;
         text->playSoundForLine(lineNumber);
@@ -1027,7 +1024,7 @@ void MainWindow::removeUnusedGlossItems()
 
 void MainWindow::sqlQueryDialog()
 {
-    DatabaseQueryDialog *dialog = new DatabaseQueryDialog(mProject->dbAdapter()->dbFilename(), 0);
+    DatabaseQueryDialog *dialog = new DatabaseQueryDialog(mProject->dbAdapter()->dbFilename(), nullptr);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
     mProject->setChanged();
@@ -1056,7 +1053,7 @@ void MainWindow::bulkMergeTranslations()
 
         QStringList flextextNames = mProject->textNames();
 
-        QProgressDialog progress(tr("Merging translations..."), "Cancel", 0, translationFiles.count(), 0);
+        QProgressDialog progress(tr("Merging translations..."), "Cancel", 0, translationFiles.count(), nullptr);
         progress.setWindowModality(Qt::WindowModal);
 
         for(int i=0; i<translationFiles.count(); i++)
@@ -1108,13 +1105,14 @@ void MainWindow::mergeEaf()
         mProject->saveAndCloseText(text);
         switch(result)
         {
-        case Text::Success:
-            QMessageBox::information(0, tr("Success!"), tr("The merge into %1 has completed succesfully.").arg(dialog.text()));
+        case Text::MergeEafSuccess:
+            QMessageBox::information(nullptr, tr("Success!"), tr("The merge into %1 has completed succesfully.").arg(dialog.text()));
             break;
         case Text::MergeEafWrongNumberOfAnnotations:
-            QMessageBox::information(0, tr("Failure!"), tr("The merge into %1 has failed because the number of annotations is wrong.").arg(dialog.text()));
+            QMessageBox::information(nullptr, tr("Failure!"), tr("The merge into %1 has failed because the number of annotations is wrong.").arg(dialog.text()));
+            break;
         default:
-            QMessageBox::information(0, tr("Failure!"), tr("The merge into %1 has failed.").arg(dialog.text()));
+            QMessageBox::information(nullptr, tr("Failure!"), tr("The merge into %1 has failed.").arg(dialog.text()));
             break;
         }
     }
@@ -1140,7 +1138,7 @@ void MainWindow::bulkMergeEaf()
 
         QStringList flextextNames = mProject->textNames();
 
-        QProgressDialog progress(tr("Merging EAF..."), "Cancel", 0, eafFiles.count(), 0);
+        QProgressDialog progress(tr("Merging EAF..."), "Cancel", 0, eafFiles.count(), nullptr);
         progress.setWindowModality(Qt::WindowModal);
 
         for(int i=0; i<eafFiles.count(); i++)
@@ -1233,7 +1231,7 @@ void MainWindow::createCountReport(const QString & typeString)
 
 void MainWindow::openProjectTempFolder()
 {
-    if( mProject != 0 )
+    if( mProject != nullptr )
     {
         QDesktopServices::openUrl(QUrl(mProject->getTempDir().absolutePath(), QUrl::TolerantMode));
     }
@@ -1282,7 +1280,7 @@ QStringList MainWindow::textsWithOpenWindows()
 
 void MainWindow::setAppropriateWindowTitle()
 {
-    if( mProject == 0 )
+    if( mProject == nullptr )
     {
         setWindowTitle(tr("Gloss"));
     }
@@ -1313,7 +1311,7 @@ void MainWindow::setGuiElementsFromProject()
     /// Texts
     mTextCombo->clear();
 
-    if( mProject == 0 ) return;
+    if( mProject == nullptr ) return;
 
     QActionGroup * views = new QActionGroup(this);
 
@@ -1395,7 +1393,7 @@ void MainWindow::setupToolbar()
 
 void MainWindow::viewChanged(int index)
 {
-    if( mProject != 0 )
+    if( mProject != nullptr )
     {
         mProject->setView(index);
     }
@@ -1403,7 +1401,7 @@ void MainWindow::viewChanged(int index)
 
 void MainWindow::quickViewChanged(int index)
 {
-    if( mProject != 0 )
+    if( mProject != nullptr )
     {
         mProject->setQuickView(index);
     }
@@ -1431,36 +1429,33 @@ void MainWindow::textMetadataDialog()
 InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, int linesPerScreen)
 {
     Text *text;
-    InterlinearChunkEditor * subWindow = 0;
+    InterlinearChunkEditor * subWindow = nullptr;
     switch( mProject->openText(textName) )
     {
     case Project::Success:
-        text = mProject->openedTexts()->value(textName, 0);
-        if( text != 0 )
+        text = mProject->openedTexts()->value(textName, nullptr);
+        if( text != nullptr )
         {
             subWindow = new InterlinearChunkEditor(text, mProject, View::Full, linesPerScreen, this);
             ui->mdiArea->addSubWindow(subWindow);
             subWindow->show();
         }
         return subWindow;
-        break;
     case Project::FileNotFound:
         QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. The filename %2 could not be found.").arg(textName).arg(mProject->filepathFromName(textName)));
-        return 0;
-        break;
+        return nullptr;
     case Project::XmlReadError:
-    default:
         QMessageBox::critical(this, tr("Error opening file"), tr("Sorry, the text %1 could not be opened. There was a problem reading the XML.").arg(textName));
-        return 0;
-        break;
+        return nullptr;
     }
+    return nullptr;
 }
 
 void MainWindow::setMemoryMode( QAction * action )
 {
-    if( mProject == 0 )
+    if( mProject == nullptr )
         return;
-    mProject->setMemoryMode( (Project::MemoryMode)action->data().toInt() );
+    mProject->setMemoryMode( static_cast<Project::MemoryMode>(action->data().toInt()) );
 }
 
 void MainWindow::baselineSearchAndReplace()
@@ -1478,7 +1473,6 @@ void MainWindow::baselineSearchAndReplace()
         case QMessageBox::Cancel:
         default:
             return;
-            break;
         }
     }
 
@@ -1502,7 +1496,7 @@ void MainWindow::baselineSearchAndReplace()
 
 void MainWindow::toggleSearchDock()
 {
-    if( mSearchDock != 0 )
+    if( mSearchDock != nullptr )
         delete mSearchDock;
 
     if( mProject->dbAdapter()->textIndicesShouldBeUpdated( mProject->textNames() ) )
@@ -1535,11 +1529,11 @@ void MainWindow::toggleSearchDock()
 
 void MainWindow::toggleAnnotationDock()
 {
-    if( mAnnotationDock != 0 )
+    if( mAnnotationDock != nullptr )
         delete mAnnotationDock;
 
     Text * text = textOfCurrentSubWindow();
-    if( text == 0 )
+    if( text == nullptr )
         return;
 
     AnnotationForm * annotationForm = new AnnotationForm(text, mProject, this);
@@ -1555,19 +1549,19 @@ void MainWindow::toggleAnnotationDock()
 Text * MainWindow::textOfCurrentSubWindow()
 {
     QMdiSubWindow * w = ui->mdiArea->activeSubWindow();
-    if( w == 0 )
-        return 0;
+    if( w == nullptr )
+        return nullptr;
 
     TextTabWidget* tdw = qobject_cast<TextTabWidget*>(w->widget());
-    if( tdw != 0 )
+    if( tdw != nullptr )
     {
         return tdw->text();
     }
 
     InterlinearChunkEditor * ice = qobject_cast<InterlinearChunkEditor*>(w->widget());
-    if( ice != 0 )
+    if( ice != nullptr )
     {
         return ice->text();
     }
-    return 0;
+    return nullptr;
 }

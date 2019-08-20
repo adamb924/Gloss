@@ -35,20 +35,15 @@ QString Focus::typeString() const
     {
     case Focus::Interpretation:
         return "Interpretation";
-        break;
     case Focus::TextForm:
         return "TextForm";
-        break;
     case Focus::Gloss:
         return "Gloss";
-        break;
     case Focus::GlossItem:
         return "GlossItem";
-        break;
     case Focus::Null:
     default:
         return "Null";
-        break;
     }
 }
 

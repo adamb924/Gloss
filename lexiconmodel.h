@@ -22,7 +22,7 @@ class LexiconModel : public QSqlQueryModel
 public:
     enum Type { Gloss, CitationForm, MorphologicalType, Other };
 
-    LexiconModel(const AllTagsModel * allTags, const Project *project, QObject *parent = 0);
+    LexiconModel(const AllTagsModel * allTags, const Project *project, QObject *parent = nullptr);
 
     Type typeFromColumn(int col);
     WritingSystem writingSystemFromColumn(int col);
@@ -42,8 +42,8 @@ private:
     QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    inline QString glossTable(int number) const { return QString("Gloss%1").arg(number); }
-    inline QString citationFormTable(int number) const { return QString("Citation%1").arg(number); }
+    inline QString glossTable(qlonglong number) const { return QString("Gloss%1").arg(number); }
+    inline QString citationFormTable(qlonglong number) const { return QString("Citation%1").arg(number); }
 
     QString mQueryString;
     const DatabaseAdapter * mDbAdapter;

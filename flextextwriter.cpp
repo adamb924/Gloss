@@ -21,7 +21,7 @@ FlexTextWriter::FlexTextWriter(Text *text) :
     mText(text),
     mVerboseOutput(false),
     mIncludeGlossNamespace(true),
-    mStream(0)
+    mStream(nullptr)
 {
 }
 
@@ -74,7 +74,7 @@ bool FlexTextWriter::serializeInterlinearText() const
 
     mStream->writeStartElement("paragraphs");
 
-    QProgressDialog progress( QObject::tr("Saving text %1...").arg(mText->mName), QString(), 0, mText->mParagraphs.count(), 0);
+    QProgressDialog progress( QObject::tr("Saving text %1...").arg(mText->mName), QString(), 0, mText->mParagraphs.count(), nullptr);
     progress.setWindowModality(Qt::WindowModal);
 
     foreach( Paragraph* paragraph, mText->mParagraphs )

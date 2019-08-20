@@ -13,5 +13,5 @@ void MessageHandler::handleMessage( QtMsgType type, const QString & description,
 {
     Q_UNUSED(type);
     Q_UNUSED(identifier);
-    QMessageBox::warning(0, mSource, QString("%1 (Line %2, Column %3)").arg(description).arg(sourceLocation.line()).arg(sourceLocation.column()));
+    QMessageBox::warning(nullptr, mSource, QString("%1 (Line %2, Column %3)").arg(description).arg(sourceLocation.line()).arg(sourceLocation.column()));
 }

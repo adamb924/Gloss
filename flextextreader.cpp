@@ -57,8 +57,8 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
     QSet<qlonglong> textFormIds;
     QSet<qlonglong> glossFormIds;
     QHash<QString,QList<QUuid> > morphGuids; /// the string here is a flextext string
-    QList<QUuid> *currentGuids = 0;
-    SyntacticAnalysis * currentSyntacticAnalysis = 0;
+    QList<QUuid> *currentGuids = nullptr;
+    SyntacticAnalysis * currentSyntacticAnalysis = nullptr;
     QStack<SyntacticAnalysisElement*> elementStack;
 
     while (!stream.atEnd())

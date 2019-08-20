@@ -54,7 +54,7 @@ QRectF ConstituentGraphicsItem::boundingRect() const
 
     qreal top = bottom - mDepth * ( mPenWidth + mFontHeight + mStalkHeight );
 
-    return QRectF( sceneTransform().inverted().map( QPointF(left,top) ) , QSize(right-left, bottom-top) );
+    return QRectF( sceneTransform().inverted().map( QPointF(left,top) ) , QSizeF(right-left, bottom-top) );
 }
 
 QPainterPath ConstituentGraphicsItem::shape() const
@@ -140,14 +140,14 @@ void ConstituentGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
         foreach(QGraphicsItem * item, items)
         {
             MorphemeGraphicsItem * mgi = qgraphicsitem_cast<MorphemeGraphicsItem*>(item);
-            if( mgi != 0 )
+            if( mgi != nullptr )
             {
                 selection.append( mgi->element() );
             }
             else
             {
                 ConstituentGraphicsItem * cgi = qgraphicsitem_cast<ConstituentGraphicsItem*>(item);
-                if ( cgi != 0 )
+                if ( cgi != nullptr )
                 {
                     selection.append( cgi->element() );
                 }
@@ -158,15 +158,15 @@ void ConstituentGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     SyntacticAnalysisElementMime *data = new SyntacticAnalysisElementMime(selection);
     QDrag *drag = new QDrag(event->widget());
     drag->setMimeData(data);
-    drag->start();
+    drag->exec();
 }
 
 void ConstituentGraphicsItem::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
-    if( event->source() != 0 ) /// if it's not coming from outside the application
+    if( event->source() != nullptr ) /// if it's not coming from outside the application
     {
         const SyntacticAnalysisElementMime *data = qobject_cast<const SyntacticAnalysisElementMime*>(event->mimeData());
-        if( data != 0 )
+        if( data != nullptr )
         {
             emit reparentElement( data->elements() , mElement );
         }
@@ -179,7 +179,7 @@ int ConstituentGraphicsItem::maxDepth() const
     foreach( QGraphicsItem* item , mDaughters )
     {
         ConstituentGraphicsItem * con = qgraphicsitem_cast<ConstituentGraphicsItem*>(item);
-        if( con != 0 )
+        if( con != nullptr )
         {
             depth = qMax( depth , con->maxDepth() );
         }

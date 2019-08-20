@@ -42,7 +42,7 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
     bool bAnyHaveParents = anyHaveParents(elements);
     bool bNoneHaveParents = !bAnyHaveParents;
 
-    SyntacticAnalysisElement *newElement = 0;
+    SyntacticAnalysisElement *newElement = nullptr;
 
     if( bNoneHaveParents ) /// if all of the elements are terminal nodes, we just add that to the analysis
     {
@@ -83,7 +83,7 @@ void SyntacticAnalysis::createConstituent(const SyntacticType &type, QList<Synta
             connect( newElement->allomorph(), SIGNAL(allomorphDestroyed(Allomorph*)), this, SLOT(removeAllomorphFromAnalysis(Allomorph*)) );
         }
     }
-    if( newElement != 0 )
+    if( newElement != nullptr )
     {
         /// add an automatic parent, if one is specified
         if( !type.automaticParent().isEmpty() )
@@ -158,7 +158,7 @@ void SyntacticAnalysis::setClosedVocabulary(bool closed)
 
 SyntacticAnalysisElement *SyntacticAnalysis::elementFromGuid(const QUuid & guid)
 {
-    return mElementConcordance.value(guid, 0);
+    return mElementConcordance.value(guid, nullptr);
 }
 
 void SyntacticAnalysis::refreshText(const Text *text)
@@ -188,7 +188,7 @@ void SyntacticAnalysis::reparentElement(QList<SyntacticAnalysisElement*> element
 {
     foreach(SyntacticAnalysisElement * element, elements)
     {
-        if( element->parent() != 0 )
+        if( element->parent() != nullptr )
         {
             element->parent()->removeChild( element );
         }
@@ -199,8 +199,8 @@ void SyntacticAnalysis::reparentElement(QList<SyntacticAnalysisElement*> element
 
 void SyntacticAnalysis::removeAllomorphFromAnalysis(Allomorph *allomorph)
 {
-    SyntacticAnalysisElement * element = mElementConcordance.value( allomorph->guid(), 0 );
-    if( element != 0 )
+    SyntacticAnalysisElement * element = mElementConcordance.value( allomorph->guid(), nullptr );
+    if( element != nullptr )
     {
         delete element;
     }
@@ -253,7 +253,7 @@ bool SyntacticAnalysis::anyHaveParents(QList<SyntacticAnalysisElement *> element
 {
     for(int i=0; i<elements.count(); i++)
     {
-        if( elements.at(i)->parent() != 0 )
+        if( elements.at(i)->parent() != nullptr )
         {
             return true;
         }
@@ -268,7 +268,7 @@ bool SyntacticAnalysis::areSisters(QList<SyntacticAnalysisElement *> elements)
         return true;
     }
     const SyntacticAnalysisElement * firstParent = elements.first()->parent();
-    if( firstParent == 0 )
+    if( firstParent == nullptr )
     {
         return false;
     }

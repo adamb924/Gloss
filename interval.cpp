@@ -35,7 +35,7 @@ bool Interval::isValid() const
 QString Interval::summaryString() const
 {
     if( isValid() )
-        return QString("%1-%2").arg( (float)mStartTime/1000.0f ).arg( (float)mEndTime/1000.0f );
+        return QString("%1-%2").arg( static_cast<double>(mStartTime)/1000.0).arg( static_cast<double>(mEndTime)/1000.0 );
     else
         return QString();
 }

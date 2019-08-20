@@ -69,9 +69,9 @@ QLayout* InterlinearDisplayWidget::addLine(int lineNumber)
     InterlinearItemTypeList * lines = mTab->interlinearLines(mText->baselineWritingSystem());
     if( lines->isEmpty() )
     {
-        return new FlowLayout( Qt::LeftToRight, 0, 5 , 5 , 5 );
+        return new FlowLayout( Qt::LeftToRight, nullptr, 5 , 5 , 5 );
     }
-    FlowLayout *flowLayout = new FlowLayout( lines->first().writingSystem().layoutDirection() , 0, 5 , 5 , 5 );
+    FlowLayout *flowLayout = new FlowLayout( lines->first().writingSystem().layoutDirection() , nullptr, 5 , 5 , 5 );
 
     mLineLayouts.insert(lineNumber, flowLayout);
     mLayout->addLayout(flowLayout);
@@ -170,7 +170,7 @@ void InterlinearDisplayWidget::clearFocus()
 
 void InterlinearDisplayWidget::scrollToLine(int line)
 {
-    if( mLineLayouts.value(line) != 0 )
+    if( mLineLayouts.value(line) != nullptr )
     {
         bool after = line > mCurrentLine;
         mCurrentLine = line;
@@ -220,7 +220,7 @@ void InterlinearDisplayWidget::addPhrasalGlossLines( int i, Phrase *phrase, QVBo
 void InterlinearDisplayWidget::addParagraphMarker(int lineIndex, Paragraph *paragraph, QLayout *before)
 {
     ParagraphMarkWidget * mark = new ParagraphMarkWidget(paragraph,this);
-    if( before == 0 ) /// add it to the end
+    if( before == nullptr ) /// add it to the end
     {
         mLayout->addWidget( mark );
     }
@@ -242,10 +242,10 @@ void InterlinearDisplayWidget::addParagraphMarker(int lineIndex, Paragraph *para
 void InterlinearDisplayWidget::clearWidgetsFromLine(int lineNumber)
 {
     QLayout *layout = mLineLayouts.value(lineNumber);
-    if( layout != 0 )
+    if( layout != nullptr )
     {
         QWidget *lineLabel = mLineLabels.take(lineNumber);
-        if( lineLabel != 0 )
+        if( lineLabel != nullptr )
         {
             lineLabel->deleteLater();
             layout->removeWidget(lineLabel);
@@ -285,7 +285,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
     if( mLines.isEmpty() )
         setLinesToDefault();
 
-    QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mLines.count(), 0);
+    QProgressDialog progress(tr("Creating interface for %1...").arg(mText->name()), "Cancel", 0, mLines.count(), nullptr);
     progress.setWindowModality(Qt::WindowModal);
 
     int nPhrases = mText->phraseCount();
@@ -319,7 +319,7 @@ void InterlinearDisplayWidget::setLayoutFromText()
             mParagraphMarkWidgets.remove( lineIndex, marker );
         }
 
-        if( mLineLayouts.value(lineIndex) == 0 ) /// if there is no layout for this line, a new layout needs to be created
+        if( mLineLayouts.value(lineIndex) == nullptr ) /// if there is no layout for this line, a new layout needs to be created
         {
             if( paragraphMarkerAppropriate )
             {
@@ -420,7 +420,7 @@ PunctuationDisplayWidget *InterlinearDisplayWidget::addPunctuationDisplayWidget(
 bool InterlinearDisplayWidget::maybeFocus(QWidget * wdw)
 {
     WordDisplayWidget * wdwRecast = qobject_cast<WordDisplayWidget*>(wdw);
-    if( wdwRecast == 0  )
+    if( wdwRecast == nullptr  )
     {
         return false;
     }
@@ -460,7 +460,7 @@ void InterlinearDisplayWidget::setLines( const QList<int> lines )
 
     // http://stackoverflow.com/questions/4272196/qt-remove-all-widgets-from-layout
     QLayoutItem *wItem;
-    while( (wItem = mLayout->takeAt(0)) != 0)
+    while( (wItem = mLayout->takeAt(0)) != nullptr)
     {
           delete wItem;
     }
@@ -516,7 +516,7 @@ void InterlinearDisplayWidget::playSound( WordDisplayWidget * wdw )
 
 int InterlinearDisplayWidget::lineNumberOfWdw(QWidget *wdw ) const
 {
-    if( qobject_cast<WordDisplayWidget*>(wdw) == 0  )
+    if( qobject_cast<WordDisplayWidget*>(wdw) == nullptr  )
     {
         return -1;
     }
@@ -604,7 +604,7 @@ void InterlinearDisplayWidget::findPreviousWdw(int &lineNumber, int &position)
         {
             position--;
         }
-    } while( qobject_cast<WordDisplayWidget*>(mWordDisplayWidgets.at(lineNumber).at(position)) == 0  && lineNumber >= 0 && position >= 0 );
+    } while( qobject_cast<WordDisplayWidget*>(mWordDisplayWidgets.at(lineNumber).at(position)) == nullptr  && lineNumber >= 0 && position >= 0 );
 }
 
 void InterlinearDisplayWidget::findNextWdw(int &lineNumber, int &position)
@@ -624,5 +624,5 @@ void InterlinearDisplayWidget::findNextWdw(int &lineNumber, int &position)
         {
             position++;
         }
-    } while( qobject_cast<WordDisplayWidget*>(mWordDisplayWidgets.at(lineNumber).at(position)) == 0 && lineNumber < mWordDisplayWidgets.count() && position < mWordDisplayWidgets.at(lineNumber).count() );
+    } while( qobject_cast<WordDisplayWidget*>(mWordDisplayWidgets.at(lineNumber).at(position)) == nullptr && lineNumber < mWordDisplayWidgets.count() && position < mWordDisplayWidgets.at(lineNumber).count() );
 }

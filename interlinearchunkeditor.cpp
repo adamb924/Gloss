@@ -16,7 +16,7 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
 {
     ui->setupUi(this);
 
-    mTextTabWidget = 0;
+    mTextTabWidget = nullptr;
 
     mText = text;
     mProject = project;
@@ -117,7 +117,7 @@ void InterlinearChunkEditor::refreshLayout()
         ui->endButton->setEnabled(true);
     }
 
-    if( mTextTabWidget != 0 )
+    if( mTextTabWidget != nullptr )
     {
         mTextTabWidget->setLines( makeLines() );
     }

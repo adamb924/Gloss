@@ -28,7 +28,7 @@ ItemEditDialog::~ItemEditDialog()
 
 InterlinearItemType ItemEditDialog::type() const
 {
-    return InterlinearItemType( (InterlinearItemType::LineType)ui->itemTypeCombo->currentData().toULongLong(), ui->writingSystemCombo->currentWritingSystem() );
+    return InterlinearItemType( static_cast<InterlinearItemType::LineType>(ui->itemTypeCombo->currentData().toULongLong()), ui->writingSystemCombo->currentWritingSystem() );
 }
 
 void ItemEditDialog::setType(InterlinearItemType type)

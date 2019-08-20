@@ -66,10 +66,10 @@ void LexicalEntryForm::fillTypes()
     int currentIndex=0;
     for(int i=0; i<10; i++)
     {
-        if( mTypes.contains( (Allomorph::Type)i ))
+        if( mTypes.contains( static_cast<Allomorph::Type>(i) ))
         {
-            ui->morphemeType->addItem( Allomorph::getTypeString( (Allomorph::Type)i ) , i );
-            if( mAllomorphType == (Allomorph::Type)i )
+            ui->morphemeType->addItem( Allomorph::getTypeString( static_cast<Allomorph::Type>(i) ) , i );
+            if( mAllomorphType == static_cast<Allomorph::Type>(i) )
                 currentIndex = ui->morphemeType->count()-1;
         }
     }
@@ -143,9 +143,9 @@ Allomorph::Type LexicalEntryForm::type() const
 
 void LexicalEntryForm::setType(int index)
 {
-    if( index > -1 && mAllomorphType != (Allomorph::Type)ui->morphemeType->itemData(index).toInt() )
+    if( index > -1 && mAllomorphType != static_cast<Allomorph::Type>(ui->morphemeType->itemData(index).toInt()) )
     {
-        mAllomorphType = (Allomorph::Type)ui->morphemeType->itemData(index).toInt();
+        mAllomorphType = static_cast<Allomorph::Type>(ui->morphemeType->itemData(index).toInt());
         fillData();
     }
 }

@@ -51,6 +51,7 @@ void AnnotationForm::doubleClick(const QModelIndex & index)
         phrase++; // make it 1-indexed
 
         QList<Focus> foci;
+        /// TODO: Why on earth am I casting a pointer to a qlonglong?
         foci << Focus( Focus::GlossItem,  (qlonglong)mAnnotationModel->glossItem(index) );
 
         emit focusTextPosition( mText->name(), phrase, foci );

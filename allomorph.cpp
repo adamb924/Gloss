@@ -221,9 +221,9 @@ QString Allomorph::getTypeString(Allomorph::Type t)
     case Suprafix:
         return "Suprafix";
     case Null:
-    default:
         return "Null";
     }
+    return "Null";
 }
 
 Allomorph::Type Allomorph::getType(QString t)
@@ -256,34 +256,24 @@ QString Allomorph::getTypeFormatTextString(const QString &text, Allomorph::Type 
     {
     case Stem:
         return text;
-        break;
     case Prefix:
         return text + "-";
-        break;
     case Suffix:
         return "-" + text;
-        break;
     case Infix:
         return "-" + text + "-";
-        break;
     case BoundStem:
         return "*" + text;
-        break;
     case Proclitic:
         return text + "=";
-        break;
     case Enclitic:
         return "=" + text;
-        break;
     case Simulfix:
         return "=" + text + "=";
-        break;
     case Suprafix:
         return "~" + text + "~";
-        break;
     case Null:
         return text;
-        break;
     }
     return text;
 }

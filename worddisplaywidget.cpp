@@ -99,7 +99,7 @@ void WordDisplayWidget::setupLayout()
             vLayout->addWidget( addAnalysisWidget( mGlossLines->at(i) ) );
             break;
         case InterlinearItemType::PosTagging:
-            vLayout->addWidget( addPosWidget( mGlossLines->at(i) ) );
+            vLayout->addWidget( addPosWidget() );
             break;
         case InterlinearItemType::Null:
             break;
@@ -238,10 +238,9 @@ AnalysisWidget* WordDisplayWidget::addAnalysisWidget( const InterlinearItemType 
     return analysisWidget;
 }
 
-PosWidget *WordDisplayWidget::addPosWidget(const InterlinearItemType &glossLine)
+PosWidget *WordDisplayWidget::addPosWidget()
 {
     PosWidget *posWidget = new PosWidget(mGlossItem, mProject->dbAdapter()->wordPosByAbbreviation() );
-
     return posWidget;
 }
 
@@ -294,6 +293,7 @@ void WordDisplayWidget::contextMenuEvent ( QContextMenuEvent * event )
             addGlossSubmenu( menu , mGlossLines->at(i).writingSystem() );
             break;
         case InterlinearItemType::Analysis:
+        case InterlinearItemType::PosTagging:
         case InterlinearItemType::Null:
             break;
         }
@@ -702,6 +702,7 @@ void WordDisplayWidget::fillData()
             case InterlinearItemType::Analysis:
                 mAnalysisWidgets[mGlossLines->at(i).writingSystem()]->setupLayout();
                 break;
+            case InterlinearItemType::PosTagging:
             case InterlinearItemType::Null:
                 break;
             }
@@ -1024,7 +1025,7 @@ void WordDisplayWidget::cycleInterpretation()
     }
 
     QList<qlonglong> candidates = mDbAdapter->candidateInterpretations( mGlossItem->baselineText() );
-    qSort(candidates.begin(), candidates.end());
+    std::sort(candidates.begin(), candidates.end());
     int position = candidates.indexOf( mGlossItem->id() );
     if( position > -1 )
     {
@@ -1042,7 +1043,7 @@ void WordDisplayWidget::cycleTextForm( const WritingSystem & ws )
 
     QHash<qlonglong,QString> textForms = mDbAdapter->interpretationTextForms(mGlossItem->id(), ws.id() );
     QList<qlonglong> candidates = textForms.uniqueKeys();
-    qSort( candidates.begin(), candidates.end() );
+    std::sort( candidates.begin(), candidates.end() );
     int position = candidates.indexOf( mGlossItem->textForm( ws ).id() );
     if( position > -1 )
     {
@@ -1060,7 +1061,7 @@ void WordDisplayWidget::cycleGloss( const WritingSystem & ws )
 
     QHash<qlonglong,QString> glosses = mDbAdapter->interpretationGlosses( mGlossItem->id(), ws.id() );
     QList<qlonglong> candidates = glosses.uniqueKeys();
-    qSort( candidates.begin(), candidates.end() );
+    std::sort( candidates.begin(), candidates.end() );
     int position = candidates.indexOf( mGlossItem->gloss( ws ).id() );
     if( position > -1 )
     {

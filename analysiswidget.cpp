@@ -32,7 +32,7 @@ void AnalysisWidget::setupLayout()
 
 void AnalysisWidget::allomorphDoubleClick(TextBit &bit)
 {
-    qlonglong allomorphIndex = bit.id();
+    int allomorphIndex = static_cast<int>(bit.id());
     editLexicalEntry( mGlossItem->morphologicalAnalysis(mWritingSystem)->allomorph(allomorphIndex)->id() );
 }
 
@@ -176,7 +176,7 @@ void AnalysisWidget::editLexicalEntry(qlonglong allomorphId)
     if( dialog.exec() )
     {
         Allomorph * a = mGlossItem->morphologicalAnalysis(mWritingSystem)->allomorphFromId( allomorphId );
-        if( a != 0 )
+        if( a != nullptr )
         {
             a->setGlosses( mDbAdapter->lexicalEntryGlossFormsForAllomorph( allomorphId ) );
         }
@@ -196,7 +196,7 @@ void AnalysisWidget::enterAnalysis()
             MorphologicalAnalysis * analysis = leDialog.morphologicalAnalysis();
             createInitializedLayout( analysis );
             /// emit 0 so that the concordance actually does change this gloss item
-            emit morphologicalAnalysisChanged( 0, analysis );
+            emit morphologicalAnalysisChanged( nullptr, analysis );
         }
     }
 }
@@ -214,7 +214,7 @@ void AnalysisWidget::createAndDisplayAnalysis(qlonglong lexicalEntryId)
 
         createInitializedLayout( analysis );
         /// emit 0 so that the concordance actually does change this gloss item
-        emit morphologicalAnalysisChanged( 0, analysis );
+        emit morphologicalAnalysisChanged( nullptr, analysis );
     }
 }
 
@@ -282,13 +282,13 @@ void AnalysisWidget::clearWidgetsFromLayout(QLayout * layout)
     if( layout->count() == 0 )
         return;
     QLayoutItem * item;
-    while( ( item = layout->takeAt(0) ) != 0 )
+    while( ( item = layout->takeAt(0) ) != nullptr )
     {
-        if( item->widget() != 0 )
+        if( item->widget() != nullptr )
         {
             item->widget()->deleteLater();
         }
-        else if ( item->layout() != 0 )
+        else if ( item->layout() != nullptr )
         {
             clearWidgetsFromLayout(item->layout());
             item->layout()->deleteLater();
@@ -309,7 +309,7 @@ void AnalysisWidget::linkToOther()
             MorphologicalAnalysis * monomorphemic = new MorphologicalAnalysis( textBit(), mProject->concordance() );
             monomorphemic->addAllomorph( mDbAdapter->allomorphFromId(allomorphId) );
             /// emit 0 so that the concordance actually does change this gloss item
-            emit morphologicalAnalysisChanged( 0, monomorphemic );
+            emit morphologicalAnalysisChanged( nullptr, monomorphemic );
         }
     }
 }

@@ -46,7 +46,7 @@ void TabsModel::moveUp(int index)
     if( index > 0 )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index, index, QModelIndex(), index-1);
-        mView->tabs()->swap( index, index-1 );
+        mView->tabs()->swapItemsAt( index, index-1 );
         QAbstractItemModel::endMoveRows();
     }
 }
@@ -56,7 +56,7 @@ void TabsModel::moveDown(int index)
     if( index+1 < mView->tabs()->count() )
     {
         QAbstractItemModel::beginMoveRows(QModelIndex(), index+1, index+1, QModelIndex(), index);
-        mView->tabs()->swap( index, index+1 );
+        mView->tabs()->swapItemsAt( index, index+1 );
         QAbstractItemModel::endMoveRows();
     }
 }

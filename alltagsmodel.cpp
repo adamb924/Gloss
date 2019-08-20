@@ -20,7 +20,7 @@ void AllTagsModel::refreshTags( )
         QStandardItem *item = new QStandardItem( tags.at(i) );
         item->setEditable(true);
         item->setCheckable(true);
-        item->setTristate(true);
+        item->setUserTristate(true);
         item->setCheckState(Qt::PartiallyChecked);
         invisibleRootItem()->appendRow(item);
     }

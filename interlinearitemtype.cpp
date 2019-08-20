@@ -66,27 +66,20 @@ QString InterlinearItemType::typeString() const
     {
     case InterlinearItemType::ImmutableText:
         return QObject::tr("Immutable Text");
-        break;
     case InterlinearItemType::ImmutableGloss:
         return QObject::tr("Immutable Gloss");
-        break;
     case InterlinearItemType::Text:
         return QObject::tr("Text Form");
-        break;
     case InterlinearItemType::Gloss:
         return QObject::tr("Gloss");
-        break;
     case InterlinearItemType::Analysis:
         return QObject::tr("Analysis");
-        break;
     case InterlinearItemType::PosTagging:
         return QObject::tr("Part of Speech Tagging");
-        break;
     case InterlinearItemType::Null:
-    default:
         return QObject::tr("(Null)");
-        break;
-    };
+    }
+    return QObject::tr("(Null)");
 }
 
 QString InterlinearItemType::typeXmlString() const
@@ -95,27 +88,20 @@ QString InterlinearItemType::typeXmlString() const
     {
     case InterlinearItemType::ImmutableText:
         return QObject::tr("immutable-text");
-        break;
     case InterlinearItemType::ImmutableGloss:
         return QObject::tr("immutable-gloss");
-        break;
     case InterlinearItemType::Text:
         return QObject::tr("text");
-        break;
     case InterlinearItemType::Gloss:
         return QObject::tr("gloss");
-        break;
     case InterlinearItemType::Analysis:
         return QObject::tr("analysis");
-        break;
     case InterlinearItemType::PosTagging:
         return QObject::tr("pos-tagging");
-        break;
     case InterlinearItemType::Null:
-    default:
         return QObject::tr("(Null)");
-        break;
-    };
+    }
+    return QObject::tr("(Null)");
 }
 
 WritingSystem InterlinearItemType::writingSystem() const
@@ -146,7 +132,6 @@ QDebug operator<<(QDebug dbg, const InterlinearItemType &type)
         dbg.nospace() << "InterlinearItemType(PosTagging)";
         break;
     case InterlinearItemType::Null:
-    default:
         dbg.nospace() << "InterlinearItemType(Null)";
         break;
     };

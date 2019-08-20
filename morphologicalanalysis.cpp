@@ -165,7 +165,7 @@ Allomorph *MorphologicalAnalysis::allomorphFromId(qlonglong id) const
             return mAllomorphs[i];
         }
     }
-    return 0;
+    return nullptr;
 }
 
 int MorphologicalAnalysis::allomorphCount() const

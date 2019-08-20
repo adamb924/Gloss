@@ -553,6 +553,7 @@ bool GlossItem::matchesFocus( const Focus & focus ) const
     }
     else if ( focus.type() == Focus::GlossItem )
     {
+        /// TODO this seems to be related to that other TODO item
         return (qlonglong)this == focus.index();
     }
     else if ( focus.type() == Focus::WholeStringSearch )

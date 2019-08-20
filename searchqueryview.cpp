@@ -44,7 +44,7 @@ void SearchQueryView::getDetails( const QModelIndex & index, QString &textName, 
     QList<QVariant> indices = index.data(Focus::IndexList).toList();
     for( int i=0; i<types.count(); i++ )
     {
-        Focus::Type t = (Focus::Type)types.at(i).toInt();
+        Focus::Type t = static_cast<Focus::Type>(types.at(i).toInt());
         if( t != Focus::WholeStringSearch && t != Focus::SubStringSearch )
         {
             foci << Focus( t , indices.at(i).toLongLong() );
