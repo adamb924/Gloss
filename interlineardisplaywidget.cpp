@@ -21,6 +21,7 @@
 #include "punctuationdisplaywidget.h"
 #include "paragraph.h"
 #include "paragraphmarkwidget.h"
+#include "mainwindow.h"
 
 InterlinearDisplayWidget::InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent) :
     QScrollArea(parent), mTab(tab), mText(text), mProject(project), mMouseMode(InterlinearDisplayWidget::Normal)
@@ -144,7 +145,7 @@ void InterlinearDisplayWidget::enterChangeBaselineMode(QAction * action)
 void InterlinearDisplayWidget::keyPressEvent ( QKeyEvent * event )
 {
     int key = event->key();
-    if( key == Qt::Key_Escape )
+    if( key == MainWindow::mShortcuts.shortcut("NormalMouseMode") )
     {
         mMouseMode = InterlinearDisplayWidget::Normal;
         setCursor(QCursor(Qt::ArrowCursor));

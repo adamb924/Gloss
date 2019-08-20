@@ -3,6 +3,7 @@
 
 #include "text.h"
 #include "texttabwidget.h"
+#include "mainwindow.h"
 
 #include <QInputDialog>
 #include <QLabel>
@@ -143,10 +144,10 @@ void InterlinearChunkEditor::closeEvent(QCloseEvent *event)
 
 void InterlinearChunkEditor::keyReleaseEvent(QKeyEvent *event)
 {
-    if( event->key() == Qt::Key_PageDown )
+    if( event->key() == MainWindow::mShortcuts.shortcut("NextPage") )
     {
         next();
-    } else if ( event->key() == Qt::Key_PageUp )
+    } else if ( event->key() == MainWindow::mShortcuts.shortcut("PreviousPage") )
     {
         previous();
     }

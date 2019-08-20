@@ -10,6 +10,7 @@ TARGET = Gloss
 TEMPLATE = app
 
 SOURCES += main.cpp\
+    keyboardshortcuts.cpp \
         mainwindow.cpp \
     flowlayout.cpp \
     project.cpp \
@@ -116,6 +117,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
+    keyboardshortcuts.h \
     project.h \
     interlineardisplaywidget.h \
     worddisplaywidget.h \

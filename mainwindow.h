@@ -16,6 +16,7 @@
 #include <QtWidgets/QMainWindow>
 
 #include "focus.h"
+#include "keyboardshortcuts.h"
 
 class Project;
 class QAction;
@@ -45,6 +46,8 @@ public:
     //! \brief This creates the list of available views in the views submenu (in the MainWindow menu bar).
     void setGuiElementsFromProject();
 
+    static KeyboardShortcuts mShortcuts;
+
 private:
     Ui::MainWindow *ui;
 
@@ -59,6 +62,7 @@ private:
     QComboBox * mQuickViewCombo;
 
     Project *mProject;
+
 
     void setupToolbar();
 

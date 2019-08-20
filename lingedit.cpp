@@ -6,6 +6,7 @@
 #include <QColor>
 
 #include "textbit.h"
+#include "mainwindow.h"
 
 LingEdit::LingEdit(QWidget *parent) :
     QLineEdit(parent), mOverrideFontSize(-1), mTextBit(TextBit()), mSpecialBorder(false), mWarningText("")
@@ -63,7 +64,7 @@ void LingEdit::keyPressEvent(QKeyEvent *event)
     {
         insert( QChar(0x200C) );
     }
-    if( event->key() == Qt::Key_Insert )
+    if( event->key() == MainWindow::mShortcuts.shortcut("InsertGlossTextForm") )
     {
         emit insertPressed( mTextBit.writingSystem() );
     }

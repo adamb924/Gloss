@@ -43,6 +43,8 @@
 #include "mergeeafdialog.h"
 #include "annotationform.h"
 
+KeyboardShortcuts MainWindow::mShortcuts;
+
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow)

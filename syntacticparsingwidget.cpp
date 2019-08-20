@@ -25,6 +25,7 @@
 #include "databaseadapter.h"
 #include "linenumbergraphicsitem.h"
 #include "paragraph.h"
+#include "mainwindow.h"
 
 SyntacticParsingWidget::SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent) :
     QWidget(parent),
@@ -187,7 +188,7 @@ void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
 {
     if( mAnalysis == 0) return;
 
-    if( event->key() == Qt::Key_Delete )
+    if( event->key() == MainWindow::mShortcuts.shortcut("RemoveConstituent") )
     {
         removeConstituent();
     }
@@ -203,11 +204,11 @@ void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
     }
     else
     {
-        if( event->key() == Qt::Key_A || event->key() == Qt::Key_Insert )
+        if( event->key() == MainWindow::mShortcuts.shortcut("CreateConstituent") )
         {
             createConstituent();
         }
-        else if ( event->key() == Qt::Key_X )
+        else if ( event->key() == MainWindow::mShortcuts.shortcut("RemoveConstituent") )
         {
             removeConstituent();
         }
