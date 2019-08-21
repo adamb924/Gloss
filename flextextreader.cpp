@@ -196,6 +196,10 @@ FlexTextReader::Result FlexTextReader::readFile( const QString & filepath, bool 
                 {
                     mText->setSound( QUrl::fromEncoded( attr.value("http://www.adambaker.org/gloss.php","audio-file").toString().toUtf8() ) );
                 }
+                if( attr.hasAttribute("http://www.adambaker.org/gloss.php","most-recent-line") )
+                {
+                    mText->mMostRecentLine = attr.value("http://www.adambaker.org/gloss.php","most-recent-line").toInt();
+                }
             }
             else if( name == "morphemes") // <morphemes>
             {

@@ -95,6 +95,12 @@ public:
     //! \brief Returns true if the Text is valid, otherwise false. A Text can be invalid if there has been some error, for instance.
     bool isValid() const;
 
+    //! \brief Returns the most recent line the user has seen; -1 is the default value.
+    int mostRecentLine() const;
+
+    //! \brief Sets the most recent line the user has seen.
+    void setMostRecentLine(int line);
+
 public slots:
     //! \brief Marks the text as having changed
     void markAsChanged();
@@ -295,6 +301,8 @@ private:
     QUrl mAudioFileURL;
 
     QList<Paragraph*> mParagraphs;
+
+    int mMostRecentLine;
 };
 
 #endif // TEXT_H

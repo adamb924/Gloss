@@ -29,12 +29,12 @@
 #include "paragraph.h"
 
 Text::Text(const WritingSystem & ws, const QString & name, Project *project) :
-    mSound(nullptr), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(true), mChanged(false), mName(name), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter())
+    mSound(nullptr), mReadResult(FlexTextReader::FlexTextReadNoAttempt), mValid(true), mChanged(false), mName(name), mBaselineWritingSystem(ws), mProject(project), mDbAdapter(mProject->dbAdapter()), mMostRecentLine(-1)
 {
 }
 
 Text::Text(const QString & filePath, Project *project) :
-    mSound(nullptr), mValid(true), mChanged(false), mName(textNameFromPath(filePath)), mProject(project), mDbAdapter(mProject->dbAdapter())
+    mSound(nullptr), mValid(true), mChanged(false), mName(textNameFromPath(filePath)), mProject(project), mDbAdapter(mProject->dbAdapter()), mMostRecentLine(-1)
 {
     FlexTextReader reader(this);
     mReadResult = reader.readFile(filePath, true);
@@ -176,6 +176,17 @@ void Text::writeTextTo(const QString & path, bool verboseOutput, bool glossNames
 bool Text::isValid() const
 {
     return mValid;
+}
+
+int Text::mostRecentLine() const
+{
+    return mMostRecentLine;
+}
+
+void Text::setMostRecentLine(int line)
+{
+    mMostRecentLine = line;
+    markAsChanged();
 }
 
 Text::MergeTranslationResult Text::mergeTranslation(const QString & filename, const WritingSystem & ws )

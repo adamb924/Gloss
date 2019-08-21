@@ -62,6 +62,8 @@ bool FlexTextWriter::serializeInterlinearText() const
 {
     mStream->writeStartElement("interlinear-text");
 
+    writeNamespaceAttribute( "most-recent-line", QString::number(mText->mMostRecentLine) );
+
     writeNamespaceAttribute( "baseline-writing-system", mText->project()->metaLanguage().flexString() );
 
     if( !mText->mAudioFileURL.isEmpty() )

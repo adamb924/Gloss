@@ -37,6 +37,12 @@ InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, Vie
     mTextTabWidget = new TextTabWidget( mText, mProject, mType, makeLines(), QList<Focus>(), this );
     ui->ildLayout->addWidget(mTextTabWidget);
 
+    int line = mText->mostRecentLine();
+    if( line > -1 && line < text->phraseCount() )
+    {
+        moveToLine( line );
+    }
+
     setWindowTitle(tr("%1 [%2]").arg(mText->name()).arg(mProject->view(type)->name()));
 }
 
@@ -89,6 +95,8 @@ void InterlinearChunkEditor::moveToPosition(int position)
         return;
 
     mPosition = position;
+
+    mText->setMostRecentLine(mPosition+1);
 
     refreshLayout();
 }
