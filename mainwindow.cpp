@@ -1538,7 +1538,7 @@ InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, 
         {
             subWindow = new InterlinearChunkEditor(text, mProject, View::Full, linesPerScreen, this);
             ui->mdiArea->addSubWindow(subWindow);
-            subWindow->show();
+            subWindow->showMaximized();
         }
         return subWindow;
     case Project::FileNotFound:
