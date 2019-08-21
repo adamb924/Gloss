@@ -81,6 +81,9 @@ private:
 
     void setAppropriateWindowTitle();
 
+    void readSettings();
+    void writeSettings();
+
     /** @name Project Methods
      * These methods pertain to IO operations on projects, and project settings.
      */
@@ -106,6 +109,8 @@ private slots:
     void setCurrentQuickView(int index);
 
     void textMetadataDialog();
+
+    void editKeyboardShortcuts();
 
     ///@}
 

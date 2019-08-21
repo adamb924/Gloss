@@ -188,7 +188,7 @@ void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
 {
     if( mAnalysis == nullptr) return;
 
-    if( event->key() == MainWindow::mShortcuts.shortcut("RemoveConstituent") )
+    if( MainWindow::mShortcuts.keysequence("RemoveConstituent").matches( toKeySequence(event) ) )
     {
         removeConstituent();
     }
@@ -204,11 +204,11 @@ void SyntacticParsingWidget::keyReleaseEvent(QKeyEvent *event)
     }
     else
     {
-        if( event->key() == MainWindow::mShortcuts.shortcut("CreateConstituent") )
+        if( MainWindow::mShortcuts.keysequence("CreateConstituent").matches( toKeySequence(event) ) )
         {
             createConstituent();
         }
-        else if ( event->key() == MainWindow::mShortcuts.shortcut("RemoveConstituent") )
+        else if( MainWindow::mShortcuts.keysequence("RemoveConstituent").matches( toKeySequence(event) ) )
         {
             removeConstituent();
         }

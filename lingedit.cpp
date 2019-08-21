@@ -64,7 +64,7 @@ void LingEdit::keyPressEvent(QKeyEvent *event)
     {
         insert( QChar(0x200C) );
     }
-    if( event->key() == MainWindow::mShortcuts.shortcut("InsertGlossTextForm") )
+    if( MainWindow::mShortcuts.keysequence("InsertGlossTextForm").matches( toKeySequence(event) ) )
     {
         emit insertPressed( mTextBit.writingSystem() );
     }

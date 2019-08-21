@@ -11,10 +11,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     keyboardshortcuts.cpp \
+    keystrokedetectinglineedit.cpp \
         mainwindow.cpp \
     flowlayout.cpp \
     project.cpp \
     interlineardisplaywidget.cpp \
+    shortcuteditordialog.cpp \
     worddisplaywidget.cpp \
     writingsystem.cpp \
     lingedit.cpp \
@@ -118,8 +120,10 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     flowlayout.h \
     keyboardshortcuts.h \
+    keystrokedetectinglineedit.h \
     project.h \
     interlineardisplaywidget.h \
+    shortcuteditordialog.h \
     worddisplaywidget.h \
     writingsystem.h \
     lingedit.h \
@@ -224,6 +228,7 @@ FORMS    += mainwindow.ui \
     importflextextdialog.ui \
     mergetranslationdialog.ui \
     generictextinputdialog.ui \
+    shortcuteditordialog.ui \
     xqueryinputdialog.ui \
     databasequerydialog.ui \
     createanalysisdialog.ui \

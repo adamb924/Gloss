@@ -1,23 +1,35 @@
 #include "keyboardshortcuts.h"
 
+#include <QKeyEvent>
+
 KeyboardShortcuts::KeyboardShortcuts()
 {
 
 }
 
-Qt::Key KeyboardShortcuts::shortcut(const QString & key)
+KeyboardShortcuts::KeyboardShortcuts(const KeyboardShortcuts &other)
 {
-    return mShortcuts.value(key, Shortcut("",Qt::Key_unknown)).keystroke;
+    mShortcuts = other.mShortcuts;
 }
 
-QString KeyboardShortcuts::description(const QString &key)
+QKeySequence KeyboardShortcuts::keysequence(const QString & code)
 {
-    return mShortcuts.value(key, Shortcut("",Qt::Key_unknown)).description;
+    return mShortcuts.value(code, Shortcut("",Qt::Key_unknown)).keysequence;
 }
 
-void KeyboardShortcuts::setShortcut(const QString &key, Qt::Key keystroke)
+QString KeyboardShortcuts::description(const QString &code)
 {
-    mShortcuts[key].keystroke = keystroke;
+    return mShortcuts.value(code, Shortcut("",Qt::Key_unknown)).description;
+}
+
+void KeyboardShortcuts::setKeySequence(const QString &code, const QKeySequence &keystroke)
+{
+    mShortcuts[code].keysequence = keystroke;
+}
+
+void KeyboardShortcuts::setShortcut(const QString &code, const Shortcut &shortcut)
+{
+    mShortcuts[code] = shortcut;
 }
 
 void KeyboardShortcuts::setDefaultShortcuts()
@@ -28,4 +40,15 @@ void KeyboardShortcuts::setDefaultShortcuts()
     mShortcuts["InsertGlossTextForm"] = Shortcut("Create a new gloss or text form", Qt::Key_Insert);
     mShortcuts["RemoveConstituent"] = Shortcut("Remove syntactic constituent", Qt::Key_Delete);
     mShortcuts["CreateConstituent"] = Shortcut("Create syntactic constituent", Qt::Key_A);
+}
+
+QStringList KeyboardShortcuts::codes() const
+{
+    return mShortcuts.keys();
+}
+
+// https://stackoverflow.com/a/10386319/1447002
+QKeySequence toKeySequence(const QKeyEvent *event)
+{
+    return QKeySequence(static_cast<int>(event->key()) | static_cast<int>(event->modifiers()) );
 }

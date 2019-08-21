@@ -50,8 +50,9 @@
     <addaction name="actionSave_Project"/>
     <addaction name="actionClose_Project"/>
     <addaction name="actionClose_project_without_saving"/>
-    <addaction name="separator"/>
     <addaction name="actionExport_texts"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_keyboard_shortcuts"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -538,6 +539,11 @@
   <action name="actionOpen_project_temp_folder">
    <property name="text">
     <string>Open project temp folder...</string>
+   </property>
+  </action>
+  <action name="actionEdit_keyboard_shortcuts">
+   <property name="text">
+    <string>Edit keyboard shortcuts...</string>
    </property>
   </action>
  </widget>

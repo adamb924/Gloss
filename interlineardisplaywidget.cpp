@@ -144,8 +144,7 @@ void InterlinearDisplayWidget::enterChangeBaselineMode(QAction * action)
 
 void InterlinearDisplayWidget::keyPressEvent ( QKeyEvent * event )
 {
-    int key = event->key();
-    if( key == MainWindow::mShortcuts.shortcut("NormalMouseMode") )
+    if( MainWindow::mShortcuts.keysequence("NormalMouseMode").matches( toKeySequence(event) ) )
     {
         mMouseMode = InterlinearDisplayWidget::Normal;
         setCursor(QCursor(Qt::ArrowCursor));

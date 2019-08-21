@@ -144,10 +144,10 @@ void InterlinearChunkEditor::closeEvent(QCloseEvent *event)
 
 void InterlinearChunkEditor::keyReleaseEvent(QKeyEvent *event)
 {
-    if( event->key() == MainWindow::mShortcuts.shortcut("NextPage") )
+    if( MainWindow::mShortcuts.keysequence("NextPage").matches( toKeySequence(event) ) )
     {
         next();
-    } else if ( event->key() == MainWindow::mShortcuts.shortcut("PreviousPage") )
+    } else if( MainWindow::mShortcuts.keysequence("PreviousPage").matches( toKeySequence(event) ) )
     {
         previous();
     }

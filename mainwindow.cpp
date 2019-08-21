@@ -29,6 +29,7 @@
 #include "textlistmodel.h"
 #include "textmetadatadialog.h"
 #include "partofspeechdialog.h"
+#include "shortcuteditordialog.h"
 
 #include <QtWidgets>
 #include <QtSql>
@@ -59,6 +60,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setupToolbar();
 
     setAppropriateWindowTitle();
+
+    mShortcuts.setDefaultShortcuts();
+    readSettings();
 
     connect(ui->actionNew_Project, SIGNAL(triggered()), this, SLOT(newProject()));
     connect(ui->actionOpen_Project, SIGNAL(triggered()), this, SLOT(openProject()));
@@ -120,6 +124,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect( ui->actionOpen_project_temp_folder, SIGNAL(triggered()), this, SLOT(openProjectTempFolder()) );
 
+    connect( ui->actionEdit_keyboard_shortcuts, SIGNAL(triggered()), this, SLOT(editKeyboardShortcuts()));
+
     ui->actionSearch_files_instead_of_index->setCheckable(true);
     ui->actionSearch_files_instead_of_index->setChecked(false);
 
@@ -134,6 +140,37 @@ MainWindow::~MainWindow()
     if( mProject != nullptr )
         delete mProject;
     delete ui;
+}
+
+void MainWindow::readSettings()
+{
+    QSettings settings("AdamBaker", "Gloss");
+
+    int size = settings.beginReadArray("shortcuts");
+    for (int i = 0; i < size; ++i) {
+        settings.setArrayIndex(i);
+        QString code = settings.value("code").toString();
+        Shortcut s;
+        s.keysequence = QKeySequence( settings.value("shortcut").toString() );
+        s.description = settings.value("description").toString();
+        mShortcuts.setShortcut(code, s);
+    }
+    settings.endArray();
+}
+
+void MainWindow::writeSettings()
+{
+    QSettings settings("AdamBaker", "Gloss");
+
+    QStringList codes= mShortcuts.codes();
+    settings.beginWriteArray("shortcuts");
+    for (int i = 0; i < codes.size(); ++i) {
+        settings.setArrayIndex(i);
+        settings.setValue("code", codes.at(i) );
+        settings.setValue("description", mShortcuts.description( codes.at(i) ) );
+        settings.setValue("shortcut", mShortcuts.keysequence( codes.at(i) ).toString() );
+    }
+    settings.endArray();
 }
 
 void MainWindow::addTableMenuItems()
@@ -274,10 +311,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if( mProject == nullptr )
     {
+        writeSettings();
         event->accept();
     }
     else if( maybeSave() )
     {
+        writeSettings();
         projectClose();
         event->accept();
     }
@@ -1424,6 +1463,15 @@ void MainWindow::textMetadataDialog()
     TextMetadataDialog * dlg = new TextMetadataDialog(mProject, this);
     dlg->exec();
     mProject->setChanged();
+}
+
+void MainWindow::editKeyboardShortcuts()
+{
+   ShortcutEditorDialog dlg( mShortcuts );
+   if( dlg.exec() == QDialog::Accepted )
+   {
+       mShortcuts = dlg.shortcuts();
+   }
 }
 
 InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, int linesPerScreen)
