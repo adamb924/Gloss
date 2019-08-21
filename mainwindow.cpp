@@ -146,6 +146,9 @@ void MainWindow::readSettings()
 {
     QSettings settings("AdamBaker", "Gloss");
 
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("windowState").toByteArray());
+
     int size = settings.beginReadArray("shortcuts");
     for (int i = 0; i < size; ++i) {
         settings.setArrayIndex(i);
@@ -161,6 +164,9 @@ void MainWindow::readSettings()
 void MainWindow::writeSettings()
 {
     QSettings settings("AdamBaker", "Gloss");
+
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("windowState", saveState());
 
     QStringList codes= mShortcuts.codes();
     settings.beginWriteArray("shortcuts");
