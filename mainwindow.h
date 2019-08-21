@@ -63,6 +63,8 @@ private:
 
     Project *mProject;
 
+    QList<QString> mRecentProjects;
+    const static int MAX_RECENT_PROJECTS = 5;
 
     void setupToolbar();
 
@@ -91,6 +93,8 @@ private:
 private slots:
     void newProject();
     void openProject();
+    void openProject(const QString & filename);
+    void openRecentProject(QAction * action);
     void saveProject();
     void closeProject();
     void closeProjectWithoutSaving();
@@ -111,6 +115,8 @@ private slots:
     void textMetadataDialog();
 
     void editKeyboardShortcuts();
+
+    void populateRecentProjectsMenu();
 
     ///@}
 

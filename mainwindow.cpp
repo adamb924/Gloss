@@ -63,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     mShortcuts.setDefaultShortcuts();
     readSettings();
+    populateRecentProjectsMenu();
 
     connect(ui->actionNew_Project, SIGNAL(triggered()), this, SLOT(newProject()));
     connect(ui->actionOpen_Project, SIGNAL(triggered()), this, SLOT(openProject()));
@@ -149,7 +150,15 @@ void MainWindow::readSettings()
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("windowState").toByteArray());
 
-    int size = settings.beginReadArray("shortcuts");
+    mRecentProjects.clear();
+    int size = qMin(MAX_RECENT_PROJECTS, settings.beginReadArray("recentProjects"));
+    for (int i = 0; i < size; ++i) {
+        settings.setArrayIndex(i);
+        mRecentProjects.append( settings.value("path").toString() );
+    }
+    settings.endArray();
+
+    size = settings.beginReadArray("shortcuts");
     for (int i = 0; i < size; ++i) {
         settings.setArrayIndex(i);
         QString code = settings.value("code").toString();
@@ -167,6 +176,13 @@ void MainWindow::writeSettings()
 
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
+
+    settings.beginWriteArray("recentProjects");
+    for (int i = 0; i < mRecentProjects.length(); ++i) {
+        settings.setArrayIndex(i);
+        settings.setValue("path", mRecentProjects.at(i) );
+    }
+    settings.endArray();
 
     QStringList codes= mShortcuts.codes();
     settings.beginWriteArray("shortcuts");
@@ -271,23 +287,38 @@ void MainWindow::newProject()
 void MainWindow::openProject()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open") );
-
     if( !filename.isNull() )
     {
-        if( mProject != nullptr )
-            delete mProject;
-        mProject = new Project(this);
-        if( mProject->readFromFile(filename) )
-        {
-            setAppropriateWindowTitle();
-            setProjectActionsEnabled(true);
-        }
-        else
-        {
-            delete mProject;
-            mProject = nullptr;
-        }
+        openProject(filename);
     }
+}
+
+void MainWindow::openProject(const QString &filename)
+{
+    /// remove any earlier occurence in the recent projects list
+    mRecentProjects.removeAll(filename);
+    /// then add this as the most recent
+    mRecentProjects.push_front(filename);
+    populateRecentProjectsMenu();
+
+    if( mProject != nullptr )
+        delete mProject;
+    mProject = new Project(this);
+    if( mProject->readFromFile(filename) )
+    {
+        setAppropriateWindowTitle();
+        setProjectActionsEnabled(true);
+    }
+    else
+    {
+        delete mProject;
+        mProject = nullptr;
+    }
+}
+
+void MainWindow::openRecentProject(QAction *action)
+{
+    openProject( action->data().toString() );
 }
 
 void MainWindow::saveProject()
@@ -1478,6 +1509,21 @@ void MainWindow::editKeyboardShortcuts()
    {
        mShortcuts = dlg.shortcuts();
    }
+}
+
+void MainWindow::populateRecentProjectsMenu()
+{
+    ui->menuRecent->clear();
+    QActionGroup * grp = new QActionGroup(this);
+    for(int i = 0; i<mRecentProjects.length(); i++)
+    {
+        QAction * a = new QAction(mRecentProjects.at(i), this);
+        a->setData(mRecentProjects.at(i));
+        grp->addAction(a);
+        ui->menuRecent->addAction(a);
+    }
+    connect(grp, SIGNAL(triggered(QAction*)), this, SLOT(openRecentProject(QAction*)));
+    ui->menuRecent->setEnabled( !mRecentProjects.isEmpty() );
 }
 
 InterlinearChunkEditor * MainWindow::openTextInChunks(const QString & textName, int linesPerScreen)
