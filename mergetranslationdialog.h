@@ -25,7 +25,7 @@ class MergeTranslationDialog : public QDialog
     Q_OBJECT
 
 public:
-    MergeTranslationDialog(Project *project, QWidget *parent = 0);
+    MergeTranslationDialog(Project *project, QWidget *parent = nullptr);
     ~MergeTranslationDialog();
 
     QString text() const;

@@ -15,7 +15,7 @@ class ImportPlainTextDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ImportPlainTextDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
+    explicit ImportPlainTextDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = nullptr);
     ~ImportPlainTextDialog();
 
     QStringList filenames() const;

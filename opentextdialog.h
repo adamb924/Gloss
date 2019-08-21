@@ -18,7 +18,7 @@ class OpenTextDialog : public QDialog
     Q_OBJECT
 
 public:
-    OpenTextDialog(const QStringList & textNames, QWidget *parent = 0);
+    OpenTextDialog(const QStringList & textNames, QWidget *parent = nullptr);
     ~OpenTextDialog();
 
     QString textName() const;

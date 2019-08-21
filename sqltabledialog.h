@@ -21,7 +21,7 @@ class SqlTableDialog : public QDialog
     Q_OBJECT
 
 public:
-    SqlTableDialog(const QString & tableName, const DatabaseAdapter * dbAdapter, QWidget *parent = 0);
+    SqlTableDialog(const QString & tableName, const DatabaseAdapter * dbAdapter, QWidget *parent = nullptr);
     ~SqlTableDialog();
 
 private:

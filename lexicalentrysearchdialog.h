@@ -28,7 +28,7 @@ class LexicalEntrySearchDialog : public QDialog
     Q_OBJECT
 
 public:
-    LexicalEntrySearchDialog(const Project * project, QWidget *parent = 0);
+    LexicalEntrySearchDialog(const Project * project, QWidget *parent = nullptr);
     ~LexicalEntrySearchDialog();
 
     qlonglong lexicalEntryId() const;

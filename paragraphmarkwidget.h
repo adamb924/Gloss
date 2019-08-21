@@ -10,7 +10,7 @@ class ParagraphMarkWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ParagraphMarkWidget(Paragraph *paragraph, QWidget *parent = 0);
+    ParagraphMarkWidget(Paragraph *paragraph, QWidget *parent = nullptr);
 
 protected:
     void paintEvent(QPaintEvent * event);

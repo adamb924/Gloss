@@ -28,7 +28,7 @@ class LexicalEntryForm : public QWidget
     Q_OBJECT
 
 public:
-    LexicalEntryForm(const TextBit & allomorphString, const GlossItem *glossItem, const Project *project,  QWidget *parent = 0);
+    LexicalEntryForm(const TextBit & allomorphString, const GlossItem *glossItem, const Project *project,  QWidget *parent = nullptr);
     ~LexicalEntryForm();
 
     qlonglong id() const;

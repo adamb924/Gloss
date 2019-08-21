@@ -22,7 +22,7 @@ class SearchForm : public QWidget
     Q_OBJECT
 
 public:
-    SearchForm(const DatabaseAdapter * dbAdapter, QWidget *parent = 0);
+    SearchForm(const DatabaseAdapter * dbAdapter, QWidget *parent = nullptr);
     ~SearchForm();
 
 signals:

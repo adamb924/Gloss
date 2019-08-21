@@ -32,7 +32,7 @@ class SyntacticParsingWidget : public QWidget
     Q_OBJECT
 
 public:
-    SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent = 0);
+    SyntacticParsingWidget(Text *text,  const Tab * tab, const Project * project, QWidget *parent = nullptr);
     ~SyntacticParsingWidget();
 
 private:

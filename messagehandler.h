@@ -13,7 +13,7 @@ class MessageHandler : public QAbstractMessageHandler
 {
     Q_OBJECT
 public:
-    MessageHandler(const QString & source, QObject *parent = 0);
+    MessageHandler(const QString & source, QObject *parent = nullptr);
 
 protected:
     void handleMessage( QtMsgType type, const QString & description, const QUrl & identifier, const QSourceLocation & sourceLocation );

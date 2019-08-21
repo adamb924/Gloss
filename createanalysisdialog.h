@@ -23,7 +23,7 @@ class CreateAnalysisDialog : public QDialog
     Q_OBJECT
 
 public:
-    CreateAnalysisDialog(const DatabaseAdapter *dbAdapter, const TextBit & initialString, QWidget *parent = 0);
+    CreateAnalysisDialog(const DatabaseAdapter *dbAdapter, const TextBit & initialString, QWidget *parent = nullptr);
     ~CreateAnalysisDialog();
 
     QString analysisString() const;

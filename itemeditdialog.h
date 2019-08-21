@@ -21,7 +21,7 @@ class ItemEditDialog : public QDialog
     Q_OBJECT
 
 public:
-    ItemEditDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
+    ItemEditDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = nullptr);
     ~ItemEditDialog();
 
     InterlinearItemType type() const;

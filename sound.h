@@ -30,7 +30,7 @@ public:
 
     inline qint64 sampleAtTime( float time )
     {
-        return (qint64)(time*mSampleRate);
+        return static_cast<qint64>(time*mSampleRate);
     }
 
     inline qint64 bytePositionAtTime( float time )

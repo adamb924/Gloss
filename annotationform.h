@@ -24,7 +24,7 @@ class AnnotationForm : public QWidget
     Q_OBJECT
 
 public:
-    AnnotationForm(Text * text, const Project * project, QWidget *parent = 0);
+    AnnotationForm(Text * text, const Project * project, QWidget *parent = nullptr);
     ~AnnotationForm();
 
 signals:

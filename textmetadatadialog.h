@@ -15,7 +15,7 @@ class TextMetadataDialog : public QDialog
     Q_OBJECT
 
 public:
-    TextMetadataDialog(Project * project, QWidget *parent = 0);
+    TextMetadataDialog(Project * project, QWidget *parent = nullptr);
     ~TextMetadataDialog();
 
 private:

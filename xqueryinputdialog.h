@@ -19,7 +19,7 @@ class XQueryInputDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit XQueryInputDialog(QWidget *parent = 0);
+    explicit XQueryInputDialog(QWidget *parent = nullptr);
     ~XQueryInputDialog();
 
     QString query() const;

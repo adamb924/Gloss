@@ -32,7 +32,7 @@ class LexiconEdit : public QMainWindow
     Q_OBJECT
 
 public:
-    LexiconEdit(Project *project, QWidget *parent = 0);
+    LexiconEdit(Project *project, QWidget *parent = nullptr);
     ~LexiconEdit();
 
 signals:

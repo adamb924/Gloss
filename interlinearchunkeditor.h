@@ -27,7 +27,7 @@ class InterlinearChunkEditor : public QWidget
     Q_OBJECT
 
 public:
-    InterlinearChunkEditor(Text *text, Project *project, View::Type type, int chunkSize, QWidget *parent = 0);
+    InterlinearChunkEditor(Text *text, Project *project, View::Type type, int chunkSize, QWidget *parent = nullptr);
     ~InterlinearChunkEditor();
 
     void moveToLine(int line);

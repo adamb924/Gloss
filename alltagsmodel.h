@@ -16,7 +16,7 @@ class AllTagsModel : public QStandardItemModel
 {
     Q_OBJECT
 public:
-    AllTagsModel(const DatabaseAdapter * dbAdapter, QWidget *parent = 0);
+    AllTagsModel(const DatabaseAdapter * dbAdapter, QWidget *parent = nullptr);
 
     void refreshTags( );
 

@@ -15,7 +15,7 @@ class AnnotationTypeListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    AnnotationTypeListModel(QList<AnnotationType> *list, QObject *parent = 0);
+    AnnotationTypeListModel(QList<AnnotationType> *list, QObject *parent = nullptr);
 
     int columnCount(const QModelIndex & parent = QModelIndex()) const;
     int rowCount(const QModelIndex & parent = QModelIndex()) const;

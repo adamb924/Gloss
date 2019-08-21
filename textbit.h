@@ -10,6 +10,7 @@
 #define TEXTBIT_H
 
 #include <QString>
+#include <QStringBuilder>
 #include "writingsystem.h"
 
 class TextBit
@@ -48,7 +49,7 @@ QDebug operator<<(QDebug dbg, const TextBit &key);
 
 inline uint qHash(const TextBit & key)
 {
-    return qHash(key.text() + key.id() + key.writingSystem().flexString() );
+    return qHash(key.text() % QString::number(key.id()) % key.writingSystem().flexString() );
 }
 
 typedef QHash<WritingSystem, TextBit> TextBitHash;

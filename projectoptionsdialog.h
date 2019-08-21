@@ -23,7 +23,7 @@ class ProjectOptionsDialog : public QDialog
     Q_OBJECT
 
 public:
-    ProjectOptionsDialog(Project * project, QWidget *parent = 0);
+    ProjectOptionsDialog(Project * project, QWidget *parent = nullptr);
     ~ProjectOptionsDialog();
 
 private slots:

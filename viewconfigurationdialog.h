@@ -28,7 +28,7 @@ class ViewConfigurationDialog : public QDialog
     Q_OBJECT
 
 public:
-    ViewConfigurationDialog(Project * project, QWidget *parent = 0);
+    ViewConfigurationDialog(Project * project, QWidget *parent = nullptr);
     ~ViewConfigurationDialog();
 
     void populateWritingSystemCombo();

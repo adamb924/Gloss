@@ -20,7 +20,7 @@ class ImportFlexTextDialog : public QDialog
     Q_OBJECT
 
 public:
-    ImportFlexTextDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
+    ImportFlexTextDialog(DatabaseAdapter *dbAdapter, QWidget *parent = nullptr);
     ~ImportFlexTextDialog();
 
     QString filename() const;

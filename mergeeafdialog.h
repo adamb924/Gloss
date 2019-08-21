@@ -21,7 +21,7 @@ class MergeEafDialog : public QDialog
     Q_OBJECT
 
 public:
-    MergeEafDialog(Project *project, QWidget *parent = 0);
+    MergeEafDialog(Project *project, QWidget *parent = nullptr);
     ~MergeEafDialog();
 
     QString text() const;

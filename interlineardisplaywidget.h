@@ -39,7 +39,7 @@ class InterlinearDisplayWidget : public QScrollArea
 public:
     enum MouseMode { Normal, ChangeBaseline };
 
-    InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent = 0);
+    InterlinearDisplayWidget(const Tab * tab, Text *text, Project *project, QWidget *parent = nullptr);
     ~InterlinearDisplayWidget();
 
     void setPhrasalGloss(int lineNumber, const TextBit & bit);

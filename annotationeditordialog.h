@@ -16,7 +16,7 @@ class AnnotationEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    AnnotationEditorDialog(const Annotation & annotation, const TextBit & hint, const QString & annotationKey, const QList<AnnotationType>* types, QWidget *parent = 0);
+    AnnotationEditorDialog(const Annotation & annotation, const TextBit & hint, const QString & annotationKey, const QList<AnnotationType>* types, QWidget *parent = nullptr);
     ~AnnotationEditorDialog();
 
     Annotation annotation() const;

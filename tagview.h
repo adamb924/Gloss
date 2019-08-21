@@ -13,7 +13,7 @@ class TagView : public QListView
 {
     Q_OBJECT
 public:
-    explicit TagView(QWidget *parent = 0);
+    explicit TagView(QWidget *parent = nullptr);
 
 signals:
 

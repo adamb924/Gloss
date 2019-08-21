@@ -15,7 +15,7 @@ class ViewsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    ViewsModel(Project * project, QObject *parent = 0);
+    ViewsModel(Project * project, QObject *parent = nullptr);
 
     int columnCount(const QModelIndex & parent = QModelIndex()) const;
     int rowCount(const QModelIndex & parent = QModelIndex()) const;

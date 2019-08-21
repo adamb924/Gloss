@@ -16,7 +16,7 @@ class AllomorphModel : public QSqlQueryModel
 {
     Q_OBJECT
 public:
-    AllomorphModel(const DatabaseAdapter * dbAdapter, QObject *parent = 0);
+    AllomorphModel(const DatabaseAdapter * dbAdapter, QObject *parent = nullptr);
 
 signals:
 

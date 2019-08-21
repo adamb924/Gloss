@@ -20,7 +20,7 @@ class DatabaseQueryDialog : public QDialog
     Q_OBJECT
 
 public:
-    DatabaseQueryDialog(const QString & databaseName, QWidget *parent = 0);
+    DatabaseQueryDialog(const QString & databaseName, QWidget *parent = nullptr);
     ~DatabaseQueryDialog();
 
 private:

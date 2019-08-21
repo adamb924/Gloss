@@ -23,8 +23,8 @@ class SyntacticAnalysisOptionsDialog : public QDialog
     Q_OBJECT
 
 public:
-    SyntacticAnalysisOptionsDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
-    SyntacticAnalysisOptionsDialog(const SyntacticAnalysis * analysis, const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
+    SyntacticAnalysisOptionsDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = nullptr);
+    SyntacticAnalysisOptionsDialog(const SyntacticAnalysis * analysis, const QList<WritingSystem> & writingSystems, QWidget *parent = nullptr);
     ~SyntacticAnalysisOptionsDialog();
 
     WritingSystem writingSystem() const;

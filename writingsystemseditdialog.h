@@ -23,7 +23,7 @@ class WritingSystemsEditDialog : public QDialog
     Q_OBJECT
 
 public:
-    WritingSystemsEditDialog(Project * prj, QWidget *parent = 0);
+    WritingSystemsEditDialog(Project * prj, QWidget *parent = nullptr);
     ~WritingSystemsEditDialog();
 
 public slots:

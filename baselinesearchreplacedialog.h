@@ -22,7 +22,7 @@ class BaselineSearchReplaceDialog : public QDialog
     Q_OBJECT
 
 public:
-    BaselineSearchReplaceDialog(const DatabaseAdapter * dbAdapter, const WritingSystem & defaultWs, QWidget *parent = 0);
+    BaselineSearchReplaceDialog(const DatabaseAdapter * dbAdapter, const WritingSystem & defaultWs, QWidget *parent = nullptr);
     ~BaselineSearchReplaceDialog();
 
     TextBit searchString() const;

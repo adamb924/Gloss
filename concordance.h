@@ -23,7 +23,7 @@ class Concordance : public QObject
 {
     Q_OBJECT
 public:
-    explicit Concordance(QObject *parent = 0);
+    explicit Concordance(QObject *parent = nullptr);
 
 signals:
 

@@ -22,9 +22,9 @@ class GenericTextInputDialog : public QDialog
     Q_OBJECT
 
 public:
-    GenericTextInputDialog(DatabaseAdapter *dbAdapter, QWidget *parent = 0);
-    GenericTextInputDialog(const WritingSystem & writingSystem, QWidget *parent = 0);
-    GenericTextInputDialog(const TextBit & bit, QWidget *parent = 0);
+    GenericTextInputDialog(DatabaseAdapter *dbAdapter, QWidget *parent = nullptr);
+    GenericTextInputDialog(const WritingSystem & writingSystem, QWidget *parent = nullptr);
+    GenericTextInputDialog(const TextBit & bit, QWidget *parent = nullptr);
     ~GenericTextInputDialog();
 
     void suggestInput( const TextBit & bit );

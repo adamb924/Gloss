@@ -22,7 +22,7 @@ class TextTabWidget : public QTabWidget
     Q_OBJECT
 
 public:
-    TextTabWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci = QList<Focus>(), QWidget *parent = 0);
+    TextTabWidget(Text *text, Project *project, View::Type type, const QList<int> & lines, const QList<Focus> & foci = QList<Focus>(), QWidget *parent = nullptr);
     ~TextTabWidget();
 
     void setLines(const QList<int> & lines);

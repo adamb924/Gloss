@@ -16,7 +16,7 @@ class PhrasalGlossesModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    PhrasalGlossesModel(Tab * tab, QObject *parent = 0);
+    PhrasalGlossesModel(Tab * tab, QObject *parent = nullptr);
 
     void addPhrasalGloss(const WritingSystem & ws);
     void removePhrasalGloss(int index);

@@ -15,7 +15,7 @@ class PartOfSpeechDialog : public QDialog
     Q_OBJECT
 
 public:
-    PartOfSpeechDialog(const QString & table, Project * prj, QWidget *parent = 0);
+    PartOfSpeechDialog(const QString & table, Project * prj, QWidget *parent = nullptr);
     ~PartOfSpeechDialog();
 
 public slots:

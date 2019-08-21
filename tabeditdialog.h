@@ -14,7 +14,7 @@ class TabEditDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TabEditDialog(QWidget *parent = 0);
+    explicit TabEditDialog(QWidget *parent = nullptr);
     ~TabEditDialog();
 
     Tab::TabType type() const;

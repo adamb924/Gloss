@@ -19,7 +19,7 @@ class AnnotationModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    AnnotationModel(Text *text, const QString & annotationLabel, QObject *parent = 0);
+    AnnotationModel(Text *text, const QString & annotationLabel, QObject *parent = nullptr);
 
     GlossItem * glossItem( const QModelIndex & index ) const;
 

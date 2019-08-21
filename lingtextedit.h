@@ -9,8 +9,8 @@ class LingTextEdit : public QTextEdit
 {
     Q_OBJECT
 public:
-    explicit LingTextEdit(QWidget *parent = 0);
-    explicit LingTextEdit(const TextBit & bit, QWidget *parent = 0);
+    explicit LingTextEdit(QWidget *parent = nullptr);
+    explicit LingTextEdit(const TextBit & bit, QWidget *parent = nullptr);
 
     TextBit textBit() const;
 

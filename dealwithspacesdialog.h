@@ -21,7 +21,7 @@ class DealWithSpacesDialog : public QDialog
 public:
     enum Result { SplitWord, ConvertSpaces, CancelEdit };
 
-    explicit DealWithSpacesDialog(QWidget *parent = 0);
+    explicit DealWithSpacesDialog(QWidget *parent = nullptr);
     ~DealWithSpacesDialog();
 
     DealWithSpacesDialog::Result choice() const;

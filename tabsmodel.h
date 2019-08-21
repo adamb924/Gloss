@@ -17,7 +17,7 @@ class TabsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    TabsModel(View * view, QObject *parent = 0);
+    TabsModel(View * view, QObject *parent = nullptr);
 
     int columnCount(const QModelIndex & parent = QModelIndex()) const;
     int rowCount(const QModelIndex & parent = QModelIndex()) const;

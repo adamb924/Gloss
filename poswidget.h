@@ -14,7 +14,7 @@ class PosWidget : public QWidget
     Q_OBJECT
 
 public:
-    PosWidget(const GlossItem *glossItem, const QHash<QString, PartOfSpeech> & partsOfSpeech, QWidget *parent = 0);
+    PosWidget(const GlossItem *glossItem, const QHash<QString, PartOfSpeech> & partsOfSpeech, QWidget *parent = nullptr);
     ~PosWidget();
 
 private:

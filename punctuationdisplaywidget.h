@@ -9,7 +9,7 @@ class PunctuationDisplayWidget : public ImmutableLabel
 {
     Q_OBJECT
 public:
-    PunctuationDisplayWidget(GlossItem * glossItem, const DatabaseAdapter * dbAdapter, QWidget * parent = 0);
+    PunctuationDisplayWidget(GlossItem * glossItem, const DatabaseAdapter * dbAdapter, QWidget * parent = nullptr);
 
 private:
     GlossItem * mGlossItem;

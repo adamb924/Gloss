@@ -16,7 +16,7 @@ class TagModel : public QStringListModel
 {
     Q_OBJECT
 public:
-    TagModel(const DatabaseAdapter * dbAdapter, QObject *parent = 0);
+    TagModel(const DatabaseAdapter * dbAdapter, QObject *parent = nullptr);
 
     Qt::DropActions supportedDropActions() const;
 

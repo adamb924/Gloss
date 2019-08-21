@@ -18,7 +18,7 @@ class Paragraph : public QObject
     friend class FlexTextImporter;
 
 public:
-    explicit Paragraph(WritingSystem & baselineWritingSystem, QObject *parent = 0);
+    explicit Paragraph(WritingSystem & baselineWritingSystem, QObject *parent = nullptr);
 
     //! \brief Returns a pointer to the list of Phrases in the paragraph
     QList<Phrase*>* phrases();

@@ -23,7 +23,7 @@ class SyntacticVocabularyDialog : public QDialog
     Q_OBJECT
 
 public:
-    SyntacticVocabularyDialog(Project * prj, QWidget *parent = 0);
+    SyntacticVocabularyDialog(Project * prj, QWidget *parent = nullptr);
     ~SyntacticVocabularyDialog();
 
 public slots:

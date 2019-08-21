@@ -18,7 +18,7 @@ class ImmutableLabel : public QLabel
 {
     Q_OBJECT
 public:
-    ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *parent = 0);
+    ImmutableLabel(const TextBit & bit, bool technicolor, QWidget *parent = nullptr);
     ~ImmutableLabel();
 
     void matchTextAlignmentTo( Qt::LayoutDirection target );

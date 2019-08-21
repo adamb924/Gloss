@@ -19,7 +19,7 @@ class ExportTextsDialog : public QDialog
     Q_OBJECT
 
 public:
-    ExportTextsDialog(QStringList textNames, QWidget *parent = 0);
+    ExportTextsDialog(QStringList textNames, QWidget *parent = nullptr);
     ~ExportTextsDialog();
 
     QStringList textNames() const;

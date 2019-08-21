@@ -9,7 +9,7 @@ class TextListModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    TextListModel(Project * project, QObject *parent = 0);
+    TextListModel(Project * project, QObject *parent = nullptr);
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
     int columnCount(const QModelIndex & parent = QModelIndex()) const;

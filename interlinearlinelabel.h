@@ -16,7 +16,7 @@ class InterlinearLineLabel : public QLabel
 {
     Q_OBJECT
 public:
-    InterlinearLineLabel(Text * text, Phrase * phrase, int lineNumber, QWidget *parent = 0);
+    InterlinearLineLabel(Text * text, Phrase * phrase, int lineNumber, QWidget *parent = nullptr);
 
 private:
     void contextMenuEvent ( QContextMenuEvent * event );

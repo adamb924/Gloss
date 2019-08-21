@@ -13,7 +13,7 @@ class LexiconView : public QTableView
 {
     Q_OBJECT
 public:
-    explicit LexiconView(QWidget *parent = 0);
+    explicit LexiconView(QWidget *parent = nullptr);
 
 private:
     void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );

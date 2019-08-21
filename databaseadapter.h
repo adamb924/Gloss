@@ -27,7 +27,7 @@ class DatabaseAdapter : public QObject
 {
     Q_OBJECT
 public:
-    DatabaseAdapter(const QString & filename, QObject *parent = 0);
+    DatabaseAdapter(const QString & filename, QObject *parent = nullptr);
     ~DatabaseAdapter();
 
     //! \brief Returns a set with all interpretation ids

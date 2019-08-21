@@ -37,7 +37,7 @@ class AnnotationMarkWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AnnotationMarkWidget(const QList<AnnotationType> * annotationTypes, const GlossItem * glossItem, QWidget *parent = 0);
+    AnnotationMarkWidget(const QList<AnnotationType> * annotationTypes, const GlossItem * glossItem, QWidget *parent = nullptr);
 
 signals:
     void annotationActivated( const QString & string );

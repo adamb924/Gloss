@@ -24,7 +24,7 @@ class EditWithSuggestionsDialog : public QDialog
     Q_OBJECT
 
 public:
-    EditWithSuggestionsDialog(const WritingSystem & ws, QWidget *parent = 0);
+    EditWithSuggestionsDialog(const WritingSystem & ws, QWidget *parent = nullptr);
     ~EditWithSuggestionsDialog();
 
     void setDefaultString( const QString & string );

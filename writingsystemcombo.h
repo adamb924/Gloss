@@ -18,7 +18,7 @@ class WritingSystemCombo : public QComboBox
 {
     Q_OBJECT
 public:
-    explicit WritingSystemCombo(QWidget *parent = 0);
+    explicit WritingSystemCombo(QWidget *parent = nullptr);
 
     void setWritingSystems(const QList<WritingSystem> & writingSystems);
     void setCurrentWritingSystem(const WritingSystem & ws);

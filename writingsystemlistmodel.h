@@ -16,7 +16,7 @@ class WritingSystemListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    WritingSystemListModel( QList<WritingSystem> * list, QObject *parent = 0);
+    WritingSystemListModel( QList<WritingSystem> * list, QObject *parent = nullptr);
 
     int columnCount(const QModelIndex & parent = QModelIndex()) const;
     int rowCount(const QModelIndex & parent = QModelIndex()) const;

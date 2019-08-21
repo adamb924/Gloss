@@ -20,7 +20,7 @@ class LexiconLineForm : public QWidget
     Q_OBJECT
 
 public:
-    LexiconLineForm(const TextBit & guess, bool autoFill, bool hideGuessButton, QWidget *parent = 0);
+    LexiconLineForm(const TextBit & guess, bool autoFill, bool hideGuessButton, QWidget *parent = nullptr);
     ~LexiconLineForm();
 
     TextBit textBit() const;

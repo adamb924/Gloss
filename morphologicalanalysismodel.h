@@ -18,7 +18,7 @@ class MorphologicalAnalysisModel : public QSqlQueryModel
 {
     Q_OBJECT
 public:
-    MorphologicalAnalysisModel(const DatabaseAdapter * dbAdapter, QObject *parent = 0);
+    MorphologicalAnalysisModel(const DatabaseAdapter * dbAdapter, QObject *parent = nullptr);
 
 public slots:
     void setLexicalEntry( qlonglong lexicalEntryId );

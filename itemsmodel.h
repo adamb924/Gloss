@@ -18,7 +18,7 @@ class ItemsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    ItemsModel(Tab * tab, WritingSystem & ws, QObject *parent = 0);
+    ItemsModel(Tab * tab, WritingSystem & ws, QObject *parent = nullptr);
 
     void addItem(InterlinearItemType type, const WritingSystem &ws );
     void removeItem(const WritingSystem &ws, const QModelIndex & index );

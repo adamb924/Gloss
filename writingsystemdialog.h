@@ -19,7 +19,7 @@ class WritingSystemDialog : public QDialog
     Q_OBJECT
 
 public:
-    WritingSystemDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
+    WritingSystemDialog(const QList<WritingSystem> & writingSystems, QWidget *parent = nullptr);
     ~WritingSystemDialog();
 
     WritingSystem writingSystem() const;

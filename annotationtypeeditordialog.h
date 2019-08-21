@@ -21,8 +21,8 @@ class AnnotationTypeEditorDialog : public QDialog
     Q_OBJECT
 
 public:
-    AnnotationTypeEditorDialog( const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
-    AnnotationTypeEditorDialog( AnnotationType type, const QList<WritingSystem> & writingSystems, QWidget *parent = 0);
+    AnnotationTypeEditorDialog( const QList<WritingSystem> & writingSystems, QWidget *parent = nullptr);
+    AnnotationTypeEditorDialog( AnnotationType type, const QList<WritingSystem> & writingSystems, QWidget *parent = nullptr);
     ~AnnotationTypeEditorDialog();
 
     AnnotationType annotationType() const;

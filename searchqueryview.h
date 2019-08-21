@@ -17,7 +17,7 @@ class SearchQueryView : public QTreeView
 {
     Q_OBJECT
 public:
-    explicit SearchQueryView(QWidget *parent = 0);
+    explicit SearchQueryView(QWidget *parent = nullptr);
 
 signals:
     void requestOpenText( const QString & textName , int lineNumber, const QList<Focus> & foci );
