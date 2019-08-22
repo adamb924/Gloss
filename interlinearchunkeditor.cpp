@@ -12,17 +12,15 @@
 
 InterlinearChunkEditor::InterlinearChunkEditor(Text *text, Project *project, View::Type type, int chunkSize, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::InterlinearChunkEditor)
+    ui(new Ui::InterlinearChunkEditor),
+    mText(text),
+    mProject(project),
+    mType(type),
+    mTextTabWidget(nullptr),
+    mChunkSize(chunkSize),
+    mPosition(0)
 {
     ui->setupUi(this);
-
-    mTextTabWidget = nullptr;
-
-    mText = text;
-    mProject = project;
-    mType = type;
-    mChunkSize = chunkSize;
-    mPosition = 0;
 
     connect( ui->previousButton , SIGNAL(clicked()), this, SLOT(previous()) );
     connect( ui->nextButton, SIGNAL(clicked()), this, SLOT(next()) );
