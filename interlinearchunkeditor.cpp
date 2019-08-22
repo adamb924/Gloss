@@ -85,6 +85,18 @@ void InterlinearChunkEditor::moveToLine(int line)
     moveToPosition( (line / mChunkSize) * mChunkSize );
 }
 
+void InterlinearChunkEditor::setPositionIndicatorText()
+{
+    int phraseCount = mText->phraseCount();
+    int firstLine = mPosition+1;
+    int lastLine = qMin( mPosition+mChunkSize, phraseCount );
+    if( firstLine == lastLine ) {
+        ui->positionIndicatorLabel->setText( tr("Line %1 of %2").arg(firstLine).arg(phraseCount) );
+    } else {
+        ui->positionIndicatorLabel->setText( tr("Lines %1-%2 of %3").arg(firstLine).arg(lastLine).arg(phraseCount) );
+    }
+}
+
 void InterlinearChunkEditor::moveToPosition(int position)
 {
     // out-of-bounds checks
@@ -103,6 +115,7 @@ void InterlinearChunkEditor::moveToPosition(int position)
 
 void InterlinearChunkEditor::refreshLayout()
 {
+    setPositionIndicatorText();
     if( mPosition - mChunkSize < 0 )
     {
         ui->previousButton->setEnabled(false);

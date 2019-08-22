@@ -52,6 +52,8 @@ private:
 
     void keyReleaseEvent(QKeyEvent * event);
 
+    void setPositionIndicatorText();
+
 private slots:
     void next();
     void previous();
