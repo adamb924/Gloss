@@ -124,7 +124,7 @@ protected:
     void addPhrasalGlossLines(int i, Phrase *phrase,  QVBoxLayout *phrasalGlossLayout);
 
     //! \brief Add a paragraph marker
-    void addParagraphMarker(int lineIndex, Paragraph *paragraph, QLayout * before = 0);
+    void addParagraphMarker(int lineIndex, Paragraph *paragraph, QLayout * before = nullptr);
 
     //! \brief Add a line label for phrase \a i
     void addLineLabel(int i, Phrase *phrase, QLayout * flowLayout  );
