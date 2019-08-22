@@ -2011,6 +2011,11 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allSuffixPossibilities(const TextB
     QSet< QPair<TextBit, bool> > retVal;
     QString stem;
 
+    if( textForm.text().isEmpty() )
+    {
+        return retVal;
+    }
+
     QRegularExpression re(" (?![-=*~])([^-=*~]+)(?![-=*~]) ");
     QRegularExpressionMatch match = re.match(" " + textForm.text() + " ");
     if (match.hasMatch())
@@ -2071,6 +2076,11 @@ QSet< QPair<TextBit, bool> > DatabaseAdapter::allPrefixPossibilities(const TextB
 {
     QSet< QPair<TextBit, bool> > retVal;
     QString stem;
+
+    if( textForm.text().isEmpty() )
+    {
+        return retVal;
+    }
 
     QRegularExpression re(" (?![-=*~])([^-=*~]+)(?![-=*~]) ");
     QRegularExpressionMatch match = re.match(" " + textForm.text() + " ");
