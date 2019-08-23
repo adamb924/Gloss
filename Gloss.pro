@@ -278,3 +278,5 @@ LIBS += -L./ \
     -llibexslt \
     -lxslt \
     -lxml2
+
+RC_ICONS = icons/Gloss.ico
