@@ -1,0 +1,33 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Introduction}{2}{chapter.1}
+\contentsline {chapter}{\numberline {2}Getting started}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Writing Systems}{3}{section.2.1}
+\contentsline {section}{\numberline {2.2}Project Options}{4}{section.2.2}
+\contentsline {section}{\numberline {2.3}View configuration}{6}{section.2.3}
+\contentsline {section}{\numberline {2.4}Adding texts}{6}{section.2.4}
+\select@language {farsi}
+\select@language {english}
+\contentsline {subsection}{\numberline {2.4.1}Adding texts from Elan files}{7}{subsection.2.4.1}
+\contentsline {section}{\numberline {2.5}The interlinear interface}{7}{section.2.5}
+\contentsline {chapter}{\numberline {3}Intermediate skills}{9}{chapter.3}
+\contentsline {section}{\numberline {3.1}Dealing with homophones/homonyms, alternate transcriptions, and alternate glosses}{9}{section.3.1}
+\contentsline {section}{\numberline {3.2}Adding annotations}{10}{section.3.2}
+\contentsline {section}{\numberline {3.3}Editing the baseline text}{10}{section.3.3}
+\contentsline {chapter}{\numberline {4}Digging deeper}{11}{chapter.4}
+\contentsline {section}{\numberline {4.1}Basic concepts}{11}{section.4.1}
+\contentsline {section}{\numberline {4.2}Types of interlinear lines}{11}{section.4.2}
+\contentsline {section}{\numberline {4.3}Switching input languages automatically}{11}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Switching input languages in Windows}{12}{subsection.4.3.1}
+\contentsline {section}{\numberline {4.4}Searching}{12}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}The Search Index}{13}{subsection.4.4.1}
+\contentsline {subsection}{\numberline {4.4.2}Approved and Unapproved Lines}{13}{subsection.4.4.2}
+\contentsline {section}{\numberline {4.5}Syntactic Analysis}{13}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Getting Started}{13}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.5.2}Annotating}{14}{subsection.4.5.2}
+\contentsline {subsection}{\numberline {4.5.3}Synchronizing your morphophonemic analysis}{14}{subsection.4.5.3}
+\contentsline {subsection}{\numberline {4.5.4}Annotating with a fixed vocabulary}{14}{subsection.4.5.4}
+\contentsline {chapter}{\numberline {5}Advanced use}{15}{chapter.5}
+\contentsline {section}{\numberline {5.1}The ``Under the hood'' menu}{15}{section.5.1}
+\contentsline {section}{\numberline {5.2}Types of files}{15}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Gloss's FlexText files}{15}{subsection.5.2.1}
+\contentsline {subsection}{\numberline {5.2.2}File Encoding}{16}{subsection.5.2.2}
